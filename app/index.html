@@ -1,0 +1,774 @@
+<title>Valerie COE Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* Layout: fixed left rail (nav + brands by stage), top bar with view switch, scrolling work area, right-hand edit drawer */
+:root{
+  --bg:#F5F3EE; --panel:#FFFFFF; --panel2:#F0EDE6; --ink:#1E2125; --muted:#5F6670; --faint:#8B9098; --line:#E3DFD6; --line2:#D5D0C5;
+  --rail:#ECE8DF; --railHover:#E2DDD1; --accent:#1D5C8A; --accentInk:#FFFFFF; --accentSoft:#E3EDF5;
+  --ok:#17703A; --okBg:#DDF2E3; --warn:#8F5A00; --warnBg:#FCEFCF; --bad:#B42318; --badBg:#FDE3E0;
+  --info:#1D5C8A; --infoBg:#E1ECF6; --off:#4E555E; --offBg:#ECE9E2;
+  --f-ui:"Onest",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-code:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --r:8px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141619; --panel:#1C1F23; --panel2:#23272C; --ink:#E9EAEC; --muted:#A3A9B1; --faint:#7D838B; --line:#2E3238; --line2:#3A3F46;
+  --rail:#181B1E; --railHover:#24282D; --accent:#6FA8D6; --accentInk:#0E1215; --accentSoft:#1F2E3B;
+  --ok:#6FCF8E; --okBg:#173322; --warn:#F2C25B; --warnBg:#3A2E12; --bad:#F2867B; --badBg:#3D1C19;
+  --info:#8DBDE3; --infoBg:#1C2B38; --off:#B4BAC1; --offBg:#2A2E33; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141619; --panel:#1C1F23; --panel2:#23272C; --ink:#E9EAEC; --muted:#A3A9B1; --faint:#7D838B; --line:#2E3238; --line2:#3A3F46;
+  --rail:#181B1E; --railHover:#24282D; --accent:#6FA8D6; --accentInk:#0E1215; --accentSoft:#1F2E3B;
+  --ok:#6FCF8E; --okBg:#173322; --warn:#F2C25B; --warnBg:#3A2E12; --bad:#F2867B; --badBg:#3D1C19;
+  --info:#8DBDE3; --infoBg:#1C2B38; --off:#B4BAC1; --offBg:#2A2E33; color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font:14px/1.45 var(--f-ui);font-variant-numeric:tabular-nums}
+a{color:var(--accent)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.app{display:grid;grid-template-columns:252px minmax(0,1fr);height:100%}
+/* rail */
+.rail{background:var(--rail);border-right:1px solid var(--line);overflow-y:auto;padding:18px 12px 24px;display:flex;flex-direction:column;gap:14px}
+.mark{padding:0 8px;font-weight:700;font-size:16px;letter-spacing:-.01em}
+.mark small{display:block;font-weight:500;font-size:12px;color:var(--muted)}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav a,.blink{display:flex;align-items:center;gap:9px;padding:6px 9px;border-radius:6px;color:var(--ink);text-decoration:none}
+.nav a:hover,.blink:hover{background:var(--railHover)}
+.nav a.on,.blink.on{background:var(--accentSoft);color:var(--accent);font-weight:600}
+.nav .n{margin-left:auto;font-size:12px;color:var(--muted)}
+.rail h3{font-size:11px;font-weight:600;color:var(--faint);text-transform:uppercase;letter-spacing:.06em;margin:8px 9px 2px}
+.blink{font-size:13px}
+.blink .n{margin-left:auto;font-size:12px;color:var(--muted)}
+.blink .tag{margin-left:4px}
+.addbtn{border:1px dashed var(--line2);background:transparent;border-radius:6px;padding:6px;cursor:pointer;color:var(--muted)}
+.addbtn:hover{border-color:var(--accent);color:var(--accent)}
+/* health dot */
+.dot{width:9px;height:9px;border-radius:50%;flex:none;background:var(--off);display:inline-block}
+.dot.h-Blocked{background:var(--bad);border-radius:2px}
+.dot.h-AtRisk{background:#E08A00}
+.dot.h-OnTrack{background:#3B82C4}
+.dot.h-Live{background:#2F9E58}
+/* top */
+.mainwrap{display:flex;flex-direction:column;min-width:0;height:100%}
+.topbar{display:flex;align-items:center;gap:12px;padding:10px 28px;border-bottom:1px solid var(--line);background:var(--panel);flex-wrap:wrap}
+.topbar .menu{display:none}
+.topbar .grow{flex:1}
+.seg{display:inline-flex;border:1px solid var(--line2);border-radius:7px;overflow:hidden}
+.seg button{border:0;background:transparent;padding:5px 12px;cursor:pointer;color:var(--muted);font-weight:500}
+.seg button.on{background:var(--ink);color:var(--bg)}
+.who{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+.who select{border:1px solid var(--line2);background:var(--panel);border-radius:6px;padding:4px 6px}
+main{overflow-y:auto;padding:24px 28px 80px;flex:1}
+h1{font-size:24px;letter-spacing:-.02em;margin:0 0 4px;font-weight:700;text-wrap:balance}
+h2{font-size:16px;margin:26px 0 10px;font-weight:600}
+.sub{color:var(--muted);margin:0 0 18px;max-width:72ch}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.grow{flex:1}
+.btn{background:var(--panel);border:1px solid var(--line2);border-radius:7px;padding:6px 12px;cursor:pointer;white-space:nowrap;color:var(--ink)}
+.btn:hover{border-color:var(--muted)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accentInk);font-weight:600}
+.btn.quiet{border-color:transparent;background:transparent;color:var(--muted)}
+.btn.danger{color:var(--bad)}
+.btn.sm{padding:3px 9px;font-size:12.5px}
+.btn:disabled{opacity:.5;cursor:default}
+.missing{border:1px dashed var(--line2);background:transparent;color:var(--muted);border-radius:6px;padding:2px 8px;font-size:12.5px;cursor:pointer}
+.missing:hover{color:var(--accent);border-color:var(--accent)}
+/* tiles */
+.tiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:16px 0 6px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px}
+.tile b{display:block;font-size:24px;font-weight:700;letter-spacing:-.02em}
+.tile span{color:var(--muted);font-size:12.5px}
+.tile.bad b{color:var(--bad)}.tile.warn b{color:var(--warn)}
+/* sow plan strip */
+.plan{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(170px,1fr);gap:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);overflow-x:auto}
+.week{padding:10px 12px;border-right:1px solid var(--line);min-width:0}
+.week:last-child{border-right:0}
+.week h4{margin:0 0 6px;font-size:12px;color:var(--muted);font-weight:600}
+.week h4 b{color:var(--ink)}
+.week .chip{display:flex;align-items:center;gap:6px;font-size:13px;padding:3px 0;color:var(--ink);text-decoration:none;flex-wrap:wrap}
+.week .chip:hover span.nm{text-decoration:underline}
+/* tables */
+.tw{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);overflow-x:auto}
+table{border-collapse:collapse;width:100%}
+th{font-size:12px;font-weight:600;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);background:var(--panel2);white-space:nowrap}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+tr.click{cursor:pointer}
+tr.click:hover td{background:var(--panel2)}
+td.num,th.num{text-align:right}
+td .hot{color:var(--bad);font-weight:600}
+.bname{font-weight:600;color:var(--ink);text-decoration:none}
+.bname:hover{text-decoration:underline}
+.clip{max-width:420px;min-width:220px}
+.clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.muted{color:var(--muted)}.faint{color:var(--faint)}
+.code{font-family:var(--f-code);font-size:12px;color:var(--muted)}
+/* pills */
+.pill{display:inline-flex;align-items:center;gap:4px;padding:1px 8px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap;line-height:20px}
+.s-ok{background:var(--okBg);color:var(--ok)}.s-warn{background:var(--warnBg);color:var(--warn)}.s-bad{background:var(--badBg);color:var(--bad)}
+.s-info{background:var(--infoBg);color:var(--info)}.s-off{background:var(--offBg);color:var(--off)}
+select.ps{appearance:none;-webkit-appearance:none;border:0;border-radius:999px;padding:1px 22px 1px 9px;font-size:12px;font-weight:600;cursor:pointer;line-height:20px;
+  background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);
+  background-position:calc(100% - 11px) 50%,calc(100% - 7px) 50%;background-size:4px 4px;background-repeat:no-repeat}
+select.ps:disabled{cursor:default;background-image:none;padding-right:9px}
+.tag{font-size:11px;padding:0 6px;border-radius:999px;background:var(--offBg);color:var(--off);white-space:nowrap;line-height:18px;display:inline-block}
+.tag.gate{background:var(--badBg);color:var(--bad);font-weight:600}
+.tag.opt{background:transparent;border:1px dashed var(--line2)}
+.tag.doc{background:var(--infoBg);color:var(--info)}
+.tag.bad{background:var(--badBg);color:var(--bad);font-weight:600}
+.tag.warn{background:var(--warnBg);color:var(--warn);font-weight:600}
+.due{font-size:12.5px;white-space:nowrap}
+.due.Overdue{color:var(--bad);font-weight:600}.due.DueSoon{color:var(--warn);font-weight:600}
+/* my tasks */
+.group{margin-bottom:18px}
+.group h2{display:flex;align-items:center;gap:8px;margin:18px 0 8px}
+.group h2 .count{font-size:12px;color:var(--muted);font-weight:500}
+.item{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:14px;align-items:center;padding:10px 14px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);margin-bottom:6px}
+.item .t{font-weight:600}
+.item .meta{font-size:12.5px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;margin-top:2px}
+.item.blocked{border-left:3px solid var(--bad)}
+.item.late{border-left:3px solid var(--bad)}
+.item.soon{border-left:3px solid #E08A00}
+.blk{font-size:12.5px;color:var(--bad);margin-top:3px}
+/* brand page */
+.bhead{display:flex;gap:18px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.facts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin:16px 0 4px}
+.fact{background:var(--panel);padding:10px 12px;min-width:0}
+.fact label{display:block;font-size:11.5px;color:var(--muted);margin-bottom:3px}
+.fact .v{font-weight:600;overflow-wrap:anywhere}
+.next{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:10px 14px;margin:10px 0}
+.next label{font-size:11.5px;color:var(--muted)}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin:20px 0 14px;overflow-x:auto}
+.tabs button{border:0;background:none;padding:9px 12px;border-bottom:2px solid transparent;cursor:pointer;color:var(--muted);font-weight:600;white-space:nowrap}
+.tabs button.on{color:var(--ink);border-color:var(--accent)}
+.phase{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);margin-bottom:10px;overflow:hidden}
+.phase>summary{list-style:none;cursor:pointer;padding:10px 14px;background:var(--panel2);display:flex;gap:10px;align-items:center;font-weight:600}
+.phase>summary::-webkit-details-marker{display:none}
+.phase>summary .pc{font-family:var(--f-code);font-size:12px;color:var(--muted)}
+.phase>summary .prog{margin-left:auto;font-weight:500;color:var(--muted);font-size:12.5px;display:flex;gap:8px;align-items:center}
+.phase[open]>summary{border-bottom:1px solid var(--line)}
+.bar{height:6px;width:70px;background:var(--offBg);border-radius:9px;overflow:hidden;display:inline-block;vertical-align:middle}
+.bar i{display:block;height:100%;background:var(--ok)}
+.step{display:grid;grid-template-columns:52px minmax(0,1fr) 130px 120px 200px;gap:12px;padding:8px 14px;border-bottom:1px solid var(--line);align-items:center}
+.step:last-child{border-bottom:0}
+.step.isgate{background:color-mix(in srgb,var(--badBg) 35%,transparent)}
+.step .nm{display:flex;flex-direction:column;gap:3px;min-width:0}
+.step .nm .tags{display:flex;gap:4px;flex-wrap:wrap}
+.step.done .nm>span:first-child{color:var(--muted)}
+.step select,.step input{border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:3px 6px;width:100%;font-size:12.5px}
+.notice{background:var(--warnBg);color:var(--warn);padding:9px 12px;border-radius:7px;margin:0 0 12px;font-size:13px}
+.notice.bad{background:var(--badBg);color:var(--bad)}
+.notice.info{background:var(--infoBg);color:var(--info)}
+.empty{padding:24px;text-align:center;color:var(--muted)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.filters select,.filters input{border:1px solid var(--line2);background:var(--panel);border-radius:7px;padding:5px 8px}
+/* bp dots */
+.bpd{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:11px;font-weight:700}
+.bp-NotStarted{background:var(--offBg);color:var(--off)}.bp-Foundations{background:var(--warnBg);color:var(--warn)}
+.bp-TacticsIn{background:var(--warnBg);color:var(--warn);box-shadow:inset 0 0 0 2px var(--warn)}.bp-InQA{background:var(--infoBg);color:var(--info)}
+.bp-Complete{background:var(--okBg);color:var(--ok)}.bp-Blocked{background:var(--badBg);color:var(--bad)}.bp-NA{background:transparent;color:var(--faint);border:1px dashed var(--line2)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin:0 0 12px}
+.legend span{display:flex;gap:5px;align-items:center}
+/* drawer + modal */
+.scrim{position:fixed;inset:0;background:rgba(10,12,14,.32);z-index:30}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(520px,100%);background:var(--panel);border-left:1px solid var(--line);z-index:31;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
+.drawer header{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.drawer header h3{margin:0;font-size:16px;flex:1;min-width:0}
+.drawer .body{overflow-y:auto;padding:16px 18px 30px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.drawer footer{border-top:1px solid var(--line);padding:12px 18px calc(12px + env(safe-area-inset-bottom,0px));display:flex;gap:8px}
+.f{display:flex;flex-direction:column;gap:4px;min-width:0}
+.f.w{grid-column:1/-1}
+.f label{font-size:12px;color:var(--muted)}
+.f input,.f select,.f textarea{border:1px solid var(--line2);background:var(--panel);border-radius:7px;padding:7px 9px;width:100%}
+.f textarea{min-height:72px;resize:vertical}
+.f .hint{font-size:11.5px;color:var(--faint)}
+.modal{position:fixed;inset:0;display:grid;place-items:center;z-index:40;background:rgba(10,12,14,.4);padding:16px}
+.modal .box{background:var(--panel);border:1px solid var(--line);border-radius:10px;width:min(440px,100%);padding:18px;display:flex;flex-direction:column;gap:12px}
+.modal h3{margin:0;font-size:16px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:8px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:50}
+.toast.show{opacity:1}
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.card textarea{width:100%;min-height:180px;border:1px solid var(--line2);border-radius:7px;padding:8px;background:var(--panel)}
+.logrow{display:grid;grid-template-columns:150px 120px minmax(0,1fr);gap:10px;padding:6px 0;border-bottom:1px solid var(--line);font-size:13px}
+@media (max-width:1100px){.tiles{grid-template-columns:repeat(3,minmax(0,1fr))}.facts{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  .rail{position:fixed;inset:0 25% 0 0;z-index:35;transform:translateX(-102%);transition:transform .2s;padding-top:calc(18px + env(safe-area-inset-top,0px))}
+  .rail.open{transform:none}
+  .topbar{padding:10px 16px}.topbar .menu{display:inline-block}
+  main{padding:18px 16px 60px}
+  .tiles,.facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .step{grid-template-columns:44px minmax(0,1fr);}
+  .step>.ctl{grid-column:2}
+  .item{grid-template-columns:minmax(0,1fr)}
+  .cols2,.drawer .body{grid-template-columns:1fr}
+  .logrow{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="app">
+  <aside class="rail" id="rail" aria-label="Navigation"></aside>
+  <div class="mainwrap">
+    <div class="topbar" id="topbar"></div>
+    <main id="main"><h1>Valerie COE Tracker</h1><p class="sub">Loading brands, tasks and steps.</p></main>
+  </div>
+</div>
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" hidden aria-label="Edit"></aside>
+<div class="modal" id="modal" hidden></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+"use strict";
+/* ---------- state ---------- */
+const COLL={brands:"brands",tasks:"tasks",access:"access",sow:"sow",bps:"bps",steps:"steps",bsteps:"brand_steps",config:"config"};
+const S={brands:{},tasks:{},access:{},sow:{},bps:{},steps:{},bsteps:{},config:{},log:{}};
+const ready={};
+let db=null,U=null,uid=null,canEdit=false,canWrite=true,dl=null;
+let me="";               // the person this viewer picked
+let simple=null;          // null until we know the role
+let route={v:"",id:""};
+let brandTab="tasks",showAllPhases=false,drawerCtx=null;
+const flt={accBrand:"",accStatus:"",taskStatus:"open"};
+const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+try{const t=ls.get("vt-tab");if(t)brandTab=t;const sv=ls.get("vt-simple");if(sv!==null)simple=sv==="1";me=ls.get("vt-me")||""}catch(e){}
+
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const esc=v=>String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const key=s=>String(s||"").replace(/[^A-Za-z]/g,"");
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("show"),2400)}
+const L=n=>(S.config.lists&&S.config.lists[n])||[];
+const people=()=>((S.config.people&&S.config.people.people)||[]);
+const activePeople=()=>people().filter(p=>p.active!==false).map(p=>p.name).sort((a,b)=>a.localeCompare(b));
+function namesFor(person){const p=people().find(x=>x.name===person);return [person].concat(p&&p.aliases||[]).filter(Boolean).map(s=>s.toLowerCase())}
+function isPerson(val,person){if(!val||!person)return false;const ns=namesFor(person);return ns.includes(String(val).toLowerCase().trim())}
+function today(){const d=new Date();d.setHours(0,0,0,0);return d}
+function isoToday(){const d=today();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function parseD(s){if(!s||!/^\d{4}-\d{2}-\d{2}$/.test(s))return null;const[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)}
+const dayDiff=s=>{const d=parseD(s);return d?Math.round((d-today())/864e5):null};
+function fmtD(s,long){const d=parseD(s);if(!d)return"";return d.toLocaleDateString("en-GB",long?{weekday:"short",day:"numeric",month:"short"}:{day:"numeric",month:"short"})}
+/* Excel rule: blank if done or no date; Overdue if before today; Due Soon if within 3 days; else On Time */
+function dueFlag(date,done){if(done)return"";const n=dayDiff(date);if(n===null)return"";if(n<0)return"Overdue";if(n<=3)return"Due Soon";return"On Time"}
+function dueText(date,flag){const n=dayDiff(date);if(n===null)return"";if(flag==="Overdue")return"Late by "+(-n)+(n===-1?" day":" days");if(n===0)return"Due today";if(n===1)return"Due tomorrow";return"Due "+fmtD(date,true)}
+function dueHtml(date,done){const f=dueFlag(date,done);if(!f)return date&&done?`<span class="due faint">${esc(fmtD(date))}</span>`:"";return`<span class="due ${key(f)}">${esc(dueText(date,f))}</span>`}
+function cls(v){
+  if(["Complete","Granted","Signed","Done","Live","All Granted","On Time","On Track"].includes(v))return v==="On Track"?"s-info":"s-ok";
+  if(["Blocked","Overdue","Urgent"].includes(v))return"s-bad";
+  if(["At Risk","Due Soon","High","In Progress","Briefed","Requested","Template Pending","Drafting","Internal Review","Final Review (Ben)","Founder Check-in","Revisions","Sent for Signature","Foundations","Tactics In","In QA"].includes(v))return"s-warn";
+  if(["Pending","Not Requested","Medium","Not Started","Not Set Up"].includes(v))return"s-info";
+  return"s-off";
+}
+const pill=v=>v?`<span class="pill ${cls(v)}">${v==="Blocked"?"! ":""}${esc(v)}</span>`:"";
+const hdot=h=>`<span class="dot h-${key(h)}" aria-hidden="true"></span>`;
+const brandList=()=>Object.entries(S.brands).map(([id,b])=>Object.assign({id},b)).sort((a,b)=>(a.order||999)-(b.order||999)||String(a.name).localeCompare(b.name));
+const bname=id=>(S.brands[id]&&S.brands[id].name)||"";
+const isInternal=b=>(b&&b.stage)==="Internal";
+const stepsSorted=()=>Object.entries(S.steps).map(([id,s])=>Object.assign({id},s)).sort((a,b)=>a.order-b.order);
+function phases(){const out=[];for(const s of stepsSorted()){let p=out.find(x=>x.code===s.phase);if(!p){p={code:s.phase,name:s.phase_name,steps:[]};out.push(p)}p.steps.push(s)}return out}
+const stepState=(bid,code)=>((S.bsteps[bid]&&S.bsteps[bid].s)||{})[code]||{};
+const withId=o=>Object.entries(o).map(([k,v])=>Object.assign({_id:k},v));
+const opts=(arr,cur,blank)=>{const list=arr.slice();if(cur&&!list.includes(cur))list.push(cur);return(blank!==false?`<option value=""></option>`:"")+list.map(o=>`<option value="${esc(o)}" ${o===cur?"selected":""}>${esc(o)}</option>`).join("")};
+
+/* ---------- roll-ups (from the Excel formulas) ---------- */
+function bpRoll(bid){const d=S.bps[bid];if(!d)return null;const secs=L("bp_section");const vals=secs.map(x=>(d.sections||{})[x]||"Not Started");
+  const live=vals.filter(v=>v!=="N/A");const done=live.filter(v=>v==="Complete").length;const progress=live.length?done/live.length:0;
+  let overall="In Progress";
+  if(vals.includes("Blocked"))overall="Blocked";else if(done===live.length)overall="Complete";else if(vals.every(v=>v==="Not Started"||!v))overall="Not Started";else if(vals.includes("In QA"))overall="In QA";
+  return{overall,progress,done,total:live.length,due:dueFlag(d.due_date,progress===1)}}
+function accessRoll(bid){const rows=Object.values(S.access).filter(a=>a.brand===bid&&a.status!=="Not Needed");const g=rows.filter(a=>a.status==="Granted").length;
+  let s="Not Set Up";if(rows.length)s=rows.some(a=>a.status==="Blocked")?"Blocked":g===rows.length?"All Granted":"In Progress";return{summary:s,text:rows.length?g+" / "+rows.length:""}}
+const sowDue=s=>!s||s.stage==="Signed"?"":dueFlag(s.target_sign||s.draft_due,false);
+function onboarding(bid){const st=stepsSorted();let na=0,done=0;for(const s of st){const v=stepState(bid,s.code).status;if(v==="N/A")na++;else if(v==="Done")done++}const tot=st.length-na;return tot?done/tot:0}
+function roll(bid){
+  const b=S.brands[bid]||{};
+  const ts=Object.values(S.tasks).filter(t=>t.brand===bid&&t.title);
+  const open=ts.filter(t=>t.status!=="Complete").length;
+  const blocked=ts.filter(t=>t.status==="Blocked").length;
+  const overdue=ts.filter(t=>dueFlag(t.deadline,t.status==="Complete")==="Overdue").length;
+  const acc=accessRoll(bid);const s=S.sow[bid];const sow=isInternal(b)?"N/A":(s?(s.stage||"Not Started"):"Not Set");
+  const bp=bpRoll(bid);const pct=onboarding(bid);
+  let health="On Track";
+  if(blocked>0||acc.summary==="Blocked"||sow==="Blocked"||(bp&&bp.overall==="Blocked"))health="Blocked";
+  else if(overdue>0)health="At Risk";else if(sow==="Signed")health="Live";
+  return{open,blocked,overdue,acc,sow,sowRow:s||{},bp,pct,health}}
+
+/* ---------- writes + change log ---------- */
+const wq={};
+function chain(k,fn){wq[k]=(wq[k]||Promise.resolve()).then(fn,fn);return wq[k]}
+function refused(e){if(e&&e.code==="invalid_argument"){canWrite=false;toast("You can view this tracker but not change it.");render();return true}return false}
+async function save(c,id,patch,label){
+  if(!db||!canWrite){toast("You can view this tracker but not change it.");return}
+  const cur=S[c][id];const old={};for(const k of Object.keys(patch))old[k]=cur?cur[k]:undefined;
+  S[c][id]=Object.assign({},cur||{},patch);render();
+  const body=Object.assign({},patch,{updated_at:Date.now(),updated_by:uid||""});
+  return chain(c+"/"+id,()=>(cur?db.doc(COLL[c]+"/"+id).update(body):db.doc(COLL[c]+"/"+id).set(Object.assign({},S[c][id],body))))
+    .then(()=>{toast("Saved");addLog(c,id,patch,old,label)})
+    .catch(e=>{if(!refused(e))toast("Not saved. Check your connection and try again.");if(cur)S[c][id]=cur;render()});
+}
+async function create(c,id,body,label){
+  if(!db||!canWrite){toast("You can view this tracker but not change it.");return null}
+  const ref=id?db.doc(COLL[c]+"/"+id):db.collection(COLL[c]).doc();
+  const full=Object.assign({},body,{created_at:Date.now(),updated_at:Date.now(),updated_by:uid||""});
+  S[c][ref.id]=full;render();
+  try{await ref.set(full);addLog(c,ref.id,{created:label||"new"},{}, label);toast("Added");return ref.id}
+  catch(e){delete S[c][ref.id];render();if(!refused(e))toast(e&&e.code==="quota_exceeded"?"The tracker is full. Ask an admin to archive old rows.":"Not added. Try again.");return null}
+}
+async function remove(c,id,label){
+  if(!db||!canWrite)return;const cur=S[c][id];delete S[c][id];render();
+  try{await db.doc(COLL[c]+"/"+id).delete();addLog(c,id,{deleted:true},{},label);toast("Deleted")}catch(e){S[c][id]=cur;render();if(!refused(e))toast("Not deleted. Try again.")}
+}
+let logBuf=null;
+function addLog(c,id,patch,old,label){
+  const day=isoToday();const lid=day+"_"+(uid||"anon");
+  const entries=[];for(const k of Object.keys(patch)){if(k==="updated_at"||k==="updated_by")continue;
+    const f=v=>v==null?"":typeof v==="object"?JSON.stringify(v).slice(0,140):String(v).slice(0,140);
+    entries.push({at:Date.now(),what:COLL[c]||c,id,label:label||"",field:k,old:f(old[k]),new:f(patch[k])})}
+  if(!entries.length)return;
+  chain("log/"+lid,async()=>{const base=(S.log[lid]&&S.log[lid].entries)||[];const all=base.concat(entries).slice(-400);
+    const body={date:day,who:uid||"",person:me||"",entries:all};S.log[lid]=body;try{await db.doc("log/"+lid).set(body)}catch(e){}});
+}
+
+/* ---------- routing ---------- */
+function parseHash(){const h=location.hash.replace(/^#/,"");
+  if(h.startsWith("brand-")){route={v:"brand",id:h.slice(6)}}
+  else if(["mine","overview","access","sow","bp","settings"].includes(h))route={v:h,id:""};
+  else route={v:"",id:""};
+  $("#rail").classList.remove("open");closeDrawer();render();$("#main").scrollTop=0}
+window.addEventListener("hashchange",parseHash);
+const go=h=>{if(location.hash==="#"+h)parseHash();else location.hash=h};
+
+/* ---------- render ---------- */
+let pend=false;
+function editing(){const a=document.activeElement;return a&&(/INPUT|TEXTAREA/.test(a.tagName))&&($("#main").contains(a)||$("#drawer").contains(a))}
+function render(){if(editing()){pend=true;return}pend=false;renderRail();renderTop();renderMain();if(drawerCtx&&!$("#drawer").hidden)openDrawer(drawerCtx.kind,drawerCtx.id,drawerCtx.extra,true)}
+document.addEventListener("focusout",()=>setTimeout(()=>{if(pend&&!editing())render()},0));
+
+const STAGE_ORDER=()=>{const st=L("stage");const main=st.filter(s=>!["On Hold","Internal"].includes(s)).reverse();return main.concat(st.filter(s=>["On Hold","Internal"].includes(s)))};
+function myItems(){
+  if(!me)return[];const out=[];
+  for(const t of withId(S.tasks)){if(!t.title||t.status==="Complete")continue;const own=isPerson(t.owner,me),sup=(t.support||[]).some(x=>isPerson(x,me));if(!own&&!sup)continue;
+    const f=dueFlag(t.deadline,false);out.push({kind:"task",id:t._id,brand:t.brand,title:t.title,status:t.status,due:t.deadline,flag:f,blocked:t.status==="Blocked",blocker:t.blocker,priority:t.priority,role:own?"Owner":"Support",notes:t.notes})}
+  for(const[bid,d]of Object.entries(S.bsteps)){for(const[code,st]of Object.entries(d.s||{})){if(!isPerson(st.owner,me)||st.status==="Done"||st.status==="N/A")continue;const s=S.steps[code];if(!s)continue;
+    const f=dueFlag(st.deadline,false);out.push({kind:"step",id:bid,code,brand:bid,title:s.name,status:st.status||"Not Started",due:st.deadline,flag:f,blocked:!!(st.blocker&&st.blocker.text),blocker:st.blocker,role:"Step owner"})}}
+  return out}
+function renderRail(){
+  const mine=myItems().length;
+  const nav=[["mine","My tasks",mine||""],["overview","Overview",""],["sow","SOW tracker",""],["access","Platform access",""],["bp","Best Practices",""]];
+  if(canEdit)nav.push(["settings","Settings",""]);
+  let h=`<div class="mark">Valerie COE<small>Brand onboarding tracker</small></div><nav class="nav">`;
+  for(const[k,l,n]of nav)h+=`<a href="#${k}" class="${route.v===k?"on":""}">${esc(l)}<span class="n">${n}</span></a>`;
+  h+=`</nav><div>`;
+  const groups={};for(const b of brandList())(groups[b.stage||"Qualification"]=groups[b.stage||"Qualification"]||[]).push(b);
+  for(const st of STAGE_ORDER()){if(!groups[st])continue;h+=`<h3>${esc(st)}</h3>`;
+    for(const b of groups[st]){const r=roll(b.id);
+      h+=`<a class="blink ${route.v==="brand"&&route.id===b.id?"on":""}" href="#brand-${esc(b.id)}" title="${esc(r.health)}">${hdot(r.health)}<span class="sr">${esc(r.health)}</span>${esc(b.name)}${b.paused?` <span class="tag">Paused</span>`:""}<span class="n">${r.open||""}</span></a>`}}
+  h+=`</div>`;
+  if(canEdit&&canWrite)h+=`<button class="addbtn" data-act="add-brand">Add brand</button>`;
+  $("#rail").innerHTML=h;
+}
+function renderTop(){
+  const ppl=activePeople();
+  $("#topbar").innerHTML=`<button class="btn sm menu" data-act="menu" aria-label="Open menu">Menu</button><span class="grow"></span>
+   <div class="seg" role="group" aria-label="View"><button data-act="simple" data-v="1" class="${simple?"on":""}">Simple</button><button data-act="simple" data-v="0" class="${simple?"":"on"}">Full</button></div>
+   <label class="who" for="whoSel">You are <select id="whoSel" data-act="who"><option value="">Pick your name</option>${ppl.map(p=>`<option ${p===me?"selected":""}>${esc(p)}</option>`).join("")}</select></label>
+   <span class="tag">${canEdit?"Lead / admin":canWrite?"Member":"View only"}</span>`;
+}
+function renderMain(){
+  const m=$("#main");
+  if(!db){return}
+  if(!ready.brands||!ready.config){m.innerHTML=`<h1>Valerie COE Tracker</h1><p class="sub">Loading brands, tasks and steps.</p>`;return}
+  if(!Object.keys(S.brands).length){m.innerHTML=`<h1>No brands yet</h1><p class="sub">${canEdit?"Use Add brand in the left menu to add the first one.":"Ask a lead to add brands."}</p>`;return}
+  let v=route.v;if(!v)v=canEdit?"overview":"mine";
+  if(v==="settings"&&!canEdit)v="overview";
+  const ro=canWrite?"":`<div class="notice info">You can view this tracker but not change it. Ask a lead for edit access.</div>`;
+  m.innerHTML=ro+(v==="brand"?vBrand(route.id):v==="mine"?vMine():v==="sow"?vSow():v==="access"?vAccess():v==="bp"?vBp():v==="settings"?vSettings():vOverview());
+}
+function canChangeTask(t){if(!canWrite)return false;if(canEdit)return true;return isPerson(t.owner,me)||(t.support||[]).some(x=>isPerson(x,me))}
+function statusSel(kind,id,val,list,enabled,extra){return`<select class="ps ${cls(val)}" data-act="status" data-kind="${kind}" data-id="${esc(id)}" ${extra||""} ${enabled?"":"disabled"} aria-label="Status">${opts(list,val,false)}</select>`}
+
+/* ---------- My tasks ---------- */
+function vMine(){
+  let h=`<h1>My tasks</h1><p class="sub">Your open tasks and onboarding steps across every brand. Blocked first, then late, then due soon.</p>`;
+  if(!me)return h+`<div class="card"><p style="margin-top:0">Pick your name to see your work.</p><select class="btn" data-act="who" aria-label="Your name"><option value="">Pick your name</option>${activePeople().map(p=>`<option>${esc(p)}</option>`).join("")}</select></div>`;
+  const t0=performance.now();
+  const items=myItems();
+  const g={b:[],o:[],s:[],r:[]};
+  for(const it of items){if(it.blocked)g.b.push(it);else if(it.flag==="Overdue")g.o.push(it);else if(it.flag==="Due Soon")g.s.push(it);else g.r.push(it)}
+  const sortD=a=>a.sort((x,y)=>String(x.due||"9999").localeCompare(String(y.due||"9999")));
+  const sec=(title,arr,cl)=>arr.length?`<section class="group"><h2>${esc(title)} <span class="count">${arr.length}</span></h2>${sortD(arr).map(it=>itemHtml(it,cl)).join("")}</section>`:"";
+  if(!items.length)return h+`<div class="tw"><div class="empty">Nothing open for ${esc(me)}. When a task or step is assigned to you it shows here.</div></div>`;
+  h+=sec("Blocked",g.b,"blocked")+sec("Late",g.o,"late")+sec("Due in the next 3 days",g.s,"soon")+sec("Everything else",g.r,"");
+  h+=`<p class="faint" style="font-size:12px">Built in ${Math.round(performance.now()-t0)} ms.</p>`;
+  return h}
+function itemHtml(it,cl){
+  const brand=`<a href="#brand-${esc(it.brand)}" class="muted">${esc(bname(it.brand))}</a>`;
+  const ctl=it.kind==="task"?statusSel("task",it.id,it.status,L("task_status"),canChangeTask(S.tasks[it.id]||{}))
+    :statusSel("step",it.id,it.status,L("checklist"),canWrite,`data-code="${esc(it.code)}"`);
+  const open=it.kind==="task"?`data-act="open" data-kind="task" data-id="${esc(it.id)}"`:`data-act="open" data-kind="step" data-id="${esc(it.id)}" data-code="${esc(it.code)}"`;
+  return`<div class="item ${cl}"><div><div class="t"><a href="#" ${open} class="bname">${esc(it.title)}</a></div>
+   <div class="meta">${brand}${it.kind==="step"?`<span class="code">${esc(it.code)}</span><span>Onboarding step</span>`:""}${simple?"":`<span>${esc(it.role)}</span>${it.priority?`<span>${esc(it.priority)}</span>`:""}`}</div>
+   ${it.blocked&&it.blocker?`<div class="blk">Blocked: ${esc(it.blocker.text||"")}${it.blocker.person?` (waiting on ${esc(it.blocker.person)})`:""}</div>`:""}</div>
+   <div>${dueHtml(it.due,false)}</div><div>${ctl}</div></div>`}
+
+/* ---------- Overview ---------- */
+function weekStart(d){const x=new Date(d);const wd=(x.getDay()+6)%7;x.setDate(x.getDate()-wd);x.setHours(0,0,0,0);return x}
+function vOverview(){
+  const bs=brandList();const R={};bs.forEach(b=>R[b.id]=roll(b.id));
+  const active=bs.filter(b=>!b.paused&&!isInternal(b));
+  const blocked=active.filter(b=>R[b.id].health==="Blocked").length,risk=active.filter(b=>R[b.id].health==="At Risk").length;
+  const od=bs.reduce((a,b)=>a+R[b.id].overdue,0);
+  const ws=weekStart(today()),we=new Date(ws);we.setDate(we.getDate()+7);
+  const signWeek=bs.filter(b=>{const d=parseD((S.sow[b.id]||{}).target_sign);return d&&d>=ws&&d<we&&(S.sow[b.id]||{}).stage!=="Signed"}).length;
+  let h=`<h1>Overview</h1><p class="sub">Every brand from first call to signed SOW. Health comes from tasks, platform access, SOW and Best Practices.</p>
+  <div class="tiles"><div class="tile"><b>${active.length}</b><span>active brands</span></div><div class="tile ${blocked?"bad":""}"><b>${blocked}</b><span>brands blocked</span></div><div class="tile ${risk?"warn":""}"><b>${risk}</b><span>brands at risk</span></div><div class="tile ${od?"bad":""}"><b>${od}</b><span>tasks late</span></div><div class="tile"><b>${signWeek}</b><span>SOWs to sign this week</span></div></div>`;
+  h+=`<h2>SOW signing plan</h2>`+sowPlan(bs,R);
+  h+=`<h2>All brands</h2><div class="tw"><table><thead><tr><th>Brand</th><th>Stage</th><th>Health</th>${simple?"":`<th class="num">Open</th><th class="num">Blocked</th><th class="num">Late</th><th>Platform access</th><th>SOW</th><th>Target sign</th><th>BPs</th><th>Onboarding</th>`}<th>Next step</th><th>Owner</th></tr></thead><tbody>`;
+  for(const b of bs){const r=R[b.id];const s=r.sowRow;
+    h+=`<tr class="click" data-act="nav" data-to="brand-${esc(b.id)}"><td><a class="bname" href="#brand-${esc(b.id)}">${esc(b.name)}</a>${b.paused?` <span class="tag">Paused</span>`:""}${b.restricted?` <span class="tag warn">Restricted</span>`:""}</td><td>${esc(b.stage)}</td><td><span class="row" style="gap:6px;flex-wrap:nowrap">${hdot(r.health)}${esc(r.health)}</span></td>
+    ${simple?"":`<td class="num">${r.open}</td><td class="num">${r.blocked?`<span class="hot">${r.blocked}</span>`:0}</td><td class="num">${r.overdue?`<span class="hot">${r.overdue}</span>`:0}</td><td>${pill(r.acc.summary)} <span class="faint">${esc(r.acc.text)}</span></td><td>${pill(r.sow)}</td><td>${targetHtml(s)}</td><td>${r.bp?pill(r.bp.overall)+` <span class="faint">${Math.round(r.bp.progress*100)}%</span>`:`<span class="faint">None</span>`}</td><td><span class="bar"><i style="width:${Math.round(r.pct*100)}%"></i></span> <span class="faint">${Math.round(r.pct*100)}%</span></td>`}
+    <td class="clip muted"><span class="clamp" title="${esc(b.next_step||"")}">${esc(b.next_step||"")}</span></td><td>${b.lead?esc(b.lead):`<span class="faint">No lead yet</span>`}</td></tr>`}
+  return h+`</tbody></table></div>`}
+function targetHtml(s){if(!s||!s.target_sign)return s&&s.stage!=="Signed"?`<span class="faint">No date</span>`:"";const blocked=s.stage==="Blocked";
+  return`<span class="row" style="gap:6px;flex-wrap:nowrap;white-space:nowrap"><span>${esc(fmtD(s.target_sign,true))}</span>${blocked?`<span class="tag bad">Blocked</span>`:dueHtml(s.target_sign,s.stage==="Signed")?`<span class="pill ${cls(sowDue(s))}">${esc(sowDue(s))}</span>`:""}</span>`}
+function sowPlan(bs,R){
+  const buckets={};const nodate=[];
+  for(const b of bs){if(isInternal(b))continue;const s=S.sow[b.id]||{};if(s.stage==="Signed")continue;const d=parseD(s.target_sign);if(!d){nodate.push(b);continue}const k=weekStart(d).getTime();(buckets[k]=buckets[k]||[]).push(b)}
+  const ws=weekStart(today()).getTime();const keys=Object.keys(buckets).map(Number).sort((a,b)=>a-b);
+  const label=k=>{const diff=Math.round((k-ws)/(7*864e5));if(diff<0)return"<b>Past target</b>";if(diff===0)return"<b>This week</b>";if(diff===1)return"<b>Next week</b>";return"Week of <b>"+esc(new Date(k).toLocaleDateString("en-GB",{day:"numeric",month:"short"}))+"</b>"};
+  const chip=b=>{const s=S.sow[b.id]||{};return`<a class="chip" href="#brand-${esc(b.id)}">${hdot(R[b.id].health)}<span class="nm">${esc(b.name)}</span>${s.stage==="Blocked"?`<span class="tag bad">Blocked</span>`:`<span class="faint" style="font-size:12px">${esc(s.stage||"Not Started")}</span>`}</a>`};
+  let h=`<div class="plan">`;for(const k of keys)h+=`<div class="week"><h4>${label(k)}</h4>${buckets[k].map(chip).join("")}</div>`;
+  if(nodate.length)h+=`<div class="week"><h4><b>No date yet</b></h4>${nodate.map(chip).join("")}</div>`;
+  return h+`</div>`}
+
+/* ---------- Brand ---------- */
+function vBrand(id){
+  const b=S.brands[id];if(!b)return`<h1>Brand not found</h1><p class="sub">It may have been removed. <a href="#overview">Back to the overview</a>.</p>`;
+  const r=roll(id);const ed=canEdit&&canWrite;
+  const miss=(f,l)=>ed?`<button class="missing" data-act="open" data-kind="brand" data-id="${esc(id)}">Add ${esc(l)}</button>`:`<span class="faint">Not set</span>`;
+  const fact=(l,v,f)=>`<div class="fact"><label>${esc(l)}</label><div class="v">${v||miss(f,l.toLowerCase())}</div></div>`;
+  let h=`<div class="bhead"><div><h1>${esc(b.name)} ${b.paused?`<span class="tag">Paused</span>`:""} ${b.restricted?`<span class="tag warn" title="Sensitive. Keep notes to links and facts.">Restricted</span>`:""}</h1>
+   <div class="row" style="gap:8px">${hdot(r.health)}<b>${esc(r.health)}</b><span class="muted">${r.open} open, ${r.blocked} blocked, ${r.overdue} late</span><span class="muted">Onboarding ${Math.round(r.pct*100)}%</span></div></div>
+   <div class="row">${b.website?`<a class="btn" href="${esc(b.website)}" target="_blank" rel="noopener">Website</a>`:""}${ed?`<button class="btn" data-act="open" data-kind="brand" data-id="${esc(id)}">Edit details</button>`:""}</div></div>
+   <div class="facts">${fact("Stage",esc(b.stage),"stage")}${fact("Brand lead",esc(b.lead),"lead")}${fact("Founder",esc(b.founder),"founder")}${fact("SOW target sign",r.sowRow.target_sign?targetHtml(r.sowRow):isInternal(b)?"N/A":"","target")}${fact("Sprint",esc(b.sprint_label),"sprint")}</div>
+   <div class="next"><label>Next step</label><div>${b.next_step?esc(b.next_step):miss("next_step","next step")}</div></div>`;
+  const tabs=[["tasks",`Tasks (${r.open} open)`],["steps",`Onboarding steps (${Math.round(r.pct*100)}%)`],["access",`Platform access${r.acc.text?" ("+r.acc.text+")":""}`],["sow","SOW"],["bp","Best Practices"]];
+  h+=`<div class="tabs" role="tablist">${tabs.map(([k,l])=>`<button role="tab" aria-selected="${brandTab===k}" class="${brandTab===k?"on":""}" data-act="tab" data-tab="${k}">${esc(l)}</button>`).join("")}</div>`;
+  if(brandTab==="steps")h+=stepsTab(id);else if(brandTab==="access")h+=accessTable(id);else if(brandTab==="sow")h+=sowCard(id);else if(brandTab==="bp")h+=bpCard(id);else h+=tasksTab(id);
+  return h}
+function tasksTab(bid){
+  let rows=withId(S.tasks).filter(t=>t.brand===bid&&t.title);const done=rows.filter(t=>t.status==="Complete").length;
+  if(flt.taskStatus==="open")rows=rows.filter(t=>t.status!=="Complete");
+  const PO={Urgent:0,High:1,Medium:2,Low:3};
+  rows.sort((a,b)=>(a.status==="Blocked"?0:1)-(b.status==="Blocked"?0:1)||String(a.deadline||"9").localeCompare(String(b.deadline||"9"))||(PO[a.priority]??4)-(PO[b.priority]??4));
+  let h=`<div class="row" style="margin-bottom:10px">${canWrite?`<button class="btn pri" data-act="add-task" data-id="${esc(bid)}">Add task</button>`:""}
+   <div class="seg"><button data-act="tflt" data-v="open" class="${flt.taskStatus==="open"?"on":""}">Open</button><button data-act="tflt" data-v="all" class="${flt.taskStatus==="all"?"on":""}">All (${done} done)</button></div></div>`;
+  if(!rows.length)return h+`<div class="tw"><div class="empty">No open tasks. Add one to start.</div></div>`;
+  h+=`<div class="tw"><table><thead><tr><th>Task</th><th>Owner</th>${simple?"":`<th>Support</th><th>Priority</th><th>Start</th>`}<th>Due</th><th>Status</th>${simple?"":`<th>Links</th>`}</tr></thead><tbody>`;
+  for(const t of rows){h+=`<tr class="click" data-act="open" data-kind="task" data-id="${esc(t._id)}"><td><b>${esc(t.title)}</b>${t.status==="Blocked"&&t.blocker?`<div class="blk">${esc(t.blocker.text)}${t.blocker.person?` (waiting on ${esc(t.blocker.person)})`:""}</div>`:simple||!t.notes?"":`<div class="faint clip" style="font-size:12.5px">${esc(t.notes.slice(0,140))}${t.notes.length>140?"...":""}</div>`}</td>
+    <td>${t.owner?esc(t.owner):`<span class="tag warn">No owner</span>`}</td>${simple?"":`<td class="muted">${esc((t.support||[]).join(", "))}</td><td>${t.priority?pill(t.priority):""}</td><td class="faint">${esc(fmtD(t.start))}</td>`}
+    <td>${dueHtml(t.deadline,t.status==="Complete")}</td><td>${statusSel("task",t._id,t.status,L("task_status"),canChangeTask(t))}</td>${simple?"":`<td>${t.brief_link?`<a href="${esc(t.brief_link)}" target="_blank" rel="noopener">Brief</a> `:""}${t.creative_link?`<a href="${esc(t.creative_link)}" target="_blank" rel="noopener">Creative</a>`:""}</td>`}</tr>`}
+  return h+`</tbody></table></div>`}
+function phaseOpen(bid,p){return p.steps.filter(s=>!s.is_optional).some(s=>!["Done","N/A"].includes(stepState(bid,s.code).status))}
+function stepsTab(bid){
+  const ps=phases();if(!ps.length)return`<div class="tw"><div class="empty">No step list loaded. An admin can add steps in Settings.</div></div>`;
+  const cur=ps.find(p=>phaseOpen(bid,p))||ps[ps.length-1];
+  let h=`<div class="row" style="margin-bottom:10px"><span class="muted">Current phase: <b>${esc(cur.code)} ${esc(cur.name)}</b>. A gate step cannot be Done while earlier required steps are open. Optional steps never hold a phase back.</span><span class="grow"></span><button class="btn sm" data-act="allphases">${showAllPhases?"Show current phase only":"Show all phases"}</button></div>`;
+  for(const p of ps){
+    const req=p.steps.filter(s=>!s.is_optional);const d=req.filter(s=>["Done","N/A"].includes(stepState(bid,s.code).status)).length;
+    const complete=!phaseOpen(bid,p);
+    if(simple&&complete&&p!==cur&&!showAllPhases)continue;
+    const open=p===cur||showAllPhases;
+    h+=`<details class="phase" ${open?"open":""}><summary><span class="pc">${esc(p.code)}</span>${esc(p.name)}${complete?` <span class="pill s-ok">Done</span>`:""}<span class="prog"><span class="bar"><i style="width:${req.length?Math.round(d/req.length*100):0}%"></i></span>${d} of ${req.length} required</span></summary>`;
+    if(canEdit&&canWrite&&!complete)h+=`<div style="padding:8px 14px;border-bottom:1px solid var(--line)"><button class="btn sm" data-act="phase-done" data-id="${esc(bid)}" data-phase="${esc(p.code)}">Mark every step in ${esc(p.code)} done</button></div>`;
+    for(const s of p.steps){const st=stepState(bid,s.code);const v=st.status||"Not Started";
+      h+=`<div class="step ${s.is_gate?"isgate":""} ${v==="Done"?"done":""}"><span class="code">${esc(s.code)}</span>
+       <div class="nm"><span>${esc(s.name)}</span><span class="tags">${s.is_gate?`<span class="tag gate">Gate</span>`:""}${s.is_optional?`<span class="tag opt">Optional</span>`:""}${s.doc_label?`<span class="tag doc">Doc: ${esc(s.doc_label)}</span>`:""}${!simple&&s.default_owner?`<span class="tag">${esc(s.default_owner)}</span>`:""}${s.hook==="monday"?`<span class="tag" title="Monday.com sync is planned for later">Monday.com link later</span>`:""}</span>
+       ${st.blocker&&st.blocker.text?`<span class="blk">Blocked: ${esc(st.blocker.text)}${st.blocker.person?` (waiting on ${esc(st.blocker.person)})`:""}</span>`:""}${st.link?`<a href="${esc(st.link)}" target="_blank" rel="noopener" style="font-size:12.5px">Open ${esc(s.doc_label||"document")}</a>`:""}</div>
+       <div class="ctl">${st.owner?esc(st.owner):`<span class="faint">No owner</span>`}</div><div class="ctl">${dueHtml(st.deadline,v==="Done"||v==="N/A")||`<span class="faint">No date</span>`}</div>
+       <div class="ctl row" style="gap:6px;flex-wrap:nowrap">${statusSel("step",bid,v,L("checklist"),canWrite,`data-code="${esc(s.code)}"`)}<button class="btn sm quiet" data-act="open" data-kind="step" data-id="${esc(bid)}" data-code="${esc(s.code)}" aria-label="Edit ${esc(s.code)}">Edit</button></div></div>`}
+    h+=`</details>`}
+  return h}
+function accessTable(bid){
+  let rows=withId(S.access);if(bid)rows=rows.filter(a=>a.brand===bid);
+  if(!bid){if(flt.accBrand)rows=rows.filter(a=>a.brand===flt.accBrand);if(flt.accStatus)rows=rows.filter(a=>a.status===flt.accStatus)}
+  rows.sort((a,b)=>bname(a.brand).localeCompare(bname(b.brand))||String(a.platform).localeCompare(b.platform));
+  let h=canWrite?`<div class="row" style="margin-bottom:10px"><button class="btn pri" data-act="add-access" data-id="${esc(bid||flt.accBrand||"")}">Add platform</button><span class="muted">Any Blocked row turns the brand Blocked. Use Not Needed to leave a platform out.</span></div>`:"";
+  if(!rows.length)return h+`<div class="tw"><div class="empty">No platforms tracked${bid?" for this brand":" for these filters"} yet. Add one when access is needed.</div></div>`;
+  h+=`<div class="tw"><table><thead><tr>${bid?"":"<th>Brand</th>"}<th>Platform</th>${simple?"":"<th>Access level</th><th>Needed for</th>"}<th>Valerie owner</th>${simple?"":"<th>Brand contact</th><th>Requested</th>"}<th>Waiting</th><th>Due</th><th>Status</th><th>Blocker</th></tr></thead><tbody>`;
+  for(const a of rows){const d=parseD(a.requested_date);const wait=d&&!["Granted","Not Needed"].includes(a.status)?Math.round((today()-d)/864e5):"";
+    h+=`<tr class="click" data-act="open" data-kind="access" data-id="${esc(a._id)}">${bid?"":`<td><a class="bname" href="#brand-${esc(a.brand)}">${esc(bname(a.brand))}</a></td>`}<td>${esc(a.platform)}</td>${simple?"":`<td>${esc(a.access_level)}</td><td>${esc(a.needed_for)}</td>`}
+    <td>${a.owner?esc(a.owner):`<span class="tag warn">No owner</span>`}</td>${simple?"":`<td>${esc(a.brand_contact)}</td><td class="faint">${esc(fmtD(a.requested_date))}</td>`}<td>${wait!==""?`<span class="${wait>5?"hot":""}">${wait} days</span>`:""}</td>
+    <td>${dueHtml(a.deadline,["Granted","Not Needed"].includes(a.status))}</td><td>${statusSel("access",a._id,a.status,L("access_status"),canWrite)}</td><td class="muted clip">${esc(a.blocker)}</td></tr>`}
+  return h+`</tbody></table></div>`}
+function sowCard(bid){
+  const b=S.brands[bid];if(isInternal(b))return`<div class="tw"><div class="empty">Internal work has no SOW.</div></div>`;
+  const s=S.sow[bid];if(!s)return`<div class="tw"><div class="empty">No SOW row yet. ${canWrite?`<button class="btn sm" data-act="add-sow" data-id="${esc(bid)}">Start one</button>`:""}</div></div>`;
+  const f=(l,v)=>`<div class="fact"><label>${esc(l)}</label><div class="v">${v||`<span class="faint">Not set</span>`}</div></div>`;
+  const flow=L("sow_stage").filter(x=>!["Not Started","On Hold","Blocked"].includes(x));
+  return`<div class="row" style="margin-bottom:10px;gap:6px">${flow.map(x=>`<span class="pill ${x===s.stage?"s-warn":"s-off"}" style="${x===s.stage?"outline:2px solid var(--warn)":""}">${esc(x)}</span>`).join(`<span class="faint">›</span>`)}</div>
+   ${s.stage==="Blocked"?`<div class="notice bad">SOW blocked. Target date kept at ${esc(fmtD(s.target_sign,true)||"none")}. ${esc(s.blocker||"")}</div>`:""}
+   <div class="row" style="margin-bottom:8px">${statusSel("sow",bid,s.stage||"Not Started",L("sow_stage"),canEdit&&canWrite)}${canWrite?`<button class="btn" data-act="open" data-kind="sow" data-id="${esc(bid)}">Edit SOW</button>`:""}</div>
+   <div class="facts" style="grid-template-columns:repeat(4,minmax(0,1fr))">${f("Owner",esc(s.owner))}${f("Target sign",targetHtml(s))}${f("Draft due",esc(fmtD(s.draft_due,true)))}${f("Batch",esc(s.batch))}
+   ${simple?"":f("Support",esc((s.support||[]).join(", ")))+f("Start",esc(fmtD(s.start_date,true)))}${f("SOW document",s.sow_link?`<a href="${esc(s.sow_link)}" target="_blank" rel="noopener">Open SOW</a>`:"")}${f("Growth Forecast",s.gf_link?`<a href="${esc(s.gf_link)}" target="_blank" rel="noopener">Open GF</a> ${s.gf_updated?`<span class="tag">Updated</span>`:""}`:"")}</div>
+   <div class="next"><label>Blocker</label><div>${esc(s.blocker)||`<span class="faint">None</span>`}</div></div><div class="next"><label>Next step</label><div>${esc(s.next_step)||`<span class="faint">None</span>`}</div></div>`}
+function bpCard(bid){
+  const d=S.bps[bid];if(!d)return`<div class="tw"><div class="empty">Best Practices not started for this brand. ${canWrite?`<button class="btn sm" data-act="add-bp" data-id="${esc(bid)}">Start tracking</button>`:""}</div></div>`;
+  const r=bpRoll(bid);
+  return`<div class="row" style="margin-bottom:10px">${pill(r.overall)}<span class="muted">${r.done} of ${r.total} sections complete</span>${d.due_date?dueHtml(d.due_date,r.progress===1):""}<span class="grow"></span>${canWrite?`<button class="btn" data-act="open" data-kind="bp" data-id="${esc(bid)}">Edit</button>`:""}</div>
+   <div class="tw"><table><thead><tr><th>Section</th><th>Status</th></tr></thead><tbody>${L("bp_section").map(x=>{const v=(d.sections||{})[x]||"Not Started";return`<tr><td>${esc(x)}</td><td>${canWrite?`<select class="ps ${cls(v)}" data-act="bpsec" data-id="${esc(bid)}" data-sec="${esc(x)}" aria-label="${esc(x)}">${opts(L("bp_status"),v,false)}</select>`:pill(v)}</td></tr>`}).join("")}</tbody></table></div>
+   <div class="next"><label>Owner</label><div>${esc(d.owner)||`<span class="faint">Not set</span>`}</div></div><div class="next"><label>Blocker</label><div>${esc(d.blocker)||`<span class="faint">None</span>`}</div></div>${simple?"":`<div class="next"><label>Notes</label><div>${esc(d.notes)||`<span class="faint">None</span>`}</div></div>`}`}
+
+/* ---------- SOW, Access, BP screens ---------- */
+function vSow(){
+  const bs=brandList().filter(b=>!isInternal(b));
+  const rows=bs.map(b=>({b,s:S.sow[b.id]||{}})).sort((x,y)=>String(x.s.target_sign||"9999").localeCompare(String(y.s.target_sign||"9999")));
+  let h=`<h1>SOW tracker</h1><p class="sub">One SOW per brand, sorted by target sign date. A blocked SOW keeps its target date and is marked Blocked.</p><div class="tw"><table><thead><tr><th>Brand</th><th>Stage</th><th>Owner</th><th>Target sign</th>${simple?"":"<th>Draft due</th><th>Batch</th>"}<th>Documents</th><th>Blocker</th><th>Next step</th></tr></thead><tbody>`;
+  for(const{b,s}of rows){h+=`<tr class="click" data-act="open" data-kind="sow" data-id="${esc(b.id)}"><td><a class="bname" href="#brand-${esc(b.id)}">${esc(b.name)}</a></td><td>${statusSel("sow",b.id,s.stage||"Not Started",L("sow_stage"),canEdit&&canWrite)}</td><td>${esc(s.owner)||`<span class="faint">Not set</span>`}</td><td>${targetHtml(s)}</td>
+   ${simple?"":`<td>${dueHtml(s.draft_due,false)||esc(fmtD(s.draft_due))}</td><td class="muted">${esc(s.batch)}</td>`}<td style="white-space:nowrap">${s.sow_link?`<a href="${esc(s.sow_link)}" target="_blank" rel="noopener">SOW</a> `:""}${s.gf_link?`<a href="${esc(s.gf_link)}" target="_blank" rel="noopener">GF</a>${s.gf_updated?` <span class="tag">Updated</span>`:""}`:""}${!s.sow_link&&!s.gf_link?`<span class="faint">None yet</span>`:""}</td>
+   <td class="muted clip">${esc(s.blocker)}</td><td class="muted clip">${esc(s.next_step)}</td></tr>`}
+  return h+`</tbody></table></div>`}
+function vAccess(){
+  return`<h1>Platform access</h1><p class="sub">One row per brand and platform. Status only. Never store passwords or logins here.</p>
+  <div class="filters"><select data-act="fa" data-k="accBrand" aria-label="Brand"><option value="">All brands</option>${brandList().map(b=>`<option value="${esc(b.id)}" ${flt.accBrand===b.id?"selected":""}>${esc(b.name)}</option>`).join("")}</select>
+  <select data-act="fa" data-k="accStatus" aria-label="Status"><option value="">Any status</option>${L("access_status").map(s=>`<option ${flt.accStatus===s?"selected":""}>${esc(s)}</option>`).join("")}</select></div>`+accessTable("")}
+const BPMARK={"Not Started":"","Foundations":"F","Tactics In":"T","In QA":"Q","Complete":"✓","Blocked":"!","N/A":"–"};
+function vBp(){
+  const secs=L("bp_section");const rows=brandList().filter(b=>S.bps[b.id]);const others=brandList().filter(b=>!S.bps[b.id]&&!isInternal(b));
+  let h=`<h1>Best Practices</h1><p class="sub">Each dot is one section. Foundations, then Tactics In, then In QA, then Complete. Open a brand to change a section.</p>
+  <div class="legend">${L("bp_status").map(v=>`<span><span class="bpd bp-${key(v)}">${esc(BPMARK[v]??"")}</span>${esc(v)}</span>`).join("")}</div>`;
+  if(canWrite&&others.length)h+=`<div class="filters"><select data-act="bp-add" aria-label="Start tracking a brand"><option value="">Start tracking a brand...</option>${others.map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join("")}</select></div>`;
+  if(!rows.length)return h+`<div class="tw"><div class="empty">No brands tracked yet. Pick one above to start.</div></div>`;
+  h+=`<div class="tw"><table><thead><tr><th>Brand</th>${secs.map(x=>`<th title="${esc(x)}" style="white-space:normal;min-width:64px">${esc(x)}</th>`).join("")}<th>Progress</th><th>Overall</th>${simple?"":"<th>Owner</th><th>Due</th>"}</tr></thead><tbody>`;
+  const ord={Blocked:0,"In Progress":1,"In QA":2,"Not Started":3,Complete:4};
+  rows.sort((a,b)=>(ord[bpRoll(a.id).overall]??5)-(ord[bpRoll(b.id).overall]??5));
+  for(const b of rows){const d=S.bps[b.id];const r=bpRoll(b.id);
+    h+=`<tr class="click" data-act="open" data-kind="bp" data-id="${esc(b.id)}"><td><a class="bname" href="#brand-${esc(b.id)}">${esc(b.name)}</a></td>${secs.map(x=>{const v=(d.sections||{})[x]||"Not Started";return`<td><span class="bpd bp-${key(v)}" title="${esc(x+": "+v)}">${esc(BPMARK[v]??"")}</span><span class="sr">${esc(v)}</span></td>`}).join("")}
+    <td>${r.done}/${r.total}</td><td>${pill(r.overall)}</td>${simple?"":`<td>${esc(d.owner)}</td><td>${dueHtml(d.due_date,r.progress===1)}</td>`}</tr>`}
+  return h+`</tbody></table></div>`}
+
+/* ---------- Settings ---------- */
+let setTab="people";
+function vSettings(){
+  const tabs=[["people","People"],["lists","Lists"],["steps","Step list"],["nobrand","Needs a brand"],["log","Change log"],["export","Export and backup"]];
+  let h=`<h1>Settings</h1><p class="sub">For leads and admins. Changes here apply to everyone.</p><div class="tabs">${tabs.map(([k,l])=>`<button class="${setTab===k?"on":""}" data-act="settab" data-tab="${k}">${esc(l)}</button>`).join("")}</div>`;
+  if(setTab==="people"){const ps=people();
+    h+=`<div class="row" style="margin-bottom:10px"><button class="btn pri" data-act="add-person">Add person</button><span class="muted">Unconfirmed names came from the Excel. Mark each as team, external or group. Aliases let one person match other spellings.</span></div>
+    <div class="tw"><table><thead><tr><th>Name</th><th>Type</th><th>Other spellings</th><th>Active</th><th>Open tasks</th></tr></thead><tbody>${ps.map((p,i)=>{const n=Object.values(S.tasks).filter(t=>t.status!=="Complete"&&(isPerson(t.owner,p.name)||(t.support||[]).some(x=>isPerson(x,p.name)))).length;
+      return`<tr><td><b>${esc(p.name)}</b></td><td><select data-act="person" data-i="${i}" data-f="kind" aria-label="Type">${opts(["team","external","group","unconfirmed"],p.kind||"team",false)}</select></td><td><input data-act="person" data-i="${i}" data-f="aliases" value="${esc((p.aliases||[]).join(", "))}" placeholder="e.g. Noops" aria-label="Other spellings" style="border:1px solid var(--line2);border-radius:6px;padding:4px 6px;width:100%;background:var(--panel)"></td><td><input type="checkbox" data-act="person" data-i="${i}" data-f="active" ${p.active!==false?"checked":""} aria-label="Active"></td><td class="num">${n}</td></tr>`}).join("")}</tbody></table></div>`}
+  else if(setTab==="lists"){const labels={task_status:"Task status",priority:"Priority",stage:"Brand stage",platform:"Platforms",access_level:"Access level",access_status:"Access status",sow_stage:"SOW stage",checklist:"Step status",bp_section:"BP sections",bp_status:"BP status"};
+    h+=`<div class="notice">Renaming a value does not change rows that already use the old one. Add new values at the end.</div><div class="cols2">${Object.keys(labels).map(k=>`<div class="card"><label for="ls-${k}"><b>${esc(labels[k])}</b></label><textarea id="ls-${k}" data-list="${k}">${esc(L(k).join("\n"))}</textarea></div>`).join("")}</div><div class="row" style="margin-top:12px"><button class="btn pri" data-act="save-lists">Save lists</button></div>`}
+  else if(setTab==="steps"){
+    h+=`<p class="muted">Gates and optional steps are a proposal from the Stage 0 report. Change them here. Codes stay the same so progress is kept.</p><div class="tw"><table><thead><tr><th>Code</th><th>Step</th><th>Gate</th><th>Optional</th><th>Default owner</th><th>Document</th></tr></thead><tbody>${stepsSorted().map(s=>`<tr><td class="code">${esc(s.code)}</td><td><input data-act="stepdef" data-id="${esc(s.id)}" data-f="name" value="${esc(s.name)}" aria-label="Step name" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:4px 6px;background:var(--panel)"></td><td><input type="checkbox" data-act="stepdef" data-id="${esc(s.id)}" data-f="is_gate" ${s.is_gate?"checked":""} aria-label="Gate"></td><td><input type="checkbox" data-act="stepdef" data-id="${esc(s.id)}" data-f="is_optional" ${s.is_optional?"checked":""} aria-label="Optional"></td><td><input data-act="stepdef" data-id="${esc(s.id)}" data-f="default_owner" value="${esc(s.default_owner)}" aria-label="Default owner" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:4px 6px;background:var(--panel)"></td><td><input data-act="stepdef" data-id="${esc(s.id)}" data-f="doc_label" value="${esc(s.doc_label)}" aria-label="Document" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:4px 6px;background:var(--panel)"></td></tr>`).join("")}</tbody></table></div>`}
+  else if(setTab==="nobrand"){const rows=withId(S.tasks).filter(t=>!t.brand);
+    h+=rows.length?`<p class="muted">Completed rows from the old sheet have no brand. Pick one for each.</p><div class="tw"><table><thead><tr><th>Task</th><th>Owner</th><th>Deadline</th><th>Notes</th><th>Brand</th></tr></thead><tbody>${rows.map(t=>`<tr><td><b>${esc(t.title)}</b></td><td>${esc(t.owner)}</td><td>${esc(fmtD(t.deadline))}</td><td class="muted">${esc(t.notes)}</td><td><select data-act="setbrand" data-id="${esc(t._id)}" aria-label="Brand"><option value="">Pick a brand</option>${brandList().map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join("")}</select></td></tr>`).join("")}</tbody></table></div>`:`<div class="tw"><div class="empty">Every task has a brand.</div></div>`}
+  else if(setTab==="log"){const all=[];for(const d of Object.values(S.log))for(const e of d.entries||[])all.push(Object.assign({person:d.person},e));all.sort((a,b)=>b.at-a.at);
+    h+=all.length?`<div class="card">${all.slice(0,300).map(e=>`<div class="logrow"><span class="faint">${esc(new Date(e.at).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}))}</span><span>${esc(e.person||"Someone")}</span><span>${esc(e.label||e.what)}: <b>${esc(e.field)}</b> ${esc(e.old)} → ${esc(e.new)}</span></div>`).join("")}</div>`:`<div class="tw"><div class="empty">No changes yet. Every edit made in the tracker is listed here.</div></div>`}
+  else{h+=`<div class="cols2"><div class="card"><h3 style="margin-top:0">Excel export</h3><p class="muted">Same sheets as the COE tracker: Brand Tracker, one tab per brand, Platform Access, SOW Tracker, BP Tracker, Onboarding Steps, Completed Archive and Lists.</p><button class="btn pri" data-act="export-xlsx">Download Excel</button></div>
+    <div class="card"><h3 style="margin-top:0">Full backup</h3><p class="muted">Every record as one JSON file. Keep it with the weekly export. Restore from backup comes in a later stage.</p><button class="btn" data-act="export-json">Download backup</button></div></div>`}
+  return h}
+
+/* ---------- drawer ---------- */
+function field(l,inner,wide,hint){return`<div class="f ${wide?"w":""}"><label>${esc(l)}</label>${inner}${hint?`<span class="hint">${esc(hint)}</span>`:""}</div>`}
+const inp=(n,v,t)=>`<input name="${n}" id="d-${n}" type="${t||"text"}" value="${esc(v||"")}">`;
+const area=(n,v)=>`<textarea name="${n}" id="d-${n}">${esc(v||"")}</textarea>`;
+const sel=(n,list,v,blank)=>`<select name="${n}" id="d-${n}">${opts(list,v||"",blank)}</select>`;
+function openDrawer(kind,id,extra,refresh){
+  drawerCtx={kind,id,extra};let title="",body="",foot="",ro=!canWrite;
+  if(kind==="task"){const t=S.tasks[id];if(!t){closeDrawer();return}ro=!canChangeTask(t);title=t.title||"New task";
+    body=field("Task",inp("title",t.title),1)+field("Brand",`<select name="brand" id="d-brand">${brandList().map(b=>`<option value="${esc(b.id)}" ${b.id===t.brand?"selected":""}>${esc(b.name)}</option>`).join("")}</select>`)+field("Owner",sel("owner",activePeople(),t.owner))
+     +field("Status",sel("status",L("task_status"),t.status,false))+field("Priority",sel("priority",L("priority"),t.priority))+field("Deadline",inp("deadline",t.deadline,"date"))
+     +(simple?"":field("Start date",inp("start",t.start,"date"))+field("Support team",inp("support",(t.support||[]).join(", ")),1,"Names separated by commas"))
+     +field("Notes / next step",area("notes",t.notes),1)+(simple?"":field("Brief link",inp("brief_link",t.brief_link,"url"))+field("Creative link",inp("creative_link",t.creative_link,"url")))
+     +(t.status==="Blocked"?field("Blocked because",inp("blk_text",t.blocker&&t.blocker.text),1)+field("Waiting on",sel("blk_person",activePeople(),t.blocker&&t.blocker.person)):"")
+     +(simple?"":`<p class="faint w" style="font-size:12px;grid-column:1/-1">${esc(t.source||"")}</p>`);
+    if(canEdit&&canWrite)foot=`<button class="btn danger" data-act="del" data-kind="task" data-id="${esc(id)}">Delete task</button>`}
+  else if(kind==="brand"){const b=S.brands[id];if(!b){closeDrawer();return}ro=!(canEdit&&canWrite);title=b.name;
+    body=field("Name",inp("name",b.name))+field("Stage",sel("stage",L("stage"),b.stage,false))+field("Brand lead",sel("lead",activePeople(),b.lead))+field("Founder",inp("founder",b.founder))+field("Website",inp("website",b.website,"url"),1)
+     +field("Sprint",inp("sprint_label",b.sprint_label),1)+field("Next step",area("next_step",b.next_step),1)
+     +field("Paused",`<select name="paused" id="d-paused">${opts(["No","Yes"],b.paused?"Yes":"No",false)}</select>`)+field("Restricted",`<select name="restricted" id="d-restricted">${opts(["No","Yes"],b.restricted?"Yes":"No",false)}</select>`,0,"Marks the brand as sensitive. Access limits come with the full build")}
+  else if(kind==="step"){const s=S.steps[extra];const st=stepState(id,extra);if(!s){closeDrawer();return}title=s.code+" "+s.name;
+    body=`<p class="muted w" style="grid-column:1/-1;margin:0">${esc(bname(id))}${s.is_gate?" · Gate step":""}${s.is_optional?" · Optional":""}${s.default_owner?" · Usually "+esc(s.default_owner):""}</p>`
+     +field("Status",sel("status",L("checklist"),st.status||"Not Started",false))+field("Owner",sel("owner",activePeople(),st.owner))+field("Deadline",inp("deadline",st.deadline,"date"))
+     +field(s.doc_label?"Link to "+s.doc_label:"Document link",inp("link",st.link,"url"))+field("Blocked because",inp("blk_text",st.blocker&&st.blocker.text),1,"Leave empty when nothing blocks it")+field("Waiting on",sel("blk_person",activePeople(),st.blocker&&st.blocker.person))
+     +field("Notes",area("notes",st.notes),1)}
+  else if(kind==="access"){const a=S.access[id];if(!a){closeDrawer();return}title=bname(a.brand)+" · "+(a.platform||"Platform");
+    body=field("Platform",sel("platform",L("platform"),a.platform))+field("Status",sel("status",L("access_status"),a.status,false))+field("Access level",sel("access_level",L("access_level"),a.access_level))+field("Needed for",inp("needed_for",a.needed_for))
+     +field("Valerie owner",sel("owner",activePeople(),a.owner))+field("Brand contact",inp("brand_contact",a.brand_contact))+field("Requested on",inp("requested_date",a.requested_date,"date"))+field("Deadline",inp("deadline",a.deadline,"date"))
+     +field("Blocker",inp("blocker",a.blocker),1)+field("Notes",area("notes",a.notes),1,"Status only. No passwords or login details.");
+    if(canEdit&&canWrite)foot=`<button class="btn danger" data-act="del" data-kind="access" data-id="${esc(id)}">Delete row</button>`}
+  else if(kind==="sow"){const s=S.sow[id]||{};title="SOW · "+bname(id);ro=!canWrite;
+    body=field("Stage",sel("stage",L("sow_stage"),s.stage||"Not Started",false))+field("Owner",sel("owner",activePeople(),s.owner))+field("Target sign",inp("target_sign",s.target_sign,"date"))+field("Draft due",inp("draft_due",s.draft_due,"date"))
+     +field("Start date",inp("start_date",s.start_date,"date"))+field("Batch",inp("batch",s.batch))+field("Support team",inp("support",(s.support||[]).join(", ")),1,"Names separated by commas")
+     +field("SOW link",inp("sow_link",s.sow_link,"url"),1,"SharePoint link only. Never paste contract text.")+field("Growth Forecast link",inp("gf_link",s.gf_link,"url"),1)
+     +field("GF updated",`<select name="gf_updated" id="d-gf_updated">${opts(["No","Yes"],s.gf_updated?"Yes":"No",false)}</select>`)+field("Blocker / dependency",area("blocker",s.blocker),1)+field("Next step",area("next_step",s.next_step),1)}
+  else if(kind==="bp"){const d=S.bps[id];if(!d){closeDrawer();return}title="Best Practices · "+bname(id);
+    body=L("bp_section").map(x=>field(x,`<select name="sec:${esc(x)}" id="d-sec-${key(x)}">${opts(L("bp_status"),(d.sections||{})[x]||"Not Started",false)}</select>`)).join("")
+     +field("BP owner",sel("owner",activePeople(),d.owner))+field("Due date",inp("due_date",d.due_date,"date"))+field("Blocker",inp("blocker",d.blocker),1)+field("BP document link",inp("doc_link",d.doc_link,"url"),1)+field("Notes",area("notes",d.notes),1)}
+  const dr=$("#drawer");
+  if(refresh&&dr.contains(document.activeElement))return;
+  dr.innerHTML=`<header><h3>${esc(title)}</h3><button class="btn sm quiet" data-act="close">Close</button></header><form class="body" id="dform">${body}</form>
+   <footer>${ro?`<span class="muted">You can view this but not change it.</span>`:`<button class="btn pri" data-act="dsave">Save</button><button class="btn" data-act="close">Cancel</button>`}<span class="grow"></span>${foot}</footer>`;
+  if(ro)dr.querySelectorAll("input,select,textarea").forEach(e=>e.disabled=true);
+  dr.hidden=false;$("#scrim").hidden=false;if(!refresh){const f=dr.querySelector("input,select");if(f)f.focus()}
+}
+function closeDrawer(){drawerCtx=null;$("#drawer").hidden=true;$("#scrim").hidden=true}
+const splitNames=v=>String(v||"").split(",").map(s=>s.trim()).filter(Boolean);
+async function drawerSave(){
+  const{kind,id,extra}=drawerCtx;const fd={};for(const el of $("#dform").elements)if(el.name)fd[el.name]=el.value.trim();
+  const diff=(cur,next)=>{const p={};for(const k of Object.keys(next)){if(JSON.stringify(cur[k]??"")!==JSON.stringify(next[k]??""))p[k]=next[k]}return p};
+  if(kind==="task"){const t=S.tasks[id];const next={title:fd.title,brand:fd.brand,owner:fd.owner,status:fd.status,priority:fd.priority,deadline:fd.deadline,notes:fd.notes};
+    if(!simple)Object.assign(next,{start:fd.start,support:splitNames(fd.support),brief_link:fd.brief_link,creative_link:fd.creative_link});
+    if(!next.title){toast("Give the task a name.");return}
+    if(next.status==="Blocked"){const text=fd.blk_text!==undefined?fd.blk_text:(t.blocker&&t.blocker.text);const person=fd.blk_person!==undefined?fd.blk_person:(t.blocker&&t.blocker.person);
+      if(!text||!person){if(t.status!=="Blocked"){closeDrawer();askBlocker(r=>save("tasks",id,Object.assign(diff(t,next),{status:"Blocked",blocker:r}),t.title));return}toast("A blocker needs one line and a person.");return}
+      next.blocker={text,person}}else next.blocker=null;
+    const p=diff(t,next);if(Object.keys(p).length)await save("tasks",id,p,t.title)}
+  else if(kind==="brand"){const b=S.brands[id];const next={name:fd.name,stage:fd.stage,lead:fd.lead,founder:fd.founder,website:fd.website,sprint_label:fd.sprint_label,next_step:fd.next_step,paused:fd.paused==="Yes",restricted:fd.restricted==="Yes"};
+    if(!next.name){toast("A brand needs a name.");return}const p=diff(b,next);if(Object.keys(p).length)await save("brands",id,p,b.name)}
+  else if(kind==="step"){const st=stepState(id,extra);
+    if(fd.status==="Done"&&st.status!=="Done"){const why=gateBlock(id,extra);if(why){toast(why);return}}
+    if(fd.blk_text&&!fd.blk_person){toast("A blocker needs a person too.");return}
+    const next={status:fd.status,owner:fd.owner,deadline:fd.deadline,link:fd.link,notes:fd.notes,blocker:fd.blk_text?{text:fd.blk_text,person:fd.blk_person}:null};
+    await saveStep(id,extra,next)}
+  else if(kind==="access"){const a=S.access[id];const next={platform:fd.platform,status:fd.status,access_level:fd.access_level,needed_for:fd.needed_for,owner:fd.owner,brand_contact:fd.brand_contact,requested_date:fd.requested_date,deadline:fd.deadline,blocker:fd.blocker,notes:fd.notes};
+    if(next.status==="Blocked"&&(!next.blocker||!next.owner)){toast("A blocked row needs a blocker and a Valerie owner.");return}
+    const p=diff(a,next);if(Object.keys(p).length)await save("access",id,p,bname(a.brand)+" "+a.platform)}
+  else if(kind==="sow"){const s=S.sow[id]||{};const next={stage:fd.stage,owner:fd.owner,target_sign:fd.target_sign,draft_due:fd.draft_due,start_date:fd.start_date,batch:fd.batch,support:splitNames(fd.support),sow_link:fd.sow_link,gf_link:fd.gf_link,gf_updated:fd.gf_updated==="Yes",blocker:fd.blocker,next_step:fd.next_step};
+    if(next.stage==="Blocked"&&!next.blocker){toast("Say what blocks the SOW.");return}
+    if(!S.sow[id]){await create("sow",id,Object.assign({brand:id},next),"SOW "+bname(id))}else{const p=diff(s,next);if(Object.keys(p).length)await save("sow",id,p,"SOW "+bname(id))}}
+  else if(kind==="bp"){const d=S.bps[id];const sections=Object.assign({},d.sections||{});for(const x of L("bp_section"))if(fd["sec:"+x])sections[x]=fd["sec:"+x];
+    const next={sections,owner:fd.owner,due_date:fd.due_date,blocker:fd.blocker,doc_link:fd.doc_link,notes:fd.notes};const p=diff(d,next);if(Object.keys(p).length)await save("bps",id,p,"BPs "+bname(id))}
+  closeDrawer()}
+function gateBlock(bid,code){const s=S.steps[code];if(!s||!s.is_gate)return"";const open=stepsSorted().filter(x=>x.order<s.order&&!x.is_optional&&!["Done","N/A"].includes(stepState(bid,x.code).status));
+  return open.length?`${s.code} is a gate. Finish ${open.length} earlier step${open.length>1?"s":""} first: ${open.slice(0,4).map(x=>x.code).join(", ")}${open.length>4?"...":""}`:""}
+async function saveStep(bid,code,next){
+  if(!db||!canWrite){toast("You can view this tracker but not change it.");return}
+  const had=!!S.bsteps[bid];const doc=S.bsteps[bid]||{brand:bid,s:{}};const cur=(doc.s||{})[code]||{};const merged=Object.assign({},cur,next);
+  const p={};for(const k of Object.keys(next))if(JSON.stringify(cur[k]??"")!==JSON.stringify(next[k]??""))p[k]=next[k];if(!Object.keys(p).length)return;
+  const old={};for(const k of Object.keys(p))old[k]=cur[k];
+  S.bsteps[bid]=Object.assign({},doc,{s:Object.assign({},doc.s||{},{[code]:merged})});render();
+  return chain("bs/"+bid,()=>had?db.doc("brand_steps/"+bid).update({s:{[code]:merged},updated_at:Date.now()}):db.doc("brand_steps/"+bid).set({brand:bid,s:{[code]:merged},updated_at:Date.now()}))
+   .then(()=>{toast("Saved");addLog("bsteps",bid,p,old,bname(bid)+" "+code)}).catch(e=>{if(!refused(e))toast("Not saved. Try again.");S.bsteps[bid]=doc;render()})}
+
+/* ---------- blocker modal ---------- */
+function askBlocker(done){
+  const m=$("#modal");m.innerHTML=`<form class="box" id="bform"><h3>What is blocking it?</h3><div class="f"><label for="b-text">One line</label><input id="b-text" required maxlength="200"></div>
+   <div class="f"><label for="b-person">Waiting on</label><select id="b-person" required>${opts(activePeople(),"")}</select></div>
+   <div class="row"><button class="btn pri" type="submit">Mark blocked</button><button class="btn" type="button" data-act="mclose">Cancel</button></div></form>`;
+  m.hidden=false;$("#b-text").focus();
+  $("#bform").onsubmit=e=>{e.preventDefault();const text=$("#b-text").value.trim(),person=$("#b-person").value;if(!text||!person){toast("Add one line and a person.");return}m.hidden=true;done({text,person})}}
+function confirmBox(msg,label,fn){const m=$("#modal");m.innerHTML=`<div class="box"><h3>${esc(msg)}</h3><div class="row"><button class="btn pri" data-act="mok">${esc(label)}</button><button class="btn" data-act="mclose">Cancel</button></div></div>`;m.hidden=false;m.querySelector("[data-act=mok]").onclick=()=>{m.hidden=true;fn()}}
+function formBox(title,fields,label,fn){const m=$("#modal");m.innerHTML=`<form class="box" id="fbox"><h3>${esc(title)}</h3>${fields}<div class="row"><button class="btn pri" type="submit">${esc(label)}</button><button class="btn" type="button" data-act="mclose">Cancel</button></div></form>`;m.hidden=false;const f=m.querySelector("input,select");if(f)f.focus();
+  $("#fbox").onsubmit=e=>{e.preventDefault();const v={};for(const el of $("#fbox").elements)if(el.name)v[el.name]=el.value.trim();if(fn(v)!==false)m.hidden=true}}
+
+/* ---------- events ---------- */
+document.addEventListener("click",e=>{
+  const a=e.target.closest("[data-act]");if(!a)return;const act=a.dataset.act;
+  if(a.tagName==="SELECT"||a.tagName==="INPUT")return;
+  if(act==="nav"){if(e.target.closest("a,select,button"))return;go(a.dataset.to);return}
+  if(act==="open"){if(e.target.closest("select")||(e.target.closest("a")&&e.target.closest("a")!==a&&e.target.closest("a").getAttribute("href")!=="#"))return;e.preventDefault();openDrawer(a.dataset.kind,a.dataset.id,a.dataset.code);return}
+  e.preventDefault();
+  if(act==="menu")$("#rail").classList.toggle("open");
+  else if(act==="simple"){simple=a.dataset.v==="1";ls.set("vt-simple",simple?"1":"0");render()}
+  else if(act==="tab"){brandTab=a.dataset.tab;ls.set("vt-tab",brandTab);render()}
+  else if(act==="tflt"){flt.taskStatus=a.dataset.v;render()}
+  else if(act==="allphases"){showAllPhases=!showAllPhases;render()}
+  else if(act==="settab"){setTab=a.dataset.tab;render()}
+  else if(act==="close")closeDrawer();
+  else if(act==="mclose")$("#modal").hidden=true;
+  else if(act==="dsave")drawerSave();
+  else if(act==="del"){const{kind,id}=a.dataset;confirmBox("Delete this row? This cannot be undone.","Delete",()=>{closeDrawer();remove(kind==="task"?"tasks":"access",id,kind)})}
+  else if(act==="add-task"){const bid=a.dataset.id;formBox("New task",`<div class="f"><label for="n-title">Task</label><input id="n-title" name="title" required></div><div class="f"><label for="n-owner">Owner</label><select id="n-owner" name="owner">${opts(activePeople(),me)}</select></div><div class="f"><label for="n-dl">Deadline</label><input id="n-dl" name="deadline" type="date"></div><div class="f"><label for="n-pr">Priority</label><select id="n-pr" name="priority">${opts(L("priority"),"Medium")}</select></div>`,"Add task",
+    v=>{if(!v.title){toast("Give the task a name.");return false}create("tasks",null,{brand:bid,title:v.title,owner:v.owner,support:[],status:"Not Started",priority:v.priority,start:"",deadline:v.deadline,notes:"",brief_link:"",creative_link:"",blocker:null,source:"Added in tracker"},v.title)})}
+  else if(act==="add-access"){const bid=a.dataset.id;formBox("New platform access row",`<div class="f"><label for="n-b">Brand</label><select id="n-b" name="brand">${brandList().map(b=>`<option value="${esc(b.id)}" ${b.id===bid?"selected":""}>${esc(b.name)}</option>`).join("")}</select></div><div class="f"><label for="n-p">Platform</label><select id="n-p" name="platform">${opts(L("platform"),"")}</select></div><div class="f"><label for="n-o">Valerie owner</label><select id="n-o" name="owner">${opts(activePeople(),"")}</select></div>`,"Add row",
+    v=>{if(!v.platform){toast("Pick a platform.");return false}create("access",null,{brand:v.brand,platform:v.platform,access_level:"TBC",needed_for:"",owner:v.owner,brand_contact:(S.brands[v.brand]||{}).founder||"",requested_date:"",deadline:"",status:"Not Requested",blocker:"",notes:""},bname(v.brand)+" "+v.platform)})}
+  else if(act==="add-sow"){const bid=a.dataset.id;create("sow",bid,{brand:bid,owner:"",support:[],stage:"Not Started",start_date:"",draft_due:"",target_sign:"",blocker:"",next_step:"",sow_link:"",gf_link:"",gf_updated:false,batch:""},"SOW "+bname(bid))}
+  else if(act==="add-bp"){const bid=a.dataset.id;create("bps",bid,{brand:bid,owner:"",due_date:"",sections:{},blocker:"",doc_link:"",notes:""},"BPs "+bname(bid))}
+  else if(act==="add-brand"){formBox("Add brand",`<div class="f"><label for="n-name">Brand name</label><input id="n-name" name="name" required></div><div class="f"><label for="n-st">Stage</label><select id="n-st" name="stage">${opts(L("stage"),"Qualification",false)}</select></div>`,"Add brand",
+    v=>{if(!v.name){toast("Type the brand name.");return false}let id=v.name.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"brand";while(S.brands[id])id+="-2";
+      create("brands",id,{name:v.name,founder:"",website:"",stage:v.stage,lead:"",next_step:"",sprint_label:"",order:brandList().length+1,paused:false,restricted:false},v.name);
+      db.doc("brand_steps/"+id).set({brand:id,s:{}}).catch(()=>{});if(v.stage!=="Internal")db.doc("sow/"+id).set({brand:id,owner:"",support:[],stage:"Not Started",start_date:"",draft_due:"",target_sign:"",blocker:"",next_step:"",sow_link:"",gf_link:"",gf_updated:false,batch:""}).catch(()=>{});
+      go("brand-"+id)})}
+  else if(act==="phase-done"){const bid=a.dataset.id,pc=a.dataset.phase;const p=phases().find(x=>x.code===pc);const first=p.steps[0];
+    const earlier=stepsSorted().filter(x=>x.order<first.order&&!x.is_optional&&!["Done","N/A"].includes(stepState(bid,x.code).status));
+    if(earlier.length){toast(`Finish the ${earlier.length} open step${earlier.length>1?"s":""} in earlier phases first.`);return}
+    confirmBox(`Mark every step in ${pc} done for ${bname(bid)}?`,"Mark done",async()=>{for(const s of p.steps){const st=stepState(bid,s.code).status;if(st!=="Done"&&st!=="N/A")await saveStep(bid,s.code,{status:"Done"})}})}
+  else if(act==="add-person"){formBox("Add person",`<div class="f"><label for="n-pn">Name as people write it</label><input id="n-pn" name="name" required></div><div class="f"><label for="n-pk">Type</label><select id="n-pk" name="kind">${opts(["team","external","group"],"team",false)}</select></div>`,"Add",
+    v=>{if(!v.name){toast("Type a name.");return false}if(people().some(p=>p.name.toLowerCase()===v.name.toLowerCase())){toast("That name is already in the list.");return false}savePeople(people().concat([{name:v.name,kind:v.kind,aliases:[],active:true}]),"Added "+v.name)})}
+  else if(act==="save-lists"){const next=Object.assign({},S.config.lists);document.querySelectorAll("[data-list]").forEach(t=>{next[t.dataset.list]=t.value.split("\n").map(s=>s.trim()).filter(Boolean)});
+    save("config","lists",next,"Lists")}
+  else if(act==="export-xlsx")exportXlsx();
+  else if(act==="export-json")exportJson();
+});
+document.addEventListener("change",e=>{
+  const t=e.target;const act=t.dataset&&t.dataset.act;if(!act)return;
+  if(act==="who"){me=t.value;ls.set("vt-me",me);if(db&&uid)db.doc("data/users/"+uid+"/profile").set({person:me}).catch(()=>{});render();return}
+  if(act==="status"){const kind=t.dataset.kind,id=t.dataset.id,v=t.value;
+    if(kind==="task"){const cur=S.tasks[id];if(v==="Blocked"){t.value=cur.status;askBlocker(r=>save("tasks",id,{status:"Blocked",blocker:r},cur.title));return}
+      save("tasks",id,{status:v,blocker:null},cur.title)}
+    else if(kind==="step"){const code=t.dataset.code;if(v==="Done"){const why=gateBlock(id,code);if(why){t.value=stepState(id,code).status||"Not Started";toast(why);return}}saveStep(id,code,{status:v})}
+    else if(kind==="access"){const cur=S.access[id];if(v==="Blocked"&&!cur.blocker){t.value=cur.status;askBlocker(r=>save("access",id,{status:"Blocked",blocker:r.text,owner:cur.owner||r.person},bname(cur.brand)+" "+cur.platform));return}save("access",id,{status:v},bname(cur.brand)+" "+cur.platform)}
+    else if(kind==="sow"){const cur=S.sow[id]||{};if(v==="Blocked"&&!cur.blocker){t.value=cur.stage||"Not Started";askBlocker(r=>save("sow",id,{stage:"Blocked",blocker:r.text+" (waiting on "+r.person+")"},"SOW "+bname(id)));return}
+      if(!S.sow[id])create("sow",id,{brand:id,stage:v},"SOW "+bname(id));else save("sow",id,{stage:v},"SOW "+bname(id))}
+    return}
+  if(act==="bpsec"){const id=t.dataset.id;const d=S.bps[id];save("bps",id,{sections:Object.assign({},d.sections||{},{[t.dataset.sec]:t.value})},"BPs "+bname(id));return}
+  if(act==="fa"){flt[t.dataset.k]=t.value;render();return}
+  if(act==="bp-add"&&t.value){const id=t.value;create("bps",id,{brand:id,owner:"",due_date:"",sections:{},blocker:"",doc_link:"",notes:""},"BPs "+bname(id));return}
+  if(act==="setbrand"&&t.value){save("tasks",t.dataset.id,{brand:t.value},S.tasks[t.dataset.id].title);return}
+  if(act==="person"){const ps=people().map(p=>Object.assign({},p));const p=ps[+t.dataset.i];const f=t.dataset.f;
+    if(f==="active")p.active=t.checked;else if(f==="aliases")p.aliases=splitNames(t.value);else p[f]=t.value;savePeople(ps,p.name);return}
+  if(act==="stepdef"){const id=t.dataset.id,f=t.dataset.f;const v=t.type==="checkbox"?t.checked:t.value.trim();if(f==="name"&&!v){toast("A step needs a name.");return}save("steps",id,{[f]:v},"Step "+id);return}
+});
+function savePeople(ps,label){save("config","people",{people:ps},"People: "+label)}
+$("#scrim").onclick=closeDrawer;
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(!$("#modal").hidden)$("#modal").hidden=true;else closeDrawer()}});
+
+/* ---------- export ---------- */
+function loadXlsx(){return new Promise((res,rej)=>{if(window.XLSX)return res(window.XLSX);const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";s.onload=()=>res(window.XLSX);s.onerror=rej;document.head.appendChild(s)})}
+async function offer(filename,data){if(!dl){toast("Downloads are not available in this view.");return}try{await dl.save({filename,data});toast("Downloaded")}catch(e){if(e&&e.code!=="declined")toast("The download did not finish.")}}
+async function exportXlsx(){
+  let X;try{X=await loadXlsx()}catch(e){toast("Could not load the Excel library. Try again.");return}
+  const wb=X.utils.book_new();const add=(name,rows)=>X.utils.book_append_sheet(wb,X.utils.aoa_to_sheet(rows),name.replace(/[\\\/?*\[\]:]/g,"").slice(0,31));
+  const bs=brandList();
+  add("Brand Tracker",[["Brand","Founder","Website","Stage","Brand Lead","Open Tasks","Blocked Tasks","Overdue Tasks","Platform Access","Access Granted","SOW Stage","SOW Owner","SOW Target Sign","BPs","BP Progress","Onboarding %","Health","Next Step"]]
+    .concat(bs.map(b=>{const r=roll(b.id);return[b.name,b.founder,b.website,b.stage,b.lead,r.open,r.blocked,r.overdue,r.acc.summary,r.acc.text,r.sow,r.sowRow.owner||"",r.sowRow.target_sign||"",r.bp?r.bp.overall:"",r.bp?Math.round(r.bp.progress*100)/100:"",Math.round(r.pct*100)/100,r.health,b.next_step]})));
+  for(const b of bs){const ts=withId(S.tasks).filter(t=>t.brand===b.id);add(b.name,[["Task / Deliverable","Owner","Support Team","Status","Priority","Start Date","Deadline","Due Flag","Notes / Next Step","Brief Link","Creative Link"]]
+    .concat(ts.map(t=>[t.title,t.owner,(t.support||[]).join(", "),t.status,t.priority,t.start,t.deadline,dueFlag(t.deadline,t.status==="Complete"),t.notes,t.brief_link,t.creative_link])))}
+  add("Platform Access",[["Brand","Platform","Access Level","Needed For","Valerie Owner","Brand Contact","Requested Date","Deadline","Status","Days Waiting","Due Flag","Blocker","Notes"]].concat(withId(S.access).map(a=>{const d=parseD(a.requested_date);return[bname(a.brand),a.platform,a.access_level,a.needed_for,a.owner,a.brand_contact,a.requested_date,a.deadline,a.status,d&&!["Granted","Not Needed"].includes(a.status)?Math.round((today()-d)/864e5):"",dueFlag(a.deadline,["Granted","Not Needed"].includes(a.status)),a.blocker,a.notes]})));
+  add("SOW Tracker",[["Brand","SOW Owner","Support Team","SOW Stage","Start Date","Draft Due","Target Sign Date","Due Flag","Blocker / Dependency","Next Step","SOW Link","GF Link","Updated GF?","Batch"]].concat(bs.filter(b=>S.sow[b.id]).map(b=>{const s=S.sow[b.id];return[b.name,s.owner,(s.support||[]).join(", "),s.stage,s.start_date,s.draft_due,s.target_sign,sowDue(s),s.blocker,s.next_step,s.sow_link,s.gf_link,s.gf_updated?"yes":"",s.batch]})));
+  const secs=L("bp_section");add("BP Tracker",[["Brand","BP Owner","Due Date","Due Flag"].concat(secs,["Progress","Overall","Blocker","BP Doc Link","Notes"])].concat(bs.filter(b=>S.bps[b.id]).map(b=>{const d=S.bps[b.id],r=bpRoll(b.id);return[b.name,d.owner,d.due_date,r.due].concat(secs.map(x=>(d.sections||{})[x]||""),[Math.round(r.progress*100)/100,r.overall,d.blocker,d.doc_link,d.notes])})));
+  const st=stepsSorted();add("Onboarding Steps",[["Phase","Code","Step"].concat(bs.map(b=>b.name))].concat([["","","% Complete"].concat(bs.map(b=>Math.round(onboarding(b.id)*100)/100))],st.map(s=>[s.phase+" "+s.phase_name,s.code,s.name].concat(bs.map(b=>stepState(b.id,s.code).status||"")))));
+  add("Completed Archive",[["Brand","Task / Deliverable","Owner","Support Team","Start Date","Deadline","Notes"]].concat(withId(S.tasks).filter(t=>!t.brand).map(t=>["",t.title,t.owner,(t.support||[]).join(", "),t.start,t.deadline,t.notes])));
+  const lk=["task_status","priority","stage","platform","access_level","access_status","sow_stage","checklist","bp_section","bp_status"];const heads=["Task Status","Priority","Stage","Team","Platform","Access Level","Access Status","SOW Stage","Checklist","BP Section","BP Status"];
+  const cols=[L("task_status"),L("priority"),L("stage"),activePeople()].concat(lk.slice(3).map(L));const n=Math.max(...cols.map(c=>c.length));const rows=[heads];for(let i=0;i<n;i++)rows.push(cols.map(c=>c[i]||""));add("Lists",rows);
+  const out=X.write(wb,{bookType:"xlsx",type:"array"});
+  await offer("Valerie_COE_Tracker_"+isoToday()+".xlsx",new Blob([out]))}
+async function exportJson(){const dump={exported_at:new Date().toISOString()};for(const[k,c]of Object.entries(COLL))dump[c]=S[k];await offer("Valerie_COE_backup_"+isoToday()+".json",JSON.stringify(dump,null,1))}
+
+/* ---------- boot ---------- */
+parseHash();
+(async()=>{
+  if(typeof window.claude==="undefined"||!window.claude.use){$("#main").innerHTML=`<h1>Open this tracker from its claude.ai link</h1><p class="sub">The live team data is stored with the claude.ai page. Ask the owner for the link.</p>`;return}
+  db=await claude.use("db");
+  if(!db){$("#main").innerHTML=`<h1>Tracker unavailable here</h1><p class="sub">Open the page from claude.ai while signed in to your Valerie account.</p>`;return}
+  U=await claude.use("user");dl=await claude.use("downloads");
+  if(U){try{uid=await U.id()}catch(e){}try{canEdit=!!(await U.canEdit())}catch(e){}try{const w=await U.can("data.write");if(w===false)canWrite=false}catch(e){}}
+  if(simple===null)simple=!canEdit;
+  if(uid){try{const p=await db.doc("data/users/"+uid+"/profile").get();if(p.exists&&p.data().person)me=p.data().person}catch(e){}}
+  const sub=(k,c)=>db.collection(c).onSnapshot(snap=>{const o={};snap.docs.forEach(d=>{if(d.exists)o[d.id]=Object.assign({},d.data())});S[k]=o;ready[k]=true;
+    if(k==="config"&&!me&&U){U.me().then(v=>{if(!me&&v&&v.name){const first=v.name.split(" ")[0].toLowerCase();const hit=activePeople().find(p=>p.toLowerCase()===first);if(hit){me=hit;render()}}}).catch(()=>{})}
+    render()},err=>{if(err&&err.code!=="revoked")toast("Live updates paused. Reload the page.")});
+  for(const[k,c]of Object.entries(COLL))sub(k,c);
+  db.collection("log").orderBy("date","desc").limit(30).onSnapshot(snap=>{const o={};snap.docs.forEach(d=>{if(d.exists)o[d.id]=d.data()});S.log=o;if(route.v==="settings")render()},()=>{});
+})();
+})();
+</script>
