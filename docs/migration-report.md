@@ -87,6 +87,7 @@
 | Completed tasks | 10 | 'Present GTM': deadline 'ASAP' cleared | Not a date |
 | Completed tasks | 10 | 'Present GTM': no brand | Shown under Settings > Needs a brand |
 | Completed tasks | 11 | 'Commence Q4 Marketing Plan': no brand | Shown under Settings > Needs a brand |
+| All tasks | - | Department suggested by keyword: Brand 86, Creative 35, Creator Partnerships 8, Finance 23, Other 2, Performance 15, Website, SEO and CRM 10 | Leads can change any task's department in one click |
 | Platform Access | 4 | IDEO Amazon Seller Central: no Valerie owner | Kept. Owner to be added |
 | Platform Access | 6 | MugWipes Amazon Seller Central: no Valerie owner | Kept. Owner to be added |
 | Platform Access | 7 | MUMUK Paid Media (TBC): no Valerie owner | Kept. Owner to be added |

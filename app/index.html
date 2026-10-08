@@ -124,6 +124,24 @@ select.ps:disabled{cursor:default;background-image:none;padding-right:9px}
 .tag.warn{background:var(--warnBg);color:var(--warn);font-weight:600}
 .due{font-size:12.5px;white-space:nowrap}
 .due.Overdue{color:var(--bad);font-weight:600}.due.DueSoon{color:var(--warn);font-weight:600}
+/* team cards */
+.teams{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.team{all:unset;box-sizing:border-box;cursor:pointer;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:9px;min-width:0}
+.team:hover{border-color:var(--accent)}.team:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.team.t-bad{border-top:3px solid var(--bad)}.team.t-late{border-top:3px solid #E08A00}
+.team .th{display:flex;align-items:baseline;gap:8px}.team .tn{font-weight:700;font-size:15px}.team .tc{margin-left:auto;font-weight:600;color:var(--muted);font-size:13px}
+.team .tstat{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:12px}
+.bar.wide{width:100%}
+.team .tlist{display:flex;flex-direction:column;gap:5px;border-top:1px solid var(--line);padding-top:8px}
+.team .tl{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:8px;align-items:center;font-size:13px}
+.team .tt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.team .tw2{font-size:12px;white-space:nowrap}
+.team .more{font-size:12px;color:var(--accent);font-weight:600}
+.team.empty-team{flex-direction:row;justify-content:space-between;align-items:center;background:transparent;border-style:dashed;padding:10px 14px}
+.teamnav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.chipbtn{border:1px solid var(--line2);background:var(--panel);border-radius:999px;padding:4px 11px;cursor:pointer;font-size:13px;color:var(--ink)}
+.chipbtn span{color:var(--muted);margin-left:3px}
+.chipbtn.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}.chipbtn.on span{color:var(--bg);opacity:.7}
 /* my tasks */
 .group{margin-bottom:18px}
 .group h2{display:flex;align-items:center;gap:8px;margin:18px 0 8px}
@@ -339,7 +357,7 @@ function addLog(c,id,patch,old,label){
 
 /* ---------- routing ---------- */
 function parseHash(){const h=location.hash.replace(/^#/,"");
-  if(h.startsWith("brand-")){route={v:"brand",id:h.slice(6)}}
+  if(h.startsWith("brand-")){route={v:"brand",id:h.slice(6)};if(deptSel.bid!==route.id)deptSel={bid:"",dep:""}}
   else if(["mine","overview","access","sow","bp","settings"].includes(h))route={v:h,id:""};
   else route={v:"",id:""};
   $("#rail").classList.remove("open");closeDrawer();render();$("#main").scrollTop=0}
@@ -464,17 +482,38 @@ function vBrand(id){
   h+=`<div class="tabs" role="tablist">${tabs.map(([k,l])=>`<button role="tab" aria-selected="${brandTab===k}" class="${brandTab===k?"on":""}" data-act="tab" data-tab="${k}">${esc(l)}</button>`).join("")}</div>`;
   if(brandTab==="steps")h+=stepsTab(id);else if(brandTab==="access")h+=accessTable(id);else if(brandTab==="sow")h+=sowCard(id);else if(brandTab==="bp")h+=bpCard(id);else h+=tasksTab(id);
   return h}
+/* tasks grouped by team: overview cards first, one click opens a team */
+const DEPTS=()=>{const l=L("department");return l.length?l:["Other"]};
+const depOf=t=>t.department&&DEPTS().includes(t.department)?t.department:(DEPTS().includes("Other")?"Other":DEPTS()[DEPTS().length-1]);
+const urgency=t=>t.status==="Blocked"?0:dueFlag(t.deadline,t.status==="Complete")==="Overdue"?1:dueFlag(t.deadline,t.status==="Complete")==="Due Soon"?2:t.status==="In Progress"?3:4;
+const byUrgency=(a,b)=>urgency(a)-urgency(b)||String(a.deadline||"9").localeCompare(String(b.deadline||"9"));
+let deptSel={bid:"",dep:""};
 function tasksTab(bid){
-  let rows=withId(S.tasks).filter(t=>t.brand===bid&&t.title);const done=rows.filter(t=>t.status==="Complete").length;
+  const all=withId(S.tasks).filter(t=>t.brand===bid&&t.title);
+  const sel=deptSel.bid===bid?deptSel.dep:"";
+  if(sel)return taskTable(bid,sel,all);
+  const open=all.filter(t=>t.status!=="Complete");
+  let h=`<div class="row" style="margin-bottom:12px"><span class="muted">${open.length} open tasks across ${DEPTS().filter(d=>open.some(t=>depOf(t)===d)).length} teams. Click a team to see its full list.</span><span class="grow"></span>${canWrite?`<button class="btn pri" data-act="add-task" data-id="${esc(bid)}">Add task</button>`:""}</div><div class="teams">`;
+  for(const d of DEPTS()){const ts=all.filter(t=>depOf(t)===d);const op=ts.filter(t=>t.status!=="Complete").sort(byUrgency);
+    const done=ts.length-op.length,bl=op.filter(t=>t.status==="Blocked").length,late=op.filter(t=>dueFlag(t.deadline,false)==="Overdue").length;
+    if(!ts.length){h+=`<button class="team empty-team" data-act="dept" data-dep="${esc(d)}"><span class="tn">${esc(d)}</span><span class="faint">No tasks yet</span></button>`;continue}
+    h+=`<button class="team ${bl?"t-bad":late?"t-late":""}" data-act="dept" data-dep="${esc(d)}"><span class="th"><span class="tn">${esc(d)}</span><span class="tc">${op.length} open</span></span>
+     <span class="tstat">${bl?`<span class="tag bad">! ${bl} blocked</span>`:""}${late?`<span class="tag bad">${late} late</span>`:""}${!bl&&!late?`<span class="tag">${op.length?"On track":"All done"}</span>`:""}<span class="faint">${done} of ${ts.length} done</span></span>
+     <span class="bar wide"><i style="width:${Math.round(done/ts.length*100)}%"></i></span>
+     <span class="tlist">${op.slice(0,3).map(t=>`<span class="tl"><span class="dot ${t.status==="Blocked"?"h-Blocked":urgency(t)===1?"h-Blocked":urgency(t)===2?"h-AtRisk":"h-OnTrack"}" aria-hidden="true"></span><span class="tt">${esc(t.title)}</span><span class="tw2">${t.status==="Blocked"?`<b class="hot">Blocked</b>`:dueHtml(t.deadline,false)||`<span class="faint">${esc(t.owner||"No owner")}</span>`}</span></span>`).join("")||`<span class="faint">Nothing open</span>`}${op.length>3?`<span class="more">+ ${op.length-3} more</span>`:""}</span></button>`}
+  return h+`</div>`}
+function taskTable(bid,dep,all){
+  let rows=all.filter(t=>depOf(t)===dep);const done=rows.filter(t=>t.status==="Complete").length;
   if(flt.taskStatus==="open")rows=rows.filter(t=>t.status!=="Complete");
-  const PO={Urgent:0,High:1,Medium:2,Low:3};
-  rows.sort((a,b)=>(a.status==="Blocked"?0:1)-(b.status==="Blocked"?0:1)||String(a.deadline||"9").localeCompare(String(b.deadline||"9"))||(PO[a.priority]??4)-(PO[b.priority]??4));
-  let h=`<div class="row" style="margin-bottom:10px">${canWrite?`<button class="btn pri" data-act="add-task" data-id="${esc(bid)}">Add task</button>`:""}
+  rows.sort(byUrgency);
+  const counts=d=>all.filter(t=>depOf(t)===d&&t.status!=="Complete").length;
+  let h=`<div class="teamnav"><button class="btn sm" data-act="dept" data-dep="">‹ All teams</button>${DEPTS().map(d=>`<button class="chipbtn ${d===dep?"on":""}" data-act="dept" data-dep="${esc(d)}">${esc(d)} <span>${counts(d)}</span></button>`).join("")}</div>
+  <div class="row" style="margin-bottom:10px">${canWrite?`<button class="btn pri" data-act="add-task" data-id="${esc(bid)}" data-dep="${esc(dep)}">Add ${esc(dep)} task</button>`:""}
    <div class="seg"><button data-act="tflt" data-v="open" class="${flt.taskStatus==="open"?"on":""}">Open</button><button data-act="tflt" data-v="all" class="${flt.taskStatus==="all"?"on":""}">All (${done} done)</button></div></div>`;
-  if(!rows.length)return h+`<div class="tw"><div class="empty">No open tasks. Add one to start.</div></div>`;
+  if(!rows.length)return h+`<div class="tw"><div class="empty">No open ${esc(dep)} tasks. Add one to start.</div></div>`;
   h+=`<div class="tw"><table><thead><tr><th>Task</th><th>Owner</th>${simple?"":`<th>Support</th><th>Priority</th><th>Start</th>`}<th>Due</th><th>Status</th>${simple?"":`<th>Links</th>`}</tr></thead><tbody>`;
   for(const t of rows){h+=`<tr class="click" data-act="open" data-kind="task" data-id="${esc(t._id)}"><td><b>${esc(t.title)}</b>${t.status==="Blocked"&&t.blocker?`<div class="blk">${esc(t.blocker.text)}${t.blocker.person?` (waiting on ${esc(t.blocker.person)})`:""}</div>`:simple||!t.notes?"":`<div class="faint clip" style="font-size:12.5px">${esc(t.notes.slice(0,140))}${t.notes.length>140?"...":""}</div>`}</td>
-    <td>${t.owner?esc(t.owner):`<span class="tag warn">No owner</span>`}</td>${simple?"":`<td class="muted">${esc((t.support||[]).join(", "))}</td><td>${t.priority?pill(t.priority):""}</td><td class="faint">${esc(fmtD(t.start))}</td>`}
+    <td>${t.owner?esc(t.owner):`<span class="tag warn">No owner</span>`}</td>${simple?"":`<td class="muted">${esc((t.support||[]).join(", "))}</td><td>${t.priority?pill(t.priority):""}</td><td class="faint" style="white-space:nowrap">${esc(fmtD(t.start))}</td>`}
     <td>${dueHtml(t.deadline,t.status==="Complete")}</td><td>${statusSel("task",t._id,t.status,L("task_status"),canChangeTask(t))}</td>${simple?"":`<td>${t.brief_link?`<a href="${esc(t.brief_link)}" target="_blank" rel="noopener">Brief</a> `:""}${t.creative_link?`<a href="${esc(t.creative_link)}" target="_blank" rel="noopener">Creative</a>`:""}</td>`}</tr>`}
   return h+`</tbody></table></div>`}
 function phaseOpen(bid,p){return p.steps.filter(s=>!s.is_optional).some(s=>!["Done","N/A"].includes(stepState(bid,s.code).status))}
@@ -564,7 +603,7 @@ function vSettings(){
     h+=`<div class="row" style="margin-bottom:10px"><button class="btn pri" data-act="add-person">Add person</button><span class="muted">Unconfirmed names came from the Excel. Mark each as team, external or group. Aliases let one person match other spellings.</span></div>
     <div class="tw"><table><thead><tr><th>Name</th><th>Type</th><th>Other spellings</th><th>Active</th><th>Open tasks</th></tr></thead><tbody>${ps.map((p,i)=>{const n=Object.values(S.tasks).filter(t=>t.status!=="Complete"&&(isPerson(t.owner,p.name)||(t.support||[]).some(x=>isPerson(x,p.name)))).length;
       return`<tr><td><b>${esc(p.name)}</b></td><td><select data-act="person" data-i="${i}" data-f="kind" aria-label="Type">${opts(["team","external","group","unconfirmed"],p.kind||"team",false)}</select></td><td><input data-act="person" data-i="${i}" data-f="aliases" value="${esc((p.aliases||[]).join(", "))}" placeholder="e.g. Noops" aria-label="Other spellings" style="border:1px solid var(--line2);border-radius:6px;padding:4px 6px;width:100%;background:var(--panel)"></td><td><input type="checkbox" data-act="person" data-i="${i}" data-f="active" ${p.active!==false?"checked":""} aria-label="Active"></td><td class="num">${n}</td></tr>`}).join("")}</tbody></table></div>`}
-  else if(setTab==="lists"){const labels={task_status:"Task status",priority:"Priority",stage:"Brand stage",platform:"Platforms",access_level:"Access level",access_status:"Access status",sow_stage:"SOW stage",checklist:"Step status",bp_section:"BP sections",bp_status:"BP status"};
+  else if(setTab==="lists"){const labels={task_status:"Task status",priority:"Priority",stage:"Brand stage",platform:"Platforms",access_level:"Access level",access_status:"Access status",sow_stage:"SOW stage",checklist:"Step status",bp_section:"BP sections",bp_status:"BP status",department:"Teams (task groups)"};
     h+=`<div class="notice">Renaming a value does not change rows that already use the old one. Add new values at the end.</div><div class="cols2">${Object.keys(labels).map(k=>`<div class="card"><label for="ls-${k}"><b>${esc(labels[k])}</b></label><textarea id="ls-${k}" data-list="${k}">${esc(L(k).join("\n"))}</textarea></div>`).join("")}</div><div class="row" style="margin-top:12px"><button class="btn pri" data-act="save-lists">Save lists</button></div>`}
   else if(setTab==="steps"){
     h+=`<p class="muted">Gates and optional steps are a proposal from the Stage 0 report. Change them here. Codes stay the same so progress is kept.</p><div class="tw"><table><thead><tr><th>Code</th><th>Step</th><th>Gate</th><th>Optional</th><th>Default owner</th><th>Document</th></tr></thead><tbody>${stepsSorted().map(s=>`<tr><td class="code">${esc(s.code)}</td><td><input data-act="stepdef" data-id="${esc(s.id)}" data-f="name" value="${esc(s.name)}" aria-label="Step name" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:4px 6px;background:var(--panel)"></td><td><input type="checkbox" data-act="stepdef" data-id="${esc(s.id)}" data-f="is_gate" ${s.is_gate?"checked":""} aria-label="Gate"></td><td><input type="checkbox" data-act="stepdef" data-id="${esc(s.id)}" data-f="is_optional" ${s.is_optional?"checked":""} aria-label="Optional"></td><td><input data-act="stepdef" data-id="${esc(s.id)}" data-f="default_owner" value="${esc(s.default_owner)}" aria-label="Default owner" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:4px 6px;background:var(--panel)"></td><td><input data-act="stepdef" data-id="${esc(s.id)}" data-f="doc_label" value="${esc(s.doc_label)}" aria-label="Document" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:4px 6px;background:var(--panel)"></td></tr>`).join("")}</tbody></table></div>`}
@@ -584,7 +623,7 @@ const sel=(n,list,v,blank)=>`<select name="${n}" id="d-${n}">${opts(list,v||"",b
 function openDrawer(kind,id,extra,refresh){
   drawerCtx={kind,id,extra};let title="",body="",foot="",ro=!canWrite;
   if(kind==="task"){const t=S.tasks[id];if(!t){closeDrawer();return}ro=!canChangeTask(t);title=t.title||"New task";
-    body=field("Task",inp("title",t.title),1)+field("Brand",`<select name="brand" id="d-brand">${brandList().map(b=>`<option value="${esc(b.id)}" ${b.id===t.brand?"selected":""}>${esc(b.name)}</option>`).join("")}</select>`)+field("Owner",sel("owner",activePeople(),t.owner))
+    body=field("Task",inp("title",t.title),1)+field("Brand",`<select name="brand" id="d-brand">${brandList().map(b=>`<option value="${esc(b.id)}" ${b.id===t.brand?"selected":""}>${esc(b.name)}</option>`).join("")}</select>`)+field("Owner",sel("owner",activePeople(),t.owner))+field("Team",sel("department",DEPTS(),depOf(t),false))
      +field("Status",sel("status",L("task_status"),t.status,false))+field("Priority",sel("priority",L("priority"),t.priority))+field("Deadline",inp("deadline",t.deadline,"date"))
      +(simple?"":field("Start date",inp("start",t.start,"date"))+field("Support team",inp("support",(t.support||[]).join(", ")),1,"Names separated by commas"))
      +field("Notes / next step",area("notes",t.notes),1)+(simple?"":field("Brief link",inp("brief_link",t.brief_link,"url"))+field("Creative link",inp("creative_link",t.creative_link,"url")))
@@ -625,7 +664,7 @@ const splitNames=v=>String(v||"").split(",").map(s=>s.trim()).filter(Boolean);
 async function drawerSave(){
   const{kind,id,extra}=drawerCtx;const fd={};for(const el of $("#dform").elements)if(el.name)fd[el.name]=el.value.trim();
   const diff=(cur,next)=>{const p={};for(const k of Object.keys(next)){if(JSON.stringify(cur[k]??"")!==JSON.stringify(next[k]??""))p[k]=next[k]}return p};
-  if(kind==="task"){const t=S.tasks[id];const next={title:fd.title,brand:fd.brand,owner:fd.owner,status:fd.status,priority:fd.priority,deadline:fd.deadline,notes:fd.notes};
+  if(kind==="task"){const t=S.tasks[id];const next={title:fd.title,brand:fd.brand,department:fd.department,owner:fd.owner,status:fd.status,priority:fd.priority,deadline:fd.deadline,notes:fd.notes};
     if(!simple)Object.assign(next,{start:fd.start,support:splitNames(fd.support),brief_link:fd.brief_link,creative_link:fd.creative_link});
     if(!next.title){toast("Give the task a name.");return}
     if(next.status==="Blocked"){const text=fd.blk_text!==undefined?fd.blk_text:(t.blocker&&t.blocker.text);const person=fd.blk_person!==undefined?fd.blk_person:(t.blocker&&t.blocker.person);
@@ -681,14 +720,15 @@ document.addEventListener("click",e=>{
   else if(act==="simple"){simple=a.dataset.v==="1";ls.set("vt-simple",simple?"1":"0");render()}
   else if(act==="tab"){brandTab=a.dataset.tab;ls.set("vt-tab",brandTab);render()}
   else if(act==="tflt"){flt.taskStatus=a.dataset.v;render()}
+  else if(act==="dept"){deptSel={bid:route.id,dep:a.dataset.dep};flt.taskStatus="open";render();$("#main").scrollTop=Math.min($("#main").scrollTop,$(".tabs").offsetTop-20)}
   else if(act==="allphases"){showAllPhases=!showAllPhases;render()}
   else if(act==="settab"){setTab=a.dataset.tab;render()}
   else if(act==="close")closeDrawer();
   else if(act==="mclose")$("#modal").hidden=true;
   else if(act==="dsave")drawerSave();
   else if(act==="del"){const{kind,id}=a.dataset;confirmBox("Delete this row? This cannot be undone.","Delete",()=>{closeDrawer();remove(kind==="task"?"tasks":"access",id,kind)})}
-  else if(act==="add-task"){const bid=a.dataset.id;formBox("New task",`<div class="f"><label for="n-title">Task</label><input id="n-title" name="title" required></div><div class="f"><label for="n-owner">Owner</label><select id="n-owner" name="owner">${opts(activePeople(),me)}</select></div><div class="f"><label for="n-dl">Deadline</label><input id="n-dl" name="deadline" type="date"></div><div class="f"><label for="n-pr">Priority</label><select id="n-pr" name="priority">${opts(L("priority"),"Medium")}</select></div>`,"Add task",
-    v=>{if(!v.title){toast("Give the task a name.");return false}create("tasks",null,{brand:bid,title:v.title,owner:v.owner,support:[],status:"Not Started",priority:v.priority,start:"",deadline:v.deadline,notes:"",brief_link:"",creative_link:"",blocker:null,source:"Added in tracker"},v.title)})}
+  else if(act==="add-task"){const bid=a.dataset.id,dep0=a.dataset.dep||"";formBox("New task",`<div class="f"><label for="n-title">Task</label><input id="n-title" name="title" required></div><div class="f"><label for="n-dep">Team</label><select id="n-dep" name="department">${opts(DEPTS(),dep0||DEPTS()[0],false)}</select></div><div class="f"><label for="n-owner">Owner</label><select id="n-owner" name="owner">${opts(activePeople(),me)}</select></div><div class="f"><label for="n-dl">Deadline</label><input id="n-dl" name="deadline" type="date"></div><div class="f"><label for="n-pr">Priority</label><select id="n-pr" name="priority">${opts(L("priority"),"Medium")}</select></div>`,"Add task",
+    v=>{if(!v.title){toast("Give the task a name.");return false}create("tasks",null,{brand:bid,department:v.department,title:v.title,owner:v.owner,support:[],status:"Not Started",priority:v.priority,start:"",deadline:v.deadline,notes:"",brief_link:"",creative_link:"",blocker:null,source:"Added in tracker"},v.title)})}
   else if(act==="add-access"){const bid=a.dataset.id;formBox("New platform access row",`<div class="f"><label for="n-b">Brand</label><select id="n-b" name="brand">${brandList().map(b=>`<option value="${esc(b.id)}" ${b.id===bid?"selected":""}>${esc(b.name)}</option>`).join("")}</select></div><div class="f"><label for="n-p">Platform</label><select id="n-p" name="platform">${opts(L("platform"),"")}</select></div><div class="f"><label for="n-o">Valerie owner</label><select id="n-o" name="owner">${opts(activePeople(),"")}</select></div>`,"Add row",
     v=>{if(!v.platform){toast("Pick a platform.");return false}create("access",null,{brand:v.brand,platform:v.platform,access_level:"TBC",needed_for:"",owner:v.owner,brand_contact:(S.brands[v.brand]||{}).founder||"",requested_date:"",deadline:"",status:"Not Requested",blocker:"",notes:""},bname(v.brand)+" "+v.platform)})}
   else if(act==="add-sow"){const bid=a.dataset.id;create("sow",bid,{brand:bid,owner:"",support:[],stage:"Not Started",start_date:"",draft_due:"",target_sign:"",blocker:"",next_step:"",sow_link:"",gf_link:"",gf_updated:false,batch:""},"SOW "+bname(bid))}

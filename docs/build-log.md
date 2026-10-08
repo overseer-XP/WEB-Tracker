@@ -14,3 +14,5 @@
 | 8 Oct 2026 | 1 | Published new page, seeded 323 records. Old board left untouched | |
 | 8 Oct 2026 | 1 | Browser test with migrated data: all 8 screens render, gate rule refuses 1A.05 with 3 open steps, one-tap status writes a change log entry, Blocked asks for a line and a person, 380 px has no sideways scroll | Proof |
 | 8 Oct 2026 | 1 | Access check: a member cannot change the step list (refused by the database) | Proof |
+| 8 Oct 2026 | 1 | Brand Tasks tab redesigned: one card per team (Brand, Creative, Performance, Creator Partnerships, Website SEO and CRM, Finance, Other) with open, blocked and late counts and the 3 most urgent tasks. One click opens a team's list; chips switch teams | Bespoke had 47 open tasks in one long table |
+| 8 Oct 2026 | 1 | Every task given a team by keyword rules in decisions.json (task name first, notes as fallback). Brand 86, Creative 35, Finance 23, Performance 15, Website/SEO/CRM 10, Creator Partnerships 8, Other 2. Team list editable in Settings > Lists | Starting point; leads correct in one click |

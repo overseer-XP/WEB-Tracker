@@ -106,6 +106,7 @@ put("config", "lists", {
     "platform": lists["Platform"], "access_level": lists["Access Level"],
     "access_status": lists["Access Status"], "sow_stage": lists["SOW Stage"],
     "checklist": lists["Checklist"], "bp_section": lists["BP Section"], "bp_status": lists["BP Status"],
+    "department": DEC.get("departments", []),
 })
 counts.append(("Lists", sum(len(v) for v in lists.values()) + len(team), 1, "All dropdowns in one config document"))
 STATUS = set(lists["Task Status"])
@@ -264,6 +265,17 @@ for r in range(4, ws.max_row + 1):
     if clean(ws[f"H{r}"].value) and not as_date(ws[f"H{r}"].value):
         log("Completed tasks", r, f"'{title}': deadline '{clean(ws[f'H{r}'].value)}' cleared", "Not a date")
     log("Completed tasks", r, f"'{title}': no brand", "Shown under Settings > Needs a brand")
+
+# Department: first matching keyword rule on the task name, then the notes. Rules live in decisions.json.
+RULES = [(dep, [re.compile(k if k.startswith("\\b") else re.escape(k)) for k in kws]) for dep, kws in DEC.get("department_rules", [])]
+dep_count = {}
+for t in tasks:
+    match = lambda text: next((dep for dep, pats in RULES if any(p.search(text.lower() + " ") for p in pats)), None)
+    t["department"] = match(t["title"]) or match(t["notes"]) or "Other"   # task name first, notes only as fallback
+    t["department_auto"] = True
+    dep_count[t["department"]] = dep_count.get(t["department"], 0) + 1
+log("All tasks", "-", "Department suggested by keyword: " + ", ".join(f"{k} {v}" for k, v in sorted(dep_count.items())),
+    "Leads can change any task's department in one click")
 
 n = {}
 for t in tasks:
