@@ -226,9 +226,9 @@ Every carried value records the old step code so it can be traced and reversed.
 | Q17 | Departments for release 1: just COE, or COE plus Finance / Ops / Creative as separate departments? | Department lead permissions |
 | Q18 | Email alerts: who gets them, how often (daily digest or instant)? Sender address on your domain? | Stage 6 |
 
-## 11. Update 8 Oct: decisions and new data
+## 10. Update 8 Oct: decisions and new data
 
-### 11.1 Decisions received
+### 10.1 Decisions received
 
 | Topic | Decision | Effect |
 | --- | --- | --- |
@@ -237,7 +237,7 @@ Every carried value records the old step code so it can be traced and reversed.
 | Current board | Not a real web app. Needs visual redesign, process remap and streamlining | See Q19 |
 | New brands | Wipes Well and PopCornaa have target dates | Add both. Answers Q13 |
 
-### 11.2 Which file feeds which table (proposal)
+### 10.2 Which file feeds which table (proposal)
 
 | Table | Source | Why |
 | --- | --- | --- |
@@ -250,7 +250,7 @@ Every carried value records the old step code so it can be traced and reversed.
 | sow: stage, target sign, next step | 8 Oct SOW update below | Newest |
 | steps_master | WIP Alt Master status tracker | Agreed target |
 
-### 11.3 SOW update of 8 Oct (to load at migration)
+### 10.3 SOW update of 8 Oct (to load at migration)
 
 | Brand | Target sign | Proposed SOW stage | Next steps |
 | --- | --- | --- | --- |
@@ -278,7 +278,7 @@ Every carried value records the old step code so it can be traced and reversed.
 
 The IDEO, MUMUK and MugWipes SOW links in the update point to the same documents as the SOW + GF Tracker.
 
-### 11.4 New questions
+### 10.4 New questions
 
 | # | Question |
 | --- | --- |
@@ -288,7 +288,7 @@ The IDEO, MUMUK and MugWipes SOW links in the update point to the same documents
 | Q22 | Ponlu has a 28 Oct target. Keep the SOW Blocked until the legal matter clears? |
 | Q23 | Founders and websites for Wipes Well and PopCornaa? |
 
-## 10. Not done or not verified
+## 11. Not done or not verified
 
 | Item | Status |
 | --- | --- |

@@ -7,4 +7,4 @@
 | 8 Oct 2026 | 0 | Found Master Project Flow holds newer tasks than the COE tabs | Needs a decision before migration |
 | 8 Oct 2026 | 0 | No app code written. Waiting on Stage 0 approval | Gate |
 | 8 Oct 2026 | 0 | Read the claude.ai board database (brands, tasks, sow, access, bps, config, checklist). Same as COE Excel, checklist empty | Answer Q3 |
-| 8 Oct 2026 | 0 | Recorded source-of-truth decision and the 8 Oct SOW target dates in the report, section 11 | User update |
+| 8 Oct 2026 | 0 | Recorded source-of-truth decision and the 8 Oct SOW target dates in the report, section 10 | User update |
