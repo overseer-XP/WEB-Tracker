@@ -226,11 +226,73 @@ Every carried value records the old step code so it can be traced and reversed.
 | Q17 | Departments for release 1: just COE, or COE plus Finance / Ops / Creative as separate departments? | Department lead permissions |
 | Q18 | Email alerts: who gets them, how often (daily digest or instant)? Sender address on your domain? | Stage 6 |
 
+## 11. Update 8 Oct: decisions and new data
+
+### 11.1 Decisions received
+
+| Topic | Decision | Effect |
+| --- | --- | --- |
+| Source of truth | "Valerie Brands - Project + Task Management" holds the newest data | Tasks load from Master Project Flow (167 rows), not the 20 COE tabs (98). Answers Q4 |
+| Claude artifact board | Read on 8 Oct. Same data as the COE Excel, no user edits, empty checklist | Nothing to export. Answers Q3. No old checklist progress exists, so the 36 to 61 mapping is for reference only. No progress can be lost |
+| Current board | Not a real web app. Needs visual redesign, process remap and streamlining | See Q19 |
+| New brands | Wipes Well and PopCornaa have target dates | Add both. Answers Q13 |
+
+### 11.2 Which file feeds which table (proposal)
+
+| Table | Source | Why |
+| --- | --- | --- |
+| tasks | Master Project Flow, plus the "Valerie" sheet for Valerie (Internal) | Newest |
+| Completed archive | "Completed tasks" sheet (same 8 rows) | Same data |
+| brands: name, founder, website, sprint_label | Master Project Flow | Newest |
+| brands: stage, next step | COE Brand Tracker, then updated from the SOW list below | Master Project Flow has no stage column |
+| platform_access, best_practices | COE tracker | Only source |
+| sow: link, GF link, GF updated, batch | SOW + GF Tracker | Only source |
+| sow: stage, target sign, next step | 8 Oct SOW update below | Newest |
+| steps_master | WIP Alt Master status tracker | Agreed target |
+
+### 11.3 SOW update of 8 Oct (to load at migration)
+
+| Brand | Target sign | Proposed SOW stage | Next steps |
+| --- | --- | --- | --- |
+| Bespoke | 9 Oct | Revisions (was Signed) | Ben and Talia confirm amendments. Confirm credit card for ad campaign and deposit for content shoot before weekly call. Other agreements close this week |
+| Seoul Tonic | 9 Oct | Revisions | Sophie sent questions. Ben confirms position, then Partnership section updated |
+| KNDZ | 16 Oct | Drafting | SOW set up in KNDZ channel. Noopur books Finance + Capital workshop this week. Ben calls founder |
+| Fourth Youth | 16 Oct | Drafting | SOW set up shortly. Noopur books Finance + Capital workshop this week. Ben calls founder |
+| IDEO | 16 Oct | Internal Review | Insert Partnership Alignment section. Revise GF. Ben calls founder |
+| MUMUK | 16 Oct | Internal Review | Same as IDEO |
+| MugWipes | 16 Oct | Internal Review | Same as IDEO |
+| Foulplay | 23 Oct | Not Started (restart) | Call with Ryan on new market focus. New document: Growth Assessment, GTM, BPs, Thinking Alignment, GF, Partnership |
+| Setosa Skincare | 23 Oct | Not Started | SOW set up shortly. Noopur books Finance + Capital workshop next week |
+| Sourced Food Co. | 23 Oct | Not Started | Same as Setosa |
+| MPG Gummies | 23 Oct | Not Started | Creative workshop this week |
+| Eco Protein | 23 Oct | Not Started | Creative workshop this week |
+| Tiny Wins | 23 Oct | Not Started | Creative workshop this week |
+| Ponlu | 28 Oct | Blocked (unchanged) | Confirm the legal matter is cleared |
+| Daisyface Skincare | 28 Oct | Not Started | |
+| ORA | 28 Oct | Not Started | |
+| CELF | 5 Nov | Not Started | |
+| Wipes Well (new) | 5 Nov | Not Started | |
+| PopCornaa (new) | 5 Nov | Not Started | |
+| Lona Beauty | TBC | Not Started | |
+| Imperial Sports | not given | Not Started | |
+
+The IDEO, MUMUK and MugWipes SOW links in the update point to the same documents as the SOW + GF Tracker.
+
+### 11.4 New questions
+
+| # | Question |
+| --- | --- |
+| Q19 | Redesign scope: keep the cream / Onest look and restyle, or start a fresh visual design? I suggest 2 mock screens (My tasks, Brand) on a phone for your yes before Stage 4 |
+| Q20 | Process remap: is the 61-step WIP Alt list final, or will the remap change it? The app will hold steps as data, so changes later need no rebuild |
+| Q21 | Bespoke goes from Signed to Revisions, so its health drops from Live. Correct? |
+| Q22 | Ponlu has a 28 Oct target. Keep the SOW Blocked until the legal matter clears? |
+| Q23 | Founders and websites for Wipes Well and PopCornaa? |
+
 ## 10. Not done or not verified
 
 | Item | Status |
 | --- | --- |
-| Current app data | Not seen. Only the code was in the file |
+| Current app data | Read on 8 Oct from the claude.ai board. Matches the COE Excel |
 | Live (today) values of the Excel formulas | Not recalculated. Only cached values from 29 Sep read |
 | Opened the old app in a browser | Not done. It only runs inside claude.ai, so it shows an "open from claude.ai" message elsewhere. Reviewed the code and CSS instead |
 | Excel row 5 to 200 blank rows | Checked by script. Only rows with a title or other typed value counted |
