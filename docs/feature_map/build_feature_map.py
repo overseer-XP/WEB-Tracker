@@ -20,7 +20,7 @@ from openpyxl.worksheet.hyperlink import Hyperlink
 OUT = sys.argv[1]
 SHOTS_DIR = sys.argv[2] if len(sys.argv) > 2 else None
 SHOTS = json.load(open(os.path.join(SHOTS_DIR, "shots.json"))) if SHOTS_DIR else []
-VERSION = "Tracker version 3 (13 Oct 2026)"
+VERSION = "Tracker version 4 (13 Oct 2026)"
 
 # --------------------------------------------------------------------------- 1. Features
 # ID, Area, Feature, What it does, Where to find it, Who uses it, Rules used, Data used, Simple view
@@ -31,13 +31,13 @@ FEATURES = [
     ("F04", "Navigation", "Simple / Full switch", "Simple hides detail people rarely need: support team, priority, start dates, brief and creative links, note previews, completed phases, step owner hints. Full shows everything. Members start in Simple, editors in Full. Each person's choice is remembered on their device.", "Top bar", "Everyone", "", "", "n/a"),
     ("F05", "Navigation", "You are (name picker)", "Each person picks their name once. The tracker remembers it for that person and uses it to build My tasks. It tries to guess from the claude.ai account name first.", "Top bar", "Everyone", "R15", "D08, D10", "Same"),
     ("F06", "Navigation", "Role tag", "Shows Lead / admin, Member or View only, so people know what they can change.", "Top bar", "Everyone", "R18", "", "Same"),
-    ("F10", "My tasks", "My tasks page", "Every open task and onboarding step where you are the owner or on the support team, across all brands. Grouped: Blocked, Late, Due in the next 3 days, Everything else. Default landing page for members.", "My tasks", "Team members, leads", "R01, R02, R15", "D02, D07, D08", "Hides role and priority"),
+    ("F10", "My tasks", "My tasks page", "Every open task and onboarding step where you are the owner or on the support team, across all brands. Grouped: Blocked, Late, Due in the next 3 days, Everything else, then Brands on hold. Default landing page for members.", "My tasks", "Team members, leads", "R01, R02, R15, R19", "D02, D07, D08", "Hides role and priority"),
     ("F11", "My tasks", "One-click status change", "Change a task or step status straight from the list. No form.", "Status pill on every row", "Everyone who can edit", "R16, R17", "D02, D07", "Same"),
     ("F12", "My tasks", "Blocker shown in red", "A blocked item shows the reason and who it is waiting on, in red under the title.", "My tasks, brand task list", "Everyone", "R16", "D02", "Same"),
-    ("F20", "Overview", "Summary tiles", "Five numbers: active brands, brands blocked, brands at risk, tasks late, SOWs to sign this week. Red or amber when not zero.", "Top of Overview", "Leadership, leads", "R01, R10", "D01, D02, D03", "Same"),
-    ("F21", "Overview", "SOW signing plan", "Every unsigned SOW placed in the week of its target sign date: This week, Next week, Week of ..., No date yet. Blocked SOWs keep their date and show a red Blocked tag.", "Overview, under the tiles", "Leadership, SOW owners", "R04, R13", "D03", "Same"),
+    ("F20", "Overview", "Summary tiles", "Five numbers: active brands, brands blocked, brands at risk, tasks late, SOWs to sign this week. Red or amber when not zero. Brands on hold are left out.", "Top of Overview", "Leadership, leads", "R01, R10", "D01, D02, D03", "Same"),
+    ("F21", "Overview", "SOW signing plan", "Every unsigned SOW placed in the week of its target sign date: This week, Next week, Week of ..., No date yet. Blocked SOWs keep their date and show a red Blocked tag. Brands on hold sit in their own On hold column.", "Overview, under the tiles", "Leadership, SOW owners", "R04, R13", "D03", "Same"),
     ("F22", "Overview", "All brands table", "One row per brand: stage, health, next step and lead. Full view adds open, blocked and late counts, platform access, SOW stage, target sign, BP progress and onboarding %.", "Overview, bottom", "Leadership, leads", "R01, R05, R06, R07, R08, R09, R10", "D01-D07", "5 columns only"),
-    ("F30", "Brand page", "Brand header", "Health with a one-line summary (open, blocked, late, onboarding %), facts strip (stage, brand lead, founder, SOW target sign, sprint) and the next step. Empty facts show an Add button for editors.", "Click any brand", "Everyone", "R10, R09", "D01, D03", "Same"),
+    ("F30", "Brand page", "Brand header", "Health with a one-line summary (open, blocked, late, onboarding %), facts strip (stage, brand lead, founder, SOW target sign, sprint) and the next step. Empty facts show an Add button for editors. Shows how many onboarding steps are blocked. A brand on hold shows a notice at the top.", "Click any brand", "Everyone", "R10, R09", "D01, D03", "Same"),
     ("F31", "Brand page", "Team cards", "The Tasks tab opens on one card per team (Brand, Creative, Performance, Creator Partnerships, Website SEO and CRM, Finance, Other). Each card: open count, blocked and late tags, progress bar, the 3 most urgent tasks.", "Brand > Tasks", "Leads, leadership", "R01, R12", "D02, D09", "Same"),
     ("F32", "Brand page", "Team task list", "Click a card to see only that team's tasks, most urgent first. Chips switch team in one click. Open / All toggle shows completed tasks.", "Brand > Tasks > a team", "Team members, leads", "R01, R12", "D02", "Hides support, priority, start, links"),
     ("F33", "Brand page", "Add task", "Name, team, owner, deadline, priority. Inside a team the team is filled in.", "Brand > Tasks", "Anyone who can edit", "", "D02", "Same"),
@@ -105,7 +105,7 @@ RULES = [
     ("R07", "BP overall", "Blocked if any section is Blocked. Complete if every counted section is Complete. Not Started if all are Not Started. In QA if any is In QA. Otherwise In Progress.", "F22, F41, F52", "COE Excel formula"),
     ("R08", "Open, blocked and late counts", "Open = tasks with a name that are not Complete. Blocked = status Blocked. Late = due flag Overdue.", "F02, F20, F22, F30, F31", "COE Excel formula"),
     ("R09", "Onboarding %", "Steps Done divided by (61 minus steps marked N/A). Optional steps count.", "F22, F30, F35", "COE Excel formula"),
-    ("R10", "Brand health", "Blocked if any blocked task, any blocked platform, SOW stage Blocked or BP overall Blocked. At Risk if any late task. Live if SOW is Signed. Otherwise On Track. Shown as a dot (square red for Blocked) plus the word.", "F02, F20, F22, F30", "COE Excel formula"),
+    ("R10", "Brand health", "On Hold first: if the brand is on hold (R19) health is On Hold (empty grey ring). Otherwise Blocked if any blocked task, any blocked platform, SOW stage Blocked or BP overall Blocked. At Risk if any late task. Live if SOW is Signed. Otherwise On Track. Shown as a dot (square red for Blocked) plus the word.", "F02, F20, F22, F30", "COE Excel formula"),
     ("R11", "Current phase", "The first phase that still has a required step not Done or N/A. Optional steps never hold a phase open.", "F35", "Brief section 6"),
     ("R12", "Team of a task", "Each task has one team. Tasks with no team or an old team name show under Other. New tasks get the team you are looking at. Existing tasks were sorted by keyword and can be moved in one click.", "F31, F32, F70", "Product owner, 8 Oct"),
     ("R13", "SOW signing week", "Target sign date placed in its Monday-to-Sunday week. Signed SOWs and internal brands are left out.", "F21", "Product owner, 8 Oct"),
@@ -113,6 +113,7 @@ RULES = [
     ("R15", "Matching you to work", "A task is yours if its owner or any support name equals your name or one of your other spellings in Settings > People. A step is yours if its owner matches.", "F05, F10, F60", "Built for this tracker"),
     ("R16", "Blocked needs a reason", "Setting Blocked asks for one line and a person. Leaving Blocked clears the blocker.", "F11, F12, F34, F38, F71, F81", "Brief section 7"),
     ("R17", "Gate rule", "A gate step cannot be Done while any earlier step that is not optional is still open (not Done or N/A).", "F35, F36, F37, F38, F71", "Brief section 6"),
+    ("R19", "On hold", "A brand is on hold when its stage is On Hold or it is marked paused. Then: health says On Hold; it leaves the active brands, blocked, at risk, tasks late and SOWs to sign tiles; the SOW signing plan shows it in an On hold column; the SOW tracker tags it and lists it last; the brand page shows a notice; My tasks puts its work in a 'Brands on hold' group. Its SOW stage is kept as it was, so nothing is lost when it comes back.", "F10, F20, F21, F22, F30, F50", "Product owner, 13 Oct"),
     ("R18", "Who can do what", "View only: read. Member: change status of own tasks (screen rule) and any step. Lead / admin: everything, including Settings, delete, add brand. Database: only editors write lists, people, steps.", "F06, F34, F80", "Brief section 8"),
 ]
 
@@ -138,7 +139,8 @@ DEPENDS = [
     ("A task status", "Open, blocked, late counts; brand health; menu dot; Overview tiles; team cards; My tasks; Excel export", "Low. Designed for daily use"),
     ("A task deadline", "Due flag, late count, health (At Risk), My tasks group, team card order", "Low"),
     ("A task team", "Which team card and list it appears in. Nothing else", "Low"),
-    ("A brand stage", "Where the brand sits in the left menu and Overview. Does NOT change health", "Low"),
+    ("A brand stage", "Where the brand sits in the left menu and Overview. Only On Hold changes health (see next row)", "Low"),
+    ("A brand stage to On Hold, or marking it paused", "Health On Hold; drops out of every Overview count and the signing plan weeks; My tasks moves its work to the bottom; SOW stage itself does not change", "Medium. Leadership stops seeing its late items"),
     ("SOW stage to Signed", "Brand health can become Live; SOW drops off the signing plan; due flag clears", "Medium. Check the SOW really is signed"),
     ("SOW stage to Blocked", "Brand health turns Blocked; red tag on the signing plan", "Medium. Needs a blocker line"),
     ("SOW target sign date", "Signing plan week, due flag, Overview 'to sign this week' tile", "Low"),
@@ -201,6 +203,7 @@ HISTORY = [
     ("8 Oct 2026", "Editable Excel copy and import", "F70, F71"),
     ("13 Oct 2026", "Feature map workbook (this file)", "n/a"),
     ("13 Oct 2026", "Pictures added: 25 tagged screenshots, every feature row links to its screen", "n/a"),
+    ("13 Oct 2026", "Fix: on hold now shows everywhere. Brand stage On Hold or paused flag counts as on hold on every screen (MugWipes still showed Internal Review in the signing plan). Brand header counts blocked steps. 33-check update test added", "R10, R19, F10, F20, F21, F30, F50"),
 ]
 
 # --------------------------------------------------------------------------- build

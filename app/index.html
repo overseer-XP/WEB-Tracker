@@ -53,6 +53,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .dot.h-AtRisk{background:#E08A00}
 .dot.h-OnTrack{background:#3B82C4}
 .dot.h-Live{background:#2F9E58}
+.dot.h-OnHold{background:transparent;box-shadow:inset 0 0 0 2px var(--faint)}
 /* top */
 .mainwrap{display:flex;flex-direction:column;min-width:0;height:100%}
 .topbar{display:flex;align-items:center;gap:12px;padding:10px 28px;border-bottom:1px solid var(--line);background:var(--panel);flex-wrap:wrap}
@@ -290,6 +291,10 @@ const hdot=h=>`<span class="dot h-${key(h)}" aria-hidden="true"></span>`;
 const brandList=()=>Object.entries(S.brands).map(([id,b])=>Object.assign({id},b)).sort((a,b)=>(a.order||999)-(b.order||999)||String(a.name).localeCompare(b.name));
 const bname=id=>(S.brands[id]&&S.brands[id].name)||"";
 const isInternal=b=>(b&&b.stage)==="Internal";
+/* on hold = brand stage On Hold or the Paused flag. Every screen uses this one test. */
+const onHold=b=>!!b&&(b.stage==="On Hold"||!!b.paused);
+const holdOf=bid=>onHold(S.brands[bid]);
+const stepBlocks=bid=>Object.values((S.bsteps[bid]&&S.bsteps[bid].s)||{}).filter(x=>x&&x.blocker&&x.blocker.text&&!["Done","N/A"].includes(x.status)).length;
 const stepsSorted=()=>Object.entries(S.steps).map(([id,s])=>Object.assign({id},s)).sort((a,b)=>a.order-b.order);
 function phases(){const out=[];for(const s of stepsSorted()){let p=out.find(x=>x.code===s.phase);if(!p){p={code:s.phase,name:s.phase_name,steps:[]};out.push(p)}p.steps.push(s)}return out}
 const stepState=(bid,code)=>((S.bsteps[bid]&&S.bsteps[bid].s)||{})[code]||{};
@@ -315,9 +320,10 @@ function roll(bid){
   const acc=accessRoll(bid);const s=S.sow[bid];const sow=isInternal(b)?"N/A":(s?(s.stage||"Not Started"):"Not Set");
   const bp=bpRoll(bid);const pct=onboarding(bid);
   let health="On Track";
-  if(blocked>0||acc.summary==="Blocked"||sow==="Blocked"||(bp&&bp.overall==="Blocked"))health="Blocked";
+  if(onHold(b))health="On Hold";
+  else if(blocked>0||acc.summary==="Blocked"||sow==="Blocked"||(bp&&bp.overall==="Blocked"))health="Blocked";
   else if(overdue>0)health="At Risk";else if(sow==="Signed")health="Live";
-  return{open,blocked,overdue,acc,sow,sowRow:s||{},bp,pct,health}}
+  return{open,blocked,overdue,acc,sow,sowRow:s||{},bp,pct,health,hold:onHold(b),stepBlocked:stepBlocks(bid)}}
 
 /* ---------- writes + change log ---------- */
 const wq={};
@@ -415,16 +421,16 @@ function statusSel(kind,id,val,list,enabled,extra){return`<select class="ps ${cl
 
 /* ---------- My tasks ---------- */
 function vMine(){
-  let h=`<h1>My tasks</h1><p class="sub">Your open tasks and onboarding steps across every brand. Blocked first, then late, then due soon.</p>`;
+  let h=`<h1>My tasks</h1><p class="sub">Your open tasks and onboarding steps across every brand. Blocked first, then late, then due soon. Work for brands on hold is at the bottom.</p>`;
   if(!me)return h+`<div class="card"><p style="margin-top:0">Pick your name to see your work.</p><select class="btn" data-act="who" aria-label="Your name"><option value="">Pick your name</option>${activePeople().map(p=>`<option>${esc(p)}</option>`).join("")}</select></div>`;
   const t0=performance.now();
   const items=myItems();
-  const g={b:[],o:[],s:[],r:[]};
-  for(const it of items){if(it.blocked)g.b.push(it);else if(it.flag==="Overdue")g.o.push(it);else if(it.flag==="Due Soon")g.s.push(it);else g.r.push(it)}
+  const g={b:[],o:[],s:[],r:[],h:[]};
+  for(const it of items){if(holdOf(it.brand))g.h.push(it);else if(it.blocked)g.b.push(it);else if(it.flag==="Overdue")g.o.push(it);else if(it.flag==="Due Soon")g.s.push(it);else g.r.push(it)}
   const sortD=a=>a.sort((x,y)=>String(x.due||"9999").localeCompare(String(y.due||"9999")));
   const sec=(title,arr,cl)=>arr.length?`<section class="group"><h2>${esc(title)} <span class="count">${arr.length}</span></h2>${sortD(arr).map(it=>itemHtml(it,cl)).join("")}</section>`:"";
   if(!items.length)return h+`<div class="tw"><div class="empty">Nothing open for ${esc(me)}. When a task or step is assigned to you it shows here.</div></div>`;
-  h+=sec("Blocked",g.b,"blocked")+sec("Late",g.o,"late")+sec("Due in the next 3 days",g.s,"soon")+sec("Everything else",g.r,"");
+  h+=sec("Blocked",g.b,"blocked")+sec("Late",g.o,"late")+sec("Due in the next 3 days",g.s,"soon")+sec("Everything else",g.r,"")+sec("Brands on hold",g.h,"");
   h+=`<p class="faint" style="font-size:12px">Built in ${Math.round(performance.now()-t0)} ms.</p>`;
   return h}
 function itemHtml(it,cl){
@@ -441,30 +447,32 @@ function itemHtml(it,cl){
 function weekStart(d){const x=new Date(d);const wd=(x.getDay()+6)%7;x.setDate(x.getDate()-wd);x.setHours(0,0,0,0);return x}
 function vOverview(){
   const bs=brandList();const R={};bs.forEach(b=>R[b.id]=roll(b.id));
-  const active=bs.filter(b=>!b.paused&&!isInternal(b));
+  const active=bs.filter(b=>!onHold(b)&&!isInternal(b));
   const blocked=active.filter(b=>R[b.id].health==="Blocked").length,risk=active.filter(b=>R[b.id].health==="At Risk").length;
-  const od=bs.reduce((a,b)=>a+R[b.id].overdue,0);
+  const od=bs.filter(b=>!onHold(b)).reduce((a,b)=>a+R[b.id].overdue,0);
   const ws=weekStart(today()),we=new Date(ws);we.setDate(we.getDate()+7);
-  const signWeek=bs.filter(b=>{const d=parseD((S.sow[b.id]||{}).target_sign);return d&&d>=ws&&d<we&&(S.sow[b.id]||{}).stage!=="Signed"}).length;
-  let h=`<h1>Overview</h1><p class="sub">Every brand from first call to signed SOW. Health comes from tasks, platform access, SOW and Best Practices.</p>
+  const signWeek=bs.filter(b=>{const d=parseD((S.sow[b.id]||{}).target_sign);return d&&d>=ws&&d<we&&(S.sow[b.id]||{}).stage!=="Signed"&&!onHold(b)}).length;
+  let h=`<h1>Overview</h1><p class="sub">Every brand from first call to signed SOW. Health comes from tasks, platform access, SOW and Best Practices. Brands on hold are left out of the counts.</p>
   <div class="tiles"><div class="tile"><b>${active.length}</b><span>active brands</span></div><div class="tile ${blocked?"bad":""}"><b>${blocked}</b><span>brands blocked</span></div><div class="tile ${risk?"warn":""}"><b>${risk}</b><span>brands at risk</span></div><div class="tile ${od?"bad":""}"><b>${od}</b><span>tasks late</span></div><div class="tile"><b>${signWeek}</b><span>SOWs to sign this week</span></div></div>`;
   h+=`<h2>SOW signing plan</h2>`+sowPlan(bs,R);
   h+=`<h2>All brands</h2><div class="tw"><table><thead><tr><th>Brand</th><th>Stage</th><th>Health</th>${simple?"":`<th class="num">Open</th><th class="num">Blocked</th><th class="num">Late</th><th>Platform access</th><th>SOW</th><th>Target sign</th><th>BPs</th><th>Onboarding</th>`}<th>Next step</th><th>Owner</th></tr></thead><tbody>`;
   for(const b of bs){const r=R[b.id];const s=r.sowRow;
-    h+=`<tr class="click" data-act="nav" data-to="brand-${esc(b.id)}"><td><a class="bname" href="#brand-${esc(b.id)}">${esc(b.name)}</a>${b.paused?` <span class="tag">Paused</span>`:""}${b.restricted?` <span class="tag warn">Restricted</span>`:""}</td><td>${esc(b.stage)}</td><td><span class="row" style="gap:6px;flex-wrap:nowrap">${hdot(r.health)}${esc(r.health)}</span></td>
+    h+=`<tr class="click" data-act="nav" data-to="brand-${esc(b.id)}"><td><a class="bname" href="#brand-${esc(b.id)}">${esc(b.name)}</a>${b.paused&&b.stage!=="On Hold"?` <span class="tag">On hold</span>`:""}${b.restricted?` <span class="tag warn">Restricted</span>`:""}</td><td>${esc(b.stage)}</td><td><span class="row" style="gap:6px;flex-wrap:nowrap">${hdot(r.health)}${esc(r.health)}</span></td>
     ${simple?"":`<td class="num">${r.open}</td><td class="num">${r.blocked?`<span class="hot">${r.blocked}</span>`:0}</td><td class="num">${r.overdue?`<span class="hot">${r.overdue}</span>`:0}</td><td>${pill(r.acc.summary)} <span class="faint">${esc(r.acc.text)}</span></td><td>${pill(r.sow)}</td><td>${targetHtml(s)}</td><td>${r.bp?pill(r.bp.overall)+` <span class="faint">${Math.round(r.bp.progress*100)}%</span>`:`<span class="faint">None</span>`}</td><td><span class="bar"><i style="width:${Math.round(r.pct*100)}%"></i></span> <span class="faint">${Math.round(r.pct*100)}%</span></td>`}
     <td class="clip muted"><span class="clamp" title="${esc(b.next_step||"")}">${esc(b.next_step||"")}</span></td><td>${b.lead?esc(b.lead):`<span class="faint">No lead yet</span>`}</td></tr>`}
   return h+`</tbody></table></div>`}
-function targetHtml(s){if(!s||!s.target_sign)return s&&s.stage!=="Signed"?`<span class="faint">No date</span>`:"";const blocked=s.stage==="Blocked";
-  return`<span class="row" style="gap:6px;flex-wrap:nowrap;white-space:nowrap"><span>${esc(fmtD(s.target_sign,true))}</span>${blocked?`<span class="tag bad">Blocked</span>`:dueHtml(s.target_sign,s.stage==="Signed")?`<span class="pill ${cls(sowDue(s))}">${esc(sowDue(s))}</span>`:""}</span>`}
+function targetHtml(s){const hold=s&&holdOf(s.brand);
+  if(!s||!s.target_sign)return hold?`<span class="tag">On hold</span>`:s&&s.stage!=="Signed"?`<span class="faint">No date</span>`:"";const blocked=s.stage==="Blocked";
+  return`<span class="row" style="gap:6px;flex-wrap:nowrap;white-space:nowrap"><span${hold?` class="faint"`:""}>${esc(fmtD(s.target_sign,true))}</span>${hold?`<span class="tag">On hold</span>`:blocked?`<span class="tag bad">Blocked</span>`:dueHtml(s.target_sign,s.stage==="Signed")?`<span class="pill ${cls(sowDue(s))}">${esc(sowDue(s))}</span>`:""}</span>`}
 function sowPlan(bs,R){
-  const buckets={};const nodate=[];
-  for(const b of bs){if(isInternal(b))continue;const s=S.sow[b.id]||{};if(s.stage==="Signed")continue;const d=parseD(s.target_sign);if(!d){nodate.push(b);continue}const k=weekStart(d).getTime();(buckets[k]=buckets[k]||[]).push(b)}
+  const buckets={};const nodate=[];const held=[];
+  for(const b of bs){if(isInternal(b))continue;const s=S.sow[b.id]||{};if(s.stage==="Signed")continue;if(onHold(b)){held.push(b);continue}const d=parseD(s.target_sign);if(!d){nodate.push(b);continue}const k=weekStart(d).getTime();(buckets[k]=buckets[k]||[]).push(b)}
   const ws=weekStart(today()).getTime();const keys=Object.keys(buckets).map(Number).sort((a,b)=>a-b);
   const label=k=>{const diff=Math.round((k-ws)/(7*864e5));if(diff<0)return"<b>Past target</b>";if(diff===0)return"<b>This week</b>";if(diff===1)return"<b>Next week</b>";return"Week of <b>"+esc(new Date(k).toLocaleDateString("en-GB",{day:"numeric",month:"short"}))+"</b>"};
   const chip=b=>{const s=S.sow[b.id]||{};return`<a class="chip" href="#brand-${esc(b.id)}">${hdot(R[b.id].health)}<span class="nm">${esc(b.name)}</span>${s.stage==="Blocked"?`<span class="tag bad">Blocked</span>`:`<span class="faint" style="font-size:12px">${esc(s.stage||"Not Started")}</span>`}</a>`};
   let h=`<div class="plan">`;for(const k of keys)h+=`<div class="week"><h4>${label(k)}</h4>${buckets[k].map(chip).join("")}</div>`;
   if(nodate.length)h+=`<div class="week"><h4><b>No date yet</b></h4>${nodate.map(chip).join("")}</div>`;
+  if(held.length)h+=`<div class="week"><h4><b>On hold</b></h4>${held.map(b=>`<a class="chip" href="#brand-${esc(b.id)}">${hdot("On Hold")}<span class="nm">${esc(b.name)}</span><span class="faint" style="font-size:12px">SOW ${esc((S.sow[b.id]||{}).stage||"Not Started")}</span></a>`).join("")}</div>`;
   return h+`</div>`}
 
 /* ---------- Brand ---------- */
@@ -473,8 +481,8 @@ function vBrand(id){
   const r=roll(id);const ed=canEdit&&canWrite;
   const miss=(f,l)=>ed?`<button class="missing" data-act="open" data-kind="brand" data-id="${esc(id)}">Add ${esc(l)}</button>`:`<span class="faint">Not set</span>`;
   const fact=(l,v,f)=>`<div class="fact"><label>${esc(l)}</label><div class="v">${v||miss(f,l.toLowerCase())}</div></div>`;
-  let h=`<div class="bhead"><div><h1>${esc(b.name)} ${b.paused?`<span class="tag">Paused</span>`:""} ${b.restricted?`<span class="tag warn" title="Sensitive. Keep notes to links and facts.">Restricted</span>`:""}</h1>
-   <div class="row" style="gap:8px">${hdot(r.health)}<b>${esc(r.health)}</b><span class="muted">${r.open} open, ${r.blocked} blocked, ${r.overdue} late</span><span class="muted">Onboarding ${Math.round(r.pct*100)}%</span></div></div>
+  let h=(r.hold?`<div class="notice">${esc(b.name)} is on hold${b.paused&&b.stage!=="On Hold"?" (marked paused)":""}. Its tasks, SOW and late items are left out of the Overview counts and the SOW signing plan.${ed?" Change the stage or untick Paused in Edit details to bring it back.":""}</div>`:"")+`<div class="bhead"><div><h1>${esc(b.name)} ${b.paused&&b.stage!=="On Hold"?`<span class="tag">On hold</span>`:""} ${b.restricted?`<span class="tag warn" title="Sensitive. Keep notes to links and facts.">Restricted</span>`:""}</h1>
+   <div class="row" style="gap:8px">${hdot(r.health)}<b>${esc(r.health)}</b><span class="muted">${r.open} open, ${r.blocked} blocked, ${r.overdue} late${r.stepBlocked?`, ${r.stepBlocked} step${r.stepBlocked>1?"s":""} blocked`:""}</span><span class="muted">Onboarding ${Math.round(r.pct*100)}%</span></div></div>
    <div class="row">${b.website?`<a class="btn" href="${esc(b.website)}" target="_blank" rel="noopener">Website</a>`:""}${ed?`<button class="btn" data-act="open" data-kind="brand" data-id="${esc(id)}">Edit details</button>`:""}</div></div>
    <div class="facts">${fact("Stage",esc(b.stage),"stage")}${fact("Brand lead",esc(b.lead),"lead")}${fact("Founder",esc(b.founder),"founder")}${fact("SOW target sign",r.sowRow.target_sign?targetHtml(r.sowRow):isInternal(b)?"N/A":"","target")}${fact("Sprint",esc(b.sprint_label),"sprint")}</div>
    <div class="next"><label>Next step</label><div>${b.next_step?esc(b.next_step):miss("next_step","next step")}</div></div>`;
@@ -569,9 +577,9 @@ function bpCard(bid){
 /* ---------- SOW, Access, BP screens ---------- */
 function vSow(){
   const bs=brandList().filter(b=>!isInternal(b));
-  const rows=bs.map(b=>({b,s:S.sow[b.id]||{}})).sort((x,y)=>String(x.s.target_sign||"9999").localeCompare(String(y.s.target_sign||"9999")));
-  let h=`<h1>SOW tracker</h1><p class="sub">One SOW per brand, sorted by target sign date. A blocked SOW keeps its target date and is marked Blocked.</p><div class="tw"><table><thead><tr><th>Brand</th><th>Stage</th><th>Owner</th><th>Target sign</th>${simple?"":"<th>Draft due</th><th>Batch</th>"}<th>Documents</th><th>Blocker</th><th>Next step</th></tr></thead><tbody>`;
-  for(const{b,s}of rows){h+=`<tr class="click" data-act="open" data-kind="sow" data-id="${esc(b.id)}"><td><a class="bname" href="#brand-${esc(b.id)}">${esc(b.name)}</a></td><td>${statusSel("sow",b.id,s.stage||"Not Started",L("sow_stage"),canEdit&&canWrite)}</td><td>${esc(s.owner)||`<span class="faint">Not set</span>`}</td><td>${targetHtml(s)}</td>
+  const rows=bs.map(b=>({b,s:Object.assign({brand:b.id},S.sow[b.id]||{})})).sort((x,y)=>(onHold(x.b)?1:0)-(onHold(y.b)?1:0)||String(x.s.target_sign||"9999").localeCompare(String(y.s.target_sign||"9999")));
+  let h=`<h1>SOW tracker</h1><p class="sub">One SOW per brand, sorted by target sign date. A blocked SOW keeps its target date and is marked Blocked. Brands on hold are at the bottom.</p><div class="tw"><table><thead><tr><th>Brand</th><th>Stage</th><th>Owner</th><th>Target sign</th>${simple?"":"<th>Draft due</th><th>Batch</th>"}<th>Documents</th><th>Blocker</th><th>Next step</th></tr></thead><tbody>`;
+  for(const{b,s}of rows){h+=`<tr class="click" data-act="open" data-kind="sow" data-id="${esc(b.id)}"><td><a class="bname" href="#brand-${esc(b.id)}">${esc(b.name)}</a>${onHold(b)?` <span class="tag">Brand on hold</span>`:""}</td><td>${statusSel("sow",b.id,s.stage||"Not Started",L("sow_stage"),canEdit&&canWrite)}</td><td>${esc(s.owner)||`<span class="faint">Not set</span>`}</td><td>${targetHtml(s)}</td>
    ${simple?"":`<td>${dueHtml(s.draft_due,false)||esc(fmtD(s.draft_due))}</td><td class="muted">${esc(s.batch)}</td>`}<td style="white-space:nowrap">${s.sow_link?`<a href="${esc(s.sow_link)}" target="_blank" rel="noopener">SOW</a> `:""}${s.gf_link?`<a href="${esc(s.gf_link)}" target="_blank" rel="noopener">GF</a>${s.gf_updated?` <span class="tag">Updated</span>`:""}`:""}${!s.sow_link&&!s.gf_link?`<span class="faint">None yet</span>`:""}</td>
    <td class="muted clip">${esc(s.blocker)}</td><td class="muted clip">${esc(s.next_step)}</td></tr>`}
   return h+`</tbody></table></div>`}
@@ -633,7 +641,7 @@ function openDrawer(kind,id,extra,refresh){
   else if(kind==="brand"){const b=S.brands[id];if(!b){closeDrawer();return}ro=!(canEdit&&canWrite);title=b.name;
     body=field("Name",inp("name",b.name))+field("Stage",sel("stage",L("stage"),b.stage,false))+field("Brand lead",sel("lead",activePeople(),b.lead))+field("Founder",inp("founder",b.founder))+field("Website",inp("website",b.website,"url"),1)
      +field("Sprint",inp("sprint_label",b.sprint_label),1)+field("Next step",area("next_step",b.next_step),1)
-     +field("Paused",`<select name="paused" id="d-paused">${opts(["No","Yes"],b.paused?"Yes":"No",false)}</select>`)+field("Restricted",`<select name="restricted" id="d-restricted">${opts(["No","Yes"],b.restricted?"Yes":"No",false)}</select>`,0,"Marks the brand as sensitive. Access limits come with the full build")}
+     +field("On hold (paused)",`<select name="paused" id="d-paused">${opts(["No","Yes"],b.paused?"Yes":"No",false)}</select>`)+field("Restricted",`<select name="restricted" id="d-restricted">${opts(["No","Yes"],b.restricted?"Yes":"No",false)}</select>`,0,"Marks the brand as sensitive. Access limits come with the full build")}
   else if(kind==="step"){const s=S.steps[extra];const st=stepState(id,extra);if(!s){closeDrawer();return}title=s.code+" "+s.name;
     body=`<p class="muted w" style="grid-column:1/-1;margin:0">${esc(bname(id))}${s.is_gate?" · Gate step":""}${s.is_optional?" · Optional":""}${s.default_owner?" · Usually "+esc(s.default_owner):""}</p>`
      +field("Status",sel("status",L("checklist"),st.status||"Not Started",false))+field("Owner",sel("owner",activePeople(),st.owner))+field("Deadline",inp("deadline",st.deadline,"date"))

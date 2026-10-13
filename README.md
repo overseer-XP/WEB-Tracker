@@ -42,3 +42,12 @@ These match the Supabase tables planned in the brief, so the later move is a cop
 | 4. Apply | Claude | Send each `batch_N.json` as one database batch. Every update is pinned to the live version, so an edit made in the app after step 3 makes the batch fail instead of being overwritten |
 
 Only cells that differ from the export snapshot (hidden `_sync` sheet) are written. A field changed both in Excel and in the app keeps the app value and is listed as a conflict. Invalid values, bad dates and gate steps marked Done too early are skipped and listed.
+
+## Tests
+
+```
+python3 -I docs/feature_map/make_preview.py .live app/index.html .shots/preview.html
+node tests/propagation.test.js .shots/preview.html
+```
+
+Runs the real app on a copy of exported data and checks that every kind of update reaches every screen it should. Run it before publishing a new version.
