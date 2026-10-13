@@ -112,7 +112,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
 
   // 9. Platform access Blocked turns brand Blocked (Bespoke row)
   await go('access'); await p.selectOption('select[data-kind=access]', 'Blocked'); await p.waitForTimeout(250);
-  if (await p.$('#bform')) { await p.fill('#b-text', 'Login not shared'); await p.selectOption('#b-person', 'Ashraf'); await p.click('#bform button[type=submit]'); await p.waitForTimeout(300) }
+  if (await p.$('#bform')) { await p.fill('#b-text', 'Login not shared'); await p.selectOption('#b-person', 'Ash Ghorab'); await p.click('#bform button[type=submit]'); await p.waitForTimeout(300) }
   await go('overview');
   check('Platform access', 'Access column says Blocked', /Blocked/.test((await overviewRow('Bespoke')).split('Live')[1] || ''));
 

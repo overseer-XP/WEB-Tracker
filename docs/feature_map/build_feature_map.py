@@ -189,7 +189,6 @@ GAPS = [
     ("Unconfirmed people", "12 names from the Excel not confirmed (team, external or same person).", "Settings > People", "Medium"),
     ("Team sorting", "Tasks were sorted into teams by keyword. Some will be wrong.", "Leads correct in one click", "Low"),
     ("Onboarding progress", "Every brand starts at 0%. No ticks existed in the old files.", "Leads tick steps or use Mark phase done", "Medium"),
-    ("Ashraf and Ash Ghorab", "Ashraf owns 3 paid tasks and the KNDZ platform row. May be the same person as Ash Ghorab. Both kept.", "Product owner to confirm", "Low"),
     ("Phone layout", "Works at phone width but designed for desktop first.", "Later stage", "Low"),
     ("Monday.com", "No step in the new checklist links to Monday.com yet.", "Out of scope for release 1", "Low"),
     ("Own platform", "Runs as a claude.ai page. Supabase, own domain and sign-in come later.", "Stage 1 of the original plan", "High"),
@@ -205,6 +204,7 @@ HISTORY = [
     ("13 Oct 2026", "Pictures added: 25 tagged screenshots, every feature row links to its screen", "n/a"),
     ("13 Oct 2026", "Fix: on hold now shows everywhere. Brand stage On Hold or paused flag counts as on hold on every screen (MugWipes still showed Internal Review in the signing plan). Brand header counts blocked steps. 33-check update test added", "R10, R19, F10, F20, F21, F30, F50"),
     ("13 Oct 2026", "Team Excel import (COE tracker 13 Oct + paid channels sheet): 61-step list replaced by the team's 53-step checklist with every tick loaded, Noor Squares added, 21 brand, 36 task, 40 SOW and 9 BP field updates, 8 new tasks, 45 paid platform rows (owner Ash Ghorab), GF status shown on SOW screens. Version 5", "F03, F35, F36, F40, F50, D03, D06"),
+    ("13 Oct 2026", "Ashraf merged into Ash Ghorab (same person): 4 tasks and the KNDZ access row moved, Ashraf kept as an alias. Amazon rows: Pradnya's N/A means access is missing", "F60, F50"),
 ]
 
 # --------------------------------------------------------------------------- build

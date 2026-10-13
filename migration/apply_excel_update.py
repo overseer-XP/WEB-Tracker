@@ -248,7 +248,6 @@ if ash:
             p["active"] = False
     put("config", "people", "update", {"people": ppl["people"]})
     applied.append({"area": "People", "what": "Ash Ghorab", "detail": "Marked as team. Plain 'Ash' retired (it meant Ashna or Ash Ghorab)"})
-    questions.append("Is Ashraf the same person as Ash Ghorab? Ashraf owns 3 paid tasks and the KNDZ platform row. Both names kept for now.")
 
 # ---------- 6. Paid channels sheet ----------
 if paid_p != "-":
@@ -303,7 +302,7 @@ if paid_p != "-":
             if noop:
                 note += " Noopur's notes: %s." % noop
             if k == "amazon" and status == "Not Requested" and row.get("D", "").upper() == "N/A":
-                note += " Pradnya's column says N/A: confirm if Amazon is needed."
+                note += " Pradnya's N/A means no access yet, so Amazon access is missing."
             aid = existing[bid].get(plat)
             if aid:
                 a = L["access"][aid]
@@ -328,7 +327,6 @@ if paid_p != "-":
         if a["platform"] in ps["placeholders_to_retire"]:
             put("access", aid, "update", {"status": "Not Needed", "notes": (a.get("notes", "") + " Replaced by one row per platform from the paid channels sheet, 13 Oct.").strip()})
             applied.append({"area": "Platform access", "what": "%s %s" % (L["brands"].get(a["brand"], {}).get("name", a["brand"]), a["platform"]), "detail": "Placeholder retired: Not Needed"})
-    questions.append("Pradnya's column says N/A for Amazon on several brands while Ash's notes say Amazon access is missing. Is Amazon not needed for them? Rows are set to Not Requested with a note.")
 
 # ---------- 7. Write files and batches ----------
 ops = []
