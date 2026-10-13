@@ -1,0 +1,309 @@
+"""Build the tracker feature map workbook.
+
+Usage: python3 -I docs/feature_map/build_feature_map.py docs/feature_map/Valerie_COE_Tracker_Feature_Map.xlsx
+
+Edit the tables below when the tracker changes, then run it again.
+Every feature, rule and field has an ID (F.., R.., D..) so the sheets can point at each other.
+"""
+import sys
+
+from openpyxl import Workbook
+from openpyxl.styles import Alignment, Font, PatternFill, Border, Side
+from openpyxl.utils import get_column_letter
+from openpyxl.worksheet.datavalidation import DataValidation
+
+OUT = sys.argv[1]
+VERSION = "Tracker version 3 (13 Oct 2026)"
+
+# --------------------------------------------------------------------------- 1. Features
+# ID, Area, Feature, What it does, Where to find it, Who uses it, Rules used, Data used, Simple view
+FEATURES = [
+    ("F01", "Navigation", "Left menu", "Links to My tasks, Overview, SOW tracker, Platform access, Best Practices and Settings (Settings only for editors). My tasks shows how many open items you have.", "Left side of every screen", "Everyone", "R14", "D01, D09", "Same"),
+    ("F02", "Navigation", "Brand list in the menu", "Every brand grouped by stage, latest stage first (Live, SOW, Best Practices, Founder Workshops, Setup, Qualification, then On Hold and Internal). Each brand has a health dot and its open task count. Paused brands carry a Paused tag.", "Left menu, under the links", "Everyone", "R10, R11", "D01, D02", "Same"),
+    ("F03", "Navigation", "Add brand", "Creates a brand with a name and stage. Also creates its empty SOW row and its 61 onboarding steps.", "Bottom of the left menu", "Editors", "", "D01, D03, D07", "Same"),
+    ("F04", "Navigation", "Simple / Full switch", "Simple hides detail people rarely need: support team, priority, start dates, brief and creative links, note previews, completed phases, step owner hints. Full shows everything. Members start in Simple, editors in Full. Each person's choice is remembered on their device.", "Top bar", "Everyone", "", "", "n/a"),
+    ("F05", "Navigation", "You are (name picker)", "Each person picks their name once. The tracker remembers it for that person and uses it to build My tasks. It tries to guess from the claude.ai account name first.", "Top bar", "Everyone", "R15", "D08, D10", "Same"),
+    ("F06", "Navigation", "Role tag", "Shows Lead / admin, Member or View only, so people know what they can change.", "Top bar", "Everyone", "R18", "", "Same"),
+    ("F10", "My tasks", "My tasks page", "Every open task and onboarding step where you are the owner or on the support team, across all brands. Grouped: Blocked, Late, Due in the next 3 days, Everything else. Default landing page for members.", "My tasks", "Team members, leads", "R01, R02, R15", "D02, D07, D08", "Hides role and priority"),
+    ("F11", "My tasks", "One-click status change", "Change a task or step status straight from the list. No form.", "Status pill on every row", "Everyone who can edit", "R16, R17", "D02, D07", "Same"),
+    ("F12", "My tasks", "Blocker shown in red", "A blocked item shows the reason and who it is waiting on, in red under the title.", "My tasks, brand task list", "Everyone", "R16", "D02", "Same"),
+    ("F20", "Overview", "Summary tiles", "Five numbers: active brands, brands blocked, brands at risk, tasks late, SOWs to sign this week. Red or amber when not zero.", "Top of Overview", "Leadership, leads", "R01, R10", "D01, D02, D03", "Same"),
+    ("F21", "Overview", "SOW signing plan", "Every unsigned SOW placed in the week of its target sign date: This week, Next week, Week of ..., No date yet. Blocked SOWs keep their date and show a red Blocked tag.", "Overview, under the tiles", "Leadership, SOW owners", "R04, R13", "D03", "Same"),
+    ("F22", "Overview", "All brands table", "One row per brand: stage, health, next step and lead. Full view adds open, blocked and late counts, platform access, SOW stage, target sign, BP progress and onboarding %.", "Overview, bottom", "Leadership, leads", "R01, R05, R06, R07, R08, R09, R10", "D01-D07", "5 columns only"),
+    ("F30", "Brand page", "Brand header", "Health with a one-line summary (open, blocked, late, onboarding %), facts strip (stage, brand lead, founder, SOW target sign, sprint) and the next step. Empty facts show an Add button for editors.", "Click any brand", "Everyone", "R10, R09", "D01, D03", "Same"),
+    ("F31", "Brand page", "Team cards", "The Tasks tab opens on one card per team (Brand, Creative, Performance, Creator Partnerships, Website SEO and CRM, Finance, Other). Each card: open count, blocked and late tags, progress bar, the 3 most urgent tasks.", "Brand > Tasks", "Leads, leadership", "R01, R12", "D02, D09", "Same"),
+    ("F32", "Brand page", "Team task list", "Click a card to see only that team's tasks, most urgent first. Chips switch team in one click. Open / All toggle shows completed tasks.", "Brand > Tasks > a team", "Team members, leads", "R01, R12", "D02", "Hides support, priority, start, links"),
+    ("F33", "Brand page", "Add task", "Name, team, owner, deadline, priority. Inside a team the team is filled in.", "Brand > Tasks", "Anyone who can edit", "", "D02", "Same"),
+    ("F34", "Brand page", "Task editor", "Side panel with every field of a task, including team, blocker and links. Editors can delete.", "Click a task", "Owner, support, editors", "R16, R18", "D02", "Fewer fields"),
+    ("F35", "Brand page", "Onboarding steps", "The 61 steps in 7 phases (1A to 2D). Opens on the current phase; others are folded. Each step: code, name, gate or optional tag, document label, owner, due date, status.", "Brand > Onboarding steps", "Leads, step owners", "R09, R11, R17", "D06, D07", "Hides completed phases"),
+    ("F36", "Brand page", "Gate rule", "A gate step (1A.05, 2B.05, 2C.01, 2C.06) cannot be Done while an earlier required step is open. The tracker says which steps are missing.", "Onboarding steps, My tasks, Excel import", "Everyone", "R17", "D06, D07", "Same"),
+    ("F37", "Brand page", "Mark phase done", "Sets every step in a phase to Done in one go, only if earlier phases are finished.", "Top of each open phase", "Editors", "R17", "D07", "Same"),
+    ("F38", "Brand page", "Step editor", "Status, owner, deadline, document link, blocker and notes for one step on one brand.", "Edit on any step", "Anyone who can edit", "R16, R17", "D07", "Same"),
+    ("F39", "Brand page", "Brand platform access tab", "That brand's platform rows with status, owner, waiting days and due flag.", "Brand > Platform access", "Paid team", "R03, R05", "D04", "Fewer columns"),
+    ("F40", "Brand page", "Brand SOW tab", "SOW stage strip, stage picker, owner, target sign, draft due, batch, SOW and Growth Forecast links, blocker and next step. Internal brands show no SOW.", "Brand > SOW", "SOW owners, leadership", "R04, R13", "D03", "Hides support and start"),
+    ("F41", "Brand page", "Brand Best Practices tab", "Status of each BP section with a picker, overall result, owner, blocker, notes.", "Brand > Best Practices", "BP owners", "R06, R07", "D05", "Hides notes"),
+    ("F42", "Brand page", "Brand details editor", "Name, stage, lead, founder, website, sprint, next step, paused, restricted.", "Edit details", "Editors", "", "D01", "Same"),
+    ("F50", "SOW tracker", "SOW tracker page", "One row per brand sorted by target sign date. Stage, owner, target sign with due flag, documents, blocker, next step. Blocked SOWs show a red Blocked tag next to the date.", "SOW tracker", "Leadership, SOW owners", "R04, R13", "D03", "Hides draft due and batch"),
+    ("F51", "Platform access", "Platform access page", "Every brand and platform row. Filter by brand and status. Status only, never passwords.", "Platform access", "Paid team", "R03, R05", "D04", "Fewer columns"),
+    ("F52", "Best Practices", "BP grid", "Brands down, sections across. Each cell is a dot with a letter (F, T, Q, tick, !, dash) so colour is never the only signal. Blocked brands sort first.", "Best Practices", "Leadership, BP owners", "R06, R07", "D05", "Hides owner and due"),
+    ("F53", "Best Practices", "Start tracking a brand", "Adds a brand to the BP grid with every section Not Started.", "Best Practices, top", "Anyone who can edit", "", "D05", "Same"),
+    ("F60", "Settings", "People", "Add people, mark them team, external, group or unconfirmed, add other spellings (for example Noops for Noopur), switch people off.", "Settings > People", "Editors", "R15", "D08", "n/a"),
+    ("F61", "Settings", "Lists", "Every dropdown: task status, priority, stage, platforms, access level and status, SOW stage, step status, BP sections and status, teams.", "Settings > Lists", "Editors", "", "D09", "n/a"),
+    ("F62", "Settings", "Step list", "Rename steps, mark gates and optional steps, set default owner and document label. Codes never change, so progress is kept.", "Settings > Step list", "Editors", "R17", "D06", "n/a"),
+    ("F63", "Settings", "Needs a brand", "Old completed tasks with no brand. Pick a brand for each.", "Settings > Needs a brand", "Editors", "", "D02", "n/a"),
+    ("F64", "Settings", "Change log", "Every edit made in the tracker: when, who, what, old value, new value.", "Settings > Change log", "Editors", "", "D11", "n/a"),
+    ("F65", "Settings", "Excel export", "Downloads a workbook with the same sheets as the old COE tracker: Brand Tracker, one tab per brand, Platform Access, SOW Tracker, BP Tracker, Onboarding Steps, Completed Archive, Lists.", "Settings > Export and backup", "Editors, leadership", "R01-R10", "All", "n/a"),
+    ("F66", "Settings", "Full backup", "Downloads every record as one JSON file.", "Settings > Export and backup", "Admin", "", "All", "n/a"),
+    ("F70", "Excel round trip", "Editable Excel copy", "Claude exports the live tracker to Excel with dropdowns and due flag formulas. People edit white cells, add tasks at the bottom, and send it back.", "Ask Claude", "Anyone who prefers Excel", "R01, R03, R04, R17", "D01-D07", "n/a"),
+    ("F71", "Excel round trip", "Excel import", "Only changed cells are written. If the same field was changed in the tracker after the export, the tracker keeps its value and the cell is listed. Bad values, text dates, blocked without a reason and gate steps done too early are skipped and listed.", "Ask Claude", "Product owner", "R16, R17", "D01-D07", "n/a"),
+    ("F80", "Safety", "Access rules", "Anyone the page is shared with can read. Only people with edit or interact access can write. Only editors can change lists, people and the step list. The database enforces this, not just the screen.", "Share menu of the page", "Admin", "R18", "All", "n/a"),
+    ("F81", "Safety", "Blocker needs a reason", "Marking anything Blocked asks for one line and a person. No silent blocks.", "Any status change to Blocked", "Everyone", "R16", "D02, D03, D04, D07", "Same"),
+    ("F82", "Safety", "No overwriting other people", "Each edit is saved field by field. Two people editing different fields of the same task do not undo each other.", "Everywhere", "Everyone", "", "All", "Same"),
+]
+
+# --------------------------------------------------------------------------- 2. Who it helps
+# Group, Question they ask, Where the tracker answers it, Features
+AUDIENCE = [
+    ("Leadership (Ben, founders of Valerie)", "Which brands are in trouble right now?", "Overview tiles and health column; red dots in the left menu", "F20, F22, F02"),
+    ("Leadership (Ben, founders of Valerie)", "Which SOWs sign this week and next?", "Overview > SOW signing plan", "F21"),
+    ("Leadership (Ben, founders of Valerie)", "Where is brand X in onboarding?", "Brand header (onboarding %), Onboarding steps tab", "F30, F35"),
+    ("Leadership (Ben, founders of Valerie)", "What is a brand waiting on?", "Blocked tags on team cards, blocker lines in red", "F31, F12"),
+    ("Leadership (Ben, founders of Valerie)", "Can I see it in Excel for a meeting?", "Excel export", "F65"),
+    ("Product owner / admin", "Who changed what?", "Change log", "F64"),
+    ("Product owner / admin", "How do I change a step, list or person without a rebuild?", "Settings", "F60, F61, F62"),
+    ("Product owner / admin", "Can people break the setup?", "Access rules: only editors change lists, people and steps", "F80"),
+    ("Brand leads / pod leads", "What is late or blocked on my brand, by team?", "Team cards", "F31"),
+    ("Brand leads / pod leads", "What is the next onboarding step and is a gate holding us?", "Onboarding steps with gates", "F35, F36"),
+    ("Brand leads / pod leads", "Update a whole phase quickly", "Mark phase done", "F37"),
+    ("Team leads (Creative, Performance, Creator, Website/CRM, Finance)", "What does my team owe across a brand?", "Team task list", "F32"),
+    ("Team members", "What do I need to do today?", "My tasks: blocked, late, due soon first", "F10"),
+    ("Team members", "How do I update fast?", "One-click status; blocker asks one line", "F11, F81"),
+    ("Team members", "I prefer Excel", "Editable Excel copy and import", "F70, F71"),
+    ("Paid team", "Which platform access is still missing and for how long?", "Platform access page, days waiting", "F51, F39"),
+    ("SOW owners", "What stage is my SOW in and what is next?", "SOW tracker and brand SOW tab", "F50, F40"),
+    ("BP owners / vertical leads", "Which BP sections are done, in QA or blocked?", "BP grid", "F52, F41"),
+    ("Finance (Marcus)", "Which finance tasks and workshops are open?", "Finance team card on each brand", "F31, F32"),
+    ("Viewers", "See progress without changing anything", "View only access, everything readable", "F80"),
+]
+
+# --------------------------------------------------------------------------- 3. Rules
+# ID, Rule, How it works, Where it shows, Source
+RULES = [
+    ("R01", "Task due flag", "Blank if the task is Complete or has no date. Overdue if the deadline is before today. Due Soon if it is today or within 3 days. Otherwise On Time. Shown as 'Late by 3 days', 'Due today', 'Due tomorrow' or 'Due Fri 16 Oct'.", "F10, F20, F22, F31, F32, F65, F70", "COE Excel formula"),
+    ("R02", "My tasks grouping", "Blocked first, then Late, then Due in 3 days, then everything else. Inside each group, earliest date first.", "F10", "Brief section 7"),
+    ("R03", "Platform access due flag and days waiting", "Due flag works like R01 but is blank when Granted or Not Needed. Days waiting = today minus requested date, blank when Granted or Not Needed.", "F39, F51", "COE Excel formula"),
+    ("R04", "SOW due flag", "Blank when Signed. Uses Target sign date; if empty, uses Draft due. Same thresholds as R01.", "F21, F40, F50", "COE Excel formula"),
+    ("R05", "Platform access summary", "Not Set Up if no rows except Not Needed. Blocked if any row is Blocked. All Granted if every counted row is Granted. Otherwise In Progress. Also shows 'granted / counted'.", "F22, F39", "COE Excel formula"),
+    ("R06", "BP progress", "Complete sections divided by (sections minus N/A).", "F22, F41, F52", "COE Excel formula"),
+    ("R07", "BP overall", "Blocked if any section is Blocked. Complete if every counted section is Complete. Not Started if all are Not Started. In QA if any is In QA. Otherwise In Progress.", "F22, F41, F52", "COE Excel formula"),
+    ("R08", "Open, blocked and late counts", "Open = tasks with a name that are not Complete. Blocked = status Blocked. Late = due flag Overdue.", "F02, F20, F22, F30, F31", "COE Excel formula"),
+    ("R09", "Onboarding %", "Steps Done divided by (61 minus steps marked N/A). Optional steps count.", "F22, F30, F35", "COE Excel formula"),
+    ("R10", "Brand health", "Blocked if any blocked task, any blocked platform, SOW stage Blocked or BP overall Blocked. At Risk if any late task. Live if SOW is Signed. Otherwise On Track. Shown as a dot (square red for Blocked) plus the word.", "F02, F20, F22, F30", "COE Excel formula"),
+    ("R11", "Current phase", "The first phase that still has a required step not Done or N/A. Optional steps never hold a phase open.", "F35", "Brief section 6"),
+    ("R12", "Team of a task", "Each task has one team. Tasks with no team or an old team name show under Other. New tasks get the team you are looking at. Existing tasks were sorted by keyword and can be moved in one click.", "F31, F32, F70", "Product owner, 8 Oct"),
+    ("R13", "SOW signing week", "Target sign date placed in its Monday-to-Sunday week. Signed SOWs and internal brands are left out.", "F21", "Product owner, 8 Oct"),
+    ("R14", "My tasks count", "Number of open tasks and steps that match you (R15).", "F01", "Built for this tracker"),
+    ("R15", "Matching you to work", "A task is yours if its owner or any support name equals your name or one of your other spellings in Settings > People. A step is yours if its owner matches.", "F05, F10, F60", "Built for this tracker"),
+    ("R16", "Blocked needs a reason", "Setting Blocked asks for one line and a person. Leaving Blocked clears the blocker.", "F11, F12, F34, F38, F71, F81", "Brief section 7"),
+    ("R17", "Gate rule", "A gate step cannot be Done while any earlier step that is not optional is still open (not Done or N/A).", "F35, F36, F37, F38, F71", "Brief section 6"),
+    ("R18", "Who can do what", "View only: read. Member: change status of own tasks (screen rule) and any step. Lead / admin: everything, including Settings, delete, add brand. Database: only editors write lists, people, steps.", "F06, F34, F80", "Brief section 8"),
+]
+
+# --------------------------------------------------------------------------- 5. Data fields
+# ID, Record, Field, Meaning, Filled by, Used by (features), Used by (rules)
+FIELDS = [
+    ("D01", "Brand", "name, founder, website, stage, lead, sprint, next step, paused, restricted, order", "One record per brand", "Editors", "F02, F03, F22, F30, F42, F65, F70", "R10"),
+    ("D02", "Task", "brand, team, title, owner, support, status, priority, start, deadline, notes, brief link, creative link, blocker", "One record per task", "Anyone who can edit; Excel import", "F10, F11, F12, F20, F22, F31-F34, F63, F65, F70", "R01, R02, R08, R10, R12, R15, R16"),
+    ("D03", "SOW", "stage, owner, support, start, draft due, target sign, blocker, next step, SOW link, Growth Forecast link, GF updated, batch", "One record per brand (not internal)", "SOW owners", "F20, F21, F22, F40, F50, F65, F70", "R04, R10, R13"),
+    ("D04", "Platform access", "brand, platform, level, needed for, owner, brand contact, requested, deadline, status, blocker, notes", "One record per brand and platform", "Paid team", "F39, F51, F65, F70", "R03, R05, R10"),
+    ("D05", "Best Practices", "owner, due date, status per section, blocker, doc link, notes", "One record per tracked brand", "BP owners", "F41, F52, F53, F65, F70", "R06, R07, R10"),
+    ("D06", "Step list", "code, phase, order, name, gate, optional, default owner, document label", "61 records, same for every brand", "Editors in Settings", "F35, F36, F62", "R09, R11, R17"),
+    ("D07", "Brand steps", "for each step code: status, owner, deadline, link, blocker, notes", "One record per brand", "Leads, step owners; Excel import", "F10, F35-F38, F65, F70", "R09, R11, R15, R17"),
+    ("D08", "People", "name, type (team, external, group, unconfirmed), other spellings, active", "One list", "Editors", "F05, F10, F60, all owner pickers", "R15"),
+    ("D09", "Lists", "task status, priority, stage, platform, access level and status, SOW stage, step status, BP sections and status, teams", "One record", "Editors", "Every dropdown, F31, F52", "R07, R12"),
+    ("D10", "Who you are", "the person you picked", "One private record per viewer", "Each viewer", "F05, F10", "R15"),
+    ("D11", "Change log", "time, person, what, field, old, new", "One record per person per day", "Written by the tracker", "F64", ""),
+]
+
+# --------------------------------------------------------------------------- 4. Dependencies (what changes if you change X)
+# If you change..., It affects, Risk if done carelessly
+DEPENDS = [
+    ("A task status", "Open, blocked, late counts; brand health; menu dot; Overview tiles; team cards; My tasks; Excel export", "Low. Designed for daily use"),
+    ("A task deadline", "Due flag, late count, health (At Risk), My tasks group, team card order", "Low"),
+    ("A task team", "Which team card and list it appears in. Nothing else", "Low"),
+    ("A brand stage", "Where the brand sits in the left menu and Overview. Does NOT change health", "Low"),
+    ("SOW stage to Signed", "Brand health can become Live; SOW drops off the signing plan; due flag clears", "Medium. Check the SOW really is signed"),
+    ("SOW stage to Blocked", "Brand health turns Blocked; red tag on the signing plan", "Medium. Needs a blocker line"),
+    ("SOW target sign date", "Signing plan week, due flag, Overview 'to sign this week' tile", "Low"),
+    ("A platform row to Blocked", "Brand health turns Blocked; access summary Blocked", "Medium"),
+    ("A BP section to Blocked", "BP overall Blocked; brand health Blocked; BP grid order", "Medium"),
+    ("A step to Done", "Onboarding %, current phase, gate checks for later steps", "Low. Gate rule protects order"),
+    ("A step to N/A", "Removes it from the onboarding % total; can open a gate", "Medium. Can skip a gate by accident"),
+    ("Gate or optional flag in the step list", "Which steps can be Done, which phase is current, onboarding % for every brand", "High. Affects all brands at once"),
+    ("Renaming a step", "Text only. Progress is kept because the code stays", "Low"),
+    ("Removing or renaming a list value (status, stage, team)", "Rows using the old value keep it but it no longer shows in dropdowns; a removed team moves its tasks to Other; counts that look for the exact word (Blocked, Complete, Signed) break if those words change", "High. Never rename Blocked, Complete, Signed, Granted, Not Needed, N/A, Done"),
+    ("Adding a team", "New empty card on every brand; available in task editor and Excel", "Low"),
+    ("Adding or removing a BP section", "BP progress and overall for every brand; BP grid columns; Excel BP sheet", "Medium. Changes every brand's BP %"),
+    ("A person's name or other spellings", "Who sees which items in My tasks", "Medium. A typo hides someone's work"),
+    ("Sharing access on the page", "Who can read and who can write", "High. Restricted brands are not protected yet"),
+    ("Health rule (R10)", "Every dot, Overview tiles, brand header, exports", "High. Leadership reads this first"),
+    ("Due Soon window (3 days)", "Every due flag, My tasks grouping, tiles", "High. Changes urgency for everyone"),
+]
+
+# --------------------------------------------------------------------------- 6. Change checklist
+CHECKLIST = [
+    ("Purpose", "Which group in 'Who it helps' asked for it, and what question does it answer?", "If nobody can name the group, park it"),
+    ("Purpose", "Does a feature already do this? Check the Feature list first", "Improve the existing one instead of adding a second"),
+    ("Simplicity", "Does it add a click to My tasks or a status change?", "Adding clicks to daily actions is a cost. Needs a strong reason"),
+    ("Simplicity", "Does it add a column or panel to Simple view?", "Simple view should stay small. Put detail in Full"),
+    ("Simplicity", "Can a busy person on a laptop understand it in 5 seconds?", "If not, simplify the words or the layout"),
+    ("Numbers", "Does it change a rule in sheet 3 (health, due flag, %)?", "Leadership reads these. Agree the change with the product owner and note it here"),
+    ("Numbers", "Will the Excel export still match the screen?", "Export uses the same rules. Update both"),
+    ("Data", "Does it need a new field? Add it to sheet 5 with who fills it", "A field nobody fills is noise"),
+    ("Data", "Does it rename or remove a list value?", "See sheet 4. Renaming key words breaks counts"),
+    ("Data", "Does it affect the Excel round trip (export and import)?", "Add the column to both scripts or it will be ignored"),
+    ("Access", "Who can use it: view only, member, editor?", "Check sheet 3, rule R18"),
+    ("Access", "Does it show sensitive data (legal, contracts, money)?", "Links only, never contract text or valuations"),
+    ("Safety", "Could two people edit the same thing at once?", "Save field by field so nobody overwrites the other"),
+    ("Safety", "Is there a way to undo it?", "Change log shows old values. Big changes need a backup first"),
+    ("Done", "Update this workbook: feature row, rules, dependencies, fields", "Run build_feature_map.py again"),
+]
+
+# --------------------------------------------------------------------------- 7. Known gaps
+GAPS = [
+    ("Restricted brands", "Only a tag. Anyone with access to the page can see restricted brands (Ponlu).", "Real limits come with the Supabase build", "High"),
+    ("Member edit limit", "Members can only change their own tasks on screen, but the database allows any edit by anyone with interact access.", "Enforced in the database with Supabase", "Medium"),
+    ("Email alerts", "No emails for blocked or late items yet.", "Stage 6", "Medium"),
+    ("Restore from backup", "Backup download works. Restore is not built.", "Stage 6", "Medium"),
+    ("Best Practices sections", "Tracker has 9 sections. The BP checklist has 16 with questions and scores.", "Waiting on the master BP sheet", "Medium"),
+    ("Brand leads", "Blank for every brand.", "Product owner to fill", "Low"),
+    ("Unconfirmed people", "12 names from the Excel not confirmed (team, external or same person).", "Settings > People", "Medium"),
+    ("Team sorting", "Tasks were sorted into teams by keyword. Some will be wrong.", "Leads correct in one click", "Low"),
+    ("Onboarding progress", "Every brand starts at 0%. No ticks existed in the old files.", "Leads tick steps or use Mark phase done", "Medium"),
+    ("Gates and optional steps", "Proposed, not confirmed: gates 1A.05, 2B.05, 2C.01, 2C.06; optional 1A.03.", "Product owner to confirm", "Medium"),
+    ("Phone layout", "Works at phone width but designed for desktop first.", "Later stage", "Low"),
+    ("Monday.com", "Step 1B.02 has a placeholder only.", "Out of scope for release 1", "Low"),
+    ("Own platform", "Runs as a claude.ai page. Supabase, own domain and sign-in come later.", "Stage 1 of the original plan", "High"),
+]
+
+# --------------------------------------------------------------------------- 8. Feature history
+HISTORY = [
+    ("8 Oct 2026", "Tracker built: My tasks, Overview, brand pages, 61 steps with gates, SOW, platform access, BP, Settings, change log, Excel export", "All"),
+    ("8 Oct 2026", "Data loaded: 22 brands, 179 tasks, 21 SOW rows, 6 platform rows, 10 BP rows", "All"),
+    ("8 Oct 2026", "Team cards on the brand Tasks tab; every task given a team", "F31, F32, R12"),
+    ("8 Oct 2026", "Editable Excel copy and import", "F70, F71"),
+    ("13 Oct 2026", "Feature map workbook (this file)", "n/a"),
+]
+
+# --------------------------------------------------------------------------- build
+HEAD = Font(bold=True, color="FFFFFF")
+FILL = PatternFill("solid", fgColor="1D5C8A")
+BAND = PatternFill("solid", fgColor="F0EDE6")
+WRAP = Alignment(wrap_text=True, vertical="top")
+THIN = Border(bottom=Side(style="thin", color="E3DFD6"))
+RISK = {"High": "FDE3E0", "Medium": "FCEFCF", "Low": "DDF2E3"}
+
+wb = Workbook()
+
+
+def add(title, intro, cols, widths, rows, band_col=None, risk_col=None):
+    ws = wb.create_sheet(title)
+    ws["A1"] = title
+    ws["A1"].font = Font(bold=True, size=14)
+    ws["A2"] = intro
+    ws["A2"].alignment = Alignment(wrap_text=True, vertical="top")
+    ws.merge_cells(start_row=2, start_column=1, end_row=2, end_column=len(cols))
+    ws.row_dimensions[2].height = 34
+    ws.append([])
+    ws.append(cols)
+    for i, w in enumerate(widths, 1):
+        c = ws.cell(4, i)
+        c.font, c.fill, c.alignment = HEAD, FILL, Alignment(wrap_text=True, vertical="center")
+        ws.column_dimensions[get_column_letter(i)].width = w
+    prev, shade = None, False
+    for r in rows:
+        ws.append(list(r))
+        row = ws.max_row
+        if band_col is not None:
+            if r[band_col] != prev:
+                shade, prev = not shade, r[band_col]
+        for i in range(1, len(cols) + 1):
+            c = ws.cell(row, i)
+            c.alignment, c.border = WRAP, THIN
+            if band_col is not None and shade:
+                c.fill = BAND
+        if risk_col is not None:
+            key = str(r[risk_col]).split(".")[0]
+            if key in RISK:
+                ws.cell(row, risk_col + 1).fill = PatternFill("solid", fgColor=RISK[key])
+    ws.freeze_panes = "A5"
+    ws.auto_filter.ref = f"A4:{get_column_letter(len(cols))}{ws.max_row}"
+    return ws
+
+
+rm = wb.active
+rm.title = "Start here"
+intro = [
+    ("Valerie COE Tracker: feature map", ""),
+    (VERSION, ""),
+    ("", ""),
+    ("What this is", "A plain list of everything the tracker does, who it helps, how its numbers are worked out and what depends on what."),
+    ("Why it exists", "Before adding or changing a feature, check here what it touches and whether it makes the tracker better or worse."),
+    ("", ""),
+    ("Sheet", "Use it to"),
+    ("1. Features", "See every function, where it is and who uses it. Each has an ID (F01, F02...)."),
+    ("2. Who it helps", "See what leadership, leads, team members and other groups get from the tracker."),
+    ("3. Rules", "See how health, due flags, % and the gate rule are worked out. IDs R01, R02..."),
+    ("4. What affects what", "Before a change: what else moves, and how risky it is (green, amber, red)."),
+    ("5. Data", "Every piece of information the tracker stores, who fills it and what uses it. IDs D01, D02..."),
+    ("6. Change checklist", "Questions to answer before building a new feature."),
+    ("7. Known gaps", "What is not built or not safe yet."),
+    ("8. History", "What changed and when. Add a row with every change."),
+    ("", ""),
+    ("Quick example", "Idea: add a Priority filter to My tasks. 1) Features: F10 already sorts by urgency, so check whether a filter adds value. 2) Checklist: it adds a click to the daily page, so it needs a strong reason. 3) What affects what: nothing else changes. Decision: likely skip, or put it in Full view only."),
+]
+for a, b in intro:
+    rm.append([a, b])
+rm["A1"].font = Font(bold=True, size=16)
+rm["A2"].font = Font(italic=True, color="5F6670")
+for r in (4, 5, 7, 17):
+    rm.cell(r, 1).font = Font(bold=True)
+rm["A7"].fill = rm["B7"].fill = FILL
+rm["A7"].font = rm["B7"].font = HEAD
+rm.column_dimensions["A"].width = 24
+rm.column_dimensions["B"].width = 110
+for row in rm.iter_rows():
+    for c in row:
+        c.alignment = WRAP
+
+add("1. Features", "Every function of the tracker. Filter by Area or Who uses it. 'Rules used' and 'Data used' point to sheets 3 and 5.",
+    ["ID", "Area", "Feature", "What it does", "Where to find it", "Who uses it", "Rules used", "Data used", "Simple view"],
+    [7, 16, 26, 70, 26, 22, 16, 16, 20], FEATURES, band_col=1)
+add("2. Who it helps", "What each group asks and where the tracker answers it.",
+    ["Group", "Question they ask", "Where the tracker answers it", "Features"],
+    [34, 50, 54, 16], AUDIENCE, band_col=0)
+add("3. Rules", "How the tracker works out every number and flag. Most come from the old COE Excel formulas so numbers match.",
+    ["ID", "Rule", "How it works", "Where it shows", "Source"],
+    [7, 28, 80, 30, 22], RULES)
+add("4. What affects what", "Before changing something, find it in the first column. Risk: green low, amber medium, red high.",
+    ["If you change...", "It affects", "Risk"],
+    [38, 80, 46], DEPENDS, risk_col=2)
+add("5. Data", "Every kind of record the tracker keeps. If a feature needs new information, add it here first.",
+    ["ID", "Record", "Fields", "Meaning", "Filled by", "Used by features", "Used by rules"],
+    [7, 18, 60, 26, 26, 36, 26], FIELDS)
+ws = add("6. Change checklist", "Answer each question before building a new feature or change. Fill the Answer column for the change you are judging.",
+         ["Area", "Question", "Why it matters", "Answer"],
+         [14, 64, 60, 30], CHECKLIST, band_col=0)
+dv = DataValidation(type="list", formula1='"Yes,No,Not sure,n/a"', allow_blank=True)
+ws.add_data_validation(dv)
+dv.add(f"D5:D{ws.max_row}")
+add("7. Known gaps", "Not built or not safe yet. New ideas should not assume these exist.",
+    ["Gap", "What it means today", "Plan", "Impact"],
+    [26, 70, 40, 12], GAPS, risk_col=3)
+add("8. History", "Add one row each time the tracker changes, with the feature IDs it touched.",
+    ["Date", "Change", "Features / rules touched"],
+    [14, 90, 30], HISTORY)
+
+wb.save(OUT)
+print("saved", OUT, {"features": len(FEATURES), "audience": len(AUDIENCE), "rules": len(RULES), "depends": len(DEPENDS),
+                     "fields": len(FIELDS), "checklist": len(CHECKLIST), "gaps": len(GAPS)})
