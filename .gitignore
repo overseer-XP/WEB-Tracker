@@ -3,3 +3,5 @@
 .live/
 .sync/
 exports/
+.shots/
+docs/feature_map/*.xlsx

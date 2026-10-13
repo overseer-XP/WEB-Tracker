@@ -1,18 +1,25 @@
 """Build the tracker feature map workbook.
 
-Usage: python3 -I docs/feature_map/build_feature_map.py docs/feature_map/Valerie_COE_Tracker_Feature_Map.xlsx
+Usage: python3 -I docs/feature_map/build_feature_map.py <out.xlsx> [<screenshots dir>]
+
+Screenshots come from take_screens.js (shots.json + S01.png ...). Without them the workbook has no Pictures sheet.
 
 Edit the tables below when the tracker changes, then run it again.
 Every feature, rule and field has an ID (F.., R.., D..) so the sheets can point at each other.
 """
+import json
+import os
 import sys
 
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font, PatternFill, Border, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.datavalidation import DataValidation
+from openpyxl.worksheet.hyperlink import Hyperlink
 
 OUT = sys.argv[1]
+SHOTS_DIR = sys.argv[2] if len(sys.argv) > 2 else None
+SHOTS = json.load(open(os.path.join(SHOTS_DIR, "shots.json"))) if SHOTS_DIR else []
 VERSION = "Tracker version 3 (13 Oct 2026)"
 
 # --------------------------------------------------------------------------- 1. Features
@@ -193,6 +200,7 @@ HISTORY = [
     ("8 Oct 2026", "Team cards on the brand Tasks tab; every task given a team", "F31, F32, R12"),
     ("8 Oct 2026", "Editable Excel copy and import", "F70, F71"),
     ("13 Oct 2026", "Feature map workbook (this file)", "n/a"),
+    ("13 Oct 2026", "Pictures added: 25 tagged screenshots, every feature row links to its screen", "n/a"),
 ]
 
 # --------------------------------------------------------------------------- build
@@ -251,6 +259,7 @@ intro = [
     ("Why it exists", "Before adding or changing a feature, check here what it touches and whether it makes the tracker better or worse."),
     ("", ""),
     ("Sheet", "Use it to"),
+    ("Pictures", "Screenshots of every screen. Red tags (F10, F31...) mark where each feature is. Each feature row links to its picture."),
     ("1. Features", "See every function, where it is and who uses it. Each has an ID (F01, F02...)."),
     ("2. Who it helps", "See what leadership, leads, team members and other groups get from the tracker."),
     ("3. Rules", "See how health, due flags, % and the gate rule are worked out. IDs R01, R02..."),
@@ -266,7 +275,7 @@ for a, b in intro:
     rm.append([a, b])
 rm["A1"].font = Font(bold=True, size=16)
 rm["A2"].font = Font(italic=True, color="5F6670")
-for r in (4, 5, 7, 17):
+for r in (4, 5, 7, 18):
     rm.cell(r, 1).font = Font(bold=True)
 rm["A7"].fill = rm["B7"].fill = FILL
 rm["A7"].font = rm["B7"].font = HEAD
@@ -276,9 +285,37 @@ for row in rm.iter_rows():
     for c in row:
         c.alignment = WRAP
 
-add("1. Features", "Every function of the tracker. Filter by Area or Who uses it. 'Rules used' and 'Data used' point to sheets 3 and 5.",
-    ["ID", "Area", "Feature", "What it does", "Where to find it", "Who uses it", "Rules used", "Data used", "Simple view"],
-    [7, 16, 26, 70, 26, 22, 16, 16, 20], FEATURES, band_col=1)
+# pictures sheet first, so feature rows can link to it
+pic_row = {}
+if SHOTS:
+    from openpyxl.drawing.image import Image as XLImage
+    ps = wb.create_sheet("Pictures")
+    ps["A1"] = "Pictures"
+    ps["A1"].font = Font(bold=True, size=14)
+    ps["A2"] = "Real screens of the tracker. Red tags show the feature IDs from sheet 1. Taken from a copy of the live data; nothing was changed in the tracker."
+    ps.column_dimensions["A"].width = 160
+    row = 4
+    for sh in SHOTS:
+        ps.cell(row, 1, f"{sh['id']}  {sh['title']}").font = Font(bold=True, size=13, color="1D5C8A")
+        ps.cell(row + 1, 1, f"Features shown: {sh['features']}").font = Font(italic=True, color="5F6670")
+        img = XLImage(os.path.join(SHOTS_DIR, sh["file"]))
+        img.width, img.height = int(img.width * 0.62), int(img.height * 0.62)
+        ps.add_image(img, f"A{row + 2}")
+        for f in [x.strip() for x in sh["features"].split(",")]:
+            pic_row.setdefault(f, []).append((sh["id"], row))
+        row += 2 + int(img.height / 20) + 3
+    ps.freeze_panes = "A3"
+
+feat_rows = [r + (", ".join(i for i, _ in pic_row.get(r[0], [])) or "No picture",) for r in FEATURES]
+fs = add("1. Features", "Every function of the tracker. Filter by Area or Who uses it. 'Rules used' and 'Data used' point to sheets 3 and 5. Click a picture ID to see the screen.",
+    ["ID", "Area", "Feature", "What it does", "Where to find it", "Who uses it", "Rules used", "Data used", "Simple view", "Picture"],
+    [7, 16, 26, 70, 26, 22, 16, 16, 20, 14], feat_rows, band_col=1)
+for r in range(5, fs.max_row + 1):
+    fid = fs.cell(r, 1).value
+    if fid in pic_row:
+        c = fs.cell(r, 10)
+        c.hyperlink = Hyperlink(ref=c.coordinate, location=f"'Pictures'!A{pic_row[fid][0][1]}", display=c.value)
+        c.font = Font(color="1D5C8A", underline="single")
 add("2. Who it helps", "What each group asks and where the tracker answers it.",
     ["Group", "Question they ask", "Where the tracker answers it", "Features"],
     [34, 50, 54, 16], AUDIENCE, band_col=0)
@@ -304,6 +341,8 @@ add("8. History", "Add one row each time the tracker changes, with the feature I
     ["Date", "Change", "Features / rules touched"],
     [14, 90, 30], HISTORY)
 
+if SHOTS:
+    wb.move_sheet("Pictures", offset=-(wb.sheetnames.index("Pictures") - 1))
 wb.save(OUT)
 print("saved", OUT, {"features": len(FEATURES), "audience": len(AUDIENCE), "rules": len(RULES), "depends": len(DEPENDS),
                      "fields": len(FIELDS), "checklist": len(CHECKLIST), "gaps": len(GAPS)})
