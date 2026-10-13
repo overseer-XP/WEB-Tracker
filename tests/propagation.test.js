@@ -1,5 +1,5 @@
 // Every kind of update, made through the screens, must show up everywhere it should.
-// Usage: node tests/propagation.test.js <preview.html>
+// Usage: node tests/propagation.test.js <preview.html>   (LIVE=<export dir>, default .live)
 // The preview runs the real app on a copy of exported data (docs/feature_map/make_preview.py). Nothing is saved.
 const path = require('path');
 const { chromium } = require(process.env.PW || '/opt/node-tools/node_modules/playwright');
@@ -25,39 +25,42 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   const drawerSave = async () => { await p.click('[data-act=dsave]'); await p.waitForTimeout(350) };
   const setMe = async name => { await p.selectOption('#whoSel', name); await p.waitForTimeout(250) };
 
-  // 1. Brand stage to On Hold (MugWipes)
+  // 1. Brand stage to On Hold (MUMUK)
   await go('overview');
   const active0 = await tile('active brands');
-  await openBrandEditor('mugwipes'); await p.selectOption('#d-stage', 'On Hold'); await drawerSave();
+  await openBrandEditor('mumuk'); await p.selectOption('#d-stage', 'On Hold'); await drawerSave();
   await go('overview');
-  check('Brand stage On Hold', 'Left menu moves it under On Hold', (await railGroup('MugWipes')) === 'ON HOLD', await railGroup('MugWipes'));
-  check('Brand stage On Hold', 'Overview health says On Hold', (await overviewRow('MugWipes')).includes('On Hold'));
+  check('Brand stage On Hold', 'Left menu moves it under On Hold', (await railGroup('MUMUK')) === 'ON HOLD', await railGroup('MUMUK'));
+  check('Brand stage On Hold', 'Overview health says On Hold', (await overviewRow('MUMUK')).includes('On Hold'));
   check('Brand stage On Hold', 'Active brands tile drops by 1', (await tile('active brands')) === active0 - 1, `${active0} to ${await tile('active brands')}`);
-  check('Brand stage On Hold', 'SOW signing plan shows it under On hold, not a week', (await planColumn('MugWipes')) === 'On hold', await planColumn('MugWipes'));
+  check('Brand stage On Hold', 'SOW signing plan shows it under On hold, not a week', (await planColumn('MUMUK')) === 'On hold', await planColumn('MUMUK'));
   await go('sow');
-  check('Brand stage On Hold', 'SOW tracker tags it Brand on hold', (await mainText()).includes('MugWipesBrand on hold') || (await mainText()).includes('MugWipes Brand on hold'));
-  await go('brand-mugwipes');
+  check('Brand stage On Hold', 'SOW tracker tags it Brand on hold', (await mainText()).includes('MUMUKBrand on hold') || (await mainText()).includes('MUMUK Brand on hold'));
+  await go('brand-mumuk');
   check('Brand stage On Hold', 'Brand page shows the on hold notice', (await mainText()).includes('is on hold'));
   check('Brand stage On Hold', 'Brand page target date says On hold', (await text('.facts')).includes('On hold'));
   await setMe('Cyrus'); await go('mine');
-  check('Brand stage On Hold', 'My tasks puts its work under Brands on hold', await p.evaluate(() => { const g = [...document.querySelectorAll('.group')].find(x => x.innerText.startsWith('Brands on hold')); return !!g && g.innerText.includes('MugWipes') }));
+  check('Brand stage On Hold', 'My tasks puts its work under Brands on hold', await p.evaluate(() => { const g = [...document.querySelectorAll('.group')].find(x => x.innerText.startsWith('Brands on hold')); return !!g && g.innerText.includes('MUMUK') }));
 
-  // 2. Paused flag (Lona Beauty) counts as on hold too
-  await openBrandEditor('lona-beauty'); await p.selectOption('#d-paused', 'Yes'); await drawerSave();
+  // 2. Paused flag (Sourced Food Co.) counts as on hold too
+  await openBrandEditor('sourced-food-co'); await p.selectOption('#d-paused', 'Yes'); await drawerSave();
   await go('overview');
-  check('Paused flag', 'Overview health says On Hold', (await overviewRow('Lona Beauty')).includes('On Hold'));
-  check('Paused flag', 'SOW plan shows it under On hold', (await planColumn('Lona Beauty')) === 'On hold', await planColumn('Lona Beauty'));
+  check('Paused flag', 'Overview health says On Hold', (await overviewRow('Sourced Food Co.')).includes('On Hold'));
+  check('Paused flag', 'SOW plan shows it under On hold', (await planColumn('Sourced Food Co.')) === 'On hold', await planColumn('Sourced Food Co.'));
 
   // 3. SOW stage changed on the SOW tracker (IDEO to Blocked, needs a reason)
   await go('sow');
   await p.selectOption('select[data-kind=sow][data-id=ideo]', 'Blocked'); await p.waitForTimeout(200);
-  await p.fill('#b-text', 'Waiting on founder'); await p.selectOption('#b-person', 'Ben'); await p.click('#bform button[type=submit]'); await p.waitForTimeout(350);
+  // the blocker box only opens when the SOW has no blocker written yet
+  let ideoBlocker = 'Waiting on founder';
+  if (await p.isVisible('#b-text')) { await p.fill('#b-text', ideoBlocker); await p.selectOption('#b-person', 'Ben'); await p.click('#bform button[type=submit]'); await p.waitForTimeout(350) }
+  else ideoBlocker = JSON.parse(require('fs').readFileSync(path.join(process.env.LIVE || '.live', 'sow', 'ideo.json'))).blocker;
   await go('overview');
   check('SOW stage', 'Overview SOW column shows Blocked', (await overviewRow('IDEO')).includes('Blocked'));
   check('SOW stage', 'Signing plan chip shows Blocked tag', await p.evaluate(() => [...document.querySelectorAll('.week .chip')].some(c => c.innerText.includes('IDEO') && c.querySelector('.tag.bad'))));
   check('SOW stage', 'Brand health turns Blocked', (await overviewRow('IDEO')).includes('IDEO Best Practices + Briefs Blocked'));
   await go('brand-ideo'); await p.click('button[data-tab=sow]'); await p.waitForTimeout(150);
-  check('SOW stage', 'Brand SOW tab shows the blocker', (await mainText()).includes('Waiting on founder'));
+  check('SOW stage', 'Brand SOW tab shows the blocker', !!ideoBlocker && (await mainText()).includes(ideoBlocker.slice(0, 30)), ideoBlocker);
 
   // 4. SOW target date moves the signing plan week (Setosa to next week)
   const nd = new Date(); nd.setDate(nd.getDate() + 7); const iso = nd.toISOString().slice(0, 10);
@@ -86,20 +89,26 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await go('brand-tiny-wins'); await p.click('[data-act=dept][data-dep=""]').catch(() => {}); await p.waitForTimeout(150);
   check('Task deadline', 'Team card shows late', (await text('.teams')).includes('late'));
 
-  // 7. Step Done updates onboarding % (ORA)
+  // 7. Step Done updates onboarding % (ORA, first open step)
   await go('brand-ora'); await p.click('button[data-tab=steps]'); await p.waitForTimeout(200);
-  await p.selectOption('select[data-code="1A.01"]', 'Done'); await p.waitForTimeout(300);
-  check('Step done', 'Brand header onboarding % goes up', (await text('.bhead')).includes('Onboarding 2%'), (await text('.bhead')).match(/Onboarding \d+%/)?.[0]);
+  const pct = async () => +(((await text('.bhead')).match(/Onboarding (\d+)%/) || [])[1] || -1);
+  const open = await p.$$eval('select[data-code]', els => els.filter(e => !['Done', 'N/A'].includes(e.value)).map(e => e.dataset.code));
+  const pct0 = await pct();
+  await p.selectOption(`select[data-code="${open[0]}"]`, 'Done'); await p.waitForTimeout(300);
+  const pct1 = await pct();
+  check('Step done', 'Brand header onboarding % goes up', pct1 > pct0, `${open[0]}: ${pct0}% to ${pct1}%`);
   await go('overview');
-  check('Step done', 'Overview onboarding column goes up', (await overviewRow('ORA')).includes('2%'));
+  check('Step done', 'Overview onboarding column goes up', (await overviewRow('ORA')).includes(pct1 + '%'));
 
-  // 8. Step owner + blocker reach My tasks and the brand header (ORA 1A.02)
+  // 8. Step owner + blocker reach My tasks and the brand header (ORA, next open step)
   await go('brand-ora'); await p.click('button[data-tab=steps]'); await p.waitForTimeout(150);
-  await p.click('[data-act=open][data-kind=step][data-code="1A.02"]'); await p.waitForTimeout(200);
+  const stepName = await p.$eval(`select[data-code="${open[1]}"]`, e => e.closest('tr, .step, li, div').innerText.split('\n')[0].trim()).catch(() => '');
+  const blocked0 = +(((await text('.bhead')).match(/(\d+) steps? blocked/) || [])[1] || 0);
+  await p.click(`[data-act=open][data-kind=step][data-code="${open[1]}"]`); await p.waitForTimeout(200);
   await p.selectOption('#d-owner', 'Noopur'); await p.fill('#d-blk_text', 'Founder not replying'); await p.selectOption('#d-blk_person', 'Ben'); await drawerSave();
-  check('Step blocker', 'Brand header says 1 step blocked', (await text('.bhead')).includes('1 step blocked'));
+  check('Step blocker', 'Brand header counts the blocked step', (await text('.bhead')).includes((blocked0 + 1) + ' step' + (blocked0 ? 's' : '') + ' blocked'), await text('.bhead'));
   await setMe('Noopur'); await go('mine');
-  check('Step owner', 'My tasks shows the step in Blocked', await p.evaluate(() => { const g = [...document.querySelectorAll('.group')].find(x => x.innerText.startsWith('Blocked')); return !!g && g.innerText.includes('Founder Introductory Call 2') }));
+  check('Step owner', 'My tasks shows the step in Blocked', stepName.length > 3 && await p.evaluate(n => { const g = [...document.querySelectorAll('.group')].find(x => x.innerText.startsWith('Blocked')); return !!g && g.innerText.includes(n) }, stepName.slice(0, 25)), stepName);
 
   // 9. Platform access Blocked turns brand Blocked (Bespoke row)
   await go('access'); await p.selectOption('select[data-kind=access]', 'Blocked'); await p.waitForTimeout(250);
@@ -128,11 +137,11 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   check('Brand lead / next step', 'Overview shows new lead', (await overviewRow('Daisyface Skincare')).endsWith('Cat'));
   check('Brand lead / next step', 'Overview shows new next step', (await overviewRow('Daisyface Skincare')).includes('Book kickoff call'));
 
-  // 13. Taking a brand off hold brings it back everywhere (MugWipes)
-  await openBrandEditor('mugwipes'); await p.selectOption('#d-stage', 'SOW'); await drawerSave();
+  // 13. Taking a brand off hold brings it back everywhere (MUMUK)
+  await openBrandEditor('mumuk'); await p.selectOption('#d-stage', 'Best Practices + Briefs'); await drawerSave();
   await go('overview');
-  check('Off hold again', 'Back in the signing plan weeks', !['On hold', null].includes(await planColumn('MugWipes')), await planColumn('MugWipes'));
-  check('Off hold again', 'Health no longer On Hold', !(await overviewRow('MugWipes')).includes('On Hold'));
+  check('Off hold again', 'Back in the signing plan weeks', !['On hold', null].includes(await planColumn('MUMUK')), await planColumn('MUMUK'));
+  check('Off hold again', 'Health no longer On Hold', !(await overviewRow('MUMUK')).includes('On Hold'));
 
   check('Page', 'No script errors', errors.length === 0, errors.join(' | '));
   const failed = results.filter(r => !r.ok);

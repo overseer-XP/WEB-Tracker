@@ -204,13 +204,13 @@ for r, v in rows(wb["SOW"]):
     e = {"SOW stage": txt(v.get("SOW stage")), "Owner": txt(v.get("Owner")), "Support team": txt(v.get("Support team")),
          "Start date": date_val(v.get("Start date"), w), "Draft due": date_val(v.get("Draft due"), w), "Target sign": date_val(v.get("Target sign"), w),
          "Blocker / dependency": txt(v.get("Blocker / dependency")), "Next step": txt(v.get("Next step")), "SOW link": txt(v.get("SOW link")),
-         "Growth Forecast link": txt(v.get("Growth Forecast link")), "GF updated": txt(v.get("GF updated")), "Batch": txt(v.get("Batch"))}
+         "Growth Forecast link": txt(v.get("Growth Forecast link")), "GF updated": txt(v.get("GF updated")), "Batch": txt(v.get("Batch")), "GF status": txt(v.get("GF status"))}
     if not check(e["SOW stage"], lists["sow_stage"], w, "SOW stage"):
         e["SOW stage"] = None
     apply("SOW", "sow", rid, r, e, {"SOW stage": ("stage", ident), "Owner": ("owner", ident), "Support team": ("support", split),
           "Start date": ("start_date", ident), "Draft due": ("draft_due", ident), "Target sign": ("target_sign", ident),
           "Blocker / dependency": ("blocker", ident), "Next step": ("next_step", ident), "SOW link": ("sow_link", ident),
-          "Growth Forecast link": ("gf_link", ident), "GF updated": ("gf_updated", yes), "Batch": ("batch", ident)},
+          "Growth Forecast link": ("gf_link", ident), "GF updated": ("gf_updated", yes), "Batch": ("batch", ident), "GF status": ("gf_status", ident)},
           live["sow"][rid], "SOW " + live["brands"].get(rid, {}).get("name", rid))
 
 # ---------------------------------------------------------------- Platform access

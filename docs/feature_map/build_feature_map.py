@@ -20,14 +20,14 @@ from openpyxl.worksheet.hyperlink import Hyperlink
 OUT = sys.argv[1]
 SHOTS_DIR = sys.argv[2] if len(sys.argv) > 2 else None
 SHOTS = json.load(open(os.path.join(SHOTS_DIR, "shots.json"))) if SHOTS_DIR else []
-VERSION = "Tracker version 4 (13 Oct 2026)"
+VERSION = "Tracker version 5 (13 Oct 2026)"
 
 # --------------------------------------------------------------------------- 1. Features
 # ID, Area, Feature, What it does, Where to find it, Who uses it, Rules used, Data used, Simple view
 FEATURES = [
     ("F01", "Navigation", "Left menu", "Links to My tasks, Overview, SOW tracker, Platform access, Best Practices and Settings (Settings only for editors). My tasks shows how many open items you have.", "Left side of every screen", "Everyone", "R14", "D01, D09", "Same"),
     ("F02", "Navigation", "Brand list in the menu", "Every brand grouped by stage, latest stage first (Live, SOW, Best Practices, Founder Workshops, Setup, Qualification, then On Hold and Internal). Each brand has a health dot and its open task count. Paused brands carry a Paused tag.", "Left menu, under the links", "Everyone", "R10, R11", "D01, D02", "Same"),
-    ("F03", "Navigation", "Add brand", "Creates a brand with a name and stage. Also creates its empty SOW row and its 61 onboarding steps.", "Bottom of the left menu", "Editors", "", "D01, D03, D07", "Same"),
+    ("F03", "Navigation", "Add brand", "Creates a brand with a name and stage. Also creates its empty SOW row and its onboarding step checklist (53 steps).", "Bottom of the left menu", "Editors", "", "D01, D03, D07", "Same"),
     ("F04", "Navigation", "Simple / Full switch", "Simple hides detail people rarely need: support team, priority, start dates, brief and creative links, note previews, completed phases, step owner hints. Full shows everything. Members start in Simple, editors in Full. Each person's choice is remembered on their device.", "Top bar", "Everyone", "", "", "n/a"),
     ("F05", "Navigation", "You are (name picker)", "Each person picks their name once. The tracker remembers it for that person and uses it to build My tasks. It tries to guess from the claude.ai account name first.", "Top bar", "Everyone", "R15", "D08, D10", "Same"),
     ("F06", "Navigation", "Role tag", "Shows Lead / admin, Member or View only, so people know what they can change.", "Top bar", "Everyone", "R18", "", "Same"),
@@ -42,12 +42,12 @@ FEATURES = [
     ("F32", "Brand page", "Team task list", "Click a card to see only that team's tasks, most urgent first. Chips switch team in one click. Open / All toggle shows completed tasks.", "Brand > Tasks > a team", "Team members, leads", "R01, R12", "D02", "Hides support, priority, start, links"),
     ("F33", "Brand page", "Add task", "Name, team, owner, deadline, priority. Inside a team the team is filled in.", "Brand > Tasks", "Anyone who can edit", "", "D02", "Same"),
     ("F34", "Brand page", "Task editor", "Side panel with every field of a task, including team, blocker and links. Editors can delete.", "Click a task", "Owner, support, editors", "R16, R18", "D02", "Fewer fields"),
-    ("F35", "Brand page", "Onboarding steps", "The 61 steps in 7 phases (1A to 2D). Opens on the current phase; others are folded. Each step: code, name, gate or optional tag, document label, owner, due date, status.", "Brand > Onboarding steps", "Leads, step owners", "R09, R11, R17", "D06, D07", "Hides completed phases"),
-    ("F36", "Brand page", "Gate rule", "A gate step (1A.05, 2B.05, 2C.01, 2C.06) cannot be Done while an earlier required step is open. The tracker says which steps are missing.", "Onboarding steps, My tasks, Excel import", "Everyone", "R17", "D06, D07", "Same"),
+    ("F35", "Brand page", "Onboarding steps", "The team's 53-step checklist in 7 phases (P1 Qualification to P7 SOW Signed). Opens on the current phase; others are folded. Each step: code, name, gate or optional tag, document label, owner, due date, status.", "Brand > Onboarding steps", "Leads, step owners", "R09, R11, R17", "D06, D07", "Hides completed phases"),
+    ("F36", "Brand page", "Gate rule", "A gate step (P1.04 LOI signed, P5.04 Best Practices QA review, P6.01 SOW draft 1 review, P6.06 Send SOW for signature) cannot be Done while an earlier required step is open. The tracker says which steps are missing.", "Onboarding steps, My tasks, Excel import", "Everyone", "R17", "D06, D07", "Same"),
     ("F37", "Brand page", "Mark phase done", "Sets every step in a phase to Done in one go, only if earlier phases are finished.", "Top of each open phase", "Editors", "R17", "D07", "Same"),
     ("F38", "Brand page", "Step editor", "Status, owner, deadline, document link, blocker and notes for one step on one brand.", "Edit on any step", "Anyone who can edit", "R16, R17", "D07", "Same"),
     ("F39", "Brand page", "Brand platform access tab", "That brand's platform rows with status, owner, waiting days and due flag.", "Brand > Platform access", "Paid team", "R03, R05", "D04", "Fewer columns"),
-    ("F40", "Brand page", "Brand SOW tab", "SOW stage strip, stage picker, owner, target sign, draft due, batch, SOW and Growth Forecast links, blocker and next step. Internal brands show no SOW.", "Brand > SOW", "SOW owners, leadership", "R04, R13", "D03", "Hides support and start"),
+    ("F40", "Brand page", "Brand SOW tab", "SOW stage strip, stage picker, owner, target sign, draft due, batch, SOW and Growth Forecast links, GF status, blocker and next step. Internal brands show no SOW.", "Brand > SOW", "SOW owners, leadership", "R04, R13", "D03", "Hides support and start"),
     ("F41", "Brand page", "Brand Best Practices tab", "Status of each BP section with a picker, overall result, owner, blocker, notes.", "Brand > Best Practices", "BP owners", "R06, R07", "D05", "Hides notes"),
     ("F42", "Brand page", "Brand details editor", "Name, stage, lead, founder, website, sprint, next step, paused, restricted.", "Edit details", "Editors", "", "D01", "Same"),
     ("F50", "SOW tracker", "SOW tracker page", "One row per brand sorted by target sign date. Stage, owner, target sign with due flag, documents, blocker, next step. Blocked SOWs show a red Blocked tag next to the date.", "SOW tracker", "Leadership, SOW owners", "R04, R13", "D03", "Hides draft due and batch"),
@@ -104,7 +104,7 @@ RULES = [
     ("R06", "BP progress", "Complete sections divided by (sections minus N/A).", "F22, F41, F52", "COE Excel formula"),
     ("R07", "BP overall", "Blocked if any section is Blocked. Complete if every counted section is Complete. Not Started if all are Not Started. In QA if any is In QA. Otherwise In Progress.", "F22, F41, F52", "COE Excel formula"),
     ("R08", "Open, blocked and late counts", "Open = tasks with a name that are not Complete. Blocked = status Blocked. Late = due flag Overdue.", "F02, F20, F22, F30, F31", "COE Excel formula"),
-    ("R09", "Onboarding %", "Steps Done divided by (61 minus steps marked N/A). Optional steps count.", "F22, F30, F35", "COE Excel formula"),
+    ("R09", "Onboarding %", "Steps Done divided by (53 minus steps marked N/A). Optional steps count.", "F22, F30, F35", "COE Excel formula"),
     ("R10", "Brand health", "On Hold first: if the brand is on hold (R19) health is On Hold (empty grey ring). Otherwise Blocked if any blocked task, any blocked platform, SOW stage Blocked or BP overall Blocked. At Risk if any late task. Live if SOW is Signed. Otherwise On Track. Shown as a dot (square red for Blocked) plus the word.", "F02, F20, F22, F30", "COE Excel formula"),
     ("R11", "Current phase", "The first phase that still has a required step not Done or N/A. Optional steps never hold a phase open.", "F35", "Brief section 6"),
     ("R12", "Team of a task", "Each task has one team. Tasks with no team or an old team name show under Other. New tasks get the team you are looking at. Existing tasks were sorted by keyword and can be moved in one click.", "F31, F32, F70", "Product owner, 8 Oct"),
@@ -122,10 +122,10 @@ RULES = [
 FIELDS = [
     ("D01", "Brand", "name, founder, website, stage, lead, sprint, next step, paused, restricted, order", "One record per brand", "Editors", "F02, F03, F22, F30, F42, F65, F70", "R10"),
     ("D02", "Task", "brand, team, title, owner, support, status, priority, start, deadline, notes, brief link, creative link, blocker", "One record per task", "Anyone who can edit; Excel import", "F10, F11, F12, F20, F22, F31-F34, F63, F65, F70", "R01, R02, R08, R10, R12, R15, R16"),
-    ("D03", "SOW", "stage, owner, support, start, draft due, target sign, blocker, next step, SOW link, Growth Forecast link, GF updated, batch", "One record per brand (not internal)", "SOW owners", "F20, F21, F22, F40, F50, F65, F70", "R04, R10, R13"),
+    ("D03", "SOW", "stage, owner, support, start, draft due, target sign, blocker, next step, SOW link, Growth Forecast link, GF updated, GF status, batch", "One record per brand (not internal)", "SOW owners", "F20, F21, F22, F40, F50, F65, F70", "R04, R10, R13"),
     ("D04", "Platform access", "brand, platform, level, needed for, owner, brand contact, requested, deadline, status, blocker, notes", "One record per brand and platform", "Paid team", "F39, F51, F65, F70", "R03, R05, R10"),
     ("D05", "Best Practices", "owner, due date, status per section, blocker, doc link, notes", "One record per tracked brand", "BP owners", "F41, F52, F53, F65, F70", "R06, R07, R10"),
-    ("D06", "Step list", "code, phase, order, name, gate, optional, default owner, document label", "61 records, same for every brand", "Editors in Settings", "F35, F36, F62", "R09, R11, R17"),
+    ("D06", "Step list", "code, phase, order, name, gate, optional, default owner, document label", "53 records, same for every brand", "Editors in Settings", "F35, F36, F62", "R09, R11, R17"),
     ("D07", "Brand steps", "for each step code: status, owner, deadline, link, blocker, notes", "One record per brand", "Leads, step owners; Excel import", "F10, F35-F38, F65, F70", "R09, R11, R15, R17"),
     ("D08", "People", "name, type (team, external, group, unconfirmed), other spellings, active", "One list", "Editors", "F05, F10, F60, all owner pickers", "R15"),
     ("D09", "Lists", "task status, priority, stage, platform, access level and status, SOW stage, step status, BP sections and status, teams", "One record", "Editors", "Every dropdown, F31, F52", "R07, R12"),
@@ -189,9 +189,9 @@ GAPS = [
     ("Unconfirmed people", "12 names from the Excel not confirmed (team, external or same person).", "Settings > People", "Medium"),
     ("Team sorting", "Tasks were sorted into teams by keyword. Some will be wrong.", "Leads correct in one click", "Low"),
     ("Onboarding progress", "Every brand starts at 0%. No ticks existed in the old files.", "Leads tick steps or use Mark phase done", "Medium"),
-    ("Gates and optional steps", "Proposed, not confirmed: gates 1A.05, 2B.05, 2C.01, 2C.06; optional 1A.03.", "Product owner to confirm", "Medium"),
+    ("Ashraf and Ash Ghorab", "Ashraf owns 3 paid tasks and the KNDZ platform row. May be the same person as Ash Ghorab. Both kept.", "Product owner to confirm", "Low"),
     ("Phone layout", "Works at phone width but designed for desktop first.", "Later stage", "Low"),
-    ("Monday.com", "Step 1B.02 has a placeholder only.", "Out of scope for release 1", "Low"),
+    ("Monday.com", "No step in the new checklist links to Monday.com yet.", "Out of scope for release 1", "Low"),
     ("Own platform", "Runs as a claude.ai page. Supabase, own domain and sign-in come later.", "Stage 1 of the original plan", "High"),
 ]
 
@@ -204,6 +204,7 @@ HISTORY = [
     ("13 Oct 2026", "Feature map workbook (this file)", "n/a"),
     ("13 Oct 2026", "Pictures added: 25 tagged screenshots, every feature row links to its screen", "n/a"),
     ("13 Oct 2026", "Fix: on hold now shows everywhere. Brand stage On Hold or paused flag counts as on hold on every screen (MugWipes still showed Internal Review in the signing plan). Brand header counts blocked steps. 33-check update test added", "R10, R19, F10, F20, F21, F30, F50"),
+    ("13 Oct 2026", "Team Excel import (COE tracker 13 Oct + paid channels sheet): 61-step list replaced by the team's 53-step checklist with every tick loaded, Noor Squares added, 21 brand, 36 task, 40 SOW and 9 BP field updates, 8 new tasks, 45 paid platform rows (owner Ash Ghorab), GF status shown on SOW screens. Version 5", "F03, F35, F36, F40, F50, D03, D06"),
 ]
 
 # --------------------------------------------------------------------------- build

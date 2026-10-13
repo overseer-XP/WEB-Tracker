@@ -195,19 +195,19 @@ dropdown(ws, "F", "People", strict=False)
 
 # ---------------------------------------------------------------- SOW
 SCOLS = ["ID", "Brand", "SOW stage", "Owner", "Support team", "Start date", "Draft due", "Target sign", "Due flag",
-         "Blocker / dependency", "Next step", "SOW link", "Growth Forecast link", "GF updated", "Batch"]
-ws = sheet("SOW", SCOLS, [16, 18, 18, 11, 20, 13, 13, 13, 11, 40, 50, 22, 22, 10, 10], ro=("ID", "Due flag"))
+         "Blocker / dependency", "Next step", "SOW link", "Growth Forecast link", "GF updated", "Batch", "GF status"]
+ws = sheet("SOW", SCOLS, [16, 18, 18, 11, 20, 13, 13, 13, 11, 40, 50, 22, 22, 10, 10, 30], ro=("ID", "Due flag"))
 srows = sorted(sow.items(), key=lambda kv: (kv[1].get("target_sign") or "9999", bname.get(kv[0], "")))
 for r, (sid, s) in enumerate(srows, 2):
     vals = {"Brand": bname.get(sid, sid), "SOW stage": s.get("stage", ""), "Owner": s.get("owner", ""),
             "Support team": ", ".join(s.get("support") or []), "Start date": s.get("start_date", ""), "Draft due": s.get("draft_due", ""),
             "Target sign": s.get("target_sign", ""), "Blocker / dependency": s.get("blocker", ""), "Next step": s.get("next_step", ""),
             "SOW link": s.get("sow_link", ""), "Growth Forecast link": s.get("gf_link", ""),
-            "GF updated": "Yes" if s.get("gf_updated") else "No", "Batch": s.get("batch", "")}
+            "GF updated": "Yes" if s.get("gf_updated") else "No", "Batch": s.get("batch", ""), "GF status": s.get("gf_status", "")}
     ws.append([sid, vals["Brand"], vals["SOW stage"], vals["Owner"], vals["Support team"], iso_to_date(vals["Start date"]),
                iso_to_date(vals["Draft due"]), iso_to_date(vals["Target sign"]),
                f'=IF(C{r}="Signed","",IF(ISNUMBER(H{r}),IF(H{r}<TODAY(),"Overdue",IF(H{r}-TODAY()<=3,"Due Soon","On Time")),IF(ISNUMBER(G{r}),IF(G{r}<TODAY(),"Overdue",IF(G{r}-TODAY()<=3,"Due Soon","On Time")),"")))',
-               vals["Blocker / dependency"], vals["Next step"], vals["SOW link"], vals["Growth Forecast link"], vals["GF updated"], vals["Batch"]])
+               vals["Blocker / dependency"], vals["Next step"], vals["SOW link"], vals["Growth Forecast link"], vals["GF updated"], vals["Batch"], vals["GF status"]])
     sync_rows.append(("SOW", sid, VERS.get("sow/" + sid, 0), vals))
 finish(ws, len(SCOLS), ro_cols=(1, 2, 9), date_cols=(6, 7, 8), wrap_cols=(10, 11))
 dropdown(ws, "C", "SowStage")

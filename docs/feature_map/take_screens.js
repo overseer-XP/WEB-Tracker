@@ -80,8 +80,8 @@ const shots = [];
   await snap('S11', 'Onboarding steps: current phase, gates, optional steps', 'F35, F36, F37',
     [['.phase summary', 'F35'], ['.step.isgate', 'F36'], ['[data-act=phase-done]', 'F37']]);
   // S12 gate refused
-  const g = await p.$('.step.isgate select');
-  if (g) { await g.selectOption('Done'); await p.waitForTimeout(250); }
+  await p.$$eval('.phase', ds => ds.forEach(d => { if (d.tagName === 'DETAILS') d.open = true }));
+  for (const g of await p.$$('.step.isgate select')) { if (await g.isVisible() && (await g.inputValue()) !== 'Done') { await g.scrollIntoViewIfNeeded(); await g.selectOption('Done'); await p.waitForTimeout(250); break; } }
   await snap('S12', 'Gate rule: a gate cannot be Done while earlier steps are open', 'F36', [['#toast', 'F36'], ['.step.isgate', 'F36']]);
   // S13 step editor
   await p.waitForTimeout(2200); await click('.step [data-act=open]');
@@ -103,7 +103,7 @@ const shots = [];
   await snap('S19', 'Best Practices grid: dots with letters', 'F52, F53', [['.legend', 'F52'], ['main table', 'F52'], ['[data-act=bp-add]', 'F53']]);
   // one real edit so the change log has something to show (preview only, nothing is saved)
   await go('brand-kndz'); await click('button[data-tab=steps]');
-  for (const code of ['1A.01', '1A.02']) { const s = await p.$(`select[data-code="${code}"]`); if (s) { await s.selectOption('Done'); await p.waitForTimeout(250); } }
+  for (const s of (await p.$$('select[data-code]')).slice(0, 40)) { if (!['Done', 'N/A'].includes(await s.inputValue())) { await s.selectOption('Done'); await p.waitForTimeout(250); break; } }
   // Settings
   await go('settings');
   await snap('S20', 'Settings: People', 'F60', [['main table', 'F60'], ['[data-act=add-person]', 'F60']]);
