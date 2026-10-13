@@ -41,7 +41,8 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   check('Brand stage On Hold', 'Brand page shows the on hold notice', (await mainText()).includes('is on hold'));
   check('Brand stage On Hold', 'Brand page target date says On hold', (await text('.facts')).includes('On hold'));
   await setMe('Cyrus'); await go('mine');
-  check('Brand stage On Hold', 'My tasks puts its work under Brands on hold', await p.evaluate(() => { const g = [...document.querySelectorAll('.group')].find(x => x.innerText.startsWith('Brands on hold')); return !!g && g.innerText.includes('MUMUK') }));
+  await view('minetab', 'onboarding');
+  check('Brand stage On Hold', 'My tasks: its brand card is greyed as On hold and sorted last', await p.evaluate(() => { const cs = [...document.querySelectorAll('.bcard')]; const c = cs.find(x => x.querySelector('.bname').innerText === 'MUMUK'); return !!c && c.classList.contains('held') && cs.indexOf(c) >= cs.filter(x => !x.classList.contains('held')).length }));
 
   // 2. Paused flag (Sourced Food Co.) counts as on hold too
   await openBrandEditor('sourced-food-co'); await p.selectOption('#d-paused', 'Yes'); await drawerSave();
@@ -109,7 +110,8 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await p.selectOption('#d-owner', 'Noopur'); await p.fill('#d-blk_text', 'Founder not replying'); await p.selectOption('#d-blk_person', 'Ben'); await drawerSave();
   check('Step blocker', 'Brand header counts the blocked step', (await text('.bhead')).includes((blocked0 + 1) + ' step' + (blocked0 ? 's' : '') + ' blocked'), await text('.bhead'));
   await setMe('Noopur'); await go('mine');
-  check('Step owner', 'My tasks shows the step in Blocked', stepName.length > 3 && await p.evaluate(n => { const g = [...document.querySelectorAll('.group')].find(x => x.innerText.startsWith('Blocked')); return !!g && g.innerText.includes(n) }, stepName.slice(0, 25)), stepName);
+  await view('minetab', 'onboarding');
+  check('Step owner', 'My tasks shows the step as blocked on the ORA card', await p.evaluate(code => { const c = [...document.querySelectorAll('.bcard')].find(x => x.querySelector('.bname').innerText === 'ORA'); return !!c && [...c.querySelectorAll('.item.blocked')].some(i => i.innerText.includes(code)) && c.innerText.includes('1 blocked') }, open[1]));
 
   // 9. Platform access Blocked turns brand Blocked (Bespoke row)
   await go('access'); await view('accview', 'list'); await p.selectOption('select[data-kind=access]', 'Blocked'); await p.waitForTimeout(250);
