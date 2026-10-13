@@ -20,7 +20,7 @@ from openpyxl.worksheet.hyperlink import Hyperlink
 OUT = sys.argv[1]
 SHOTS_DIR = sys.argv[2] if len(sys.argv) > 2 else None
 SHOTS = json.load(open(os.path.join(SHOTS_DIR, "shots.json"))) if SHOTS_DIR else []
-VERSION = "Tracker version 6 (13 Oct 2026)"
+VERSION = "Tracker version 7 (13 Oct 2026)"
 
 # --------------------------------------------------------------------------- 1. Features
 # ID, Area, Feature, What it does, Where to find it, Who uses it, Rules used, Data used, Simple view
@@ -28,13 +28,14 @@ FEATURES = [
     ("F01", "Navigation", "Left menu", "Links to My tasks, Overview, SOW tracker, Platform access, Best Practices and Settings (Settings only for editors). My tasks shows how many open items you have.", "Left side of every screen", "Everyone", "R14", "D01, D09", "Same"),
     ("F02", "Navigation", "Brand list in the menu", "Every brand grouped by stage, latest stage first (Live, SOW, Best Practices, Founder Workshops, Setup, Qualification, then On Hold and Internal). Each brand has a health dot and its open task count. Paused brands carry a Paused tag.", "Left menu, under the links", "Everyone", "R10, R11", "D01, D02", "Same"),
     ("F03", "Navigation", "Add brand", "Creates a brand with a name and stage. Also creates its empty SOW row and its onboarding step checklist (53 steps).", "Bottom of the left menu", "Editors", "", "D01, D03, D07", "Same"),
-    ("F04", "Navigation", "Simple / Full switch", "Simple hides detail people rarely need: support team, priority, start dates, brief and creative links, note previews, completed phases, step owner hints. Full shows everything. Members start in Simple, editors in Full. Each person's choice is remembered on their device.", "Top bar", "Everyone", "", "", "n/a"),
+    ("F04", "Navigation", "View for switch", "Leadership, Leads or Team. Leadership and Team show the simple screens (fewer columns and fields); Leads show everything. Team opens on My tasks, the others on the Overview. Members start on Team, editors on Leads. Each person's choice is remembered on their device.", "Top bar", "Everyone", "", "", "Is the switch"),
     ("F05", "Navigation", "You are (name picker)", "Each person picks their name once. The tracker remembers it for that person and uses it to build My tasks. It tries to guess from the claude.ai account name first.", "Top bar", "Everyone", "R15", "D08, D10", "Same"),
     ("F06", "Navigation", "Role tag", "Shows Lead / admin, Member or View only, so people know what they can change.", "Top bar", "Everyone", "R18", "", "Same"),
     ("F10", "My tasks", "My tasks page", "Every open task and onboarding step where you are the owner or on the support team, across all brands. Grouped: Blocked, Late, Due in the next 3 days, Everything else, then Brands on hold. Default landing page for members.", "My tasks", "Team members, leads", "R01, R02, R15, R19", "D02, D07, D08", "Hides role and priority"),
     ("F11", "My tasks", "One-click status change", "Change a task or step status straight from the list. No form.", "Status pill on every row", "Everyone who can edit", "R16, R17", "D02, D07", "Same"),
     ("F12", "My tasks", "Blocker shown in red", "A blocked item shows the reason and who it is waiting on, in red under the title.", "My tasks, brand task list", "Everyone", "R16", "D02", "Same"),
     ("F20", "Overview", "Summary tiles", "Five numbers: active brands, brands blocked, brands at risk, tasks late, SOWs to sign this week. Red or amber when not zero. Brands on hold are left out.", "Top of Overview", "Leadership, leads", "R01, R10", "D01, D02, D03", "Same"),
+    ("F23", "Overview", "Pipeline", "One column per brand stage from Qualification to Live, plus On hold, with the count and every brand in it with its health dot. Click a brand to open it.", "Overview", "Leadership, everyone", "R19", "D01", "Same"),
     ("F21", "Overview", "SOW signing plan", "Every unsigned SOW placed in the week of its target sign date: This week, Next week, Week of ..., No date yet. Blocked SOWs keep their date and show a red Blocked tag. Brands on hold sit in their own On hold column.", "Overview, under the tiles", "Leadership, SOW owners", "R04, R13", "D03", "Same"),
     ("F22", "Overview", "All brands table", "One row per brand: stage, health, next step and lead. Full view adds open, blocked and late counts, platform access, SOW stage, target sign, BP progress and onboarding %.", "Overview, bottom", "Leadership, leads", "R01, R05, R06, R07, R08, R09, R10", "D01-D07", "5 columns only"),
     ("F30", "Brand page", "Brand header", "Health with a one-line summary (open, blocked, late, onboarding %), facts strip (stage, brand lead, founder, SOW target sign, sprint) and the next step. Empty facts show an Add button for editors. Shows how many onboarding steps are blocked. A brand on hold shows a notice at the top.", "Click any brand", "Everyone", "R10, R09", "D01, D03", "Same"),
@@ -208,6 +209,7 @@ HISTORY = [
     ("13 Oct 2026", "Team Excel import (COE tracker 13 Oct + paid channels sheet): 61-step list replaced by the team's 53-step checklist with every tick loaded, Noor Squares added, 21 brand, 36 task, 40 SOW and 9 BP field updates, 8 new tasks, 45 paid platform rows (owner Ash Ghorab), GF status shown on SOW screens. Version 5", "F03, F35, F36, F40, F50, D03, D06"),
     ("13 Oct 2026", "Ashraf merged into Ash Ghorab (same person): 4 tasks and the KNDZ access row moved, Ashraf kept as an alias. Amazon rows: Pradnya's N/A means access is missing", "F60, F50"),
     ("13 Oct 2026", "New views: SOW progress board (Cat's layout, live from the onboarding steps) and Platform access grid (brand by platform). Phone width sideways scroll fixed on table pages. Version 6", "F54, F55, F50, F51"),
+    ("13 Oct 2026", "Calmer design: soft sage, teal and pastel status colours in light and dark. Simple / Full replaced by View for: Leadership, Leads, Team. Pipeline added to the Overview. Version 7", "F04, F23, F54"),
 ]
 
 # --------------------------------------------------------------------------- build

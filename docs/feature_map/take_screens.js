@@ -44,14 +44,14 @@ const shots = [];
   await snap('S01', 'The tracker: left menu, brand list, top bar', 'F01, F02, F03, F04, F05, F06',
     [['.nav', 'F01'], ['.rail > nav + div', 'F02'], ['.addbtn', 'F03'], ['.topbar .seg', 'F04'], ['.who', 'F05'], ['.topbar .tag', 'F06']]);
   // S02 overview top
-  await snap('S02', 'Overview: summary tiles and SOW signing plan', 'F20, F21', [['.tiles', 'F20'], ['.plan', 'F21']]);
+  await snap('S02', 'Overview: summary tiles, pipeline and SOW signing plan', 'F20, F23, F21', [['.tiles', 'F20'], ['.pipe', 'F23'], ['.plan', 'F21']]);
   // S03 overview table full
-  await scrollTo('main h2:nth-of-type(2)');
+  await scrollTo('main h2:nth-of-type(3)');
   await snap('S03', 'Overview: all brands table (Full view)', 'F22', [['main .tw', 'F22']]);
   // S04 overview table simple
-  await click('.topbar .seg button[data-v="1"]'); await scrollTo('main h2:nth-of-type(2)');
-  await snap('S04', 'Overview: all brands table (Simple view, 5 columns)', 'F04, F22', [['main .tw', 'F22'], ['.topbar .seg', 'F04']]);
-  await click('.topbar .seg button[data-v="0"]');
+  await click('.topbar .seg button[data-v="leadership"]'); await scrollTo('main h2:nth-of-type(3)');
+  await snap('S04', 'Overview: all brands table (Leadership view, 5 columns)', 'F04, F22', [['main .tw', 'F22'], ['.topbar .seg', 'F04']]);
+  await click('.topbar .seg button[data-v="lead"]');
   // S05 my tasks
   await go('mine');
   await snap('S05', 'My tasks: blocked first, then late, then due soon', 'F10, F11, F12',
