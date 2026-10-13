@@ -125,9 +125,9 @@ if D.get("use_new_step_list"):
             edited = [k for k in dropped if set(old[k]) - {"status"} or old[k].get("status") not in (None, "", "Not Started")]
             if edited:
                 skipped.append({"area": "Onboarding steps", "what": bname, "detail": "Old step edits removed with the old list: " + ", ".join(edited)})
-            put("brand_steps", bid, "set", {"brand": bid, "s": s, "archived_list": archived, "updated_at": NOW})
+            put("brand_steps", bid, "set", {"brand": bid, "s": s, "updated_at": NOW})
             done = sum(1 for v in s.values() if v["status"] == "Done")
-            applied.append({"area": "Onboarding steps", "what": bname, "detail": "%d ticks loaded (%d Done)%s" % (len(s), done, ", archive list" if archived else "")})
+            applied.append({"area": "Onboarding steps", "what": bname, "detail": "%d ticks loaded (%d Done)%s" % (len(s), done, ", from the qualifying list" if archived else "")})
 
 # ---------- 2. New brands ----------
 max_order = max(b.get("order", 0) for b in L["brands"].values())
