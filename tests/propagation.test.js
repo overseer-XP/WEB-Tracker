@@ -23,6 +23,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   const overviewRow = name => p.evaluate(n => { for (const r of document.querySelectorAll('main tbody tr')) if (r.querySelector('.bname') && r.querySelector('.bname').innerText === n) return r.innerText.replace(/\s+/g, ' '); return '' }, name);
   const openBrandEditor = async id => { await go('brand-' + id); await p.click('.bhead [data-act=open][data-kind=brand]'); await p.waitForTimeout(200) };
   const drawerSave = async () => { await p.click('[data-act=dsave]'); await p.waitForTimeout(350) };
+  const view = async (k, v) => { const b = await p.$(`[data-act=${k}][data-v=${v}]`); if (b) { await b.click(); await p.waitForTimeout(200) } };
   const setMe = async name => { await p.selectOption('#whoSel', name); await p.waitForTimeout(250) };
 
   // 1. Brand stage to On Hold (MUMUK)
@@ -34,7 +35,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   check('Brand stage On Hold', 'Overview health says On Hold', (await overviewRow('MUMUK')).includes('On Hold'));
   check('Brand stage On Hold', 'Active brands tile drops by 1', (await tile('active brands')) === active0 - 1, `${active0} to ${await tile('active brands')}`);
   check('Brand stage On Hold', 'SOW signing plan shows it under On hold, not a week', (await planColumn('MUMUK')) === 'On hold', await planColumn('MUMUK'));
-  await go('sow');
+  await go('sow'); await view('sowview', 'list');
   check('Brand stage On Hold', 'SOW tracker tags it Brand on hold', (await mainText()).includes('MUMUKBrand on hold') || (await mainText()).includes('MUMUK Brand on hold'));
   await go('brand-mumuk');
   check('Brand stage On Hold', 'Brand page shows the on hold notice', (await mainText()).includes('is on hold'));
@@ -49,7 +50,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   check('Paused flag', 'SOW plan shows it under On hold', (await planColumn('Sourced Food Co.')) === 'On hold', await planColumn('Sourced Food Co.'));
 
   // 3. SOW stage changed on the SOW tracker (IDEO to Blocked, needs a reason)
-  await go('sow');
+  await go('sow'); await view('sowview', 'list');
   await p.selectOption('select[data-kind=sow][data-id=ideo]', 'Blocked'); await p.waitForTimeout(200);
   // the blocker box only opens when the SOW has no blocker written yet
   let ideoBlocker = 'Waiting on founder';
@@ -64,7 +65,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
 
   // 4. SOW target date moves the signing plan week (Setosa to next week)
   const nd = new Date(); nd.setDate(nd.getDate() + 7); const iso = nd.toISOString().slice(0, 10);
-  await go('sow'); await p.click('tr[data-kind=sow][data-id=setosa-skincare] td:nth-child(3)'); await p.waitForTimeout(200);
+  await go('sow'); await view('sowview', 'list'); await p.click('tr[data-kind=sow][data-id=setosa-skincare] td:nth-child(3)'); await p.waitForTimeout(200);
   await p.fill('#d-target_sign', iso); await drawerSave();
   await go('overview');
   check('SOW target date', 'Signing plan moves it to Next week', (await planColumn('Setosa Skincare')) === 'Next week', await planColumn('Setosa Skincare'));
@@ -111,7 +112,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   check('Step owner', 'My tasks shows the step in Blocked', stepName.length > 3 && await p.evaluate(n => { const g = [...document.querySelectorAll('.group')].find(x => x.innerText.startsWith('Blocked')); return !!g && g.innerText.includes(n) }, stepName.slice(0, 25)), stepName);
 
   // 9. Platform access Blocked turns brand Blocked (Bespoke row)
-  await go('access'); await p.selectOption('select[data-kind=access]', 'Blocked'); await p.waitForTimeout(250);
+  await go('access'); await view('accview', 'list'); await p.selectOption('select[data-kind=access]', 'Blocked'); await p.waitForTimeout(250);
   if (await p.$('#bform')) { await p.fill('#b-text', 'Login not shared'); await p.selectOption('#b-person', 'Ash Ghorab'); await p.click('#bform button[type=submit]'); await p.waitForTimeout(300) }
   await go('overview');
   check('Platform access', 'Access column says Blocked', /Blocked/.test((await overviewRow('Bespoke')).split('Live')[1] || ''));
@@ -142,6 +143,30 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await go('overview');
   check('Off hold again', 'Back in the signing plan weeks', !['On hold', null].includes(await planColumn('MUMUK')), await planColumn('MUMUK'));
   check('Off hold again', 'Health no longer On Hold', !(await overviewRow('MUMUK')).includes('On Hold'));
+
+
+  // 14. SOW progress board: a square opens its steps, changing them recolours the square and moves onboarding % (CELF, W1)
+  await go('overview'); const celfPct0 = +((await overviewRow('CELF')).match(/(\d+)%/) || [])[1];
+  await go('sow'); await view('sowview', 'board');
+  const sq = 'button.bd[data-b=celf][data-c="1.0"]';
+  const sqBefore = await p.$eval(sq, e => e.className);
+  await p.click(sq); await p.waitForTimeout(250);
+  for (const s of await p.$$('#drawer select[data-code]')) { await s.selectOption('Done'); await p.waitForTimeout(250) }
+  await p.click('[data-act=close]'); await p.waitForTimeout(200);
+  check('SOW board', 'Square turns Done after its steps are Done', !sqBefore.includes('bd-done') && (await p.$eval(sq, e => e.className)).includes('bd-done'), sqBefore);
+  await go('overview');
+  check('SOW board', 'Overview onboarding % goes up', +((await overviewRow('CELF')).match(/(\d+)%/) || [])[1] > celfPct0);
+
+  // 15. Platform access grid: + adds a platform for a brand, editing it updates the grid (CELF TikTok Ads)
+  await go('access'); await view('accview', 'grid');
+  const plus = 'button.acd-empty[data-b=celf][data-p="TikTok Ads"]';
+  check('Access grid', 'Untracked platform shows a +', !!(await p.$(plus)));
+  await p.click(plus); await p.waitForTimeout(350);
+  await p.selectOption('#d-status', 'Granted'); await drawerSave(); await p.click('[data-act=close]').catch(() => {}); await p.waitForTimeout(200);
+  await go('access');
+  check('Access grid', 'New square shows Granted', await p.evaluate(() => [...document.querySelectorAll('main tbody tr')].some(r => r.innerText.startsWith('CELF') && r.querySelector('button.acd.s-ok'))));
+  await go('brand-celf'); await p.click('button[data-tab=access]'); await p.waitForTimeout(150);
+  check('Access grid', 'Brand access tab lists the new row', (await mainText()).includes('TikTok Ads'));
 
   check('Page', 'No script errors', errors.length === 0, errors.join(' | '));
   const failed = results.filter(r => !r.ok);

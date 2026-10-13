@@ -1,0 +1,28 @@
+{
+ "note": "Columns of the SOW progress board. Each column rolls up the onboarding steps listed by code. Edit here and load into config/sow_board.",
+ "groups": [
+  {"name": "Onboarding and access", "cols": [
+   {"label": "Kickoff call", "steps": ["P1.05"]},
+   {"label": "Founder Sync + Financial Snapshot", "steps": ["P1.07", "P1.08", "P2.05", "P2.06"]},
+   {"label": "Platform access + technical call", "steps": ["P1.09", "P2.07", "P2.08", "P2.09"]}]},
+  {"name": "Workshops", "cols": [
+   {"label": "W1 Financial and Growth", "steps": ["P4.01", "P4.02", "P4.03"]},
+   {"label": "W2 Creative Discovery", "steps": ["P4.04", "P4.05"]}]},
+  {"name": "Strategy and preparation", "cols": [
+   {"label": "Growth Assessment", "steps": ["P4.06", "P4.07"]},
+   {"label": "COE brief", "steps": ["P3.01", "P3.02"]},
+   {"label": "SOW setup", "steps": ["P2.01", "P2.02", "P2.03", "P2.04"]}]},
+  {"name": "SOW components", "cols": [
+   {"label": "Growth Forecast", "steps": ["P3.03", "P4.13", "P4.15"]},
+   {"label": "Thinking Alignment", "steps": ["P5.06"]},
+   {"label": "BPs", "steps": ["P5.03", "P5.04"]},
+   {"label": "Commercial", "steps": ["P5.07"]},
+   {"label": "Partnership Alignment", "steps": ["P5.08"]},
+   {"label": "Enablement Brief", "steps": ["P5.05"]}]},
+  {"name": "Workshops and sign-off", "cols": [
+   {"label": "W3 Growth Plan review", "steps": ["P4.08", "P4.09", "P4.10", "P4.11"]},
+   {"label": "W4 Capital and Valuation", "steps": ["P4.14"]},
+   {"label": "SOW call", "steps": ["P6.02", "P6.03", "P6.04"]},
+   {"label": "Signed", "sow_stage": {"done": ["Signed"], "progress": ["Sent for Signature"]}}]}
+ ]
+}

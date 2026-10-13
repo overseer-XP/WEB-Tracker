@@ -20,7 +20,7 @@ from openpyxl.worksheet.hyperlink import Hyperlink
 OUT = sys.argv[1]
 SHOTS_DIR = sys.argv[2] if len(sys.argv) > 2 else None
 SHOTS = json.load(open(os.path.join(SHOTS_DIR, "shots.json"))) if SHOTS_DIR else []
-VERSION = "Tracker version 5 (13 Oct 2026)"
+VERSION = "Tracker version 6 (13 Oct 2026)"
 
 # --------------------------------------------------------------------------- 1. Features
 # ID, Area, Feature, What it does, Where to find it, Who uses it, Rules used, Data used, Simple view
@@ -50,8 +50,10 @@ FEATURES = [
     ("F40", "Brand page", "Brand SOW tab", "SOW stage strip, stage picker, owner, target sign, draft due, batch, SOW and Growth Forecast links, GF status, blocker and next step. Internal brands show no SOW.", "Brand > SOW", "SOW owners, leadership", "R04, R13", "D03", "Hides support and start"),
     ("F41", "Brand page", "Brand Best Practices tab", "Status of each BP section with a picker, overall result, owner, blocker, notes.", "Brand > Best Practices", "BP owners", "R06, R07", "D05", "Hides notes"),
     ("F42", "Brand page", "Brand details editor", "Name, stage, lead, founder, website, sprint, next step, paused, restricted.", "Edit details", "Editors", "", "D01", "Same"),
-    ("F50", "SOW tracker", "SOW tracker page", "One row per brand sorted by target sign date. Stage, owner, target sign with due flag, documents, blocker, next step. Blocked SOWs show a red Blocked tag next to the date.", "SOW tracker", "Leadership, SOW owners", "R04, R13", "D03", "Hides draft due and batch"),
-    ("F51", "Platform access", "Platform access page", "Every brand and platform row. Filter by brand and status. Status only, never passwords.", "Platform access", "Paid team", "R03, R05", "D04", "Fewer columns"),
+    ("F50", "SOW tracker", "SOW tracker page", "List view (Sign dates and blockers). One row per brand sorted by target sign date. Stage, owner, target sign with due flag, documents, blocker, next step. Blocked SOWs show a red Blocked tag next to the date.", "SOW tracker", "Leadership, SOW owners", "R04, R13", "D03", "Hides draft due and batch"),
+    ("F54", "SOW tracker", "SOW progress board", "Default SOW view, built from Cat's sheet. One row per brand, columns grouped Onboarding and access, Workshops, Strategy and preparation, SOW components, Workshops and sign-off. Each square rolls up one or more onboarding steps (Done, In progress, Not done). Click a square to change those steps. Columns live in config/sow_board, not in code.", "SOW tracker > Progress board", "Leadership, SOW owners, everyone", "R09, R17", "D03, D06, D07", "Hides blocker column"),
+    ("F55", "Platform access", "Platform access grid", "Default access view. Brands down, platforms across, one square per brand and platform with its status. Click to edit, + to add a platform for a brand. Filter to brands missing access.", "Platform access > By brand", "Paid team, leads", "R03, R05", "D04", "Same"),
+    ("F51", "Platform access", "Platform access page", "List view. Every brand and platform row. Filter by brand and status. Status only, never passwords.", "Platform access", "Paid team", "R03, R05", "D04", "Fewer columns"),
     ("F52", "Best Practices", "BP grid", "Brands down, sections across. Each cell is a dot with a letter (F, T, Q, tick, !, dash) so colour is never the only signal. Blocked brands sort first.", "Best Practices", "Leadership, BP owners", "R06, R07", "D05", "Hides owner and due"),
     ("F53", "Best Practices", "Start tracking a brand", "Adds a brand to the BP grid with every section Not Started.", "Best Practices, top", "Anyone who can edit", "", "D05", "Same"),
     ("F60", "Settings", "People", "Add people, mark them team, external, group or unconfirmed, add other spellings (for example Noops for Noopur), switch people off.", "Settings > People", "Editors", "R15", "D08", "n/a"),
@@ -205,6 +207,7 @@ HISTORY = [
     ("13 Oct 2026", "Fix: on hold now shows everywhere. Brand stage On Hold or paused flag counts as on hold on every screen (MugWipes still showed Internal Review in the signing plan). Brand header counts blocked steps. 33-check update test added", "R10, R19, F10, F20, F21, F30, F50"),
     ("13 Oct 2026", "Team Excel import (COE tracker 13 Oct + paid channels sheet): 61-step list replaced by the team's 53-step checklist with every tick loaded, Noor Squares added, 21 brand, 36 task, 40 SOW and 9 BP field updates, 8 new tasks, 45 paid platform rows (owner Ash Ghorab), GF status shown on SOW screens. Version 5", "F03, F35, F36, F40, F50, D03, D06"),
     ("13 Oct 2026", "Ashraf merged into Ash Ghorab (same person): 4 tasks and the KNDZ access row moved, Ashraf kept as an alias. Amazon rows: Pradnya's N/A means access is missing", "F60, F50"),
+    ("13 Oct 2026", "New views: SOW progress board (Cat's layout, live from the onboarding steps) and Platform access grid (brand by platform). Phone width sideways scroll fixed on table pages. Version 6", "F54, F55, F50, F51"),
 ]
 
 # --------------------------------------------------------------------------- build

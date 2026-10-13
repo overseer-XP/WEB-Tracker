@@ -96,9 +96,9 @@ const shots = [];
   await snap('S16', 'Brand page: Best Practices tab', 'F41', [['main table', 'F41']]);
   // S17 SOW tracker, S18 access, S19 BP
   await go('sow');
-  await snap('S17', 'SOW tracker: every brand by target sign date', 'F50', [['main table', 'F50'], ['.tag.bad', 'F50']]);
+  await snap('S17', 'SOW tracker: progress board, one square per stage item', 'F54, F50', [['main table', 'F54'], ['.viewseg', 'F50']]);
   await go('access');
-  await snap('S18', 'Platform access: filter by brand and status', 'F51', [['.filters', 'F51'], ['main table', 'F51']]);
+  await snap('S18', 'Platform access: brands by platforms grid', 'F55, F51', [['main table', 'F55'], ['.filters', 'F55'], ['.viewseg', 'F51']]);
   await go('bp');
   await snap('S19', 'Best Practices grid: dots with letters', 'F52, F53', [['.legend', 'F52'], ['main table', 'F52'], ['[data-act=bp-add]', 'F53']]);
   // one real edit so the change log has something to show (preview only, nothing is saved)
