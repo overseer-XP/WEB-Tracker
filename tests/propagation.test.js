@@ -20,7 +20,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   const railGroup = name => p.evaluate(name => { let g = ''; const out = {}; for (const el of document.querySelectorAll('.rail h3, .rail .blink')) { if (el.tagName === 'H3') g = el.innerText.trim(); else out[[...el.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join('').trim()] = g } return out[name] }, name);
   const tile = label => p.evaluate(l => { for (const t of document.querySelectorAll('.tile')) if (t.innerText.includes(l)) return +t.querySelector('b').innerText; return null }, label);
   const planColumn = name => p.evaluate(n => { for (const w of document.querySelectorAll('.week')) for (const c of w.querySelectorAll('.chip .nm')) if (c.innerText === n) return w.querySelector('h4').innerText; return null }, name);
-  const overviewRow = name => p.evaluate(n => { for (const r of document.querySelectorAll('main tbody tr')) if (r.querySelector('.bname') && r.querySelector('.bname').innerText === n) return r.innerText.replace(/\s+/g, ' '); return '' }, name);
+  const overviewRow = name => p.evaluate(n => { const tbs = document.querySelectorAll('main table'); const last = tbs[tbs.length - 1]; if (!last) return ''; for (const r of last.querySelectorAll('tbody tr')) if (r.querySelector('.bname') && r.querySelector('.bname').innerText === n) return r.innerText.replace(/\s+/g, ' '); return '' }, name);
   const openBrandEditor = async id => { await go('brand-' + id); await p.click('.bhead [data-act=open][data-kind=brand]'); await p.waitForTimeout(200) };
   const drawerSave = async () => { await p.click('[data-act=dsave]'); await p.waitForTimeout(350) };
   const view = async (k, v) => { const b = await p.$(`[data-act=${k}][data-v=${v}]`); if (b) { await b.click(); await p.waitForTimeout(200) } };
@@ -77,8 +77,8 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await p.selectOption('main select[data-kind=task]', 'Blocked'); await p.waitForTimeout(200);
   await p.fill('#b-text', 'Need founder files'); await p.selectOption('#b-person', 'Cat'); await p.click('#bform button[type=submit]'); await p.waitForTimeout(350);
   await go('overview');
-  check('Task blocked', 'Brand health turns Blocked', !celf0.includes('Blocked') && (await overviewRow('CELF')).includes('Blocked'), (await overviewRow('CELF')).slice(0, 60));
-  check('Task blocked', 'Left menu dot is red', await p.evaluate(() => [...document.querySelectorAll('.rail .blink')].some(a => [...a.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join('').trim() === 'CELF' && a.querySelector('.dot.h-Blocked'))));
+  check('Task blocked', 'Brand health turns Has blockers (or Blocked if the task is High or Urgent)', !celf0.includes('Blocked') && !celf0.includes('Has blockers') && /Has blockers|Blocked/.test(await overviewRow('CELF')), (await overviewRow('CELF')).slice(0, 60));
+  check('Task blocked', 'Left menu dot turns red', await p.evaluate(() => [...document.querySelectorAll('.rail .blink')].some(a => [...a.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join('').trim() === 'CELF' && a.querySelector('.dot.h-Blocked, .dot.h-Hasblockers'))));
   await go('brand-celf'); await p.click('button[data-tab=tasks]'); await p.waitForTimeout(150); await p.click('[data-act=dept][data-dep=""]').catch(() => {}); await p.waitForTimeout(150);
   check('Task blocked', 'Team card shows 1 blocked', (await text('.teams')).includes('1 blocked'));
 
@@ -169,6 +169,89 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   check('Access grid', 'New square shows Granted', await p.evaluate(() => [...document.querySelectorAll('main tbody tr')].some(r => r.innerText.startsWith('CELF') && r.querySelector('button.acd.s-ok'))));
   await go('brand-celf'); await p.click('button[data-tab=access]'); await p.waitForTimeout(150);
   check('Access grid', 'Brand access tab lists the new row', (await mainText()).includes('TikTok Ads'));
+
+
+  // 16. Search finds a brand and a task and takes you there
+  await go('overview'); await p.click('#q'); await p.keyboard.type('Seoul'); await p.waitForTimeout(150);
+  check('Search', 'Brand result shows', (await text('#sres')).includes('Seoul Tonic'));
+  await p.keyboard.press('Enter'); await p.waitForTimeout(300);
+  check('Search', 'Enter opens the first result', await p.evaluate(() => location.hash) === '#brand-seoul-tonic');
+  const anyTask = await p.evaluate(() => { const t = Object.values(window.__SEED.tasks).find(t => t.title && t.brand && t.status !== 'Complete' && t.title.length > 12); return t.title });
+  await p.click('#q'); await p.keyboard.type(anyTask.slice(0, 12)); await p.waitForTimeout(150);
+  const taskRow = await p.$$eval('#sres .sr-row', rs => rs.findIndex(r => r.innerText.toLowerCase().startsWith('task')));
+  await (await p.$$('#sres .sr-row'))[taskRow].click(); await p.waitForTimeout(400);
+  check('Search', 'Task result opens its brand page with the task highlighted', !!(await p.$('tr.flash')));
+
+  // 17. Sort the brands table
+  await go('overview'); await p.click('[data-act=sort][data-k=health]'); await p.waitForTimeout(150);
+  const firstH = await p.evaluate(() => { const tbs = document.querySelectorAll('main table'); return tbs[tbs.length - 1].querySelector('tbody tr td:nth-child(3)').innerText.trim() }).catch(() => '');
+  check('Sort', 'Sorting by health puts Blocked first', firstH === 'Blocked', firstH);
+  await p.click('[data-act=sort][data-k=health]'); await p.waitForTimeout(150);
+  const firstH2 = await p.evaluate(() => { const tbs = document.querySelectorAll('main table'); return tbs[tbs.length - 1].querySelector('tbody tr td:nth-child(3)').innerText.trim() }).catch(() => '');
+  check('Sort', 'Clicking again reverses it', firstH2 !== 'Blocked', firstH2);
+
+  // 18. A past SOW target shows in Needs attention
+  await go('sow'); await view('sowview', 'list'); await p.click('tr[data-kind=sow][data-id=tiny-wins] td:nth-child(3)'); await p.waitForTimeout(200);
+  const pastD = new Date(); pastD.setDate(pastD.getDate() - 3); await p.fill('#d-target_sign', pastD.toISOString().slice(0, 10)); await drawerSave();
+  await go('overview');
+  check('Needs attention', 'Past SOW target appears for Tiny Wins', await p.evaluate(() => [...document.querySelectorAll('.att tr')].some(r => r.innerText.includes('Past SOW target') && r.innerText.includes('Tiny Wins'))));
+
+  // 19. Stage change starts the days-in-stage clock
+  await openBrandEditor('celf'); await p.selectOption('#d-stage', 'Founder Workshops'); await drawerSave();
+  check('Stage age', 'Brand facts show days in stage', (await text('.facts')).includes('for 0 days'));
+
+  // 20. Gate sign-off is recorded with the person and date
+  await setMe('Noopur'); await go('brand-bespoke'); await p.click('button[data-tab=steps]'); await p.click('[data-act=allphases]').catch(() => {}); await p.waitForTimeout(200);
+  const gate = await p.$$eval('.step.isgate select[data-code]', els => { const e = els.find(x => x.offsetHeight); return e && e.dataset.code });
+  await p.selectOption(`select[data-code="${gate}"]`, 'In Progress'); await p.waitForTimeout(200);
+  await p.selectOption(`select[data-code="${gate}"]`, 'Done'); await p.waitForTimeout(300);
+  check('Gate sign-off', 'Done gate shows Signed off by Noopur', await p.evaluate(c => { const s = document.querySelector(`select[data-code="${c}"]`).closest('.step'); return s.innerText.includes('Signed off by Noopur') }, gate));
+
+  // 21. Comment with a mention reaches that person's My tasks
+  await go('brand-kndz'); await p.click('button[data-tab=updates]'); await p.waitForTimeout(150);
+  await p.fill('#c-text', 'Founder sent the GF numbers, @Cat please check'); await p.click('#cform button[type=submit]'); await p.waitForTimeout(300);
+  check('Comments', 'Comment shows on the brand Updates tab', (await mainText()).includes('Founder sent the GF numbers'));
+  check('Comments', 'Updates tab counts it', (await text('.tabs')).includes('Updates (1)'));
+  await setMe('Cat'); await go('mine');
+  check('Comments', 'Mention shows in Cat\'s My tasks', await p.evaluate(() => [...document.querySelectorAll('.item.men')].some(x => x.innerText.includes('KNDZ'))));
+
+  // 22. Task template: create in Settings, use on a brand
+  await go('settings'); await p.click('[data-act=settab][data-tab=templates]'); await p.waitForTimeout(150);
+  await p.fill('#t-name', 'UGC kickoff'); await p.selectOption('#t-vert', 'UGC'); await p.fill('#t-lines', 'Shortlist creators | Creator Partnerships | 5\nSend brief to creators | Creator Partnerships | 7');
+  await p.click('#tform button[type=submit]'); await p.waitForTimeout(300);
+  check('Templates', 'Template is listed', (await mainText()).includes('UGC kickoff'));
+  await go('brand-ora'); await p.click('button[data-tab=tasks]'); await p.click('[data-act=dept][data-dep=""]').catch(() => {}); await p.waitForTimeout(150);
+  const before22 = +(await text('.tabs')).match(/Tasks \((\d+)/)[1];
+  await p.selectOption('select[data-act=use-tpl]', '0'); await p.waitForTimeout(150); await p.click('[data-act=mok]'); await p.waitForTimeout(500);
+  check('Templates', 'Using it adds 2 tasks to the brand', +(await text('.tabs')).match(/Tasks \((\d+)/)[1] === before22 + 2);
+
+  // 23. People view: pick a person, filter by vertical
+  await go('people'); const rows23 = (await p.$$('main tbody tr')).length;
+  await p.click('main tbody tr.click'); await p.waitForTimeout(200);
+  check('People', 'Clicking a person lists their tasks', (await p.$$('main .item')).length > 0);
+  await p.selectOption('select[data-k=vert]', 'UGC'); await p.waitForTimeout(150);
+  check('People', 'Vertical filter narrows the table', (await p.$$('main tbody tr')).length < rows23);
+  await p.selectOption('select[data-k=vert]', '');
+
+  // 24. My tasks vertical filter
+  await setMe('Cat'); await go('mine'); const n24 = (await p.$$('main .item:not(.men)')).length;
+  await p.click('[data-act=mvert][data-v="UGC"]'); await p.waitForTimeout(150);
+  check('My tasks', 'Vertical chip narrows the list', (await p.$$('main .item:not(.men)')).length < n24);
+  await p.click('[data-act=mvert][data-v=""]');
+
+  // 25. Client view shows no internal data
+  await go('client-bespoke');
+  const internal = await p.evaluate(() => Object.values(window.__SEED.tasks).filter(t => t.brand === 'bespoke').map(t => t.title).filter(Boolean));
+  const ct = await mainText();
+  check('Client view', 'No task names appear on the client page', !internal.some(t => t.length > 8 && ct.includes(t)));
+  check('Client view', 'Download button is there', !!(await p.$('[data-act=client-dl]')));
+
+  // 26. Leadership view hides the dense table until asked
+  await go('overview'); await view('lens', 'leadership');
+  check('Leadership view', 'Full table is folded away', !!(await p.$('[data-act=allbrands]')));
+  await p.click('[data-act=allbrands]'); await p.waitForTimeout(150);
+  check('Leadership view', 'Show button opens it', !(await p.$('[data-act=allbrands]')));
+  await view('lens', 'lead');
 
   check('Page', 'No script errors', errors.length === 0, errors.join(' | '));
   const failed = results.filter(r => !r.ok);

@@ -60,9 +60,18 @@ Blank Excel cells never wipe a tracker value. Owners that are not people (for ex
 
 ## Tests
 
+Build a preview of the real app on exported data, then run the checks. Nothing is saved.
+
 ```
-python3 -I docs/feature_map/make_preview.py .live app/index.html .shots/preview.html
-node tests/propagation.test.js .shots/preview.html
+python3 -I docs/feature_map/make_preview.py .live app/index.html .shots/preview.html          # lead
+python3 -I docs/feature_map/make_preview.py .live app/index.html .shots/member.html member    # member
+python3 -I docs/feature_map/make_preview.py .live app/index.html .shots/view.html view        # view only
+node tests/propagation.test.js .shots/preview.html   # every kind of update reaches every screen (58 checks)
+node tests/controls.js .shots/preview.html           # controls that only appear in a certain mode (43)
+node tests/audit.js .shots/preview.html              # every screen, every view, desktop and phone, every button
+node tests/roles.js .shots/member.html .shots/view.html   # what members and view-only people can do (12)
+python3 -I tests/make_stress_data.py .live .shots/stress 8 && python3 -I docs/feature_map/make_preview.py .shots/stress app/index.html .shots/stress.html
+node tests/stress.js .shots/stress.html              # page and edit timings with 8 times the brands
 ```
 
-Runs the real app on a copy of exported data and checks that every kind of update reaches every screen it should. Run it before publishing a new version.
+Run them all before publishing a new version.

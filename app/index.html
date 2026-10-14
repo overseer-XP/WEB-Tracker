@@ -63,6 +63,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .dot.h-AtRisk{background:var(--dRisk)}
 .dot.h-OnTrack{background:var(--dTrack)}
 .dot.h-Live{background:var(--dLive)}
+.dot.h-Hasblockers,.dot.h-HasBlockers{background:transparent;box-shadow:inset 0 0 0 2.5px var(--bad)}
 .dot.h-OnHold{background:transparent;box-shadow:inset 0 0 0 2px var(--faint)}
 /* top */
 .mainwrap{display:flex;flex-direction:column;min-width:0;height:100%}
@@ -168,6 +169,45 @@ select.ps:disabled{cursor:default;background-image:none;padding-right:9px}
 .group h2 .count{font-size:12px;color:var(--muted);font-weight:500}
 .item{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:14px;align-items:center;padding:10px 14px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);margin-bottom:6px}
 .item .t{font-weight:600}
+.tile em.tr{display:block;font-style:normal;font-size:11.5px;color:var(--muted);margin-top:4px}.tile em.tr.up{color:var(--ok)}.tile em.tr.down{color:var(--bad)}
+.tile span i{font-style:normal}
+.att td{vertical-align:middle}
+.hyg{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;background:var(--warnBg);color:var(--warn);border-radius:var(--r);padding:9px 14px;margin:12px 0 0;font-size:13px}
+.hyg a{color:var(--warn);text-decoration:underline}
+.pb .days{font-style:normal;font-size:11px;color:var(--faint);margin-left:auto}
+.search{position:relative;flex:1;min-width:220px;max-width:420px}
+.bhead>div:first-child{min-width:0}
+.clamp1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.att td.muted{max-width:560px}
+.search input{width:100%;border:1px solid var(--line2);background:var(--panel);border-radius:8px;padding:6px 10px}
+.sres{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--panel);border:1px solid var(--line2);border-radius:var(--r);box-shadow:0 8px 24px color-mix(in srgb,var(--ink) 14%,transparent);z-index:30;max-height:60vh;overflow:auto;padding:4px}
+.sr-row{display:grid;grid-template-columns:62px minmax(0,1fr);gap:0 8px;width:100%;text-align:left;border:0;background:transparent;padding:7px 8px;border-radius:6px;cursor:pointer}
+.sr-row:hover,.sr-row:focus{background:var(--accentSoft)}.sr-type{grid-row:span 2;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding-top:2px}
+.sr-l{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sr-s{font-size:12px}.sr-none{padding:10px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
+.since{background:var(--infoBg);color:var(--info);border-radius:var(--r);padding:9px 14px;margin:0 0 12px;font-size:13px}
+.since.faint{background:transparent;padding:0 2px}
+a.item.men{text-decoration:none;color:var(--ink);border-left:3px solid var(--accent)}
+.mention{color:var(--accent)}
+.guide{display:flex;gap:14px;align-items:flex-start;background:var(--accentSoft);border-radius:var(--r);padding:10px 14px;margin:0 0 14px;font-size:13px}
+.guide ul{margin:4px 0 0;padding-left:18px}.guide>div{flex:1}
+.upd{align-items:start}.h3{font-size:14px;margin:0 0 8px}
+.cform textarea{width:100%;min-height:72px;border:1px solid var(--line2);border-radius:6px;padding:8px;background:var(--panel);resize:vertical}
+.cform{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.cmt{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;margin-bottom:8px}
+.ctext{white-space:pre-wrap;overflow-wrap:anywhere;margin-top:4px}
+.actlist{padding:4px 12px}.act{padding:7px 0;border-bottom:1px solid var(--line);font-size:13px}.act:last-child{border-bottom:0}
+.load{display:inline-block;width:110px;height:8px;background:var(--offBg);border-radius:9px;overflow:hidden;vertical-align:middle;margin-right:6px}
+.load i{display:block;height:100%;background:var(--dTrack)}.load.warn i{background:var(--dRisk)}
+tr.sel td{background:var(--accentSoft)}
+.sortb{border:0;background:transparent;padding:0;font:inherit;color:inherit;cursor:pointer;text-transform:inherit;letter-spacing:inherit}
+.sortb:hover,.sortb.on{color:var(--accent)}
+.tag.ok{background:var(--okBg);color:var(--ok)}
+.bd{font-size:12px;font-weight:700;color:var(--ink)}.bdl{font-size:10px;line-height:12px;text-align:center;color:var(--ink)}
+.client{max-width:760px}.client .ceyebrow{color:var(--muted);font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;margin:12px 0 0}.client h1{font-size:28px;margin:4px 0 16px}
+.cstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}.cstats div{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px}.cstats b{display:block;font-size:20px}.cstats span{color:var(--muted);font-size:13px}
+.cgroups{background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}.cg{display:flex;gap:10px;align-items:center;padding:11px 14px;border-bottom:1px solid var(--line)}.cg:last-child{border-bottom:0}.cn{flex:1;font-weight:600}.cs{color:var(--muted);font-size:13px}
+.cdot{width:12px;height:12px;border-radius:50%;background:var(--fNA)}.c-Done{background:var(--dLive)}.c-Inprogress{background:var(--fProg)}
 .flash,.flash td{background:var(--accentSoft)!important;transition:background .6s}
 @media (prefers-reduced-motion:reduce){.flash,.flash td{transition:none}}
 .cnt{font-size:11.5px;margin-left:6px;padding:0 6px;border-radius:999px;background:var(--offBg);color:var(--off);font-weight:600}
@@ -295,8 +335,8 @@ table.grid td{vertical-align:middle}
 (function(){
 "use strict";
 /* ---------- state ---------- */
-const COLL={brands:"brands",tasks:"tasks",access:"access",sow:"sow",bps:"bps",steps:"steps",bsteps:"brand_steps",config:"config"};
-const S={brands:{},tasks:{},access:{},sow:{},bps:{},steps:{},bsteps:{},config:{},log:{}};
+const COLL={brands:"brands",tasks:"tasks",access:"access",sow:"sow",bps:"bps",steps:"steps",bsteps:"brand_steps",config:"config",comments:"comments",snaps:"snapshots"};
+const S={brands:{},tasks:{},access:{},sow:{},bps:{},steps:{},bsteps:{},config:{},comments:{},snaps:{},log:{}};
 const ready={};
 let db=null,U=null,uid=null,canEdit=false,canWrite=true,dl=null;
 let me="";               // the person this viewer picked
@@ -335,7 +375,7 @@ function dueHtml(date,done){const f=dueFlag(date,done);if(!f)return date&&done?`
 function cls(v){
   if(["Complete","Granted","Signed","Done","Live","All Granted","On Time","On Track"].includes(v))return v==="On Track"?"s-info":"s-ok";
   if(["Blocked","Overdue","Urgent"].includes(v))return"s-bad";
-  if(["At Risk","Due Soon","High","In Progress","Briefed","Requested","Template Pending","Drafting","Internal Review","Final Review (Ben)","Founder Check-in","Revisions","Sent for Signature","Foundations","Tactics In","In QA"].includes(v))return"s-warn";
+  if(["At Risk","Has blockers","Due Soon","High","In Progress","Briefed","Requested","Template Pending","Drafting","Internal Review","Final Review (Ben)","Founder Check-in","Revisions","Sent for Signature","Foundations","Tactics In","In QA"].includes(v))return"s-warn";
   if(["Pending","Not Requested","Medium","Not Started","Not Set Up"].includes(v))return"s-info";
   return"s-off";
 }
@@ -364,19 +404,27 @@ function accessRoll(bid){const rows=Object.values(S.access).filter(a=>a.brand===
   let s="Not Set Up";if(rows.length)s=rows.some(a=>a.status==="Blocked")?"Blocked":g===rows.length?"All Granted":"In Progress";return{summary:s,text:rows.length?g+" / "+rows.length:""}}
 const sowDue=s=>!s||s.stage==="Signed"?"":dueFlag(s.target_sign||s.draft_due,false);
 function onboarding(bid){const st=stepsSorted();let na=0,done=0;for(const s of st){const v=stepState(bid,s.code).status;if(v==="N/A")na++;else if(v==="Done")done++}const tot=st.length-na;return tot?done/tot:0}
-function roll(bid){
+function roll(bid){return memo("roll:"+bid,()=>rollNow(bid))}
+function tasksOf(bid){return memo("tasksBy",()=>{const m={};for(const t of Object.values(S.tasks))if(t.title)(m[t.brand]=m[t.brand]||[]).push(t);return m})[bid]||[]}
+function rollNow(bid){
   const b=S.brands[bid]||{};
-  const ts=Object.values(S.tasks).filter(t=>t.brand===bid&&t.title);
+  const ts=tasksOf(bid);
   const open=ts.filter(t=>t.status!=="Complete").length;
   const blocked=ts.filter(t=>t.status==="Blocked").length;
   const overdue=ts.filter(t=>dueFlag(t.deadline,t.status==="Complete")==="Overdue").length;
   const acc=accessRoll(bid);const s=S.sow[bid];const sow=isInternal(b)?"N/A":(s?(s.stage||"Not Started"):"Not Set");
   const bp=bpRoll(bid);const pct=onboarding(bid);
+  const why=[];let whyTab="";const reason=(t,tab)=>{why.push(t);if(!whyTab)whyTab=tab};
+  if(sow==="Blocked")reason("SOW blocked"+(s&&s.blocker?": "+s.blocker:""),"sow");
+  if(acc.summary==="Blocked")reason("Platform access blocked","access");
+  if(bp&&bp.overall==="Blocked")reason("Best Practices blocked","bp");
+  for(const st of stepsSorted())if(st.is_gate){const x=stepState(bid,st.code);if(x.blocker&&x.blocker.text&&!["Done","N/A"].includes(x.status))reason("Gate step blocked: "+st.name,"steps")}
+  for(const t of ts)if(t.status==="Blocked"&&["High","Urgent"].includes(t.priority))reason(t.title+(t.blocker&&t.blocker.text?": "+t.blocker.text:""),"tasks");
   let health="On Track";
   if(onHold(b))health="On Hold";
-  else if(blocked>0||acc.summary==="Blocked"||sow==="Blocked"||(bp&&bp.overall==="Blocked"))health="Blocked";
-  else if(overdue>0)health="At Risk";else if(sow==="Signed")health="Live";
-  return{open,blocked,overdue,acc,sow,sowRow:s||{},bp,pct,health,hold:onHold(b),stepBlocked:stepBlocks(bid)}}
+  else if(why.length)health="Blocked";
+  else if(overdue>0)health="At Risk";else if(blocked>0)health="Has blockers";else if(sow==="Signed")health="Live";
+  return{open,blocked,overdue,acc,sow,sowRow:s||{},bp,pct,health,why,whyTab,hold:onHold(b),stepBlocked:stepBlocks(bid)}}
 
 /* ---------- writes + change log ---------- */
 const wq={};
@@ -384,7 +432,8 @@ function chain(k,fn){wq[k]=(wq[k]||Promise.resolve()).then(fn,fn);return wq[k]}
 function refused(e){if(e&&e.code==="invalid_argument"){canWrite=false;toast("You can view this tracker but not change it.");render();return true}return false}
 async function save(c,id,patch,label){
   if(!db||!canWrite){toast("You can view this tracker but not change it.");return}
-  const cur=S[c][id];const old={};for(const k of Object.keys(patch))old[k]=cur?cur[k]:undefined;
+  const cur=S[c][id];if(c==="brands"&&patch.stage&&cur&&patch.stage!==cur.stage)patch=Object.assign({},patch,{stage_since:isoToday()});
+  const old={};for(const k of Object.keys(patch))old[k]=cur?cur[k]:undefined;
   S[c][id]=Object.assign({},cur||{},patch);render();
   const body=Object.assign({},patch,{updated_at:Date.now(),updated_by:uid||""});
   return chain(c+"/"+id,()=>(cur?db.doc(COLL[c]+"/"+id).update(body):db.doc(COLL[c]+"/"+id).set(Object.assign({},S[c][id],body))))
@@ -417,7 +466,8 @@ function addLog(c,id,patch,old,label){
 /* ---------- routing ---------- */
 function parseHash(){const h=location.hash.replace(/^#/,"");
   if(h.startsWith("brand-")){route={v:"brand",id:h.slice(6)};if(deptSel.bid!==route.id)deptSel={bid:"",dep:""}}
-  else if(["mine","overview","access","sow","bp","settings"].includes(h))route={v:h,id:""};
+  else if(h.startsWith("client-"))route={v:"client",id:h.slice(7)};
+  else if(["mine","overview","access","sow","bp","settings","people"].includes(h))route={v:h,id:""};
   else route={v:"",id:""};
   $("#rail").classList.remove("open");closeDrawer();render();$("#main").scrollTop=0}
 window.addEventListener("hashchange",parseHash);
@@ -426,11 +476,15 @@ const go=h=>{if(location.hash==="#"+h)parseHash();else location.hash=h};
 /* ---------- render ---------- */
 let pend=false;
 function editing(){const a=document.activeElement;return a&&(/INPUT|TEXTAREA/.test(a.tagName))&&($("#main").contains(a)||$("#drawer").contains(a))}
-function render(){if(editing()){pend=true;return}pend=false;renderRail();renderTop();renderMain();if(drawerCtx&&!$("#drawer").hidden)openDrawer(drawerCtx.kind,drawerCtx.id,drawerCtx.extra,true)}
+// Numbers per brand are worked out once per draw and reused by every part of the page.
+let epoch=0;const memoStore=new Map();function memo(k,fn){const e=memoStore.get(k);if(e&&e.ep===epoch)return e.v;const v=fn();memoStore.set(k,{ep:epoch,v});return v}
+let rq=0;function scheduleRender(){if(rq)return;rq=requestAnimationFrame(()=>{rq=0;render()})}
+function render(){epoch++;if(editing()){pend=true;return}pend=false;renderRail();renderTop();renderMain();if(drawerCtx&&!$("#drawer").hidden)openDrawer(drawerCtx.kind,drawerCtx.id,drawerCtx.extra,true)}
 document.addEventListener("focusout",()=>setTimeout(()=>{if(pend&&!editing())render()},0));
 
 const STAGE_ORDER=()=>{const st=L("stage");const main=st.filter(s=>!["On Hold","Internal"].includes(s)).reverse();return main.concat(st.filter(s=>["On Hold","Internal"].includes(s)))};
-function myItems(){
+function myItems(){return memo("mine:"+me,myItemsNow)}
+function myItemsNow(){
   if(!me)return[];const out=[];
   for(const t of withId(S.tasks)){if(!t.title||t.status==="Complete")continue;const own=isPerson(t.owner,me),sup=(t.support||[]).some(x=>isPerson(x,me));if(!own&&!sup)continue;
     const f=dueFlag(t.deadline,false);out.push({kind:"task",id:t._id,brand:t.brand,title:t.title,status:t.status,due:t.deadline,flag:f,blocked:t.status==="Blocked",blocker:t.blocker,priority:t.priority,role:own?"Owner":"Support",notes:t.notes})}
@@ -439,7 +493,7 @@ function myItems(){
   return out}
 function renderRail(){
   const mine=myItems().length;
-  const nav=[["mine","My tasks",mine||""],["overview","Overview",""],["sow","SOW tracker",""],["access","Platform access",""],["bp","Best Practices",""]];
+  const nav=[["mine","My tasks",mine||""],["overview","Overview",""],["people","People",""],["sow","SOW tracker",""],["access","Platform access",""],["bp","Best Practices",""]];
   if(canEdit)nav.push(["settings","Settings",""]);
   let h=`<div class="mark">Valerie COE<small>Brand onboarding tracker</small></div><nav class="nav">`;
   for(const[k,l,n]of nav)h+=`<a href="#${k}" class="${route.v===k?"on":""}">${esc(l)}<span class="n">${n}</span></a>`;
@@ -454,8 +508,9 @@ function renderRail(){
 }
 const LENSES=[["leadership","Leadership","Big picture: pipeline, health, signing plan. Fewer columns"],["lead","Leads","Everything: every column, editor fields and filters"],["team","Team","Your work first: My tasks, simple tables"]];
 function renderTop(){
+  if(document.activeElement&&document.activeElement.id==="q")return; // keep the search box while someone types
   const ppl=activePeople();
-  $("#topbar").innerHTML=`<button class="btn sm menu" data-act="menu" aria-label="Open menu">Menu</button><span class="grow"></span>
+  $("#topbar").innerHTML=`<button class="btn sm menu" data-act="menu" aria-label="Open menu">Menu</button><div class="search"><label for="q" class="sr">Search brands, tasks, people and steps</label><input id="q" type="search" placeholder="Search brands, tasks, people" autocomplete="off" value="${esc(searchQ)}"><div id="sres" class="sres" hidden></div></div><span class="grow"></span>
    <div class="lens"><span class="lbl">View for</span><div class="seg" role="group" aria-label="View for">${LENSES.map(([k,l,t])=>`<button data-act="lens" data-v="${k}" class="${lens===k?"on":""}" title="${esc(t)}">${esc(l)}</button>`).join("")}</div></div>
    <label class="who" for="whoSel">You are <select id="whoSel" data-act="who"><option value="">Pick your name</option>${ppl.map(p=>`<option ${p===me?"selected":""}>${esc(p)}</option>`).join("")}</select></label>
    <div class="seg" role="group" aria-label="Colours"><button data-act="theme" data-v="light" class="${theme==="light"?"on":""}">Light</button><button data-act="theme" data-v="dark" class="${theme==="dark"?"on":""}">Dark</button></div>
@@ -470,24 +525,31 @@ function renderMain(){
   if(v==="settings"&&!canEdit)v="overview";
   const ro=canWrite?"":`<div class="notice info">You can view this tracker but not change it. Ask a lead for edit access.</div>`;
   if(focusItem&&v==="brand")setTimeout(()=>{const f=focusItem;focusItem=null;let el=document.querySelector("#main "+f.sel);if(!el)return;if(f.up)el=el.closest(f.up)||el;const mm=$("#main"),r=el.getBoundingClientRect(),mr=mm.getBoundingClientRect();mm.scrollTop+=r.top-mr.top-mm.clientHeight/2+r.height/2;el.classList.add("flash");setTimeout(()=>el.classList.remove("flash"),2600)},40);
-  m.innerHTML=ro+(v==="brand"?vBrand(route.id):v==="mine"?vMine():v==="sow"?vSow():v==="access"?vAccess():v==="bp"?vBp():v==="settings"?vSettings():vOverview());
+  m.innerHTML=ro+(v==="brand"?vBrand(route.id):v==="mine"?vMine():v==="sow"?vSow():v==="access"?vAccess():v==="bp"?vBp():v==="settings"?vSettings():v==="people"?vPeople():v==="client"?(canEdit?vClient(route.id):vOverview()):vOverview());
 }
 function canChangeTask(t){if(!canWrite)return false;if(canEdit)return true;return isPerson(t.owner,me)||(t.support||[]).some(x=>isPerson(x,me))}
 function statusSel(kind,id,val,list,enabled,extra){return`<select class="ps ${cls(val)}" data-act="status" data-kind="${kind}" data-id="${esc(id)}" ${extra||""} ${enabled?"":"disabled"} aria-label="Status">${opts(list,val,false)}</select>`}
 
 /* ---------- My tasks ---------- */
-let mineTab=null;
+let mineTab=null,mineVert="",sinceTs=null;
+function sinceBanner(all){const k="vt-seen-"+me;if(sinceTs===null||sinceTs.who!==me){sinceTs={who:me,t:+(ls.get(k)||0)};ls.set(k,String(Date.now()))}
+  if(!sinceTs.t)return"";const ids=new Set(all.map(it=>it.id));const ch=[];for(const d of Object.values(S.log))for(const e of d.entries||[])if(e.at>sinceTs.t&&ids.has(e.id)&&d.person!==me)ch.push(Object.assign({person:d.person},e));
+  const men=myMentions(me).filter(c=>c.at>sinceTs.t);if(!ch.length&&!men.length)return`<div class="since faint">Nothing changed on your work since your last visit ${esc(agoText(sinceTs.t))}.</div>`;
+  return`<div class="since"><b>Since your last visit ${esc(agoText(sinceTs.t))}:</b> ${ch.length?`${ch.length} change${ch.length>1?"s":""} to your work by others`:""}${ch.length&&men.length?", ":""}${men.length?`${men.length} new mention${men.length>1?"s":""}`:""}.${ch.slice(0,4).map(e=>`<div class="faint" style="font-size:12.5px">${esc(e.person||"Someone")} changed ${esc(e.field)} on ${esc(e.label)}${e.new?` to ${esc(String(e.new).slice(0,40))}`:""}</div>`).join("")}</div>`}
 let focusItem=null; // set when My tasks sends someone to an item on a brand page
 const isLiveBrand=bid=>{const b=S.brands[bid];return !b||b.stage==="Live"||isInternal(b)};
 function vMine(){
   let h=`<h1>My tasks</h1>`;
   if(!me)return h+`<p class="sub">Your open tasks and onboarding steps across every brand.</p><div class="card"><p style="margin-top:0">Pick your name to see your work.</p><select class="btn" data-act="who" aria-label="Your name"><option value="">Pick your name</option>${activePeople().map(p=>`<option>${esc(p)}</option>`).join("")}</select></div>`;
-  const items=myItems();
+  const all=myItems();const items=mineVert?all.filter(it=>it.kind==="task"&&vertOf(S.tasks[it.id]||{})===mineVert):all;
   const onb=items.filter(it=>!isLiveBrand(it.brand)),live=items.filter(it=>isLiveBrand(it.brand));
+  h+=sinceBanner(all)+guide("mine");
+  const men=myMentions(me);if(men.length)h+=`<section class="group"><h2>Mentions <span class="count">${men.length}</span></h2>${men.slice(0,5).map(c=>`<a class="item men" href="#brand-${esc(c.brand)}" data-act="men-go" data-id="${esc(c.brand)}"><div><div class="t">${esc(c.by||"Someone")} on ${esc(bname(c.brand))}</div><div class="meta">${linkMentions(c.text).slice(0,400)}</div></div><div class="faint" style="font-size:12px">${esc(agoText(c.at))}</div><div></div></a>`).join("")}</section>`;
   if(mineTab===null)mineTab=ls.get("vt-minetab")||(onb.length?"onboarding":"live");
   const urgent=a=>a.filter(it=>!holdOf(it.brand)&&(it.blocked||it.flag==="Overdue")).length;
   h+=`<div class="seg viewseg" role="group" aria-label="Which work"><button data-act="minetab" data-v="onboarding" class="${mineTab==="onboarding"?"on":""}">Brand onboarding <span class="cnt">${onb.length}</span>${urgent(onb)?`<span class="cnt bad">${urgent(onb)} need you</span>`:""}</button><button data-act="minetab" data-v="live" class="${mineTab==="live"?"on":""}">Onboarded brands <span class="cnt">${live.length}</span>${urgent(live)?`<span class="cnt bad">${urgent(live)} need you</span>`:""}</button></div>`;
-  if(!items.length)return h+`<div class="tw"><div class="empty">Nothing open for ${esc(me)}. When a task or step is assigned to you it shows here.</div></div>`;
+  h+=`<div class="chips">${["",...VERTS()].map(v=>`<button class="chipbtn ${mineVert===v?"on":""}" data-act="mvert" data-v="${esc(v)}">${v?esc(v):"All verticals"}</button>`).join("")}</div>`;
+  if(!items.length)return h+`<div class="tw"><div class="empty">${mineVert?`Nothing open for ${esc(me)} in ${esc(mineVert)}.`:`Nothing open for ${esc(me)}. When a task or step is assigned to you it shows here.`}</div></div>`;
   const rank=it=>it.blocked?0:it.flag==="Overdue"?1:it.flag==="Due Soon"?2:3;
   const byRank=a=>a.slice().sort((x,y)=>rank(x)-rank(y)||String(x.due||"9999").localeCompare(String(y.due||"9999")));
   const cl=it=>it.blocked?"blocked":it.flag==="Overdue"?"late":it.flag==="Due Soon"?"soon":"";
@@ -519,21 +581,30 @@ function itemHtml(it,cl,noBrand){
 
 /* ---------- Overview ---------- */
 function weekStart(d){const x=new Date(d);const wd=(x.getDay()+6)%7;x.setDate(x.getDate()-wd);x.setHours(0,0,0,0);return x}
+let ovSort={k:"",dir:1},showAllBrands=false;
 function vOverview(){
   const bs=brandList();const R={};bs.forEach(b=>R[b.id]=roll(b.id));
-  const active=bs.filter(b=>!onHold(b)&&!isInternal(b));
-  const blocked=active.filter(b=>R[b.id].health==="Blocked").length,risk=active.filter(b=>R[b.id].health==="At Risk").length;
-  const od=bs.filter(b=>!onHold(b)).reduce((a,b)=>a+R[b.id].overdue,0);
-  const ws=weekStart(today()),we=new Date(ws);we.setDate(we.getDate()+7);
-  const signWeek=bs.filter(b=>{const d=parseD((S.sow[b.id]||{}).target_sign);return d&&d>=ws&&d<we&&(S.sow[b.id]||{}).stage!=="Signed"&&!onHold(b)}).length;
-  let h=`<h1>Overview</h1><p class="sub">Every brand from first call to signed SOW. Health comes from tasks, platform access, SOW and Best Practices. Brands on hold are left out of the counts.</p>
-  <div class="tiles"><div class="tile"><b>${active.length}</b><span>active brands</span></div><div class="tile ${blocked?"bad":""}"><b>${blocked}</b><span>brands blocked</span></div><div class="tile ${risk?"warn":""}"><b>${risk}</b><span>brands at risk</span></div><div class="tile ${od?"bad":""}"><b>${od}</b><span>tasks late</span></div><div class="tile"><b>${signWeek}</b><span>SOWs to sign this week</span></div></div>`;
-  h+=`<h2>Pipeline</h2><p class="hint2">Where every brand is, from first call to live. Click a brand to open it.</p>`+pipeline(bs,R);
+  const n=portfolioNumbers(bs,R);keepSnapshot(n);const prev=compareSnap();
+  let h=`<h1>Overview</h1><p class="sub">Every brand from first call to signed SOW. Health comes from tasks, platform access, SOW and Best Practices. Brands on hold are left out of the counts.</p>`+guide("overview");
+  const tile=(v,label,k,goodDown,c)=>`<div class="tile ${c||""}"><b>${v}</b><span>${label}</span>${trendHtml(k,v,prev,goodDown)}</div>`;
+  const hb=bs.filter(b=>!onHold(b)&&!isInternal(b)&&R[b.id].health==="Has blockers").length;
+  h+=`<div class="tiles">${tile(n.active,"active brands","active",false)}${tile(n.blocked,"brands blocked"+(hb?` <i class="faint">+ ${hb} with task blockers</i>`:""),"blocked",true,n.blocked?"bad":"")}${tile(n.risk,"brands at risk","risk",true,n.risk?"warn":"")}${tile(n.late,"tasks late","late",true,n.late?"bad":"")}${tile(n.signWeek,"SOWs to sign this week","signWeek",false)}</div>`;
+  if(!prev)h+=`<p class="hint2">Trends appear once the tracker has a week of history. It saves one snapshot a day when the Overview is opened.</p>`;
+  const att=attention(bs,R);
+  h+=`<h2>Needs attention <span class="count">${att.length}</span></h2>`;
+  h+=att.length?`<div class="tw att"><table><tbody>${att.slice(0,lens==="leadership"?12:30).map(x=>`<tr class="click" data-act="att-go" data-id="${esc(x.b.id)}" data-tab="${esc(x.tab)}"><td style="width:170px"><span class="pill ${x.kind==="Blocked"||x.kind==="Past SOW target"?"s-bad":x.kind==="No update"?"s-off":"s-warn"}">${esc(x.kind)}</span></td><td style="width:190px"><a class="bname" href="#brand-${esc(x.b.id)}">${esc(x.b.name)}</a></td><td class="muted">${esc(x.text)}</td></tr>`).join("")}</tbody></table></div>${att.length>(lens==="leadership"?12:30)?`<p class="hint2">${att.length-(lens==="leadership"?12:30)} more. Switch View for to Leads to see all.</p>`:""}`:`<div class="tw"><div class="empty">Nothing needs attention. No brand is blocked, past its SOW date, out of step or quiet for a week.</div></div>`;
+  const hy=hygiene();if(hy.length&&lens!=="team")h+=`<div class="hyg"><b>Missing information</b>${hy.map(([l,c,to])=>`<a href="#${to}">${c} ${esc(l.toLowerCase())}</a>`).join("")}</div>`;
+  h+=`<h2>Pipeline</h2><p class="hint2">Where every brand is, from first call to live. Days show how long a brand has been in its stage, once a stage change is recorded.</p>`+pipeline(bs,R);
   h+=`<h2>SOW signing plan</h2>`+sowPlan(bs,R);
-  h+=`<h2>All brands</h2><div class="tw"><table><thead><tr><th>Brand</th><th>Stage</th><th>Health</th>${simple?"":`<th class="num">Open</th><th class="num">Blocked</th><th class="num">Late</th><th>Platform access</th><th>SOW</th><th>Target sign</th><th>BPs</th><th>Onboarding</th>`}<th>Next step</th><th>Owner</th></tr></thead><tbody>`;
-  for(const b of bs){const r=R[b.id];const s=r.sowRow;
-    h+=`<tr class="click" data-act="nav" data-to="brand-${esc(b.id)}"><td><a class="bname" href="#brand-${esc(b.id)}">${esc(b.name)}</a>${b.paused&&b.stage!=="On Hold"?` <span class="tag">On hold</span>`:""}${b.restricted?` <span class="tag warn">Restricted</span>`:""}</td><td>${esc(b.stage)}</td><td><span class="row" style="gap:6px;flex-wrap:nowrap">${hdot(r.health)}${esc(r.health)}</span></td>
-    ${simple?"":`<td class="num">${r.open}</td><td class="num">${r.blocked?`<span class="hot">${r.blocked}</span>`:0}</td><td class="num">${r.overdue?`<span class="hot">${r.overdue}</span>`:0}</td><td>${pill(r.acc.summary)} <span class="faint">${esc(r.acc.text)}</span></td><td>${pill(r.sow)}</td><td>${targetHtml(s)}</td><td>${r.bp?pill(r.bp.overall)+` <span class="faint">${Math.round(r.bp.progress*100)}%</span>`:`<span class="faint">None</span>`}</td><td><span class="bar"><i style="width:${Math.round(r.pct*100)}%"></i></span> <span class="faint">${Math.round(r.pct*100)}%</span></td>`}
+  if(lens==="leadership"&&!showAllBrands)return h+`<h2>All brands</h2><button class="btn" data-act="allbrands">Show the full brands table</button>`;
+  const cols=[["name","Brand"],["stage","Stage"],["health","Health"]].concat(simple?[]:[["open","Open",1],["blocked","Blocked",1],["late","Late",1],["acc","Platform access"],["sow","SOW"],["target","Target sign"],["bp","BPs"],["pct","Onboarding"],["upd","Updated"]]).concat([["next","Next step"],["lead","Owner"]]);
+  const hv={"Blocked":0,"At Risk":1,"Has blockers":2,"On Track":3,"Live":4,"On Hold":5};
+  const val=(b,k)=>{const r=R[b.id];return k==="name"?b.name:k==="stage"?STAGE_ORDER().indexOf(b.stage):k==="health"?hv[r.health]??9:k==="open"?r.open:k==="blocked"?r.blocked:k==="late"?r.overdue:k==="acc"?r.acc.text:k==="sow"?r.sow:k==="target"?(r.sowRow.target_sign||"9999"):k==="bp"?(r.bp?r.bp.progress:-1):k==="pct"?r.pct:k==="upd"?-(lastUpdated(b.id)||0):k==="next"?(b.next_step||""):k==="lead"?(b.lead||"~"):""};
+  const rows=bs.slice();if(ovSort.k)rows.sort((x,y)=>{const a=val(x,ovSort.k),c=val(y,ovSort.k);return(a<c?-1:a>c?1:0)*ovSort.dir});
+  h+=`<h2>All brands</h2><div class="tw"><table><thead><tr>${cols.map(([k,l,num])=>`<th class="${num?"num":""}"><button class="sortb ${ovSort.k===k?"on":""}" data-act="sort" data-k="${k}" aria-label="Sort by ${esc(l)}">${esc(l)}${ovSort.k===k?(ovSort.dir>0?" ▲":" ▼"):""}</button></th>`).join("")}</tr></thead><tbody>`;
+  for(const b of rows){const r=R[b.id];const s=r.sowRow;const lu=lastUpdated(b.id);
+    h+=`<tr class="click" data-act="nav" data-to="brand-${esc(b.id)}"><td><a class="bname" href="#brand-${esc(b.id)}">${esc(b.name)}</a>${b.paused&&b.stage!=="On Hold"?` <span class="tag">On hold</span>`:""}${b.restricted?` <span class="tag warn">Restricted</span>`:""}</td><td>${esc(b.stage)}</td><td><span class="row" style="gap:6px;flex-wrap:nowrap" title="${esc(r.why.join("; "))}">${hdot(r.health)}${esc(r.health)}</span></td>
+    ${simple?"":`<td class="num">${r.open}</td><td class="num">${r.blocked?`<span class="hot">${r.blocked}</span>`:0}</td><td class="num">${r.overdue?`<span class="hot">${r.overdue}</span>`:0}</td><td>${pill(r.acc.summary)} <span class="faint">${esc(r.acc.text)}</span></td><td>${pill(r.sow)}</td><td>${targetHtml(s)}</td><td>${r.bp?pill(r.bp.overall)+` <span class="faint">${Math.round(r.bp.progress*100)}%</span>`:`<span class="faint">None</span>`}</td><td><span class="bar"><i style="width:${Math.round(r.pct*100)}%"></i></span> <span class="faint">${Math.round(r.pct*100)}%</span></td><td class="${lu&&Date.now()-lu>7*DAY?"hot":"faint"}" style="white-space:nowrap">${lu?esc(agoText(lu)):"Not yet"}</td>`}
     <td class="clip muted"><span class="clamp" title="${esc(b.next_step||"")}">${esc(b.next_step||"")}</span></td><td>${b.lead?esc(b.lead):`<span class="faint">No lead yet</span>`}</td></tr>`}
   return h+`</tbody></table></div>`}
 function targetHtml(s){const hold=s&&holdOf(s.brand);
@@ -541,7 +612,7 @@ function targetHtml(s){const hold=s&&holdOf(s.brand);
   return`<span class="row" style="gap:6px;flex-wrap:nowrap;white-space:nowrap"><span${hold?` class="faint"`:""}>${esc(fmtD(s.target_sign,true))}</span>${hold?`<span class="tag">On hold</span>`:blocked?`<span class="tag bad">Blocked</span>`:dueHtml(s.target_sign,s.stage==="Signed")?`<span class="pill ${cls(sowDue(s))}">${esc(sowDue(s))}</span>`:""}</span>`}
 function pipeline(bs,R){
   const stages=L("stage").filter(x=>x!=="Internal");const col=st=>bs.filter(b=>!isInternal(b)&&(st==="On Hold"?onHold(b):!onHold(b)&&b.stage===st));
-  return`<div class="pipe">${stages.map(st=>{const list=col(st);return`<div class="pcol ${st==="On Hold"?"held":""}"><div class="ph"><b>${list.length}</b><span>${esc(st)}</span></div>${list.map(b=>`<a class="pb" href="#brand-${esc(b.id)}" title="${esc(R[b.id].health)}">${hdot(R[b.id].health)}<span>${esc(b.name)}</span></a>`).join("")||`<span class="faint" style="font-size:12px">None</span>`}</div>`}).join("")}</div>`}
+  return`<div class="pipe">${stages.map(st=>{const list=col(st);return`<div class="pcol ${st==="On Hold"?"held":""}"><div class="ph"><b>${list.length}</b><span>${esc(st)}</span></div>${list.map(b=>{const d=stageDays(b);return`<a class="pb" href="#brand-${esc(b.id)}" title="${esc(R[b.id].health)}">${hdot(R[b.id].health)}<span>${esc(b.name)}</span>${d!==null?`<i class="days">${d}d</i>`:""}</a>`}).join("")||`<span class="faint" style="font-size:12px">None</span>`}</div>`}).join("")}</div>`}
 function sowPlan(bs,R){
   const buckets={};const nodate=[];const held=[];
   for(const b of bs){if(isInternal(b))continue;const s=S.sow[b.id]||{};if(s.stage==="Signed")continue;if(onHold(b)){held.push(b);continue}const d=parseD(s.target_sign);if(!d){nodate.push(b);continue}const k=weekStart(d).getTime();(buckets[k]=buckets[k]||[]).push(b)}
@@ -560,13 +631,13 @@ function vBrand(id){
   const miss=(f,l)=>ed?`<button class="missing" data-act="open" data-kind="brand" data-id="${esc(id)}">Add ${esc(l)}</button>`:`<span class="faint">Not set</span>`;
   const fact=(l,v,f)=>`<div class="fact"><label>${esc(l)}</label><div class="v">${v||miss(f,l.toLowerCase())}</div></div>`;
   let h=(r.hold?`<div class="notice">${esc(b.name)} is on hold${b.paused&&b.stage!=="On Hold"?" (marked paused)":""}. Its tasks, SOW and late items are left out of the Overview counts and the SOW signing plan.${ed?" Change the stage or untick Paused in Edit details to bring it back.":""}</div>`:"")+`<div class="bhead"><div><h1>${esc(b.name)} ${b.paused&&b.stage!=="On Hold"?`<span class="tag">On hold</span>`:""} ${b.restricted?`<span class="tag warn" title="Sensitive. Keep notes to links and facts.">Restricted</span>`:""}</h1>
-   <div class="row" style="gap:8px">${hdot(r.health)}<b>${esc(r.health)}</b><span class="muted">${r.open} open, ${r.blocked} blocked, ${r.overdue} late${r.stepBlocked?`, ${r.stepBlocked} step${r.stepBlocked>1?"s":""} blocked`:""}</span><span class="muted">Onboarding ${Math.round(r.pct*100)}%</span></div></div>
-   <div class="row">${b.website?`<a class="btn" href="${esc(b.website)}" target="_blank" rel="noopener">Website</a>`:""}${ed?`<button class="btn" data-act="open" data-kind="brand" data-id="${esc(id)}">Edit details</button>`:""}</div></div>
-   <div class="facts">${fact("Stage",esc(b.stage),"stage")}${fact("Brand lead",esc(b.lead),"lead")}${fact("Founder",esc(b.founder),"founder")}${fact("SOW target sign",r.sowRow.target_sign?targetHtml(r.sowRow):isInternal(b)?"N/A":"","target")}${fact("Sprint",esc(b.sprint_label),"sprint")}</div>
+   <div class="row" style="gap:8px">${hdot(r.health)}<b>${esc(r.health)}</b><span class="muted">${r.open} open, ${r.blocked} blocked, ${r.overdue} late${r.stepBlocked?`, ${r.stepBlocked} step${r.stepBlocked>1?"s":""} blocked`:""}</span><span class="muted">Onboarding ${Math.round(r.pct*100)}%</span>${lastUpdated(id)?`<span class="muted">Updated ${esc(agoText(lastUpdated(id)))}</span>`:""}</div>${r.why.length?`<div class="blk clamp1" style="margin-top:4px" title="${esc(r.why.join("\n"))}">Blocked by: ${esc(r.why.map(w=>w.split(": ")[0]).join(" · "))}</div>`:""}</div>
+   <div class="row">${b.website?`<a class="btn" href="${esc(b.website)}" target="_blank" rel="noopener">Website</a>`:""}${canEdit?`<a class="btn" href="#client-${esc(id)}">Client view</a>`:""}${ed?`<button class="btn" data-act="open" data-kind="brand" data-id="${esc(id)}">Edit details</button>`:""}</div></div>
+   <div class="facts">${fact("Stage",esc(b.stage)+(stageDays(b)!==null?` <span class="faint" style="font-weight:500">for ${stageDays(b)} days</span>`:""),"stage")}${fact("Brand lead",esc(b.lead),"lead")}${fact("Founder",esc(b.founder),"founder")}${fact("SOW target sign",r.sowRow.target_sign?targetHtml(r.sowRow):isInternal(b)?"N/A":"","target")}${fact("Sprint",esc(b.sprint_label),"sprint")}</div>
    <div class="next"><label>Next step</label><div>${b.next_step?esc(b.next_step):miss("next_step","next step")}</div></div>`;
-  const tabs=[["tasks",`Tasks (${r.open} open)`],["steps",`Onboarding steps (${Math.round(r.pct*100)}%)`],["access",`Platform access${r.acc.text?" ("+r.acc.text+")":""}`],["sow","SOW"],["bp","Best Practices"]];
+  const tabs=[["tasks",`Tasks (${r.open} open)`],["steps",`Onboarding steps (${Math.round(r.pct*100)}%)`],["access",`Platform access${r.acc.text?" ("+r.acc.text+")":""}`],["sow","SOW"],["bp","Best Practices"],["updates",`Updates${Object.values(S.comments).filter(c=>c.brand===id).length?" ("+Object.values(S.comments).filter(c=>c.brand===id).length+")":""}`]];
   h+=`<div class="tabs" role="tablist">${tabs.map(([k,l])=>`<button role="tab" aria-selected="${brandTab===k}" class="${brandTab===k?"on":""}" data-act="tab" data-tab="${k}">${esc(l)}</button>`).join("")}</div>`;
-  if(brandTab==="steps")h+=stepsTab(id);else if(brandTab==="access")h+=accessTable(id);else if(brandTab==="sow")h+=sowCard(id);else if(brandTab==="bp")h+=bpCard(id);else h+=tasksTab(id);
+  if(brandTab==="updates")h+=updatesTab(id);else if(brandTab==="steps")h+=stepsTab(id);else if(brandTab==="access")h+=accessTable(id);else if(brandTab==="sow")h+=sowCard(id);else if(brandTab==="bp")h+=bpCard(id);else h+=tasksTab(id);
   return h}
 /* tasks grouped by team: overview cards first, one click opens a team */
 const DEPTS=()=>{const l=L("department");return l.length?l:["Other"]};
@@ -579,7 +650,7 @@ function tasksTab(bid){
   const sel=deptSel.bid===bid?deptSel.dep:"";
   if(sel)return taskTable(bid,sel,all);
   const open=all.filter(t=>t.status!=="Complete");
-  let h=`<div class="row" style="margin-bottom:12px"><span class="muted">${open.length} open tasks across ${DEPTS().filter(d=>open.some(t=>depOf(t)===d)).length} teams. Click a team to see its full list.</span><span class="grow"></span>${canWrite?`<button class="btn pri" data-act="add-task" data-id="${esc(bid)}">Add task</button>`:""}</div><div class="teams">`;
+  let h=`<div class="row" style="margin-bottom:12px"><span class="muted">${open.length} open tasks across ${DEPTS().filter(d=>open.some(t=>depOf(t)===d)).length} teams. Click a team to see its full list.</span><span class="grow"></span>${canWrite&&TEMPLATES().length?`<select data-act="use-tpl" data-id="${esc(bid)}" aria-label="Add tasks from a template" class="btn"><option value="">Add from template...</option>${TEMPLATES().map((t,i)=>`<option value="${i}">${esc(t.name)} (${t.tasks.length})</option>`).join("")}</select>`:""}${canWrite?`<button class="btn pri" data-act="add-task" data-id="${esc(bid)}">Add task</button>`:""}</div><div class="teams">`;
   for(const d of DEPTS()){const ts=all.filter(t=>depOf(t)===d);const op=ts.filter(t=>t.status!=="Complete").sort(byUrgency);
     const done=ts.length-op.length,bl=op.filter(t=>t.status==="Blocked").length,late=op.filter(t=>dueFlag(t.deadline,false)==="Overdue").length;
     if(!ts.length){h+=`<button class="team empty-team" data-act="dept" data-dep="${esc(d)}"><span class="tn">${esc(d)}</span><span class="faint">No tasks yet</span></button>`;continue}
@@ -616,7 +687,7 @@ function stepsTab(bid){
     if(canEdit&&canWrite&&!complete)h+=`<div style="padding:8px 14px;border-bottom:1px solid var(--line)"><button class="btn sm" data-act="phase-done" data-id="${esc(bid)}" data-phase="${esc(p.code)}">Mark every step in ${esc(p.code)} done</button></div>`;
     for(const s of p.steps){const st=stepState(bid,s.code);const v=st.status||"Not Started";
       h+=`<div class="step ${s.is_gate?"isgate":""} ${v==="Done"?"done":""}"><span class="code">${esc(s.code)}</span>
-       <div class="nm"><span>${esc(s.name)}</span><span class="tags">${s.is_gate?`<span class="tag gate">Gate</span>`:""}${s.is_optional?`<span class="tag opt">Optional</span>`:""}${s.doc_label?`<span class="tag doc">Doc: ${esc(s.doc_label)}</span>`:""}${!simple&&s.default_owner?`<span class="tag">${esc(s.default_owner)}</span>`:""}${s.hook==="monday"?`<span class="tag" title="Monday.com sync is planned for later">Monday.com link later</span>`:""}</span>
+       <div class="nm"><span>${esc(s.name)}</span><span class="tags">${s.is_gate?`<span class="tag gate">Gate</span>`:""}${st.approved_by&&v==="Done"?`<span class="tag ok">Signed off by ${esc(st.approved_by)}, ${esc(fmtD(st.approved_at))}</span>`:""}${s.is_optional?`<span class="tag opt">Optional</span>`:""}${s.doc_label?`<span class="tag doc">Doc: ${esc(s.doc_label)}</span>`:""}${!simple&&s.default_owner?`<span class="tag">${esc(s.default_owner)}</span>`:""}${s.hook==="monday"?`<span class="tag" title="Monday.com sync is planned for later">Monday.com link later</span>`:""}</span>
        ${st.blocker&&st.blocker.text?`<span class="blk">Blocked: ${esc(st.blocker.text)}${st.blocker.person?` (waiting on ${esc(st.blocker.person)})`:""}</span>`:""}${st.link?`<a href="${esc(st.link)}" target="_blank" rel="noopener" style="font-size:12.5px">Open ${esc(s.doc_label||"document")}</a>`:""}</div>
        <div class="ctl">${st.owner?esc(st.owner):`<span class="faint">No owner</span>`}</div><div class="ctl">${dueHtml(st.deadline,v==="Done"||v==="N/A")||`<span class="faint">No date</span>`}</div>
        <div class="ctl row" style="gap:6px;flex-wrap:nowrap">${statusSel("step",bid,v,L("checklist"),canWrite,`data-code="${esc(s.code)}"`)}<button class="btn sm quiet" data-act="open" data-kind="step" data-id="${esc(bid)}" data-code="${esc(s.code)}" aria-label="Edit ${esc(s.code)}">Edit</button></div></div>`}
@@ -669,6 +740,147 @@ function vAccess(){
   return head+`<p class="sub">One row per brand and platform. Status only. Never store passwords or logins here.</p>
   <div class="filters"><select data-act="fa" data-k="accBrand" aria-label="Brand"><option value="">All brands</option>${brandList().map(b=>`<option value="${esc(b.id)}" ${flt.accBrand===b.id?"selected":""}>${esc(b.name)}</option>`).join("")}</select>
   <select data-act="fa" data-k="accStatus" aria-label="Status"><option value="">Any status</option>${L("access_status").map(s=>`<option ${flt.accStatus===s?"selected":""}>${esc(s)}</option>`).join("")}</select></div>`+accessTable("")}
+
+/* ---------- freshness, stage age ---------- */
+const DAY=864e5;
+function lastUpdated(bid){return memo("lu",()=>{const idx={};const take=(b,d)=>{if(!d||!b)return;const v=+d.updated_at||+d.created_at||0;if(v>(idx[b]||0))idx[b]=v};
+  for(const[id,d]of Object.entries(S.brands))take(id,d);for(const[id,d]of Object.entries(S.sow))take(id,d);for(const[id,d]of Object.entries(S.bps))take(id,d);for(const[id,d]of Object.entries(S.bsteps))take(id,d);
+  for(const t of Object.values(S.tasks))take(t.brand,t);for(const a of Object.values(S.access))take(a.brand,a);for(const c of Object.values(S.comments))take(c.brand,c);return idx})[bid]||0}
+function lastUpdatedSlow(bid){let m=0;const take=d=>{if(!d)return;const v=+d.updated_at||+d.created_at||0;if(v>m)m=v};
+  take(S.brands[bid]);take(S.sow[bid]);take(S.bps[bid]);take(S.bsteps[bid]);
+  for(const t of Object.values(S.tasks))if(t.brand===bid)take(t);for(const a of Object.values(S.access))if(a.brand===bid)take(a);
+  for(const c of Object.values(S.comments))if(c.brand===bid)take(c);return m}
+function agoText(ts){if(!ts)return"";const d=Math.floor((Date.now()-ts)/DAY);return d<=0?"today":d===1?"yesterday":d+" days ago"}
+function stageDays(b){const d=parseD(b&&b.stage_since);return d?Math.max(0,Math.round((today()-d)/DAY)):null}
+
+/* ---------- needs attention: the exceptions leadership should act on ---------- */
+function attention(bs,R){const out=[];
+  for(const b of bs){if(isInternal(b)||onHold(b))continue;const r=R[b.id];const s=S.sow[b.id]||{};const add=(kind,text,tab)=>out.push({b,kind,text,tab});
+    if(r.health==="Blocked")add("Blocked",r.why[0]||"Blocked",r.whyTab||"tasks");
+    if(s.target_sign&&s.stage!=="Signed"&&dayDiff(s.target_sign)<0)add("Past SOW target",`Target ${fmtD(s.target_sign,true)}, SOW ${s.stage||"Not Started"}`,"sow");
+    if(b.stage==="Live"&&s.stage&&s.stage!=="Signed")add("Stage mismatch",`Brand is Live but the SOW is ${s.stage}`,"sow");
+    if(s.stage==="Signed"&&b.stage!=="Live")add("Stage mismatch",`SOW is Signed but the brand is at ${b.stage}`,"sow");
+    const lu=lastUpdated(b.id);if(lu&&Date.now()-lu>7*DAY)add("No update",`Nothing changed for ${Math.floor((Date.now()-lu)/DAY)} days`,"updates")}
+  const order={"Blocked":0,"Past SOW target":1,"Stage mismatch":2,"No update":3};
+  return out.sort((x,y)=>order[x.kind]-order[y.kind])}
+function hygiene(){const open=withId(S.tasks).filter(t=>t.title&&t.status!=="Complete"&&!holdOf(t.brand));
+  return[["High or Urgent tasks with no deadline",open.filter(t=>["High","Urgent"].includes(t.priority)&&!t.deadline).length,"people"],
+    ["Open tasks with no owner",open.filter(t=>!t.owner).length,"people"],
+    ["Brands with no brand lead",brandList().filter(b=>!isInternal(b)&&!b.lead).length,"overview"],
+    ["SOWs with no owner",Object.entries(S.sow).filter(([id,s])=>S.brands[id]&&!onHold(S.brands[id])&&!s.owner).length,"sow"]].filter(x=>x[1])}
+
+/* ---------- daily snapshot for trends ---------- */
+function portfolioNumbers(bs,R){const active=bs.filter(b=>!onHold(b)&&!isInternal(b));
+  const ws=weekStart(today()),we=new Date(ws);we.setDate(we.getDate()+7);
+  return{active:active.length,blocked:active.filter(b=>R[b.id].health==="Blocked").length,risk:active.filter(b=>R[b.id].health==="At Risk").length,
+    late:bs.filter(b=>!onHold(b)).reduce((a,b)=>a+R[b.id].overdue,0),
+    signWeek:bs.filter(b=>{const d=parseD((S.sow[b.id]||{}).target_sign);return d&&d>=ws&&d<we&&(S.sow[b.id]||{}).stage!=="Signed"&&!onHold(b)}).length,
+    signed:bs.filter(b=>(S.sow[b.id]||{}).stage==="Signed").length,live:bs.filter(b=>b.stage==="Live").length}}
+let snapTried="";
+function keepSnapshot(n){const d=isoToday();if(!db||!canWrite||S.snaps[d]||snapTried===d||!ready.snaps)return;snapTried=d;
+  db.doc("snapshots/"+d).set(Object.assign({date:d,at:Date.now()},n)).catch(()=>{})}
+function compareSnap(){const target=new Date(today());target.setDate(target.getDate()-7);const t=isoToday();
+  const olds=Object.values(S.snaps).filter(s=>s.date&&s.date<t).sort((a,b)=>a.date.localeCompare(b.date));if(!olds.length)return null;
+  const before=olds.filter(s=>parseD(s.date)<=target);return before.length?before[before.length-1]:olds[0]}
+function trendHtml(key,now,prev,goodDown){if(!prev||prev[key]===undefined)return"";const d=now-prev[key];
+  if(!d)return`<em class="tr">same as ${esc(fmtD(prev.date))}</em>`;const good=goodDown?d<0:d>0;
+  return`<em class="tr ${good?"up":"down"}">${d>0?"▲ +":"▼ "}${d} since ${esc(fmtD(prev.date))}</em>`}
+
+/* ---------- verticals ---------- */
+const VERTS=()=>L("vertical").length?L("vertical"):L("bp_section");
+const VERT_RULES=[["UGC",["ugc"]],["Influencer",["influencer","talent","creator"]],["Affiliates",["affiliate"]],["Ambassadors",["ambassador"]],["Brand Partnerships",["partnership","collab"]],
+  ["Paid Media",["paid","meta ","google ads","ads ","ad campaign","ad copy","media plan","tiktok ads"]],["Amazon",["amazon"]],["Email / CRM",["email","klaviyo","crm"]],["Website / CRO",["website","seo","shopify","landing","cro"]]];
+function vertOf(t){if(t.vertical)return t.vertical;const s=" "+((t.title||"")+" "+(t.notes||"")).toLowerCase()+" ";
+  for(const[v,ws]of VERT_RULES)if(VERTS().includes(v)&&ws.some(w=>s.includes(w)))return v;return""}
+
+/* ---------- people and capacity ---------- */
+let peopleSel="",peopleVert="",peopleDept="";
+function vPeople(){
+  let h=`<h1>People</h1><p class="sub">Who is carrying what across every brand. Open work per person, how much is late or blocked, and what has no date. Click a name to see their list.</p>`+guide("people");
+  const open=withId(S.tasks).filter(t=>t.title&&t.status!=="Complete"&&!holdOf(t.brand)&&(!peopleVert||vertOf(t)===peopleVert)&&(!peopleDept||depOf(t)===peopleDept));
+  h+=`<div class="filters"><select data-act="pf" data-k="dept" aria-label="Team"><option value="">All teams</option>${DEPTS().map(d=>`<option ${peopleDept===d?"selected":""}>${esc(d)}</option>`).join("")}</select>
+   <select data-act="pf" data-k="vert" aria-label="Vertical"><option value="">All verticals</option>${VERTS().map(v=>`<option ${peopleVert===v?"selected":""}>${esc(v)}</option>`).join("")}</select></div>`;
+  const ppl={};const add=(n,t,role)=>{if(!n)return;const p=ppl[n]=ppl[n]||{name:n,own:[],sup:[],brands:new Set()};p[role].push(t);p.brands.add(t.brand)};
+  for(const t of open){add(t.owner,t,"own");for(const s of t.support||[])add(s,t,"sup")}
+  const rows=Object.values(ppl).map(p=>{const o=p.own;return Object.assign(p,{n:o.length,blocked:o.filter(t=>t.status==="Blocked").length,late:o.filter(t=>dueFlag(t.deadline,false)==="Overdue").length,
+    week:o.filter(t=>{const n=dayDiff(t.deadline);return n!==null&&n>=0&&n<=7}).length,nodate:o.filter(t=>!t.deadline).length})}).sort((a,b)=>b.n-a.n||b.sup.length-a.sup.length);
+  const max=Math.max(1,...rows.map(r=>r.n));const un=open.filter(t=>!t.owner);
+  h+=`<div class="tw"><table class="sortless"><thead><tr><th>Person</th><th>Owns</th><th class="num">Blocked</th><th class="num">Late</th><th class="num">Due in 7 days</th><th class="num">No date</th><th class="num">Supports</th><th class="num">Brands</th></tr></thead><tbody>`;
+  for(const r of rows){h+=`<tr class="click ${peopleSel===r.name?"sel":""}" data-act="person-pick" data-name="${esc(r.name)}"><td><b>${esc(r.name)}</b></td><td><span class="load"><i style="width:${Math.round(r.n/max*100)}%"></i></span> ${r.n}</td>
+    <td class="num">${r.blocked?`<span class="hot">${r.blocked}</span>`:0}</td><td class="num">${r.late?`<span class="hot">${r.late}</span>`:0}</td><td class="num">${r.week}</td><td class="num">${r.nodate?`<span class="faint">${r.nodate}</span>`:0}</td><td class="num">${r.sup.length}</td><td class="num">${r.brands.size}</td></tr>`}
+  if(un.length)h+=`<tr class="click ${peopleSel==="__none"?"sel":""}" data-act="person-pick" data-name="__none"><td><b>No owner</b></td><td><span class="load warn"><i style="width:${Math.round(un.length/max*100)}%"></i></span> ${un.length}</td><td class="num">${un.filter(t=>t.status==="Blocked").length}</td><td class="num">${un.filter(t=>dueFlag(t.deadline,false)==="Overdue").length}</td><td class="num">-</td><td class="num">${un.filter(t=>!t.deadline).length}</td><td class="num">-</td><td class="num">${new Set(un.map(t=>t.brand)).size}</td></tr>`;
+  if(!rows.length&&!un.length)h+=`<tr><td colspan="8"><div class="empty">No open tasks for these filters.</div></td></tr>`;
+  h+=`</tbody></table></div>`;
+  if(peopleSel){const list=peopleSel==="__none"?un:open.filter(t=>isPerson(t.owner,peopleSel)||(t.support||[]).some(x=>isPerson(x,peopleSel)));
+    const its=list.map(t=>({kind:"task",id:t._id,brand:t.brand,title:t.title,status:t.status,due:t.deadline,flag:dueFlag(t.deadline,false),blocked:t.status==="Blocked",blocker:t.blocker,priority:t.priority,role:isPerson(t.owner,peopleSel)?"Owner":peopleSel==="__none"?"No owner":"Support"}))
+      .sort((a,b)=>(a.blocked?0:a.flag==="Overdue"?1:2)-(b.blocked?0:b.flag==="Overdue"?1:2)||String(a.due||"9").localeCompare(String(b.due||"9")));
+    h+=`<h2>${peopleSel==="__none"?"Tasks with no owner":esc(peopleSel)+"'s open tasks"} <span class="count">${its.length}</span></h2>${its.map(it=>itemHtml(it,it.blocked?"blocked":it.flag==="Overdue"?"late":"")).join("")}`}
+  return h}
+
+/* ---------- search ---------- */
+let searchQ="";
+function searchResults(q){q=q.trim().toLowerCase();if(q.length<2)return[];const out=[];
+  for(const b of brandList())if(b.name.toLowerCase().includes(q))out.push({type:"Brand",label:b.name,sub:b.stage,go:"brand-"+b.id});
+  for(const p of activePeople())if(p.toLowerCase().includes(q))out.push({type:"Person",label:p,sub:"Open their work",person:p});
+  for(const t of withId(S.tasks))if(t.title&&t.title.toLowerCase().includes(q))out.push({type:"Task",label:t.title,sub:bname(t.brand)+" · "+(t.status||""),task:t._id});
+  for(const s of stepsSorted())if(s.name.toLowerCase().includes(q))out.push({type:"Step",label:s.code+" "+s.name,sub:"Onboarding step",step:s.code});
+  return out.slice(0,14)}
+function renderSearch(){const box=$("#sres");if(!box)return;const rs=searchResults(searchQ);
+  box.hidden=!searchQ.trim()||searchQ.trim().length<2;
+  box.innerHTML=rs.length?rs.map((r,i)=>`<button class="sr-row" data-act="search-go" data-i="${i}"><span class="sr-type">${esc(r.type)}</span><span class="sr-l">${esc(r.label)}</span><span class="faint sr-s">${esc(r.sub||"")}</span></button>`).join(""):`<div class="sr-none">Nothing matches "${esc(searchQ)}".</div>`}
+
+/* ---------- comments and activity per brand ---------- */
+function mentionsIn(text){const ps=activePeople().slice().sort((a,b)=>b.length-a.length);const out=[];const low=(text||"").toLowerCase();
+  for(const p of ps)if(low.includes("@"+p.toLowerCase())&&!out.includes(p))out.push(p);return out}
+function linkMentions(text){let h=esc(text);for(const p of activePeople().slice().sort((a,b)=>b.length-a.length)){const re=new RegExp("@"+p.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),"gi");h=h.replace(re,m=>`<b class="mention">${m}</b>`)}return h}
+function brandActivity(bid){const ids=new Set([bid]);for(const[id,t]of Object.entries(S.tasks))if(t.brand===bid)ids.add(id);for(const[id,a]of Object.entries(S.access))if(a.brand===bid)ids.add(id);
+  const out=[];for(const d of Object.values(S.log))for(const e of d.entries||[])if(ids.has(e.id))out.push(Object.assign({person:d.person},e));return out.sort((a,b)=>b.at-a.at).slice(0,15)}
+function updatesTab(bid){
+  const cs=withId(S.comments).filter(c=>c.brand===bid).sort((a,b)=>b.at-a.at);
+  let h=`<div class="cols2 upd"><div><h3 class="h3">Comments</h3>${canWrite?`<form id="cform" class="card cform"><label for="c-text" class="sr">Add a comment</label><textarea id="c-text" name="text" placeholder="Write an update. Type @ and a name to mention someone, for example @Noopur" required></textarea>
+    <div class="row"><span class="faint" style="font-size:12px">Mentions show in that person's My tasks. Links only, never passwords or contract text.</span><span class="grow"></span><button class="btn pri" type="submit">Post</button></div><input type="hidden" name="brand" value="${esc(bid)}"></form>`:""}`;
+  h+=cs.length?cs.map(c=>`<div class="cmt"><div class="row" style="gap:8px"><b>${esc(c.by||"Someone")}</b><span class="faint" style="font-size:12px">${esc(new Date(c.at).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}))}</span><span class="grow"></span>${canWrite&&(c.by===me||canEdit)?`<button class="btn sm quiet" data-act="del-comment" data-id="${esc(c._id)}">Delete</button>`:""}</div><div class="ctext">${linkMentions(c.text)}</div></div>`).join("")
+    :`<div class="empty card">No comments yet. Post the first update for ${esc(bname(bid))} above.</div>`;
+  const act=brandActivity(bid);
+  h+=`</div><div><h3 class="h3">Recent changes</h3>${act.length?`<div class="card actlist">${act.map(e=>`<div class="act"><span class="faint">${esc(new Date(e.at).toLocaleDateString("en-GB",{day:"numeric",month:"short"}))}</span> <b>${esc(e.person||"Someone")}</b> changed ${esc(e.field)} on ${esc(e.label||e.id)}${e.new!==undefined&&e.new!==""&&e.field!=="created"?` to <i>${esc(String(e.new).slice(0,60))}</i>`:""}</div>`).join("")}</div>`:`<div class="empty card">No changes recorded in the last 30 days.</div>`}</div></div>`;
+  return h}
+function myMentions(person){const since=Date.now()-14*DAY;return withId(S.comments).filter(c=>c.at>since&&(c.mentions||[]).some(m=>isPerson(m,person))).sort((a,b)=>b.at-a.at)}
+
+/* ---------- task templates ---------- */
+const TEMPLATES=()=>((S.config.templates&&S.config.templates.list)||[]);
+function parseTemplateLines(text){return text.split("\n").map(l=>l.trim()).filter(Boolean).map(l=>{const[title,dep,days]=l.split("|").map(x=>(x||"").trim());return{title,department:DEPTS().includes(dep)?dep:"",days:+days||0}}).filter(x=>x.title)}
+
+/* ---------- client status page: one brand, no internal notes ---------- */
+function clientModel(bid){const b=S.brands[bid]||{};const s=S.sow[bid]||{};const groups=boardCols();
+  const g=groups.map(gr=>{const vals=gr.cols.map(c=>boardCell(bid,c)).filter(v=>v&&v!=="N/A");const done=vals.filter(v=>v==="Done").length;
+    return{name:gr.name,state:!vals.length?"Not started":done===vals.length?"Done":vals.some(v=>v!=="Not done")?"In progress":"Not started",done,total:vals.length}});
+  const need=withId(S.access).filter(a=>a.brand===bid&&!["Granted","Not Needed"].includes(a.status)).map(a=>a.platform);
+  return{name:b.name,stage:onHold(b)?"On hold":b.stage,pct:Math.round(onboarding(bid)*100),groups:g,target:s.target_sign||"",signed:s.stage==="Signed",need,date:isoToday()}}
+function clientHtml(m,standalone){
+  const rows=m.groups.map(g=>`<div class="cg"><span class="cdot c-${key(g.state)}" aria-hidden="true"></span><span class="cn">${esc(g.name)}</span><span class="cs">${esc(g.state)}${g.total?` · ${g.done} of ${g.total}`:""}</span></div>`).join("");
+  return`<div class="client"><p class="ceyebrow">Onboarding status · ${esc(fmtD(m.date,true))}</p><h1>${esc(m.name)}</h1>
+   <div class="cstats"><div><b>${m.pct}%</b><span>onboarding complete</span></div><div><b>${esc(m.stage||"")}</b><span>current stage</span></div><div><b>${m.signed?"Signed":m.target?esc(fmtD(m.target,true)):"To be agreed"}</b><span>${m.signed?"scope of work":"target SOW signing"}</span></div></div>
+   <h2>Progress by stage</h2><div class="cgroups">${rows}</div>
+   ${m.need.length?`<h2>What we still need from you</h2><ul class="cneed">${m.need.map(p=>`<li>Access to ${esc(p)}</li>`).join("")}</ul>`:`<h2>What we still need from you</h2><p>Nothing right now. Thank you.</p>`}</div>`}
+function clientDoc(m){return`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(m.name)} onboarding status</title><style>
+body{margin:0;background:#F3F6F5;color:#2A3337;font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}.client{max-width:720px;margin:0 auto;padding:40px 20px}
+.ceyebrow{color:#66747A;font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin:0}h1{font-size:30px;margin:4px 0 20px}h2{font-size:17px;margin:28px 0 10px}
+.cstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}.cstats div{background:#fff;border:1px solid #E1E8E5;border-radius:10px;padding:14px}.cstats b{display:block;font-size:22px}.cstats span{color:#66747A;font-size:13px}
+.cgroups{background:#fff;border:1px solid #E1E8E5;border-radius:10px}.cg{display:flex;gap:10px;align-items:center;padding:11px 14px;border-bottom:1px solid #E1E8E5}.cg:last-child{border-bottom:0}.cn{flex:1;font-weight:600}.cs{color:#66747A;font-size:13.5px}
+.cdot{width:12px;height:12px;border-radius:50%;background:#E7ECEA}.c-Done{background:#6EAD86}.c-Inprogress{background:#B5A4D5}.cneed{padding-left:20px}
+</style></head><body>${clientHtml(m,true)}<p style="text-align:center;color:#94A0A5;font-size:12px;padding-bottom:30px">Prepared by Valerie on ${esc(fmtD(m.date,true))}</p></body></html>`}
+function vClient(bid){const b=S.brands[bid];if(!b)return`<h1>Brand not found</h1>`;
+  return`<div class="row" style="margin-bottom:14px"><a class="btn" href="#brand-${esc(bid)}">‹ Back to ${esc(b.name)}</a><span class="grow"></span><button class="btn pri" data-act="client-dl" data-id="${esc(bid)}">Download for the client</button></div>
+   <div class="notice info">This is what the client sees: stage, progress by stage, the SOW date and the access we still need. No tasks, notes, people or other brands. Download it and send the file; never send the tracker link, which shows every brand.</div>`+clientHtml(clientModel(bid))}
+
+/* ---------- first-visit guides ---------- */
+const GUIDES={
+  overview:["Start with Needs attention: these are the brands to act on today.","Tiles compare with last week once the tracker has a week of history.","Pipeline shows where every brand is. Click a name to open it."],
+  mine:["Brand onboarding: one card per brand you work on. Onboarded brands: live work by urgency.","Click a task name to jump to it on its brand page. Change status right here.","Mentions from comments show at the top for 14 days."],
+  people:["Owns is the number of open tasks a person owns. The bar compares people.","Click a row to see their tasks. No owner lists work nobody has picked up.","Filter by team or vertical to see one part of the business."],
+  sow:["Each square rolls up a few onboarding steps. ✓ done, • in progress, empty not started.","Click a square to tick its steps. Signed comes from the SOW stage."]};
+function guide(k){if(!GUIDES[k]||ls.get("vt-guide-"+k))return"";return`<div class="guide"><div><b>How to use this page</b><ul>${GUIDES[k].map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div><button class="btn sm quiet" data-act="guide-off" data-k="${k}">Got it</button></div>`}
+
 /* ---------- view switch ---------- */
 function viewSeg(k,cur,items){return`<div class="seg viewseg" role="group" aria-label="View">${items.map(([v,l])=>`<button data-act="${k}" data-v="${v}" class="${cur===v?"on":""}">${esc(l)}</button>`).join("")}</div>`}
 
@@ -709,19 +921,20 @@ function boardCell(bid,col){
   if(live.every(v=>v==="Done"))return"Done";
   if(live.some(v=>v==="Done"||v==="In Progress"))return"In progress";
   return"Not done"}
+const BOARD_MARK={"Done":"✓","In progress":"•","N/A":"–"};
 const BOARD_CLS={"Done":"bd-done","In progress":"bd-prog","Not done":"bd-not","N/A":"bd-na","":"bd-na"};
 function sowBoard(){
   const groups=boardCols();const bs=brandList().filter(b=>!isInternal(b));
   const rows=bs.map(b=>({b,pct:Math.round(onboarding(b.id)*100)})).sort((x,y)=>(onHold(x.b)?1:0)-(onHold(y.b)?1:0)||y.pct-x.pct||String(x.b.name).localeCompare(y.b.name));
   const ncol=groups.reduce((n,g)=>n+g.cols.length,0);
   let h=`<p class="sub">The whole onboarding journey on one screen, brand by brand. Each square rolls up one or more onboarding steps. Click a square to see and change those steps.</p>
-  <div class="legend">${["Done","In progress","Not done","N/A"].map(v=>`<span><span class="bdl ${BOARD_CLS[v]}"></span>${esc(v)}</span>`).join("")}</div>
+  <div class="legend">${["Done","In progress","Not done","N/A"].map(v=>`<span><span class="bdl ${BOARD_CLS[v]}">${BOARD_MARK[v]||""}</span>${esc(v)}</span>`).join("")}</div>`+guide("sow")+`
   <div class="tw"><table class="grid board"><thead><tr><th class="stick" rowspan="2">Brand</th><th rowspan="2">SOW stage</th><th rowspan="2" class="num">Done</th>${groups.map((g,i)=>`<th colspan="${g.cols.length}" class="gh g${i%6}">${esc(g.name)}</th>`).join("")}${simple?"":`<th rowspan="2">Blocker</th>`}<th rowspan="2">Docs</th></tr>
   <tr>${groups.map((g,i)=>g.cols.map(c=>`<th class="pc g${i%6}"><span>${esc(c.label)}</span></th>`).join("")).join("")}</tr></thead><tbody>`;
   for(const{b,pct}of rows){const s=S.sow[b.id]||{};const hold=onHold(b);
     h+=`<tr class="${hold?"held":""}"><td class="stick"><a class="bname" href="#brand-${esc(b.id)}">${esc(b.name)}</a></td><td>${hold?`<span class="pill s-off">On hold</span>`:pill(s.stage||"Not Started")}</td><td class="num"><b>${pct}%</b></td>`;
     groups.forEach((g,gi)=>g.cols.forEach((c,ci)=>{const v=boardCell(b.id,c);
-      h+=`<td class="gc"><button class="bd ${BOARD_CLS[v]}" data-act="board" data-b="${esc(b.id)}" data-c="${gi}.${ci}" title="${esc(c.label+": "+(v||"No steps linked"))}"><span class="sr">${esc(c.label+" "+v)}</span></button></td>`}));
+      h+=`<td class="gc"><button class="bd ${BOARD_CLS[v]}" data-act="board" data-b="${esc(b.id)}" data-c="${gi}.${ci}" title="${esc(c.label+": "+(v||"No steps linked"))}">${BOARD_MARK[v]||""}<span class="sr">${esc(c.label+" "+v)}</span></button></td>`}));
     h+=`${simple?"":`<td class="muted bblk"><div class="clamp2" title="${esc(s.blocker||"")}">${esc(s.blocker||"")}</div></td>`}<td style="white-space:nowrap">${s.gf_link?`<a href="${esc(s.gf_link)}" target="_blank" rel="noopener">GF</a> `:""}${s.sow_link?`<a href="${esc(s.sow_link)}" target="_blank" rel="noopener">SOW</a>`:""}${!s.gf_link&&!s.sow_link?`<span class="faint">None</span>`:""}</td></tr>`}
   if(!rows.length)h+=`<tr><td colspan="${ncol+5}"><div class="empty">No brands yet.</div></td></tr>`;
   return h+`</tbody></table></div>`}
@@ -753,18 +966,22 @@ function vBp(){
 /* ---------- Settings ---------- */
 let setTab="people";
 function vSettings(){
-  const tabs=[["people","People"],["lists","Lists"],["steps","Step list"],["nobrand","Needs a brand"],["log","Change log"],["export","Export and backup"]];
+  const tabs=[["people","People"],["lists","Lists"],["steps","Step list"],["templates","Task templates"],["nobrand","Needs a brand"],["log","Change log"],["export","Export and backup"]];
   let h=`<h1>Settings</h1><p class="sub">For leads and admins. Changes here apply to everyone.</p><div class="tabs">${tabs.map(([k,l])=>`<button class="${setTab===k?"on":""}" data-act="settab" data-tab="${k}">${esc(l)}</button>`).join("")}</div>`;
   if(setTab==="people"){const ps=people();
     h+=`<div class="row" style="margin-bottom:10px"><button class="btn pri" data-act="add-person">Add person</button><span class="muted">Unconfirmed names came from the Excel. Mark each as team, external or group. Aliases let one person match other spellings.</span></div>
     <div class="tw"><table><thead><tr><th>Name</th><th>Type</th><th>Other spellings</th><th>Active</th><th>Open tasks</th></tr></thead><tbody>${ps.map((p,i)=>{const n=Object.values(S.tasks).filter(t=>t.status!=="Complete"&&(isPerson(t.owner,p.name)||(t.support||[]).some(x=>isPerson(x,p.name)))).length;
       return`<tr><td><b>${esc(p.name)}</b></td><td><select data-act="person" data-i="${i}" data-f="kind" aria-label="Type">${opts(["team","external","group","unconfirmed"],p.kind||"team",false)}</select></td><td><input data-act="person" data-i="${i}" data-f="aliases" value="${esc((p.aliases||[]).join(", "))}" placeholder="e.g. Noops" aria-label="Other spellings" style="border:1px solid var(--line2);border-radius:6px;padding:4px 6px;width:100%;background:var(--panel)"></td><td><input type="checkbox" data-act="person" data-i="${i}" data-f="active" ${p.active!==false?"checked":""} aria-label="Active"></td><td class="num">${n}</td></tr>`}).join("")}</tbody></table></div>`}
-  else if(setTab==="lists"){const labels={task_status:"Task status",priority:"Priority",stage:"Brand stage",platform:"Platforms",access_level:"Access level",access_status:"Access status",sow_stage:"SOW stage",checklist:"Step status",bp_section:"BP sections",bp_status:"BP status",department:"Teams (task groups)"};
+  else if(setTab==="lists"){const labels={vertical:"Verticals",task_status:"Task status",priority:"Priority",stage:"Brand stage",platform:"Platforms",access_level:"Access level",access_status:"Access status",sow_stage:"SOW stage",checklist:"Step status",bp_section:"BP sections",bp_status:"BP status",department:"Teams (task groups)"};
     h+=`<div class="notice">Renaming a value does not change rows that already use the old one. Add new values at the end.</div><div class="cols2">${Object.keys(labels).map(k=>`<div class="card"><label for="ls-${k}"><b>${esc(labels[k])}</b></label><textarea id="ls-${k}" data-list="${k}">${esc(L(k).join("\n"))}</textarea></div>`).join("")}</div><div class="row" style="margin-top:12px"><button class="btn pri" data-act="save-lists">Save lists</button></div>`}
   else if(setTab==="steps"){
     h+=`<p class="muted">Gates and optional steps are a proposal from the Stage 0 report. Change them here. Codes stay the same so progress is kept.</p><div class="tw"><table><thead><tr><th>Code</th><th>Step</th><th>Gate</th><th>Optional</th><th>Default owner</th><th>Document</th></tr></thead><tbody>${stepsSorted().map(s=>`<tr><td class="code">${esc(s.code)}</td><td><input data-act="stepdef" data-id="${esc(s.id)}" data-f="name" value="${esc(s.name)}" aria-label="Step name" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:4px 6px;background:var(--panel)"></td><td><input type="checkbox" data-act="stepdef" data-id="${esc(s.id)}" data-f="is_gate" ${s.is_gate?"checked":""} aria-label="Gate"></td><td><input type="checkbox" data-act="stepdef" data-id="${esc(s.id)}" data-f="is_optional" ${s.is_optional?"checked":""} aria-label="Optional"></td><td><input data-act="stepdef" data-id="${esc(s.id)}" data-f="default_owner" value="${esc(s.default_owner)}" aria-label="Default owner" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:4px 6px;background:var(--panel)"></td><td><input data-act="stepdef" data-id="${esc(s.id)}" data-f="doc_label" value="${esc(s.doc_label)}" aria-label="Document" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:4px 6px;background:var(--panel)"></td></tr>`).join("")}</tbody></table></div>`}
   else if(setTab==="nobrand"){const rows=withId(S.tasks).filter(t=>!t.brand);
     h+=rows.length?`<p class="muted">Completed rows from the old sheet have no brand. Pick one for each.</p><div class="tw"><table><thead><tr><th>Task</th><th>Owner</th><th>Deadline</th><th>Notes</th><th>Brand</th></tr></thead><tbody>${rows.map(t=>`<tr><td><b>${esc(t.title)}</b></td><td>${esc(t.owner)}</td><td>${esc(fmtD(t.deadline))}</td><td class="muted">${esc(t.notes)}</td><td><select data-act="setbrand" data-id="${esc(t._id)}" aria-label="Brand"><option value="">Pick a brand</option>${brandList().map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join("")}</select></td></tr>`).join("")}</tbody></table></div>`:`<div class="tw"><div class="empty">Every task has a brand.</div></div>`}
+  else if(setTab==="templates"){const ts=TEMPLATES();
+    h+=`<p class="muted">A template is a set of tasks you add to a brand in one go, for example a UGC kickoff. One task per line: name | team | days from today until due. Team and days are optional.</p>`;
+    h+=ts.length?`<div class="tw"><table><thead><tr><th>Template</th><th>Vertical</th><th>Tasks</th><th></th></tr></thead><tbody>${ts.map((t,i)=>`<tr><td><b>${esc(t.name)}</b></td><td>${esc(t.vertical||"")}</td><td class="muted">${t.tasks.map(x=>esc(x.title)).join(", ")}</td><td><button class="btn sm danger" data-act="tpl-del" data-i="${i}">Delete</button></td></tr>`).join("")}</tbody></table></div>`:`<div class="tw"><div class="empty">No templates yet. Add the first one below.</div></div>`;
+    h+=`<form id="tform" class="card" style="margin-top:14px;max-width:640px"><h3 style="margin-top:0">New template</h3><div class="f"><label for="t-name">Name</label><input id="t-name" name="name" required placeholder="UGC kickoff"></div><div class="f"><label for="t-vert">Vertical</label><select id="t-vert" name="vertical">${opts(VERTS(),"")}</select></div><div class="f"><label for="t-lines">Tasks</label><textarea id="t-lines" name="lines" rows="6" required placeholder="Shortlist creators | Creator Partnerships | 5&#10;Send brief to creators | Creator Partnerships | 7"></textarea></div><button class="btn pri" type="submit">Save template</button></form>`}
   else if(setTab==="log"){const all=[];for(const d of Object.values(S.log))for(const e of d.entries||[])all.push(Object.assign({person:d.person},e));all.sort((a,b)=>b.at-a.at);
     h+=all.length?`<div class="card">${all.slice(0,300).map(e=>`<div class="logrow"><span class="faint">${esc(new Date(e.at).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}))}</span><span>${esc(e.person||"Someone")}</span><span>${esc(e.label||e.what)}: <b>${esc(e.field)}</b> ${esc(e.old)} → ${esc(e.new)}</span></div>`).join("")}</div>`:`<div class="tw"><div class="empty">No changes yet. Every edit made in the tracker is listed here.</div></div>`}
   else{h+=`<div class="cols2"><div class="card"><h3 style="margin-top:0">Excel export</h3><p class="muted">Same sheets as the COE tracker: Brand Tracker, one tab per brand, Platform Access, SOW Tracker, BP Tracker, Onboarding Steps, Completed Archive and Lists.</p><button class="btn pri" data-act="export-xlsx">Download Excel</button></div>
@@ -780,7 +997,7 @@ function openDrawer(kind,id,extra,refresh){
   drawerCtx={kind,id,extra};let title="",body="",foot="",ro=!canWrite;
   if(kind==="task"){const t=S.tasks[id];if(!t){closeDrawer();return}ro=!canChangeTask(t);title=t.title||"New task";
     body=field("Task",inp("title",t.title),1)+field("Brand",`<select name="brand" id="d-brand">${brandList().map(b=>`<option value="${esc(b.id)}" ${b.id===t.brand?"selected":""}>${esc(b.name)}</option>`).join("")}</select>`)+field("Owner",sel("owner",activePeople(),t.owner))+field("Team",sel("department",DEPTS(),depOf(t),false))
-     +field("Status",sel("status",L("task_status"),t.status,false))+field("Priority",sel("priority",L("priority"),t.priority))+field("Deadline",inp("deadline",t.deadline,"date"))
+     +field("Vertical",sel("vertical",VERTS(),t.vertical||""),0,t.vertical?"":(vertOf(t)?"Guessed from the name: "+vertOf(t)+". Pick one to confirm":"Optional"))+field("Status",sel("status",L("task_status"),t.status,false))+field("Priority",sel("priority",L("priority"),t.priority))+field("Deadline",inp("deadline",t.deadline,"date"))
      +(simple?"":field("Start date",inp("start",t.start,"date"))+field("Support team",inp("support",(t.support||[]).join(", ")),1,"Names separated by commas"))
      +field("Notes / next step",area("notes",t.notes),1)+(simple?"":field("Brief link",inp("brief_link",t.brief_link,"url"))+field("Creative link",inp("creative_link",t.creative_link,"url")))
      +(t.status==="Blocked"?field("Blocked because",inp("blk_text",t.blocker&&t.blocker.text),1)+field("Waiting on",sel("blk_person",activePeople(),t.blocker&&t.blocker.person)):"")
@@ -821,7 +1038,7 @@ const splitNames=v=>String(v||"").split(",").map(s=>s.trim()).filter(Boolean);
 async function drawerSave(){
   const{kind,id,extra}=drawerCtx;const fd={};for(const el of $("#dform").elements)if(el.name)fd[el.name]=el.value.trim();
   const diff=(cur,next)=>{const p={};for(const k of Object.keys(next)){if(JSON.stringify(cur[k]??"")!==JSON.stringify(next[k]??""))p[k]=next[k]}return p};
-  if(kind==="task"){const t=S.tasks[id];const next={title:fd.title,brand:fd.brand,department:fd.department,owner:fd.owner,status:fd.status,priority:fd.priority,deadline:fd.deadline,notes:fd.notes};
+  if(kind==="task"){const t=S.tasks[id];const next={title:fd.title,brand:fd.brand,department:fd.department,vertical:fd.vertical||"",owner:fd.owner,status:fd.status,priority:fd.priority,deadline:fd.deadline,notes:fd.notes};
     if(!simple)Object.assign(next,{start:fd.start,support:splitNames(fd.support),brief_link:fd.brief_link,creative_link:fd.creative_link});
     if(!next.title){toast("Give the task a name.");return}
     if(next.status==="Blocked"){const text=fd.blk_text!==undefined?fd.blk_text:(t.blocker&&t.blocker.text);const person=fd.blk_person!==undefined?fd.blk_person:(t.blocker&&t.blocker.person);
@@ -848,7 +1065,10 @@ function gateBlock(bid,code){const s=S.steps[code];if(!s||!s.is_gate)return"";co
   return open.length?`${s.code} is a gate. Finish ${open.length} earlier step${open.length>1?"s":""} first: ${open.slice(0,4).map(x=>x.code).join(", ")}${open.length>4?"...":""}`:""}
 async function saveStep(bid,code,next){
   if(!db||!canWrite){toast("You can view this tracker but not change it.");return}
-  const had=!!S.bsteps[bid];const doc=S.bsteps[bid]||{brand:bid,s:{}};const cur=(doc.s||{})[code]||{};const merged=Object.assign({},cur,next);
+  const had=!!S.bsteps[bid];const doc=S.bsteps[bid]||{brand:bid,s:{}};const cur=(doc.s||{})[code]||{};
+  if(S.steps[code]&&S.steps[code].is_gate&&next.status==="Done"&&cur.status!=="Done")next=Object.assign({},next,{approved_by:me||"",approved_at:isoToday()});
+  if(next.status&&next.status!=="Done"&&cur.approved_by)next=Object.assign({},next,{approved_by:"",approved_at:""});
+  const merged=Object.assign({},cur,next);
   const p={};for(const k of Object.keys(next))if(JSON.stringify(cur[k]??"")!==JSON.stringify(next[k]??""))p[k]=next[k];if(!Object.keys(p).length)return;
   const old={};for(const k of Object.keys(p))old[k]=cur[k];
   S.bsteps[bid]=Object.assign({},doc,{s:Object.assign({},doc.s||{},{[code]:merged})});render();
@@ -883,6 +1103,19 @@ document.addEventListener("click",e=>{
     if(kind==="task"){const t=S.tasks[id];if(!t)return;brandTab="tasks";deptSel={bid:t.brand,dep:depOf(t)};flt.taskStatus=t.status==="Complete"?"all":"open";focusItem={sel:`tr[data-kind="task"][data-id="${CSS.escape(id)}"]`};go("brand-"+t.brand)}
     else{brandTab="steps";showAllPhases=true;focusItem={sel:`select[data-code="${CSS.escape(code)}"]`,up:".step"};go("brand-"+id)}
     ls.set("vt-tab",brandTab)}
+  else if(act==="sort"){const k=a.dataset.k;ovSort=ovSort.k===k?{k,dir:-ovSort.dir}:{k,dir:1};render()}
+  else if(act==="allbrands"){showAllBrands=true;render()}
+  else if(act==="att-go"){brandTab=a.dataset.tab||"tasks";ls.set("vt-tab",brandTab);go("brand-"+a.dataset.id)}
+  else if(act==="person-pick"){peopleSel=peopleSel===a.dataset.name?"":a.dataset.name;render()}
+  else if(act==="mvert"){mineVert=a.dataset.v;render()}
+  else if(act==="men-go"){brandTab="updates";ls.set("vt-tab",brandTab);go("brand-"+a.dataset.id)}
+  else if(act==="guide-off"){ls.set("vt-guide-"+a.dataset.k,"1");render()}
+  else if(act==="client-dl"){const m=clientModel(a.dataset.id);offer((m.name||"brand").replace(/[^A-Za-z0-9]+/g,"_")+"_onboarding_status_"+isoToday()+".html",clientDoc(m))}
+  else if(act==="del-comment"){const id=a.dataset.id;confirmBox("Delete this comment?","Delete",()=>remove("comments",id,"Comment"))}
+  else if(act==="tpl-del"){const i=+a.dataset.i;confirmBox("Delete this template?","Delete",()=>{const list=TEMPLATES().filter((_,j)=>j!==i);saveTemplates(list)})}
+  else if(act==="search-go"){const r=searchResults(searchQ)[+a.dataset.i];searchQ="";$("#q").value="";renderSearch();if(!r)return;
+    if(r.go)go(r.go);else if(r.person){peopleSel=r.person;go("people")}else if(r.task){const t=S.tasks[r.task];if(t){brandTab="tasks";deptSel={bid:t.brand,dep:depOf(t)};flt.taskStatus=t.status==="Complete"?"all":"open";focusItem={sel:`tr[data-kind="task"][data-id="${CSS.escape(r.task)}"]`};go("brand-"+t.brand)}else{setTab="nobrand";go("settings")}}
+    else if(r.step){setTab="steps";go("settings")}}
   else if(act==="minetab"){mineTab=a.dataset.v;ls.set("vt-minetab",mineTab);render()}
   else if(act==="accview"){accView=a.dataset.v;ls.set("vt-accview",accView);render()}
   else if(act==="sowview"){sowView=a.dataset.v;ls.set("vt-sowview",sowView);render()}
@@ -932,6 +1165,10 @@ document.addEventListener("change",e=>{
     return}
   if(act==="bpsec"){const id=t.dataset.id;const d=S.bps[id];save("bps",id,{sections:Object.assign({},d.sections||{},{[t.dataset.sec]:t.value})},"BPs "+bname(id));return}
   if(act==="fa"){flt[t.dataset.k]=t.value;render();return}
+  if(act==="pf"){if(t.dataset.k==="vert")peopleVert=t.value;else peopleDept=t.value;render();return}
+  if(act==="use-tpl"&&t.value!==""){const tp=TEMPLATES()[+t.value];const bid=t.dataset.id;t.value="";if(!tp)return;
+    confirmBox(`Add ${tp.tasks.length} tasks from "${tp.name}" to ${bname(bid)}?`,"Add tasks",async()=>{for(const x of tp.tasks){const d=new Date(today());d.setDate(d.getDate()+(x.days||0));
+      await create("tasks",null,{brand:bid,title:x.title,owner:"",support:[],status:"Not Started",priority:"",start:isoToday(),deadline:x.days?d.toISOString().slice(0,10):"",notes:"From template: "+tp.name,brief_link:"",creative_link:"",blocker:null,department:x.department||"",department_auto:!x.department,vertical:tp.vertical||"",source:"Template: "+tp.name},bname(bid)+" "+x.title)}toast("Added "+tp.tasks.length+" tasks")});return}
   if(act==="bp-add"&&t.value){const id=t.value;create("bps",id,{brand:id,owner:"",due_date:"",sections:{},blocker:"",doc_link:"",notes:""},"BPs "+bname(id));return}
   if(act==="setbrand"&&t.value){save("tasks",t.dataset.id,{brand:t.value},S.tasks[t.dataset.id].title);return}
   if(act==="person"){const ps=people().map(p=>Object.assign({},p));const p=ps[+t.dataset.i];const f=t.dataset.f;
@@ -939,6 +1176,18 @@ document.addEventListener("change",e=>{
   if(act==="stepdef"){const id=t.dataset.id,f=t.dataset.f;const v=t.type==="checkbox"?t.checked:t.value.trim();if(f==="name"&&!v){toast("A step needs a name.");return}save("steps",id,{[f]:v},"Step "+id);return}
 });
 function savePeople(ps,label){save("config","people",{people:ps},"People: "+label)}
+function saveTemplates(list){if(S.config.templates)save("config","templates",{list},"Task templates");else create("config","templates",{list},"Task templates")}
+document.addEventListener("submit",e=>{const f=e.target;
+  if(f.id==="cform"){e.preventDefault();const text=f.elements.text.value.trim(),bid=f.elements.brand.value;if(!text)return;
+    if(!me){toast("Pick your name in the top bar first, so people know who wrote it.");return}
+    create("comments",null,{brand:bid,text,by:me,at:Date.now(),mentions:mentionsIn(text)},"Comment on "+bname(bid)).then(id=>{if(id)f.reset()})}
+  if(f.id==="tform"){e.preventDefault();const name=f.elements.name.value.trim(),tasks=parseTemplateLines(f.elements.lines.value);
+    if(!name||!tasks.length){toast("Give the template a name and at least one task.");return}saveTemplates(TEMPLATES().concat([{name,vertical:f.elements.vertical.value,tasks}]))}});
+document.addEventListener("input",e=>{if(e.target.id==="q"){searchQ=e.target.value;renderSearch()}});
+document.addEventListener("focusout",e=>{if(e.target.id==="q")setTimeout(()=>{if(!$(".search")||!$(".search").contains(document.activeElement)){const b=$("#sres");if(b)b.hidden=true;renderTop()}},150)});
+document.addEventListener("keydown",e=>{if(e.key==="/"&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||"")){const q=$("#q");if(q){e.preventDefault();q.focus()}}
+  if(e.target.id==="q"&&e.key==="Enter"){const first=$("#sres .sr-row");if(first)first.click()}
+  if(e.target.id==="q"&&e.key==="Escape"){searchQ="";e.target.value="";renderSearch();e.target.blur()}});
 $("#scrim").onclick=closeDrawer;
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(!$("#modal").hidden)$("#modal").hidden=true;else closeDrawer()}});
 
@@ -975,9 +1224,9 @@ parseHash();
   if(lens===null)lens=simple===null?(canEdit?"lead":"team"):(simple?"team":"lead");
   if(simple===null)simple=lens!=="lead";
   if(uid){try{const p=await db.doc("data/users/"+uid+"/profile").get();if(p.exists&&p.data().person)me=p.data().person}catch(e){}}
-  const sub=(k,c)=>db.collection(c).onSnapshot(snap=>{const o={};snap.docs.forEach(d=>{if(d.exists)o[d.id]=Object.assign({},d.data())});S[k]=o;ready[k]=true;
+  const sub=(k,c)=>db.collection(c).onSnapshot(snap=>{const o={};snap.docs.forEach(d=>{if(d.exists)o[d.id]=Object.assign({},d.data())});S[k]=o;ready[k]=true;epoch++;
     if(k==="config"&&!me&&U){U.me().then(v=>{if(!me&&v&&v.name){const first=v.name.split(" ")[0].toLowerCase();const hit=activePeople().find(p=>p.toLowerCase()===first);if(hit){me=hit;render()}}}).catch(()=>{})}
-    render()},err=>{if(err&&err.code!=="revoked")toast("Live updates paused. Reload the page.")});
+    scheduleRender()},err=>{if(err&&err.code!=="revoked")toast("Live updates paused. Reload the page.")});
   for(const[k,c]of Object.entries(COLL))sub(k,c);
   db.collection("log").orderBy("date","desc").limit(30).onSnapshot(snap=>{const o={};snap.docs.forEach(d=>{if(d.exists)o[d.id]=d.data()});S.log=o;if(route.v==="settings")render()},()=>{});
 })();

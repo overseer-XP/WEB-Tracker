@@ -20,7 +20,7 @@ from openpyxl.worksheet.hyperlink import Hyperlink
 OUT = sys.argv[1]
 SHOTS_DIR = sys.argv[2] if len(sys.argv) > 2 else None
 SHOTS = json.load(open(os.path.join(SHOTS_DIR, "shots.json"))) if SHOTS_DIR else []
-VERSION = "Tracker version 7 (13 Oct 2026)"
+VERSION = "Tracker version 11 (14 Oct 2026)"
 
 # --------------------------------------------------------------------------- 1. Features
 # ID, Area, Feature, What it does, Where to find it, Who uses it, Rules used, Data used, Simple view
@@ -51,6 +51,15 @@ FEATURES = [
     ("F40", "Brand page", "Brand SOW tab", "SOW stage strip, stage picker, owner, target sign, draft due, batch, SOW and Growth Forecast links, GF status, blocker and next step. Internal brands show no SOW.", "Brand > SOW", "SOW owners, leadership", "R04, R13", "D03", "Hides support and start"),
     ("F41", "Brand page", "Brand Best Practices tab", "Status of each BP section with a picker, overall result, owner, blocker, notes.", "Brand > Best Practices", "BP owners", "R06, R07", "D05", "Hides notes"),
     ("F42", "Brand page", "Brand details editor", "Name, stage, lead, founder, website, sprint, next step, paused, restricted.", "Edit details", "Editors", "", "D01", "Same"),
+    ("F07", "Navigation", "Search", "Search box in the top bar finds brands, tasks, people and steps as you type. Enter opens the first result. Press / to jump to it.", "Top bar", "Everyone", "", "D01, D02", "Same"),
+    ("F24", "Overview", "Needs attention", "The exceptions to act on: brands Blocked (SOW, access, BPs, a gate step or a High or Urgent task), SOW past its target, stage mismatch (Live but SOW not signed, or the reverse), and no change for 7 days. Each row opens the brand on the right tab. Below it, Missing information counts tasks with no deadline or owner, brands with no lead and SOWs with no owner.", "Overview", "Leadership, leads", "R20, R21", "D01, D02, D03", "Leadership sees the top 12"),
+    ("F25", "Overview", "Trends on tiles", "One snapshot of the tiles is saved each day the Overview is opened. Tiles then show the change against about a week ago.", "Overview tiles", "Leadership", "", "D12", "Same"),
+    ("F26", "Overview", "Sortable brands table", "Click any column title to sort, click again to reverse. Updated shows when anything on the brand last changed; red after 7 days. Leadership sees the table folded behind a button.", "Overview", "Leads, leadership", "", "D01", "Fewer columns"),
+    ("F27", "People", "People and capacity", "Open tasks owned per person with a bar to compare, blocked, late, due in 7 days, no date, tasks they support and brands. Filter by team or vertical. Click a person to list their tasks; No owner lists tasks nobody owns.", "People", "Leads, leadership", "", "D02", "Same"),
+    ("F43", "Brand page", "Updates tab", "Comments on the brand (with @name mentions) next to the last 15 changes from the change log.", "Brand > Updates", "Everyone", "", "D02, D13", "Same"),
+    ("F44", "Brand page", "Client view", "A clean status page for one brand: % done, stage, SOW date, progress by stage and the access still needed. No tasks, notes, people or other brands. Download it as a file to send. Leads only.", "Brand > Client view", "Clients (via leads)", "", "D01, D03, D04, D07", "Same"),
+    ("F45", "Brand page", "Days in stage and Updated", "Brand header shows when anything last changed, and the Stage fact shows days in stage once a stage change is recorded. Header also lists what blocks the brand.", "Brand page", "Leads", "", "D01", "Same"),
+    ("F67", "Settings", "Task templates", "Named sets of tasks (name, team, days until due) per vertical. Add from template on a brand's Tasks tab creates them in one go.", "Settings > Task templates; Brand > Tasks", "Leads", "", "D09", "n/a"),
     ("F50", "SOW tracker", "SOW tracker page", "List view (Sign dates and blockers). One row per brand sorted by target sign date. Stage, owner, target sign with due flag, documents, blocker, next step. Blocked SOWs show a red Blocked tag next to the date.", "SOW tracker", "Leadership, SOW owners", "R04, R13", "D03", "Hides draft due and batch"),
     ("F54", "SOW tracker", "SOW progress board", "Default SOW view, built from Cat's sheet. One row per brand, columns grouped Onboarding and access, Workshops, Strategy and preparation, SOW components, Workshops and sign-off. Each square rolls up one or more onboarding steps (Done, In progress, Not done). Click a square to change those steps. Columns live in config/sow_board, not in code.", "SOW tracker > Progress board", "Leadership, SOW owners, everyone", "R09, R17", "D03, D06, D07", "Hides blocker column"),
     ("F55", "Platform access", "Platform access grid", "Default access view. Brands down, platforms across, one square per brand and platform with its status. Click to edit, + to add a platform for a brand. Filter to brands missing access.", "Platform access > By brand", "Paid team, leads", "R03, R05", "D04", "Same"),
@@ -117,6 +126,8 @@ RULES = [
     ("R16", "Blocked needs a reason", "Setting Blocked asks for one line and a person. Leaving Blocked clears the blocker.", "F11, F12, F34, F38, F71, F81", "Brief section 7"),
     ("R17", "Gate rule", "A gate step cannot be Done while any earlier step that is not optional is still open (not Done or N/A).", "F35, F36, F37, F38, F71", "Brief section 6"),
     ("R19", "On hold", "A brand is on hold when its stage is On Hold or it is marked paused. Then: health says On Hold; it leaves the active brands, blocked, at risk, tasks late and SOWs to sign tiles; the SOW signing plan shows it in an On hold column; the SOW tracker tags it and lists it last; the brand page shows a notice; My tasks puts its work in a 'Brands on hold' group. Its SOW stage is kept as it was, so nothing is lost when it comes back.", "F10, F20, F21, F22, F30, F50", "Product owner, 13 Oct"),
+    ("R20", "Two levels of blocked", "Blocked (red square dot) only when the SOW, platform access, Best Practices, a gate step or a High or Urgent task is blocked. Any other blocked task makes the brand Has blockers (red ring), shown after At Risk.", "F20, F22, F24, F30", "Review 14 Oct"),
+    ("R21", "Needs attention", "Listed when: Blocked; SOW target passed and not Signed; brand Live but SOW not Signed, or SOW Signed but brand not Live; nothing changed on the brand for 7 days. Brands on hold and internal brands are left out.", "F24", "Review 14 Oct"),
     ("R18", "Who can do what", "View only: read. Member: change status of own tasks (screen rule) and any step. Lead / admin: everything, including Settings, delete, add brand. Database: only editors write lists, people, steps.", "F06, F34, F80", "Brief section 8"),
 ]
 
@@ -134,6 +145,8 @@ FIELDS = [
     ("D09", "Lists", "task status, priority, stage, platform, access level and status, SOW stage, step status, BP sections and status, teams", "One record", "Editors", "Every dropdown, F31, F52", "R07, R12"),
     ("D10", "Who you are", "the person you picked", "One private record per viewer", "Each viewer", "F05, F10", "R15"),
     ("D11", "Change log", "time, person, what, field, old, new", "One record per person per day", "Written by the tracker", "F64", ""),
+    ("D12", "Daily snapshot", "date, active, blocked, at risk, late, SOWs this week, signed, live", "One record per day", "Written when the Overview opens", "F25", ""),
+    ("D13", "Comments", "brand, text, by, time, mentions", "One record per comment", "Anyone who can edit", "F43, F10", ""),
 ]
 
 # --------------------------------------------------------------------------- 4. Dependencies (what changes if you change X)
@@ -188,10 +201,12 @@ GAPS = [
     ("Email alerts", "No emails for blocked or late items yet.", "Stage 6", "Medium"),
     ("Restore from backup", "Backup download works. Restore is not built.", "Stage 6", "Medium"),
     ("Best Practices sections", "Tracker has 9 sections. The BP checklist has 16 with questions and scores.", "Waiting on the master BP sheet", "Medium"),
-    ("Brand leads", "Blank for every brand.", "Product owner to fill", "Low"),
     ("Unconfirmed people", "12 names from the Excel not confirmed (team, external or same person).", "Settings > People", "Medium"),
     ("Team sorting", "Tasks were sorted into teams by keyword. Some will be wrong.", "Leads correct in one click", "Low"),
-    ("Onboarding progress", "Every brand starts at 0%. No ticks existed in the old files.", "Leads tick steps or use Mark phase done", "Medium"),
+    ("Clients", "Client view is a downloaded snapshot file. Clients cannot log in to a live page of their own brand.", "Needs per-brand sign-in with the Supabase build", "Medium"),
+    ("Notifications", "Mentions and changes show inside the tracker (My tasks, Since your last visit). Nothing is sent by email or Slack.", "Stage 6", "Medium"),
+    ("Data gaps", "Most open tasks have no deadline and no brand has a lead, so late and stale signals undercount. Missing information on the Overview counts them.", "Team to fill", "High"),
+    ("Not built", "Drag-and-drop board, saved named filters, brand colour tags, a task timeline.", "Low priority after the review", "Low"),
     ("Phone layout", "Works at phone width but designed for desktop first.", "Later stage", "Low"),
     ("Monday.com", "No step in the new checklist links to Monday.com yet.", "Out of scope for release 1", "Low"),
     ("Own platform", "Runs as a claude.ai page. Supabase, own domain and sign-in come later.", "Stage 1 of the original plan", "High"),
@@ -210,6 +225,7 @@ HISTORY = [
     ("13 Oct 2026", "Ashraf merged into Ash Ghorab (same person): 4 tasks and the KNDZ access row moved, Ashraf kept as an alias. Amazon rows: Pradnya's N/A means access is missing", "F60, F50"),
     ("13 Oct 2026", "New views: SOW progress board (Cat's layout, live from the onboarding steps) and Platform access grid (brand by platform). Phone width sideways scroll fixed on table pages. Version 6", "F54, F55, F50, F51"),
     ("13 Oct 2026", "Calmer design: soft sage, teal and pastel status colours in light and dark. Simple / Full replaced by View for: Leadership, Leads, Team. Pipeline added to the Overview. Version 7", "F04, F23, F54"),
+    ("14 Oct 2026", "Review gaps closed: Needs attention, Blocked vs Has blockers, tile trends, sortable table, People view, verticals, search, Updates tab with mentions, since your last visit, gate sign-off record, task templates, client view, page guides. Faster with many brands. Version 11", "F07, F24 to F27, F43 to F45, F67, F10, F36"),
 ]
 
 # --------------------------------------------------------------------------- build

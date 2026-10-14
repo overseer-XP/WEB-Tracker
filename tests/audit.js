@@ -5,7 +5,7 @@
 const path = require('path');
 const { chromium } = require(process.env.PW || '/opt/node-tools/node_modules/playwright');
 const url = 'file://' + path.resolve(process.argv[2]);
-const SKIP = new Set(['del', 'export-xlsx', 'export-json', 'menu', 'dsave', 'mok', 'save-lists']);
+const SKIP = new Set(['del', 'export-xlsx', 'export-json', 'menu', 'dsave', 'mok', 'save-lists', 'client-dl']);
 
 (async () => {
   const b = await chromium.launch();
@@ -17,7 +17,7 @@ const SKIP = new Set(['del', 'export-xlsx', 'export-json', 'menu', 'dsave', 'mok
       await p.goto(url + '#overview'); await p.waitForTimeout(500);
       await p.evaluate(l => { localStorage.setItem('vt-lens', l); }, lens); await p.reload(); await p.waitForTimeout(500);
       const brands = await p.$$eval('.rail .blink', as => as.map(a => a.getAttribute('href').slice(1)));
-      const screens = ['mine', 'overview', 'sow', 'access', 'bp', 'settings', ...brands.slice(0, label === 'desktop' ? 99 : 3)];
+      const screens = ['mine', 'overview', 'people', 'sow', 'access', 'bp', 'settings', ...brands.slice(0, label === 'desktop' ? 99 : 3)];
       for (const s of screens) {
         await p.evaluate(h => { location.hash = h }, s); await p.waitForTimeout(250);
         const sw = await p.evaluate(() => document.documentElement.scrollWidth);
