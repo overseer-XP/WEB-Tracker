@@ -235,9 +235,9 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
 
   // 24. My tasks vertical filter
   await setMe('Cat'); await go('mine'); const n24 = (await p.$$('main .item:not(.men)')).length;
-  await p.click('[data-act=mvert][data-v="UGC"]'); await p.waitForTimeout(150);
-  check('My tasks', 'Vertical chip narrows the list', (await p.$$('main .item:not(.men)')).length < n24);
-  await p.click('[data-act=mvert][data-v=""]');
+  await p.selectOption('#m-vert', 'UGC'); await p.waitForTimeout(150);
+  check('My tasks', 'Vertical filter narrows the list', (await p.$$('main .item:not(.men)')).length < n24);
+  await p.selectOption('#m-vert', '');
 
   // 25. Client view shows no internal data
   await go('client-bespoke');
@@ -246,12 +246,52 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   check('Client view', 'No task names appear on the client page', !internal.some(t => t.length > 8 && ct.includes(t)));
   check('Client view', 'Download button is there', !!(await p.$('[data-act=client-dl]')));
 
-  // 26. Leadership view hides the dense table until asked
-  await go('overview'); await view('lens', 'leadership');
-  check('Leadership view', 'Full table is folded away', !!(await p.$('[data-act=allbrands]')));
+  // 26. Leadership view is a role: only people ticked in Settings get the button
+  await setMe('Noopur'); await go('overview');
+  check('Leadership view', 'No Leadership button without the role', !(await p.$('[data-act=lens]')));
+  await go('settings'); await p.click('[data-act=settab][data-tab=people]'); await p.waitForTimeout(150);
+  await p.check('input[aria-label="Leadership view for Noopur"]'); await p.waitForTimeout(250);
+  check('Leadership view', 'Button appears once Noopur has the role', !!(await p.$('[data-act=lens]')));
+  await p.click('[data-act=lens]'); await p.waitForTimeout(250);
+  check('Leadership view', 'Turning it on opens the Overview with the table folded', await p.evaluate(() => location.hash) === '#overview' && !!(await p.$('[data-act=allbrands]')));
   await p.click('[data-act=allbrands]'); await p.waitForTimeout(150);
-  check('Leadership view', 'Show button opens it', !(await p.$('[data-act=allbrands]')));
-  await view('lens', 'lead');
+  check('Leadership view', 'Show button opens the table', !(await p.$('[data-act=allbrands]')));
+  await setMe('Cat'); await go('overview');
+  check('Leadership view', 'Someone without the role never gets it', !(await p.$('[data-act=lens]')) && !(await p.$('[data-act=allbrands]')));
+  await setMe('Noopur'); await p.click('[data-act=lens]'); await p.waitForTimeout(200);
+  check('Leadership view', 'Turning it off brings the full Overview back', !(await p.$('[data-act=allbrands]')));
+
+  // 27. Simple / Full is back for everyone
+  await go('overview'); await p.click('[data-act=simple][data-v="1"]'); await p.waitForTimeout(150);
+  const simpleCols = await p.evaluate(() => { const t = document.querySelectorAll('main table'); return t[t.length - 1].querySelectorAll('thead th').length });
+  await p.click('[data-act=simple][data-v="0"]'); await p.waitForTimeout(150);
+  const fullCols = await p.evaluate(() => { const t = document.querySelectorAll('main table'); return t[t.length - 1].querySelectorAll('thead th').length });
+  check('Simple / Full', 'Simple shows fewer columns than Full', simpleCols < fullCols, `${simpleCols} vs ${fullCols}`);
+
+  // 28. My tasks: group by, sort, board, fold
+  await setMe('Cat'); await go('mine'); await view('minetab', 'all');
+  for (const g of ['priority', 'due', 'status', 'team', 'brand']) { await p.selectOption('#m-group', g); await p.waitForTimeout(120) }
+  await p.selectOption('#m-group', 'priority'); await p.waitForTimeout(120);
+  const heads = await p.$$eval('.bcard header .gl', e => e.map(x => x.innerText));
+  check('My tasks', 'Group by priority puts Urgent or High first', /Urgent|High/.test(heads[0] || ''), heads.join(', '));
+  await p.selectOption('#m-group', 'due'); await p.waitForTimeout(120);
+  const dheads = await p.$$eval('.bcard header .gl', e => e.map(x => x.innerText));
+  check('My tasks', 'Group by due date starts with Late and ends with No date', dheads[0] === 'Late' && dheads[dheads.length - 1] === 'No date', dheads.join(', '));
+  await p.selectOption('#m-sort', 'brand'); await p.selectOption('#m-group', 'none'); await p.waitForTimeout(150);
+  const brandsOrder = await p.$$eval('.flat .item .meta a', e => e.map(x => x.innerText));
+  check('My tasks', 'Sort by brand A to Z with no groups', brandsOrder.every((b, i) => i === 0 || brandsOrder[i - 1].localeCompare(b) <= 0), brandsOrder.slice(0, 5).join(', '));
+  await p.selectOption('#m-sort', 'urgency'); await p.selectOption('#m-group', 'brand'); await p.waitForTimeout(150);
+  const n28 = (await p.$$('.bcard .item')).length; await p.click('[data-act=mfold]'); await p.waitForTimeout(150);
+  check('My tasks', 'Fold all groups hides the items', (await p.$$('.bcard .item')).length === 0 && n28 > 0);
+  await p.click('[data-act=mfold]'); await p.waitForTimeout(150);
+  check('My tasks', 'Open all groups brings them back', (await p.$$('.bcard .item')).length === n28);
+  await p.click('[data-act=mlayout][data-v=board]'); await p.waitForTimeout(150);
+  const bcol = await p.$$eval('.kcol', cs => cs.map(c => c.querySelector('.kh b').innerText));
+  check('My tasks', 'Board shows a column per status', bcol.includes('In Progress') && bcol.includes('Blocked'), bcol.join(', '));
+  const card = await p.$('.kcol:not(.kbad) .kcard select[data-kind=task]:not([disabled])');
+  if (card) { await card.selectOption('Blocked'); await p.waitForTimeout(150); if (await p.$('#bform:not([hidden]) #b-text')) { await p.fill('#b-text', 'Waiting on assets'); await p.selectOption('#b-person', 'Ben'); await p.click('#bform button[type=submit]'); await p.waitForTimeout(300) } }
+  check('My tasks', 'Changing status on a card moves it to that column', !card || await p.$$eval('.kcol.kbad .kcard', cs => cs.some(c => c.innerText.includes('Waiting on assets'))));
+  await p.click('[data-act=mlayout][data-v=list]');
 
   check('Page', 'No script errors', errors.length === 0, errors.join(' | '));
   const failed = results.filter(r => !r.ok);

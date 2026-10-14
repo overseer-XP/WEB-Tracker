@@ -20,7 +20,7 @@ from openpyxl.worksheet.hyperlink import Hyperlink
 OUT = sys.argv[1]
 SHOTS_DIR = sys.argv[2] if len(sys.argv) > 2 else None
 SHOTS = json.load(open(os.path.join(SHOTS_DIR, "shots.json"))) if SHOTS_DIR else []
-VERSION = "Tracker version 11 (14 Oct 2026)"
+VERSION = "Tracker version 12 (14 Oct 2026)"
 
 # --------------------------------------------------------------------------- 1. Features
 # ID, Area, Feature, What it does, Where to find it, Who uses it, Rules used, Data used, Simple view
@@ -28,10 +28,10 @@ FEATURES = [
     ("F01", "Navigation", "Left menu", "Links to My tasks, Overview, SOW tracker, Platform access, Best Practices and Settings (Settings only for editors). My tasks shows how many open items you have.", "Left side of every screen", "Everyone", "R14", "D01, D09", "Same"),
     ("F02", "Navigation", "Brand list in the menu", "Every brand grouped by stage, latest stage first (Live, SOW, Best Practices, Founder Workshops, Setup, Qualification, then On Hold and Internal). Each brand has a health dot and its open task count. Paused brands carry a Paused tag.", "Left menu, under the links", "Everyone", "R10, R11", "D01, D02", "Same"),
     ("F03", "Navigation", "Add brand", "Creates a brand with a name and stage. Also creates its empty SOW row and its onboarding step checklist (53 steps).", "Bottom of the left menu", "Editors", "", "D01, D03, D07", "Same"),
-    ("F04", "Navigation", "View for switch", "Leadership, Leads or Team. Leadership and Team show the simple screens (fewer columns and fields); Leads show everything. Team opens on My tasks, the others on the Overview. Members start on Team, editors on Leads. Each person's choice is remembered on their device.", "Top bar", "Everyone", "", "", "Is the switch"),
+    ("F04", "Navigation", "Simple / Full switch and Leadership view", "Simple hides detail people rarely need; Full shows every column and field. Members start in Simple, editors in Full, and each person's choice is remembered. Leadership view is a role: leads tick Leadership for a person in Settings > People, and only those people see the Leadership view button (Overview with exceptions first and the brands table folded).", "Top bar; Settings > People", "Everyone; leadership", "", "D08, D10", "Is the switch"),
     ("F05", "Navigation", "You are (name picker)", "Each person picks their name once. The tracker remembers it for that person and uses it to build My tasks. It tries to guess from the claude.ai account name first.", "Top bar", "Everyone", "R15", "D08, D10", "Same"),
     ("F06", "Navigation", "Role tag", "Shows Lead / admin, Member or View only, so people know what they can change.", "Top bar", "Everyone", "R18", "", "Same"),
-    ("F10", "My tasks", "My tasks page", "Every open task and onboarding step where you are the owner or on the support team, across all brands. Grouped: Blocked, Late, Due in the next 3 days, Everything else, then Brands on hold. Default landing page for members.", "My tasks", "Team members, leads", "R01, R02, R15, R19", "D02, D07, D08", "Hides role and priority"),
+    ("F10", "My tasks", "My tasks page", "Your open tasks and steps in three tabs: Brand onboarding, Onboarded brands, All my work. List or Board layout. Group by brand, priority, due date, status, team or nothing; sort by most urgent, due date, priority or brand; filter by vertical; fold groups. Mentions and Since your last visit at the top. Choices are remembered per person.", "My tasks", "Team members", "R01, R02", "D02, D07", "Hides role and priority on items"),
     ("F11", "My tasks", "One-click status change", "Change a task or step status straight from the list. No form.", "Status pill on every row", "Everyone who can edit", "R16, R17", "D02, D07", "Same"),
     ("F12", "My tasks", "Blocker shown in red", "A blocked item shows the reason and who it is waiting on, in red under the title.", "My tasks, brand task list", "Everyone", "R16", "D02", "Same"),
     ("F20", "Overview", "Summary tiles", "Five numbers: active brands, brands blocked, brands at risk, tasks late, SOWs to sign this week. Red or amber when not zero. Brands on hold are left out.", "Top of Overview", "Leadership, leads", "R01, R10", "D01, D02, D03", "Same"),
@@ -226,6 +226,7 @@ HISTORY = [
     ("13 Oct 2026", "New views: SOW progress board (Cat's layout, live from the onboarding steps) and Platform access grid (brand by platform). Phone width sideways scroll fixed on table pages. Version 6", "F54, F55, F50, F51"),
     ("13 Oct 2026", "Calmer design: soft sage, teal and pastel status colours in light and dark. Simple / Full replaced by View for: Leadership, Leads, Team. Pipeline added to the Overview. Version 7", "F04, F23, F54"),
     ("14 Oct 2026", "Review gaps closed: Needs attention, Blocked vs Has blockers, tile trends, sortable table, People view, verticals, search, Updates tab with mentions, since your last visit, gate sign-off record, task templates, client view, page guides. Faster with many brands. Version 11", "F07, F24 to F27, F43 to F45, F67, F10, F36"),
+    ("14 Oct 2026", "Simple / Full back for everyone. Leadership view only for people given the Leadership role in Settings > People. My tasks: List or Board, group by brand, priority, due date, status or team, sort options, fold groups. Version 12", "F04, F10, F60"),
 ]
 
 # --------------------------------------------------------------------------- build

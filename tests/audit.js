@@ -11,11 +11,12 @@ const SKIP = new Set(['del', 'export-xlsx', 'export-json', 'menu', 'dsave', 'mok
   const b = await chromium.launch();
   const out = { screens: [], dead: [], errors: [], overflow: [], clicked: 0, kinds: {} };
   for (const [w, label] of [[1440, 'desktop'], [390, 'phone']]) {
-    for (const lens of ['leadership', 'lead', 'team']) {
+    for (const lens of ['simple', 'full', 'leadership']) {
       const p = await b.newPage({ viewport: { width: w, height: 900 } });
       const errs = []; p.on('pageerror', e => errs.push(e.message));
       await p.goto(url + '#overview'); await p.waitForTimeout(500);
-      await p.evaluate(l => { localStorage.setItem('vt-lens', l); }, lens); await p.reload(); await p.waitForTimeout(500);
+      await p.evaluate(l => { localStorage.setItem('vt-simple', l === 'full' ? '0' : '1'); localStorage.setItem('vt-lens', l === 'leadership' ? 'leadership' : '') }, lens); await p.reload(); await p.waitForTimeout(500);
+      if (lens === 'leadership') { await p.evaluate(() => { location.hash = 'settings' }); await p.waitForTimeout(250); await p.click('[data-act=settab][data-tab=people]'); await p.check('input[aria-label="Leadership view for Noopur"]'); await p.waitForTimeout(250) }
       const brands = await p.$$eval('.rail .blink', as => as.map(a => a.getAttribute('href').slice(1)));
       const screens = ['mine', 'overview', 'people', 'sow', 'access', 'bp', 'settings', ...brands.slice(0, label === 'desktop' ? 99 : 3)];
       for (const s of screens) {
@@ -23,7 +24,7 @@ const SKIP = new Set(['del', 'export-xlsx', 'export-json', 'menu', 'dsave', 'mok
         const sw = await p.evaluate(() => document.documentElement.scrollWidth);
         if (sw > w + 1) out.overflow.push(`${label} ${lens} #${s}: page is ${sw}px wide`);
         out.screens.push(`${label}/${lens}/${s}`);
-        if (label === 'phone' || lens !== 'lead' && s.startsWith('brand-')) continue;
+        if (label === 'phone' || lens !== 'full' && s.startsWith('brand-')) continue;
         // tabs and view switches on this screen, then every data-act control
         const n = await p.$$eval('main [data-act], #topbar [data-act]', els => els.length);
         for (let i = 0; i < n; i++) {
