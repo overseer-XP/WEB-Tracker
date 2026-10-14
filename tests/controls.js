@@ -29,8 +29,8 @@ await t('Steps tab: show all phases',async()=>{await p.click('button[data-tab=st
 await t('Step Edit opens step editor',async()=>{for(const e of await p.$$('.step [data-act=open]')){if(await e.isVisible()){await e.click();break}}await p.waitForTimeout(200);const r=await drawerOpen();await closeAll();return r});
 await t('Mark phase done asks to confirm',async()=>{const x=await p.$('[data-act=phase-done]');if(!x)return 'none';await x.click();await p.waitForTimeout(150);const r=await modalOpen();await closeAll();return r});
 await t('Brand Edit details opens editor',async()=>{await p.click('.bhead [data-act=open][data-kind=brand]');await p.waitForTimeout(150);const r=await drawerOpen();await closeAll();return r});
-await t('Brand access/SOW/BP tabs render',async()=>{for(const k of ['access','sow','bp']){await p.click(`button[data-tab=${k}]`);await p.waitForTimeout(120)}return !!(await p.$('main .tw'))});
-await t('BP grid row opens BP editor',async()=>{await go('bp');await p.click('main tbody tr.click td:nth-child(2)');await p.waitForTimeout(150);const r=await drawerOpen();await closeAll();return r});
+await t('Brand access/SOW/BP tabs render',async()=>{for(const k of ['access','sow','bp']){await p.click(`button[data-tab=${k}]`);await p.waitForTimeout(120)}return !!(await p.$('main .bpcards'))});
+await t('BP grid Edit opens BP editor',async()=>{await go('bp');await p.click('main tbody [data-act=open][data-kind=bp]');await p.waitForTimeout(150);const r=await drawerOpen();await closeAll();return r});
 await t('Add brand opens form',async()=>{await p.click('[data-act=add-brand]');await p.waitForTimeout(150);const r=await modalOpen();await closeAll();return r});
 await t('Settings: add person opens form',async()=>{await go('settings');await p.click('[data-act=settab][data-tab=people]');await p.click('[data-act=add-person]');await p.waitForTimeout(150);const r=await modalOpen();await closeAll();return r});
 await t('Settings: every tab renders',async()=>{for(const k of ['lists','steps','nobrand','log','export','people']){await p.click(`[data-act=settab][data-tab=${k}]`);await p.waitForTimeout(100)}return true});

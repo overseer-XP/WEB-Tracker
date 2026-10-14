@@ -121,7 +121,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
 
   // 10. BP section Blocked (KNDZ)
   await go('brand-kndz'); await p.click('button[data-tab=bp]'); await p.waitForTimeout(150);
-  await p.selectOption('select[data-act=bpsec][data-sec="Amazon"]', 'Blocked'); await p.waitForTimeout(300);
+  await p.selectOption('select[data-act=bpsec][data-sec="Paid Amazon"]', 'Blocked'); await p.waitForTimeout(300);
   await go('bp');
   check('BP section', 'BP grid shows KNDZ overall Blocked', await p.evaluate(() => [...document.querySelectorAll('main tbody tr')].some(r => r.innerText.startsWith('KNDZ') && r.innerText.includes('Blocked'))));
   await go('overview');
@@ -148,7 +148,8 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
 
 
   // 14. SOW progress board: a square opens its steps, changing them recolours the square and moves onboarding % (CELF, W1)
-  await go('overview'); const celfPct0 = +((await overviewRow('CELF')).match(/(\d+)%/) || [])[1];
+  const lastPct = t => { const m = [...t.matchAll(/(\d+)%/g)]; return m.length ? +m[m.length - 1][1] : -1 };
+  await go('overview'); const celfPct0 = lastPct(await overviewRow('CELF'));
   await go('sow'); await view('sowview', 'board');
   const sq = 'button.bd[data-b=celf][data-c="1.0"]';
   const sqBefore = await p.$eval(sq, e => e.className);
@@ -157,7 +158,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await p.click('[data-act=close]'); await p.waitForTimeout(200);
   check('SOW board', 'Square turns Done after its steps are Done', !sqBefore.includes('bd-done') && (await p.$eval(sq, e => e.className)).includes('bd-done'), sqBefore);
   await go('overview');
-  check('SOW board', 'Overview onboarding % goes up', +((await overviewRow('CELF')).match(/(\d+)%/) || [])[1] > celfPct0);
+  check('SOW board', 'Overview onboarding % goes up', lastPct(await overviewRow('CELF')) > celfPct0, celfPct0 + ' to ' + lastPct(await overviewRow('CELF')));
 
   // 15. Platform access grid: + adds a platform for a brand, editing it updates the grid (CELF TikTok Ads)
   await go('access'); await view('accview', 'grid');
@@ -292,6 +293,22 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   if (card) { await card.selectOption('Blocked'); await p.waitForTimeout(150); if (await p.$('#bform:not([hidden]) #b-text')) { await p.fill('#b-text', 'Waiting on assets'); await p.selectOption('#b-person', 'Ben'); await p.click('#bform button[type=submit]'); await p.waitForTimeout(300) } }
   check('My tasks', 'Changing status on a card moves it to that column', !card || await p.$$eval('.kcol.kbad .kcard', cs => cs.some(c => c.innerText.includes('Waiting on assets'))));
   await p.click('[data-act=mlayout][data-v=list]');
+
+
+  // 29. Best Practices: click a dot, pick a status, it saves and shows everywhere
+  await go('bp'); const dotSel = 'button[data-act=bpdot][data-id=sourced-food-co][data-sec="SEO"]';
+  await p.click(dotSel); await p.waitForTimeout(120);
+  check('BP dot', 'Clicking a dot opens a status menu', !!(await p.$('#pop')));
+  await p.click('#pop [data-v="Complete"]'); await p.waitForTimeout(250);
+  check('BP dot', 'Choosing a status closes the menu and updates the dot', !(await p.$('#pop')) && (await p.$eval(dotSel, e => e.title)) === 'SEO: Complete');
+  check('BP dot', 'Progress count goes up', (await p.evaluate(() => [...document.querySelectorAll('main tbody tr')].find(r => r.innerText.startsWith('Sourced Food Co.')).innerText)).includes('1/17'));
+  await go('brand-sourced-food-co'); await p.click('button[data-tab=bp]'); await p.waitForTimeout(150);
+  check('BP dot', 'Brand Best Practices tab shows the same status', await p.$eval('select[data-act=bpsec][data-sec="SEO"]', e => e.value) === 'Complete');
+  await go('bp'); await p.click(dotSel); await p.keyboard.press('Escape'); await p.waitForTimeout(100);
+  check('BP dot', 'Escape closes the menu without changing anything', !(await p.$('#pop')) && (await p.$eval(dotSel, e => e.title)) === 'SEO: Complete');
+  await p.click('[data-act=bpf][data-v=blocked]'); await p.waitForTimeout(150);
+  check('BP dot', 'Blocked filter shows only blocked brands', await p.$$eval('main tbody tr', rs => rs.length > 0 && rs.every(r => r.innerText.includes('Blocked'))));
+  await p.click('[data-act=bpf][data-v=all]');
 
   check('Page', 'No script errors', errors.length === 0, errors.join(' | '));
   const failed = results.filter(r => !r.ok);

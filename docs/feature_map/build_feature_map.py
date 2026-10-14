@@ -20,7 +20,7 @@ from openpyxl.worksheet.hyperlink import Hyperlink
 OUT = sys.argv[1]
 SHOTS_DIR = sys.argv[2] if len(sys.argv) > 2 else None
 SHOTS = json.load(open(os.path.join(SHOTS_DIR, "shots.json"))) if SHOTS_DIR else []
-VERSION = "Tracker version 12 (14 Oct 2026)"
+VERSION = "Tracker version 13 (14 Oct 2026)"
 
 # --------------------------------------------------------------------------- 1. Features
 # ID, Area, Feature, What it does, Where to find it, Who uses it, Rules used, Data used, Simple view
@@ -64,7 +64,7 @@ FEATURES = [
     ("F54", "SOW tracker", "SOW progress board", "Default SOW view, built from Cat's sheet. One row per brand, columns grouped Onboarding and access, Workshops, Strategy and preparation, SOW components, Workshops and sign-off. Each square rolls up one or more onboarding steps (Done, In progress, Not done). Click a square to change those steps. Columns live in config/sow_board, not in code.", "SOW tracker > Progress board", "Leadership, SOW owners, everyone", "R09, R17", "D03, D06, D07", "Hides blocker column"),
     ("F55", "Platform access", "Platform access grid", "Default access view. Brands down, platforms across, one square per brand and platform with its status. Click to edit, + to add a platform for a brand. Filter to brands missing access.", "Platform access > By brand", "Paid team, leads", "R03, R05", "D04", "Same"),
     ("F51", "Platform access", "Platform access page", "List view. Every brand and platform row. Filter by brand and status. Status only, never passwords.", "Platform access", "Paid team", "R03, R05", "D04", "Fewer columns"),
-    ("F52", "Best Practices", "BP grid", "Brands down, sections across. Each cell is a dot with a letter (F, T, Q, tick, !, dash) so colour is never the only signal. Blocked brands sort first.", "Best Practices", "Leadership, BP owners", "R06, R07", "D05", "Hides owner and due"),
+    ("F52", "Best Practices", "BP grid", "One row per brand: progress bar, overall status, then one dot per section, grouped (Brand and content, Website and retention, Paid, Partnerships, Data). Click a dot to pick its status from a short menu. Filter All, Not complete, Blocked; sort by needs work, name or due date. 17 sections: the 16 from the team's BP sheet plus UGC. Sections and groups are data (Settings > Lists, config/bp_groups).", "Best Practices", "BP owners, leads", "R07, R08", "D05, D09", "Hides owner and due"),
     ("F53", "Best Practices", "Start tracking a brand", "Adds a brand to the BP grid with every section Not Started.", "Best Practices, top", "Anyone who can edit", "", "D05", "Same"),
     ("F60", "Settings", "People", "Add people, mark them team, external, group or unconfirmed, add other spellings (for example Noops for Noopur), switch people off.", "Settings > People", "Editors", "R15", "D08", "n/a"),
     ("F61", "Settings", "Lists", "Every dropdown: task status, priority, stage, platforms, access level and status, SOW stage, step status, BP sections and status, teams.", "Settings > Lists", "Editors", "", "D09", "n/a"),
@@ -200,7 +200,7 @@ GAPS = [
     ("Member edit limit", "Members can only change their own tasks on screen, but the database allows any edit by anyone with interact access.", "Enforced in the database with Supabase", "Medium"),
     ("Email alerts", "No emails for blocked or late items yet.", "Stage 6", "Medium"),
     ("Restore from backup", "Backup download works. Restore is not built.", "Stage 6", "Medium"),
-    ("Best Practices sections", "Tracker has 9 sections. The BP checklist has 16 with questions and scores.", "Waiting on the master BP sheet", "Medium"),
+    ("Best Practices questions", "Sections match the BP sheet, but the checklist questions, scores, findings and tactics stay in the sheet.", "Could be imported per brand later", "Low"),
     ("Unconfirmed people", "12 names from the Excel not confirmed (team, external or same person).", "Settings > People", "Medium"),
     ("Team sorting", "Tasks were sorted into teams by keyword. Some will be wrong.", "Leads correct in one click", "Low"),
     ("Clients", "Client view is a downloaded snapshot file. Clients cannot log in to a live page of their own brand.", "Needs per-brand sign-in with the Supabase build", "Medium"),
@@ -227,6 +227,7 @@ HISTORY = [
     ("13 Oct 2026", "Calmer design: soft sage, teal and pastel status colours in light and dark. Simple / Full replaced by View for: Leadership, Leads, Team. Pipeline added to the Overview. Version 7", "F04, F23, F54"),
     ("14 Oct 2026", "Review gaps closed: Needs attention, Blocked vs Has blockers, tile trends, sortable table, People view, verticals, search, Updates tab with mentions, since your last visit, gate sign-off record, task templates, client view, page guides. Faster with many brands. Version 11", "F07, F24 to F27, F43 to F45, F67, F10, F36"),
     ("14 Oct 2026", "Simple / Full back for everyone. Leadership view only for people given the Leadership role in Settings > People. My tasks: List or Board, group by brand, priority, due date, status or team, sort options, fold groups. Version 12", "F04, F10, F60"),
+    ("14 Oct 2026", "Best Practices: 17 sections from the team's BP sheet (plus UGC), grouped; click a dot to set a section; summary columns first; brand tab shows grouped cards. Old statuses mapped and kept as a backup. Version 13", "F41, F52, F53"),
 ]
 
 # --------------------------------------------------------------------------- build
