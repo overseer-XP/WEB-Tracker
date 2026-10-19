@@ -4,7 +4,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
 /* Calm palette: misty sage-grey ground, soft teal accent, pastel status fills. Layout: left rail, top bar with search and Simple / Full, work area, edit drawer */
-:root{
+:root{color-scheme:light;
   --bg:#F3F6F5; --panel:#FFFFFF; --panel2:#EDF2F0; --ink:#2A3337; --muted:#66747A; --faint:#94A0A5; --line:#E1E8E5; --line2:#D0D9D5;
   --rail:#EAF0ED; --railHover:#DEE7E3; --accent:#3D7486; --accentInk:#FFFFFF; --accentSoft:#DFECEF;
   --ok:#3E7C5A; --okBg:#E2F0E7; --warn:#8A6727; --warnBg:#F7EDD8; --bad:#A4514B; --badBg:#F6E2DF;
@@ -38,6 +38,10 @@ html,body{height:100%}
 body{background:var(--bg);color:var(--ink);font:14px/1.45 var(--f-ui);font-variant-numeric:tabular-nums}
 a{color:var(--accent)}
 button,input,select,textarea{font:inherit;color:inherit}
+input,select,textarea{background-color:var(--panel);color:var(--ink)}
+*{scrollbar-width:thin;scrollbar-color:var(--line2) transparent}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-track,::-webkit-scrollbar-corner{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--line2);border-radius:9px;border:2px solid transparent;background-clip:padding-box}::-webkit-scrollbar-thumb:hover{background-color:var(--faint)}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .app{display:grid;grid-template-columns:252px minmax(0,1fr);grid-template-rows:minmax(0,1fr);height:100%;overflow:hidden}
@@ -212,15 +216,17 @@ select.ps:disabled{cursor:default;background-image:none;padding-right:9px}
 .sr-row:hover,.sr-row:focus{background:var(--accentSoft)}.sr-type{grid-row:span 2;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding-top:2px}
 .sr-l{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sr-s{font-size:12px}.sr-none{padding:10px;color:var(--muted)}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
-.accmd{display:grid;grid-template-columns:250px minmax(0,1fr);gap:16px;align-items:start}
+.accmd{display:grid;grid-template-columns:230px minmax(0,1fr);gap:16px;align-items:start}
 .acclist{border:1px solid var(--line);border-radius:10px;background:var(--panel);position:sticky;top:0;display:flex;flex-direction:column;max-height:calc(100vh - 150px)}
-.acclist input{margin:8px;width:auto}
+.acclist input{margin:8px;width:auto;border:1px solid var(--line2);background:var(--panel);border-radius:8px;padding:6px 10px}
 .accbs{overflow:auto;padding:0 6px 6px}
 .accb{display:flex;flex-direction:column;gap:3px;width:100%;text-align:left;background:none;border:0;border-left:3px solid transparent;border-radius:6px;padding:7px 9px;cursor:pointer;color:var(--ink);font:inherit}
 .accb:hover{background:var(--offBg)}.accb.on{background:var(--accentSoft);border-left-color:var(--accent)}
 .accb .an{font-weight:600;font-size:13.5px}.accb .am{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;flex-wrap:wrap}.accb .bar{width:60px}
 .accbh{margin:0 0 8px;gap:10px}.accbh h2{margin:0;font-size:18px}
 .accdet{min-width:0}
+table.accfull .sub2{font-size:12px;color:var(--faint);margin-top:3px}table.accfull .sub2.hot{color:var(--bad);font-weight:600}
+table.accfull td.ap{min-width:120px}table.accfull td.as{min-width:150px}table.accfull td.an2{min-width:160px}
 .since{background:var(--infoBg);color:var(--info);border-radius:var(--r);padding:9px 14px;margin:0 0 12px;font-size:13px}
 .since.faint{background:transparent;padding:0 2px}
 a.item.men{text-decoration:none;color:var(--ink);border-left:3px solid var(--accent)}
@@ -1057,16 +1063,14 @@ function accRows(rows,bid){
   const ord=a=>ACC_STEPS.indexOf(a.status)<0?(a.status==="Blocked"?-1:9):ACC_STEPS.indexOf(a.status);
   let h="";
   if(!rows.length)return`<div class="tw"><div class="empty">No platforms tracked for ${esc(bname(bid))} yet. Add the ones the team needs.</div></div>`;
-  h+=`<div class="tw"><table class="accfull"><thead><tr><th>Platform</th><th>Team</th><th>Status</th><th>Type</th><th>Team logins</th><th>Next step</th><th>Last chased</th><th class="num">Notes</th></tr></thead><tbody>`;
+  h+=`<div class="tw"><table class="accfull"><thead><tr><th>Platform</th><th>Status and type</th><th>Team logins</th><th>Next step</th><th class="num"><span class="sr">Comments</span></th></tr></thead><tbody>`;
   {const list=rows.sort((x,y)=>ord(x)-ord(y)||String(x.platform).localeCompare(y.platform));
     for(const a of list){const lc=lastContact(a);const wd=workdaysSince(lc);const th=accThread(a._id).filter(c=>c.kind!=="system").length;const ns=a.next_step||{};
-      h+=`<tr class="click" data-act="open" data-kind="access" data-id="${esc(a._id)}"><td><b>${esc(a.platform)}</b>${a.needed_for&&a.needed_for.toLowerCase()!==accTeamOf(a).toLowerCase()?`<div class="faint" style="font-size:12px">${esc(a.needed_for)}</div>`:""}</td><td class="nowrap">${esc(accTeamOf(a))}</td>
-       <td>${statusSel("access",a._id,a.status||"Needed",L("access_status"),canWrite)}${a.status==="Blocked"&&a.blocker?`<div class="blk">${esc(a.blocker)}</div>`:""}</td>
-       <td class="nowrap">${esc(a.access_level&&a.access_level!=="TBC"?a.access_level:"")||`<span class="faint">TBC</span>`}${a.access_via?`<div class="faint" style="font-size:12px">${esc(a.access_via)}</div>`:""}</td>
+      h+=`<tr class="click" data-act="open" data-kind="access" data-id="${esc(a._id)}"><td class="ap"><b>${esc(a.platform)}</b><div class="sub2">${esc(accTeamOf(a))}${a.needed_for&&a.needed_for.toLowerCase()!==accTeamOf(a).toLowerCase()?" · "+esc(a.needed_for):""}</div></td>
+       <td class="as">${statusSel("access",a._id,a.status||"Needed",L("access_status"),canWrite)}<div class="sub2">${esc(a.access_level&&a.access_level!=="TBC"?a.access_level:"Type TBC")}${a.access_via?" · "+esc(a.access_via):""}</div>${a.status==="Blocked"&&a.blocker?`<div class="blk">${esc(a.blocker)}</div>`:""}</td>
        <td><div class="seats">${seatChips(a)}</div></td>
-       <td class="clip">${ns.text?`${esc(ns.text)}<div class="faint" style="font-size:12px">${esc(ns.who||"No one")}${ns.due?" · "+esc(fmtD(ns.due)):""}</div>`:accOpen(a)?`<span class="tag warn">No next step</span>`:""}</td>
-       <td class="nowrap">${lc&&ACC_FOUNDER.includes(a.status)?`<span class="${needsChase(a)?"hot":""}">${esc(fmtD(lc))}${wd!==null?` · ${wd} working day${wd===1?"":"s"}`:""}</span>`:`<span class="faint">-</span>`}</td>
-       <td class="num">${th?`<span class="cnt">${th}</span>`:""}</td></tr>`}}
+       <td class="an2">${ns.text?`${esc(ns.text)}<div class="sub2">${esc(ns.who||"No one")}${ns.due?" · by "+esc(fmtD(ns.due)):""}</div>`:accOpen(a)?`<span class="tag warn">No next step</span>`:""}${lc&&ACC_FOUNDER.includes(a.status)?`<div class="sub2 ${needsChase(a)?"hot":""}">Last asked ${esc(fmtD(lc))}${wd!==null?` · ${wd} working day${wd===1?"":"s"}`:""}</div>`:""}</td>
+       <td class="num">${th?`<span class="cnt" title="${th} comment${th===1?"":"s"}">${th}</span>`:""}</td></tr>`}}
   return h+`</tbody></table></div>`}
 function accDrawer(id){const a=S.access[id];const th=accThread(id);const team=accTeamOf(a);const ns=a.next_step||{};const st=a.status||"Needed";
   const steps=`<div class="stepper w">${ACC_STEPS.map((x,i)=>`<span class="sp ${x===st?"cur":ACC_STEPS.indexOf(st)>i?"past":""}">${i+1}. ${esc(x)}</span>`).join("")}${["Blocked","Not Needed"].includes(st)?`<span class="sp cur">${esc(st)}</span>`:""}</div>`;
