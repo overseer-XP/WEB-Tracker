@@ -212,6 +212,15 @@ select.ps:disabled{cursor:default;background-image:none;padding-right:9px}
 .sr-row:hover,.sr-row:focus{background:var(--accentSoft)}.sr-type{grid-row:span 2;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding-top:2px}
 .sr-l{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sr-s{font-size:12px}.sr-none{padding:10px;color:var(--muted)}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
+.accmd{display:grid;grid-template-columns:250px minmax(0,1fr);gap:16px;align-items:start}
+.acclist{border:1px solid var(--line);border-radius:10px;background:var(--panel);position:sticky;top:0;display:flex;flex-direction:column;max-height:calc(100vh - 150px)}
+.acclist input{margin:8px;width:auto}
+.accbs{overflow:auto;padding:0 6px 6px}
+.accb{display:flex;flex-direction:column;gap:3px;width:100%;text-align:left;background:none;border:0;border-left:3px solid transparent;border-radius:6px;padding:7px 9px;cursor:pointer;color:var(--ink);font:inherit}
+.accb:hover{background:var(--offBg)}.accb.on{background:var(--accentSoft);border-left-color:var(--accent)}
+.accb .an{font-weight:600;font-size:13.5px}.accb .am{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;flex-wrap:wrap}.accb .bar{width:60px}
+.accbh{margin:0 0 8px;gap:10px}.accbh h2{margin:0;font-size:18px}
+.accdet{min-width:0}
 .since{background:var(--infoBg);color:var(--info);border-radius:var(--r);padding:9px 14px;margin:0 0 12px;font-size:13px}
 .since.faint{background:transparent;padding:0 2px}
 a.item.men{text-decoration:none;color:var(--ink);border-left:3px solid var(--accent)}
@@ -360,6 +369,7 @@ table.grid td{vertical-align:middle}
   .item{grid-template-columns:minmax(0,1fr)}
   .cols2,.drawer .body{grid-template-columns:1fr}
   .logrow{grid-template-columns:1fr}
+  .accmd{grid-template-columns:1fr}.acclist{position:static;max-height:240px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -390,13 +400,13 @@ let lens="";              // "leadership" when a leadership person turns on the 
 let route={v:"",id:""};
 let brandTab="tasks",showAllPhases=false,drawerCtx=null;
 const flt={accBrand:"",accStatus:"",taskStatus:"open",accGap:false};
-let accView="grid",sowView="board";
+let accBrand="",sowView="board";
 const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 // Light by default, whatever the device is set to. Each person can switch to dark.
 let theme=ls.get("vt-theme")==="dark"?"dark":"light";
 const applyTheme=()=>{document.documentElement.setAttribute("data-theme",theme)};applyTheme();
 new MutationObserver(()=>{if(document.documentElement.getAttribute("data-theme")!==theme)applyTheme()}).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
-try{const t=ls.get("vt-tab");if(t)brandTab=t;const sv=ls.get("vt-simple");if(sv!==null)simple=sv==="1";if(ls.get("vt-lens")==="leadership")lens="leadership";me=ls.get("vt-me")||"";accView=ls.get("vt-accview")||"";sowView=ls.get("vt-sowview")||"board"}catch(e){}
+try{const t=ls.get("vt-tab");if(t)brandTab=t;const sv=ls.get("vt-simple");if(sv!==null)simple=sv==="1";if(ls.get("vt-lens")==="leadership")lens="leadership";me=ls.get("vt-me")||"";accBrand=ls.get("vt-accbrand")||"";sowView=ls.get("vt-sowview")||"board"}catch(e){}
 
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s);
@@ -840,12 +850,10 @@ function vSow(){
    <td class="muted clip">${esc(s.blocker)}</td><td class="muted clip">${esc(s.next_step)}</td></tr>`}
   return h+`</tbody></table></div>`}
 function vAccess(){
-  const head=`<h1>Platform access</h1>`+viewSeg("accview",accView,[["grid","Simple"],["full","Full"]]);
-  if(accView!=="full")return head+accessGrid();
-  return head+`<p class="sub">Who has access to what, what kind, and what happens next. Click a row for the steps, team logins, chasing and the comment thread.</p>`+accFull("");
-  return head+`<p class="sub">One row per brand and platform. Status only. Never store passwords or logins here.</p>
-  <div class="filters"><select data-act="fa" data-k="accBrand" aria-label="Brand"><option value="">All brands</option>${brandList().map(b=>`<option value="${esc(b.id)}" ${flt.accBrand===b.id?"selected":""}>${esc(b.name)}</option>`).join("")}</select>
-  <select data-act="fa" data-k="accStatus" aria-label="Status"><option value="">Any status</option>${L("access_status").map(s=>`<option ${flt.accStatus===s?"selected":""}>${esc(s)}</option>`).join("")}</select></div>`+accessTable("")}
+  const head=`<h1>Platform access</h1>`;
+  if(simple)return head+accessGrid();
+  return head+`<p class="sub">Pick a brand on the left to see who has access to what, what kind, and what happens next. Click a platform for the steps, team logins, chasing and the comment thread.</p>`+accFull("");
+}
 
 /* ---------- freshness, stage age ---------- */
 const DAY=864e5;
@@ -1033,17 +1041,24 @@ function accQueues(){const q=[["open","All open"],["founder","Waiting on founder
 function inQueue(a,q){if(q==="open")return accOpen(a)||a.status==="Granted";if(q==="founder")return ACC_FOUNDER.includes(a.status);if(q==="chase")return needsChase(a);
   if(q==="logins")return a.status==="Granted";if(q==="done")return a.status==="Team confirmed"||a.status==="Not Needed";if(q.startsWith("team:"))return accTeamOf(a)===q.slice(5)&&a.status!=="Not Needed";return true}
 function seatChips(a){const s=a.seats||[];if(!s.length)return`<span class="faint">No one yet</span>`;return s.map(x=>`<span class="seat st-${key(x.s)}" title="${esc(x.p+": "+x.s)}">${esc(x.p)}${x.s==="Has login"?" ✓":x.s==="Asked"?" ·":""}</span>`).join("")}
+function accBrands(){const all=withId(S.access);const by={};for(const a of all)if(inQueue(a,accQueue))(by[a.brand]=by[a.brand]||[]).push(a);
+  return Object.keys(by).filter(b=>S.brands[b]).sort((x,y)=>(holdOf(x)?1:0)-(holdOf(y)?1:0)||(by[y].some(needsChase)?1:0)-(by[x].some(needsChase)?1:0)||bname(x).localeCompare(bname(y))).map(b=>{const mine=all.filter(a=>a.brand===b&&a.status!=="Not Needed");
+    return{b,n:by[b].length,ok:mine.filter(accGranted).length,total:mine.length,chase:by[b].filter(needsChase).length,founder:by[b].filter(a=>ACC_FOUNDER.includes(a.status)).length}})}
 function accFull(bid){
-  let rows=withId(S.access).filter(a=>!bid||a.brand===bid);if(!bid)rows=rows.filter(a=>inQueue(a,accQueue));
+  if(!bid){const list=accBrands();const chips=`<div class="chips">${accQueues().map(([k,l])=>{const n=withId(S.access).filter(a=>inQueue(a,k)).length;return`<button class="chipbtn ${accQueue===k?"on":""}" data-act="accq" data-v="${esc(k)}">${esc(l)} <span>${n}</span></button>`}).join("")}</div>`;
+    if(!list.length)return chips+`<div class="tw"><div class="empty">Nothing in this list.</div></div>`;
+    const cur=list.some(x=>x.b===accBrand)?accBrand:list[0].b;
+    const side=`<div class="acclist" role="list" aria-label="Brands"><input id="acc-find" type="search" placeholder="Find a brand (${list.length})" aria-label="Find a brand"><div class="accbs">${list.map(x=>`<button role="listitem" class="accb ${x.b===cur?"on":""}" data-act="accb" data-id="${esc(x.b)}" data-n="${esc(bname(x.b).toLowerCase())}" aria-current="${x.b===cur}"><span class="an">${esc(bname(x.b))}</span><span class="am"><span class="bar"><i style="width:${x.total?Math.round(x.ok/x.total*100):0}%"></i></span> ${x.ok}/${x.total}${x.chase?` <span class="tag bad">${x.chase} chase</span>`:x.founder?` <span class="tag warn">${x.founder} with founder</span>`:""}</span></button>`).join("")}</div></div>`;
+    const br=S.brands[cur]||{};const waiting=withId(S.access).filter(a=>a.brand===cur&&ACC_FOUNDER.includes(a.status)).length;const total=withId(S.access).filter(a=>a.brand===cur).length;const shown=list.find(x=>x.b===cur).n;
+    const top=`<div class="row accbh"><h2><a class="bname" href="#brand-${esc(cur)}">${esc(bname(cur))}</a></h2><span class="faint">${esc(br.founder?"Founder: "+br.founder:"")}</span><span class="grow"></span>${waiting?`<button class="btn sm" data-act="fm-open" data-id="${esc(cur)}">Message for founder (${waiting})</button>`:""}${canWrite?`<button class="btn sm" data-act="add-access" data-id="${esc(cur)}">Add platform</button>`:""}</div>${shown<total?`<p class="faint" style="margin:0 0 8px">Showing ${shown} of ${total} platforms in this list.</p>`:""}`;
+    return chips+`<div class="accmd">${side}<div class="accdet">${top}${accRows(withId(S.access).filter(a=>a.brand===cur&&inQueue(a,accQueue)),cur)}</div></div>`}
+  return accRows(withId(S.access).filter(a=>a.brand===bid),bid)}
+function accRows(rows,bid){
   const ord=a=>ACC_STEPS.indexOf(a.status)<0?(a.status==="Blocked"?-1:9):ACC_STEPS.indexOf(a.status);
   let h="";
-  if(!bid)h+=`<div class="chips">${accQueues().map(([k,l])=>{const n=withId(S.access).filter(a=>inQueue(a,k)).length;return`<button class="chipbtn ${accQueue===k?"on":""}" data-act="accq" data-v="${esc(k)}">${esc(l)} <span>${n}</span></button>`}).join("")}</div>`;
-  if(!rows.length)return h+`<div class="tw"><div class="empty">${bid?`No platforms tracked for ${esc(bname(bid))} yet. Add the ones the team needs.`:"Nothing in this list."}</div></div>`;
-  const by={};for(const a of rows)(by[a.brand]=by[a.brand]||[]).push(a);
-  const bids=Object.keys(by).sort((x,y)=>(holdOf(x)?1:0)-(holdOf(y)?1:0)||bname(x).localeCompare(bname(y)));
+  if(!rows.length)return`<div class="tw"><div class="empty">No platforms tracked for ${esc(bname(bid))} yet. Add the ones the team needs.</div></div>`;
   h+=`<div class="tw"><table class="accfull"><thead><tr><th>Platform</th><th>Team</th><th>Status</th><th>Type</th><th>Team logins</th><th>Next step</th><th>Last chased</th><th class="num">Notes</th></tr></thead><tbody>`;
-  for(const b of bids){const list=by[b].sort((x,y)=>ord(x)-ord(y)||String(x.platform).localeCompare(y.platform));const br=S.brands[b]||{};const waiting=withId(S.access).filter(a=>a.brand===b&&ACC_FOUNDER.includes(a.status)).length;
-    if(!bid)h+=`<tr class="grp"><td colspan="8"><a class="bname" href="#brand-${esc(b)}">${esc(bname(b))}</a> <span class="faint">${esc(br.founder?"Founder: "+br.founder:"")}</span>${waiting?` <button class="btn sm" data-act="fm-open" data-id="${esc(b)}">Message for founder (${waiting})</button>`:""}</td></tr>`;
+  {const list=rows.sort((x,y)=>ord(x)-ord(y)||String(x.platform).localeCompare(y.platform));
     for(const a of list){const lc=lastContact(a);const wd=workdaysSince(lc);const th=accThread(a._id).filter(c=>c.kind!=="system").length;const ns=a.next_step||{};
       h+=`<tr class="click" data-act="open" data-kind="access" data-id="${esc(a._id)}"><td><b>${esc(a.platform)}</b>${a.needed_for&&a.needed_for.toLowerCase()!==accTeamOf(a).toLowerCase()?`<div class="faint" style="font-size:12px">${esc(a.needed_for)}</div>`:""}</td><td class="nowrap">${esc(accTeamOf(a))}</td>
        <td>${statusSel("access",a._id,a.status||"Needed",L("access_status"),canWrite)}${a.status==="Blocked"&&a.blocker?`<div class="blk">${esc(a.blocker)}</div>`:""}</td>
@@ -1291,7 +1306,7 @@ document.addEventListener("click",e=>{
   else if(act==="tflt"){flt.taskStatus=a.dataset.v;render()}
   else if(act==="goto-item"){const{kind,id,code}=a.dataset;
     if(kind==="task"){const t=S.tasks[id];if(!t)return;brandTab="tasks";deptSel={bid:t.brand,dep:depOf(t)};flt.taskStatus=t.status==="Complete"?"all":"open";focusItem={sel:`tr[data-kind="task"][data-id="${CSS.escape(id)}"]`};go("brand-"+t.brand)}
-    else if(kind==="access"){accView="full";ls.set("vt-accview","full");go("access");setTimeout(()=>openDrawer("access",id),60);return}
+    else if(kind==="access"){accBrand=(S.access[id]||{}).brand||accBrand;go("access");setTimeout(()=>openDrawer("access",id),60);return}
     else{brandTab="steps";showAllPhases=true;focusItem={sel:`select[data-code="${CSS.escape(code)}"]`,up:".step"};go("brand-"+id)}
     ls.set("vt-tab",brandTab)}
   else if(act==="sort"){const k=a.dataset.k;ovSort=ovSort.k===k?{k,dir:-ovSort.dir}:{k,dir:1};render()}
@@ -1302,7 +1317,7 @@ document.addEventListener("click",e=>{
   else if(act==="mlayout"){mineLayout=a.dataset.v;ls.set("vt-mlayout",mineLayout);render()}
   else if(act==="mfold1"){const k=a.dataset.k;if(mineFold.has(k))mineFold.delete(k);else mineFold.add(k);render()}
   else if(act==="mfold"){if(a.dataset.v==="open")mineFold.clear();else{const all=myItems();const list=mineTab==="onboarding"?all.filter(i=>!isLiveBrand(i.brand)):mineTab==="live"?all.filter(i=>isLiveBrand(i.brand)):all;const grp=mineGroup[mineTab]||(mineTab==="live"?"due":"brand");for(const g of mineGroups(list,grp))mineFold.add(mineTab+"|"+grp+"|"+g.key)}render()}
-  else if(act==="men-go"&&a.dataset.acc){accView="full";go("access");setTimeout(()=>openDrawer("access",a.dataset.acc),60)}
+  else if(act==="men-go"&&a.dataset.acc){accBrand=(S.access[a.dataset.acc]||{}).brand||accBrand;go("access");setTimeout(()=>openDrawer("access",a.dataset.acc),60)}
   else if(act==="men-go"){brandTab="updates";ls.set("vt-tab",brandTab);go("brand-"+a.dataset.id)}
   else if(act==="guide-off"){ls.set("vt-guide-"+a.dataset.k,"1");render()}
   else if(act==="client-dl"){const m=clientModel(a.dataset.id);offer((m.name||"brand").replace(/[^A-Za-z0-9]+/g,"_")+"_onboarding_status_"+isoToday()+".html",clientDoc(m))}
@@ -1326,7 +1341,7 @@ document.addEventListener("click",e=>{
   else if(act==="acc-post"){const id=drawerCtx&&drawerCtx.id;const a=S.access[id];const t=$("#acc-c");const text=t.value.trim();if(!a||!text)return;if(!me){toast("Pick your name in the top bar first.");return}
     create("comments",null,{brand:a.brand,access:id,text,by:me,at:Date.now(),mentions:mentionsIn(text)},"Comment on "+bname(a.brand)+" "+a.platform).then(r=>{if(r)t.value=""})}
   else if(act==="minetab"){mineTab=a.dataset.v;ls.set("vt-minetab",mineTab);render()}
-  else if(act==="accview"){accView=a.dataset.v;ls.set("vt-accview",accView);render()}
+  else if(act==="accb"){accBrand=a.dataset.id;ls.set("vt-accbrand",accBrand);render()}
   else if(act==="sowview"){sowView=a.dataset.v;ls.set("vt-sowview",sowView);render()}
   else if(act==="accgap"){flt.accGap=a.dataset.v==="1";render()}
   else if(act==="board")openDrawer("board",a.dataset.b,a.dataset.c);
@@ -1402,7 +1417,7 @@ document.addEventListener("submit",e=>{const f=e.target;
     const body={teams,bp_map,help,chase_days:Math.max(1,+el.chase_days.value||2)};if(S.config.access_setup)save("config","access_setup",body,"Access setup");else create("config","access_setup",body,"Access setup")}
   if(f.id==="tform"){e.preventDefault();const name=f.elements.name.value.trim(),tasks=parseTemplateLines(f.elements.lines.value);
     if(!name||!tasks.length){toast("Give the template a name and at least one task.");return}saveTemplates(TEMPLATES().concat([{name,vertical:f.elements.vertical.value,tasks}]))}});
-document.addEventListener("input",e=>{if(e.target.form&&e.target.form.id==="dform"&&e.target.name)drawerDirty[e.target.name]=e.target.value;if(e.target.id==="q"){searchQ=e.target.value;renderSearch()}});
+document.addEventListener("input",e=>{if(e.target.form&&e.target.form.id==="dform"&&e.target.name)drawerDirty[e.target.name]=e.target.value;if(e.target.id==="q"){searchQ=e.target.value;renderSearch()}if(e.target.id==="acc-find"){const q=e.target.value.trim().toLowerCase();document.querySelectorAll(".accb").forEach(b=>b.hidden=!!q&&!b.dataset.n.includes(q))}});
 document.addEventListener("focusout",e=>{if(e.target.id==="q")setTimeout(()=>{if(!$(".search")||!$(".search").contains(document.activeElement)){const b=$("#sres");if(b)b.hidden=true;renderTop()}},150)});
 document.addEventListener("keydown",e=>{if(e.key==="/"&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||"")){const q=$("#q");if(q){e.preventDefault();q.focus()}}
   if(e.target.id==="q"&&e.key==="Enter"){const first=$("#sres .sr-row");if(first)first.click()}

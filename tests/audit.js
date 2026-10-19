@@ -9,7 +9,7 @@ const SKIP = new Set(['del', 'export-xlsx', 'export-json', 'menu', 'dsave', 'mok
 
 (async () => {
   const b = await chromium.launch();
-  const out = { screens: [], dead: [], errors: [], overflow: [], clicked: 0, kinds: {} };
+  const out = { screens: [], dead: [], errors: [], overflow: [], dupes: [], clicked: 0, kinds: {} };
   for (const [w, label] of [[1440, 'desktop'], [390, 'phone']]) {
     for (const lens of ['simple', 'full', 'leadership']) {
       const p = await b.newPage({ viewport: { width: w, height: 900 } });
@@ -24,6 +24,9 @@ const SKIP = new Set(['del', 'export-xlsx', 'export-json', 'menu', 'dsave', 'mok
         const sw = await p.evaluate(() => document.documentElement.scrollWidth);
         if (sw > w + 1) out.overflow.push(`${label} ${lens} #${s}: page is ${sw}px wide`);
         out.screens.push(`${label}/${lens}/${s}`);
+        // only the top bar may hold a Simple / Full switch
+        const dup = await p.$$eval('button', bs => bs.filter(b => /^(Simple|Full)$/.test(b.innerText.trim()) && !b.closest('#topbar')).length);
+        if (dup) out.dupes.push(`${label} ${lens} #${s}: ${dup} extra Simple/Full buttons`);
         if (label === 'phone' || lens !== 'full' && s.startsWith('brand-')) continue;
         // tabs and view switches on this screen, then every data-act control
         const n = await p.$$eval('main [data-act], #topbar [data-act]', els => els.length);
@@ -52,7 +55,8 @@ const SKIP = new Set(['del', 'export-xlsx', 'export-json', 'menu', 'dsave', 'mok
   console.log('by action:', JSON.stringify(out.kinds));
   console.log(`script errors: ${out.errors.length}`); out.errors.slice(0, 20).forEach(e => console.log('  ' + e));
   console.log(`sideways scroll: ${out.overflow.length}`); out.overflow.forEach(e => console.log('  ' + e));
+  console.log(`extra Simple/Full switches: ${out.dupes.length}`); out.dupes.forEach(e => console.log('  ' + e));
   const dead = [...new Set(out.dead)]; console.log(`buttons that changed nothing: ${dead.length}`); dead.slice(0, 40).forEach(e => console.log('  ' + e));
   await b.close();
-  process.exit(out.errors.length || out.overflow.length ? 1 : 0);
+  process.exit(out.errors.length || out.overflow.length || out.dupes.length ? 1 : 0);
 })();

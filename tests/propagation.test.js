@@ -23,7 +23,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   const overviewRow = name => p.evaluate(n => { const tbs = document.querySelectorAll('main table'); const last = tbs[tbs.length - 1]; if (!last) return ''; for (const r of last.querySelectorAll('tbody tr')) if (r.querySelector('.bname') && r.querySelector('.bname').innerText === n) return r.innerText.replace(/\s+/g, ' '); return '' }, name);
   const openBrandEditor = async id => { await go('brand-' + id); await p.click('.bhead [data-act=open][data-kind=brand]'); await p.waitForTimeout(200) };
   const drawerSave = async () => { await p.click('[data-act=dsave]'); await p.waitForTimeout(350) };
-  const view = async (k, v) => { const b = await p.$(`[data-act=${k}][data-v=${v}]`); if (b) { await b.click(); await p.waitForTimeout(200) } };
+  const view = async (k, v) => { const b = await p.$(`[data-act=${k}][data-v="${v}"]`); if (b) { await b.click(); await p.waitForTimeout(200) } };
   const setMe = async name => { await p.selectOption('#whoSel', name); await p.waitForTimeout(250) };
 
   // 1. Brand stage to On Hold (MUMUK)
@@ -114,7 +114,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   check('Step owner', 'My tasks shows the step as blocked on the ORA card', await p.evaluate(code => { const c = [...document.querySelectorAll('.bcard')].find(x => x.querySelector('.bname').innerText === 'ORA'); return !!c && [...c.querySelectorAll('.item.blocked')].some(i => i.innerText.includes(code)) && c.innerText.includes('1 blocked') }, open[1]));
 
   // 9. Platform access Blocked turns brand Blocked (Bespoke row)
-  await go('access'); await view('accview', 'full'); await p.selectOption('select[data-kind=access]', 'Blocked'); await p.waitForTimeout(250);
+  await go('access'); await view('simple', '0'); await p.click('[data-act=accq][data-v=open]'); await p.click('[data-act=accb][data-id=bespoke]'); await p.waitForTimeout(150); await p.selectOption('select[data-kind=access]', 'Blocked'); await p.waitForTimeout(250);
   if (await p.$('#bform')) { await p.fill('#b-text', 'Login not shared'); await p.selectOption('#b-person', 'Ash Ghorab'); await p.click('#bform button[type=submit]'); await p.waitForTimeout(300) }
   await go('overview');
   check('Platform access', 'Access column says Blocked', /Blocked/.test((await overviewRow('Bespoke')).split('Live')[1] || ''));
@@ -161,7 +161,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   check('SOW board', 'Overview onboarding % goes up', lastPct(await overviewRow('CELF')) > celfPct0, celfPct0 + ' to ' + lastPct(await overviewRow('CELF')));
 
   // 15. Platform access grid: + adds a platform for a brand, editing it updates the grid (CELF TikTok Ads)
-  await go('access'); await view('accview', 'grid');
+  await go('access'); await view('simple', '1');
   const plus = 'button.acd-empty[data-b=celf][data-p="TikTok Ads"]';
   check('Access grid', 'Untracked platform shows a +', !!(await p.$(plus)));
   await p.click(plus); await p.waitForTimeout(350);
@@ -171,6 +171,8 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await go('brand-celf'); await p.click('button[data-tab=access]'); await p.waitForTimeout(150);
   check('Access grid', 'Brand access tab lists the new row', (await mainText()).includes('TikTok Ads'));
 
+
+  await view('simple', '0');
 
   // 16. Search finds a brand and a task and takes you there
   await go('overview'); await p.click('#q'); await p.keyboard.type('Seoul'); await p.waitForTimeout(150);
@@ -312,7 +314,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
 
 
   // 30. Platform access: steps, next step, chase, logins, thread, founder message, BP lock
-  await setMe('Noopur'); await go('access'); await view('accview', 'full'); await p.click('[data-act=accq][data-v=open]');
+  await setMe('Noopur'); await go('access'); await view('simple', '0'); await p.click('[data-act=accq][data-v=open]'); await p.click('[data-act=accb][data-id=eco-protein]'); await p.waitForTimeout(150);
   const row = 'tr[data-kind=access][data-id="eco-protein-meta-ads-manager"] td:first-child';
   await p.click(row); await p.waitForTimeout(250);
   check('Access', 'Row opens with the 5 steps shown', (await text('.stepper')).includes('Team confirmed'));
