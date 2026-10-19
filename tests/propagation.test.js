@@ -114,7 +114,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   check('Step owner', 'My tasks shows the step as blocked on the ORA card', await p.evaluate(code => { const c = [...document.querySelectorAll('.bcard')].find(x => x.querySelector('.bname').innerText === 'ORA'); return !!c && [...c.querySelectorAll('.item.blocked')].some(i => i.innerText.includes(code)) && c.innerText.includes('1 blocked') }, open[1]));
 
   // 9. Platform access Blocked turns brand Blocked (Bespoke row)
-  await go('access'); await view('accview', 'list'); await p.selectOption('select[data-kind=access]', 'Blocked'); await p.waitForTimeout(250);
+  await go('access'); await view('accview', 'full'); await p.selectOption('select[data-kind=access]', 'Blocked'); await p.waitForTimeout(250);
   if (await p.$('#bform')) { await p.fill('#b-text', 'Login not shared'); await p.selectOption('#b-person', 'Ash Ghorab'); await p.click('#bform button[type=submit]'); await p.waitForTimeout(300) }
   await go('overview');
   check('Platform access', 'Access column says Blocked', /Blocked/.test((await overviewRow('Bespoke')).split('Live')[1] || ''));
@@ -154,7 +154,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   const sq = 'button.bd[data-b=celf][data-c="1.0"]';
   const sqBefore = await p.$eval(sq, e => e.className);
   await p.click(sq); await p.waitForTimeout(250);
-  for (const s of await p.$$('#drawer select[data-code]')) { await s.selectOption('Done'); await p.waitForTimeout(250) }
+  for (const c of await p.$$eval('#drawer select[data-code]', ss => ss.map(x => x.dataset.code))) { await p.selectOption(`#drawer select[data-code="${c}"]`, 'Done'); await p.waitForTimeout(250) }
   await p.click('[data-act=close]'); await p.waitForTimeout(200);
   check('SOW board', 'Square turns Done after its steps are Done', !sqBefore.includes('bd-done') && (await p.$eval(sq, e => e.className)).includes('bd-done'), sqBefore);
   await go('overview');
@@ -309,6 +309,42 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await p.click('[data-act=bpf][data-v=blocked]'); await p.waitForTimeout(150);
   check('BP dot', 'Blocked filter shows only blocked brands', await p.$$eval('main tbody tr', rs => rs.length > 0 && rs.every(r => r.innerText.includes('Blocked'))));
   await p.click('[data-act=bpf][data-v=all]');
+
+
+  // 30. Platform access: steps, next step, chase, logins, thread, founder message, BP lock
+  await setMe('Noopur'); await go('access'); await view('accview', 'full'); await p.click('[data-act=accq][data-v=open]');
+  const row = 'tr[data-kind=access][data-id="eco-protein-meta-ads-manager"] td:first-child';
+  await p.click(row); await p.waitForTimeout(250);
+  check('Access', 'Row opens with the 5 steps shown', (await text('.stepper')).includes('Team confirmed'));
+  await p.fill('#d-ns_text', 'Noopur to ask Andy for Meta partner access'); await p.selectOption('#d-ns_who', 'Noopur');
+  await p.click('[data-act=chase]'); await p.waitForTimeout(250);
+  check('Access', 'Logging a chase moves Needed to Asked founder and keeps unsaved edits', await p.$eval('#d-status', e => e.value) === 'Asked founder' && await p.$eval('#d-ns_text', e => e.value).then(v => v.startsWith('Noopur to ask')));
+  check('Access', 'Chase shows in the thread', (await text('.thread')).includes('Chased the founder by WhatsApp'));
+  await p.fill('#acc-c', '@Ash Ghorab founder says tonight'); await p.click('[data-act=acc-post]'); await p.waitForTimeout(250);
+  check('Access', 'Comment shows in the thread', (await text('.thread')).includes('founder says tonight'));
+  await p.selectOption('#seat-p', 'Paras'); await p.click('[data-act=seat-add]'); await p.waitForTimeout(250);
+  await p.selectOption('[data-act=seat][data-i="0"]', 'Has login'); await p.waitForTimeout(250);
+  check('Access', 'Team login added and set to Has login', (await text('.seatedit')).includes('Paras') && (await text('.thread')).includes('Paras: Asked to Has login'));
+  await drawerSave();
+  check('Access', 'Full view shows the next step and the login', await p.evaluate(() => { const r = document.querySelector('tr[data-id="eco-protein-meta-ads-manager"]'); return r.innerText.includes('Noopur to ask Andy') && r.innerText.includes('Paras') }));
+  await go('mine'); await view('minetab', 'all');
+  check('Access', 'Next step shows in Noopur\'s My tasks', (await mainText()).includes('Meta Ads Manager: Noopur to ask Andy'));
+  await setMe('Ash Ghorab'); await go('mine');
+  check('Access', 'Mention reaches Ash', await p.evaluate(() => [...document.querySelectorAll('.item.men')].some(x => x.innerText.includes('Meta Ads Manager'))));
+  await setMe('Noopur'); await go('brand-celf'); await p.click('button[data-tab=access]'); await p.waitForTimeout(150);
+  await p.click('main [data-act=fm-open]'); await p.waitForTimeout(150);
+  const msg = await p.$eval('#fm-text', e => e.value);
+  check('Access', 'Founder message lists every missing platform', /Google Ads/.test(msg) && /Meta Ads Manager/.test(msg) && /Amazon Seller Central/.test(msg));
+  await p.click('[data-act=fm-asked]'); await p.waitForTimeout(400);
+  check('Access', 'Mark as Asked founder updates all of them', await p.$$eval('main select[data-kind=access]', ss => ss.length > 0 && ss.filter(s => s.value === 'Asked founder').length >= 3));
+  await go('bp');
+  const lockBefore = await p.$eval('button[data-act=bpdot][data-id=eco-protein][data-sec="Paid Meta"]', e => e.className.includes('bp-Locked'));
+  await go('access'); await p.selectOption('select[data-kind=access][data-id="eco-protein-meta-ads-manager"]', 'Granted'); await p.waitForTimeout(250);
+  await go('bp');
+  const readyAfter = await p.$eval('button[data-act=bpdot][data-id=eco-protein][data-sec="Paid Meta"]', e => e.className.includes('bp-Ready'));
+  check('Access', 'BP section is locked until access is granted, then ready to start', lockBefore && readyAfter, `${lockBefore} ${readyAfter}`);
+  await go('overview');
+  check('Access', 'Needs attention lists founders to chase', await p.evaluate(() => [...document.querySelectorAll('.att tr')].some(r => r.innerText.includes('Chase founder'))));
 
   check('Page', 'No script errors', errors.length === 0, errors.join(' | '));
   const failed = results.filter(r => !r.ok);

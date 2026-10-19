@@ -73,6 +73,22 @@ button,input,select,textarea{font:inherit;color:inherit}
 .seg{display:inline-flex;border:1px solid var(--line2);border-radius:7px;overflow:hidden}
 .seg button{border:0;background:transparent;padding:5px 12px;cursor:pointer;color:var(--muted);font-weight:500}
 .seg button.on{background:var(--accentSoft);color:var(--accent);font-weight:600}
+.nsdot{position:absolute;top:-3px;right:-3px;width:8px;height:8px;border-radius:50%;background:var(--accent);border:1.5px solid var(--panel)}
+.chdot{position:absolute;bottom:-3px;right:-3px;width:8px;height:8px;border-radius:50%;background:var(--dRisk);border:1.5px solid var(--panel)}
+.nsdot.inl,.chdot.inl{position:static;display:inline-block;border:0}
+.acd{position:relative}
+table.accfull td{vertical-align:middle}table.accfull tr.grp td{background:var(--panel2);font-size:13.5px;padding:7px 10px}
+.seats{display:flex;flex-wrap:wrap;gap:4px}.seat{font-size:12px;padding:1px 8px;border-radius:999px;background:var(--offBg);color:var(--off);white-space:nowrap}
+.seat.st-Haslogin{background:var(--okBg);color:var(--ok)}.seat.st-Asked{background:var(--warnBg);color:var(--warn)}
+.stepper{display:flex;flex-wrap:wrap;gap:4px;grid-column:1/-1}.sp{font-size:11.5px;padding:3px 8px;border-radius:999px;background:var(--offBg);color:var(--muted)}.sp.past{background:var(--okBg);color:var(--ok)}.sp.cur{background:var(--accent);color:var(--accentInk);font-weight:600}
+.seatedit,.thread{grid-column:1/-1;display:flex;flex-direction:column;gap:6px}.seatrow{display:flex;align-items:center;gap:8px}.seatrow b{flex:1}
+.thread textarea{width:100%;border:1px solid var(--line2);border-radius:6px;padding:8px;background:var(--panel)}
+.sysn{font-size:12px;color:var(--muted);padding-left:10px;border-left:2px solid var(--line2)}
+.box.wide{max-width:640px;width:100%}.box textarea{width:100%;border:1px solid var(--line2);border-radius:6px;padding:10px;background:var(--panel2);font:13px/1.5 var(--f-ui);margin-bottom:10px}
+.bp-Locked{background:var(--panel);color:var(--bad);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--bad) 45%,transparent)}
+.bp-Ready{box-shadow:inset 0 0 0 2px var(--dLive)}
+.lockt,.readyt{display:block;font-size:11.5px;margin-top:2px}.lockt{color:var(--bad)}.readyt{color:var(--ok)}
+#aform input,#aform select{border:1px solid var(--line2);border-radius:6px;padding:4px 6px;background:var(--panel)}#aform .card{margin-bottom:12px}
 .toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:0 0 14px}
 .toolbar .tl{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
 .toolbar select{border:1px solid var(--line2);background:var(--panel);border-radius:6px;padding:4px 6px;color:var(--ink)}
@@ -380,7 +396,7 @@ const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k
 let theme=ls.get("vt-theme")==="dark"?"dark":"light";
 const applyTheme=()=>{document.documentElement.setAttribute("data-theme",theme)};applyTheme();
 new MutationObserver(()=>{if(document.documentElement.getAttribute("data-theme")!==theme)applyTheme()}).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
-try{const t=ls.get("vt-tab");if(t)brandTab=t;const sv=ls.get("vt-simple");if(sv!==null)simple=sv==="1";if(ls.get("vt-lens")==="leadership")lens="leadership";me=ls.get("vt-me")||"";accView=ls.get("vt-accview")||"grid";sowView=ls.get("vt-sowview")||"board"}catch(e){}
+try{const t=ls.get("vt-tab");if(t)brandTab=t;const sv=ls.get("vt-simple");if(sv!==null)simple=sv==="1";if(ls.get("vt-lens")==="leadership")lens="leadership";me=ls.get("vt-me")||"";accView=ls.get("vt-accview")||"";sowView=ls.get("vt-sowview")||"board"}catch(e){}
 
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s);
@@ -402,10 +418,10 @@ function dueFlag(date,done){if(done)return"";const n=dayDiff(date);if(n===null)r
 function dueText(date,flag){const n=dayDiff(date);if(n===null)return"";if(flag==="Overdue")return"Late by "+(-n)+(n===-1?" day":" days");if(n===0)return"Due today";if(n===1)return"Due tomorrow";return"Due "+fmtD(date,true)}
 function dueHtml(date,done){const f=dueFlag(date,done);if(!f)return date&&done?`<span class="due faint">${esc(fmtD(date))}</span>`:"";return`<span class="due ${key(f)}">${esc(dueText(date,f))}</span>`}
 function cls(v){
-  if(["Complete","Granted","Signed","Done","Live","All Granted","On Time","On Track"].includes(v))return v==="On Track"?"s-info":"s-ok";
+  if(["Complete","Granted","Team confirmed","Signed","Done","Live","All Granted","On Time","On Track"].includes(v))return v==="On Track"?"s-info":"s-ok";
   if(["Blocked","Overdue","Urgent"].includes(v))return"s-bad";
-  if(["At Risk","Has blockers","Due Soon","High","In Progress","Briefed","Requested","Template Pending","Drafting","Internal Review","Final Review (Ben)","Founder Check-in","Revisions","Sent for Signature","Foundations","Tactics In","In QA"].includes(v))return"s-warn";
-  if(["Pending","Not Requested","Medium","Not Started","Not Set Up"].includes(v))return"s-info";
+  if(["At Risk","Has blockers","Due Soon","High","In Progress","Briefed","Requested","Asked founder","Founder actioned","Template Pending","Drafting","Internal Review","Final Review (Ben)","Founder Check-in","Revisions","Sent for Signature","Foundations","Tactics In","In QA"].includes(v))return"s-warn";
+  if(["Pending","Not Requested","Needed","Medium","Not Started","Not Set Up"].includes(v))return"s-info";
   return"s-off";
 }
 const pill=v=>v?`<span class="pill ${cls(v)}">${v==="Blocked"?"! ":""}${esc(v)}</span>`:"";
@@ -429,7 +445,7 @@ function bpRoll(bid){const d=S.bps[bid];if(!d)return null;const secs=L("bp_secti
   let overall="In Progress";
   if(vals.includes("Blocked"))overall="Blocked";else if(done===live.length)overall="Complete";else if(vals.every(v=>v==="Not Started"||!v))overall="Not Started";else if(vals.includes("In QA"))overall="In QA";
   return{overall,progress,done,total:live.length,due:dueFlag(d.due_date,progress===1)}}
-function accessRoll(bid){const rows=Object.values(S.access).filter(a=>a.brand===bid&&a.status!=="Not Needed");const g=rows.filter(a=>a.status==="Granted").length;
+function accessRoll(bid){const rows=Object.values(S.access).filter(a=>a.brand===bid&&a.status!=="Not Needed");const g=rows.filter(accGranted).length;
   let s="Not Set Up";if(rows.length)s=rows.some(a=>a.status==="Blocked")?"Blocked":g===rows.length?"All Granted":"In Progress";return{summary:s,text:rows.length?g+" / "+rows.length:""}}
 const sowDue=s=>!s||s.stage==="Signed"?"":dueFlag(s.target_sign||s.draft_due,false);
 function onboarding(bid){const st=stepsSorted();let na=0,done=0;for(const s of st){const v=stepState(bid,s.code).status;if(v==="N/A")na++;else if(v==="Done")done++}const tot=st.length-na;return tot?done/tot:0}
@@ -517,6 +533,8 @@ function myItemsNow(){
   if(!me)return[];const out=[];
   for(const t of withId(S.tasks)){if(!t.title||t.status==="Complete")continue;const own=isPerson(t.owner,me),sup=(t.support||[]).some(x=>isPerson(x,me));if(!own&&!sup)continue;
     const f=dueFlag(t.deadline,false);out.push({kind:"task",id:t._id,brand:t.brand,title:t.title,status:t.status,due:t.deadline,flag:f,blocked:t.status==="Blocked",blocker:t.blocker,priority:t.priority,role:own?"Owner":"Support",notes:t.notes})}
+  for(const a of withId(S.access)){const ns=a.next_step;if(!ns||!ns.text||!isPerson(ns.who,me)||!accOpen(a))continue;const f=dueFlag(ns.due,false);
+    out.push({kind:"access",id:a._id,brand:a.brand,title:a.platform+": "+ns.text,status:a.status||"Needed",due:ns.due,flag:f,blocked:a.status==="Blocked",blocker:a.blocker?{text:a.blocker}:null,role:"Access next step"})}
   for(const[bid,d]of Object.entries(S.bsteps)){for(const[code,st]of Object.entries(d.s||{})){if(!isPerson(st.owner,me)||st.status==="Done"||st.status==="N/A")continue;const s=S.steps[code];if(!s)continue;
     const f=dueFlag(st.deadline,false);out.push({kind:"step",id:bid,code,brand:bid,title:s.name,status:st.status||"Not Started",due:st.deadline,flag:f,blocked:!!(st.blocker&&st.blocker.text),blocker:st.blocker,role:"Step owner"})}}
   return out}
@@ -576,7 +594,7 @@ function vMine(){
   const all=myItems();const items=mineVert?all.filter(it=>it.kind==="task"&&vertOf(S.tasks[it.id]||{})===mineVert):all;
   const onb=items.filter(it=>!isLiveBrand(it.brand)),live=items.filter(it=>isLiveBrand(it.brand));
   h+=sinceBanner(all)+guide("mine");
-  const men=myMentions(me);if(men.length)h+=`<section class="group"><h2>Mentions <span class="count">${men.length}</span></h2>${men.slice(0,5).map(c=>`<a class="item men" href="#brand-${esc(c.brand)}" data-act="men-go" data-id="${esc(c.brand)}"><div><div class="t">${esc(c.by||"Someone")} on ${esc(bname(c.brand))}</div><div class="meta">${linkMentions(c.text).slice(0,400)}</div></div><div class="faint" style="font-size:12px">${esc(agoText(c.at))}</div><div></div></a>`).join("")}</section>`;
+  const men=myMentions(me);if(men.length)h+=`<section class="group"><h2>Mentions <span class="count">${men.length}</span></h2>${men.slice(0,5).map(c=>`<a class="item men" href="#brand-${esc(c.brand)}" data-act="men-go" data-id="${esc(c.brand)}" data-acc="${esc(c.access||"")}"><div><div class="t">${esc(c.by||"Someone")} on ${esc(bname(c.brand))}${c.access&&S.access[c.access]?" · "+esc(S.access[c.access].platform):""}</div><div class="meta">${linkMentions(c.text).slice(0,400)}</div></div><div class="faint" style="font-size:12px">${esc(agoText(c.at))}</div><div></div></a>`).join("")}</section>`;
   if(mineTab===null)mineTab=ls.get("vt-minetab")||(onb.length?"onboarding":"live");
   const urgent=a=>a.filter(it=>!holdOf(it.brand)&&(it.blocked||it.flag==="Overdue")).length;
   const tabBtn=(k,l,a)=>`<button data-act="minetab" data-v="${k}" class="${mineTab===k?"on":""}">${l} <span class="cnt">${a.length}</span>${urgent(a)?`<span class="cnt bad">${urgent(a)} need you</span>`:""}</button>`;
@@ -616,7 +634,7 @@ function mineCmp(k){const due=(a,b)=>String(a.due||"9999").localeCompare(String(
 function dueBucket(it){if(!it.due)return["5","No date"];const n=dayDiff(it.due);if(n<0)return["0","Late"];if(n===0)return["1","Due today"];if(n<=7)return["2","Due in the next 7 days"];if(n<=30)return["3","Due this month"];return["4","Later"]}
 function mineGroups(items,by){const m=new Map();
   const keyOf=it=>by==="brand"?[it.brand,bname(it.brand)]:by==="priority"?[String(priIdx(it)),it.priority||(it.kind==="step"?"Onboarding steps":"No priority")]
-    :by==="due"?dueBucket(it):by==="status"?[it.status||"Not Started",it.status||"Not Started"]:[it.kind==="step"?"~steps":depOf(S.tasks[it.id]||{}),it.kind==="step"?"Onboarding steps":depOf(S.tasks[it.id]||{})];
+    :by==="due"?dueBucket(it):by==="status"?[it.status||"Not Started",it.status||"Not Started"]:[it.kind==="step"?"~steps":it.kind==="access"?"~access":depOf(S.tasks[it.id]||{}),it.kind==="step"?"Onboarding steps":it.kind==="access"?"Platform access":depOf(S.tasks[it.id]||{})];
   for(const it of items){const[k,l]=keyOf(it);if(!m.has(k))m.set(k,{key:k,label:l,items:[]});m.get(k).items.push(it)}
   const gs=[...m.values()];const st=L("task_status").concat(L("checklist"));
   if(by==="brand")gs.sort((a,b)=>(holdOf(a.key)?1:0)-(holdOf(b.key)?1:0)||Math.min(...a.items.map(itemRank))-Math.min(...b.items.map(itemRank))||b.items.length-a.items.length);
@@ -633,11 +651,11 @@ function mineBoard(items){const st=[...new Set(["Blocked"].concat(L("task_status
     <div class="row" style="justify-content:space-between;gap:6px">${dueHtml(it.due,false)||`<span class="faint" style="font-size:12px">No date</span>`}${it.kind==="task"?statusSel("task",it.id,it.status,L("task_status"),canChangeTask(S.tasks[it.id]||{})):statusSel("step",it.id,it.status,L("checklist"),canWrite,`data-code="${esc(it.code)}"`)}</div></div>`).join("")||`<div class="faint" style="font-size:12.5px;padding:6px">Nothing here</div>`}</div>`).join("")}</div>`}
 function itemHtml(it,cl,noBrand){
   const brand=`<a href="#brand-${esc(it.brand)}" class="muted">${esc(bname(it.brand))}</a>`;
-  const ctl=it.kind==="task"?statusSel("task",it.id,it.status,L("task_status"),canChangeTask(S.tasks[it.id]||{}))
+  const ctl=it.kind==="access"?statusSel("access",it.id,it.status,L("access_status"),canWrite):it.kind==="task"?statusSel("task",it.id,it.status,L("task_status"),canChangeTask(S.tasks[it.id]||{}))
     :statusSel("step",it.id,it.status,L("checklist"),canWrite,`data-code="${esc(it.code)}"`);
   const open=it.kind==="task"?`data-act="open" data-kind="task" data-id="${esc(it.id)}"`:`data-act="open" data-kind="step" data-id="${esc(it.id)}" data-code="${esc(it.code)}"`;
   return`<div class="item ${cl}"><div><div class="t"><a href="#brand-${esc(it.brand)}" data-act="goto-item" data-kind="${it.kind}" data-id="${esc(it.id)}" data-code="${esc(it.code||"")}" class="bname" title="Open on the ${esc(bname(it.brand))} page">${esc(it.title)}</a></div>
-   <div class="meta">${noBrand?"":brand}${it.kind==="step"?`<span class="code">${esc(it.code)}</span><span>Onboarding step</span>`:""}${simple?"":`<span>${esc(it.role)}</span>${it.priority?`<span>${esc(it.priority)}</span>`:""}`}</div>
+   <div class="meta">${noBrand?"":brand}${it.kind==="access"?`<span>Platform access</span>`:""}${it.kind==="step"?`<span class="code">${esc(it.code)}</span><span>Onboarding step</span>`:""}${simple?"":`<span>${esc(it.role)}</span>${it.priority?`<span>${esc(it.priority)}</span>`:""}`}</div>
    ${it.blocked&&it.blocker?`<div class="blk">Blocked: ${esc(it.blocker.text||"")}${it.blocker.person?` (waiting on ${esc(it.blocker.person)})`:""}</div>`:""}</div>
    <div>${dueHtml(it.due,false)}</div><div>${ctl}</div></div>`}
 
@@ -654,7 +672,7 @@ function vOverview(){
   if(!prev)h+=`<p class="hint2">Trends appear once the tracker has a week of history. It saves one snapshot a day when the Overview is opened.</p>`;
   const att=attention(bs,R);
   h+=`<h2>Needs attention <span class="count">${att.length}</span></h2>`;
-  h+=att.length?`<div class="tw att"><table><tbody>${att.slice(0,leaderOn()?12:30).map(x=>`<tr class="click" data-act="att-go" data-id="${esc(x.b.id)}" data-tab="${esc(x.tab)}"><td style="width:170px"><span class="pill ${x.kind==="Blocked"||x.kind==="Past SOW target"?"s-bad":x.kind==="No update"?"s-off":"s-warn"}">${esc(x.kind)}</span></td><td style="width:190px"><a class="bname" href="#brand-${esc(x.b.id)}">${esc(x.b.name)}</a></td><td class="muted">${esc(x.text)}</td></tr>`).join("")}</tbody></table></div>${att.length>(leaderOn()?12:30)?`<p class="hint2">${att.length-(leaderOn()?12:30)} more. Turn off Leadership view to see all.</p>`:""}`:`<div class="tw"><div class="empty">Nothing needs attention. No brand is blocked, past its SOW date, out of step or quiet for a week.</div></div>`;
+  h+=att.length?`<div class="tw att"><table><tbody>${att.slice(0,leaderOn()?12:30).map(x=>`<tr class="click" data-act="att-go" data-id="${esc(x.b.id)}" data-tab="${esc(x.tab)}"><td style="width:170px"><span class="pill ${x.kind==="Blocked"||x.kind==="Past SOW target"?"s-bad":x.kind==="Chase founder"?"s-warn":x.kind==="No update"?"s-off":"s-warn"}">${esc(x.kind)}</span></td><td style="width:190px"><a class="bname" href="#brand-${esc(x.b.id)}">${esc(x.b.name)}</a></td><td class="muted">${esc(x.text)}</td></tr>`).join("")}</tbody></table></div>${att.length>(leaderOn()?12:30)?`<p class="hint2">${att.length-(leaderOn()?12:30)} more. Turn off Leadership view to see all.</p>`:""}`:`<div class="tw"><div class="empty">Nothing needs attention. No brand is blocked, past its SOW date, out of step or quiet for a week.</div></div>`;
   const hy=hygiene();if(hy.length&&(canEdit||leaderOn()))h+=`<div class="hyg"><b>Missing information</b>${hy.map(([l,c,to])=>`<a href="#${to}">${c} ${esc(l.toLowerCase())}</a>`).join("")}</div>`;
   h+=`<h2>Pipeline</h2><p class="hint2">Where every brand is, from first call to live. Days show how long a brand has been in its stage, once a stage change is recorded.</p>`+pipeline(bs,R);
   h+=`<h2>SOW signing plan</h2>`+sowPlan(bs,R);
@@ -697,7 +715,7 @@ function vBrand(id){
    <div class="row">${b.website?`<a class="btn" href="${esc(b.website)}" target="_blank" rel="noopener">Website</a>`:""}${canEdit?`<a class="btn" href="#client-${esc(id)}">Client view</a>`:""}${ed?`<button class="btn" data-act="open" data-kind="brand" data-id="${esc(id)}">Edit details</button>`:""}</div></div>
    <div class="facts">${fact("Stage",esc(b.stage)+(stageDays(b)!==null?` <span class="faint" style="font-weight:500">for ${stageDays(b)} days</span>`:""),"stage")}${fact("Brand lead",esc(b.lead),"lead")}${fact("Founder",esc(b.founder),"founder")}${fact("SOW target sign",r.sowRow.target_sign?targetHtml(r.sowRow):isInternal(b)?"N/A":"","target")}${fact("Sprint",esc(b.sprint_label),"sprint")}</div>
    <div class="next"><label>Next step</label><div>${b.next_step?esc(b.next_step):miss("next_step","next step")}</div></div>`;
-  const tabs=[["tasks",`Tasks (${r.open} open)`],["steps",`Onboarding steps (${Math.round(r.pct*100)}%)`],["access",`Platform access${r.acc.text?" ("+r.acc.text+")":""}`],["sow","SOW"],["bp","Best Practices"],["updates",`Updates${Object.values(S.comments).filter(c=>c.brand===id).length?" ("+Object.values(S.comments).filter(c=>c.brand===id).length+")":""}`]];
+  const tabs=[["tasks",`Tasks (${r.open} open)`],["steps",`Onboarding steps (${Math.round(r.pct*100)}%)`],["access",`Platform access${r.acc.text?" ("+r.acc.text+")":""}`],["sow","SOW"],["bp","Best Practices"],["updates",`Updates${Object.values(S.comments).filter(c=>c.brand===id&&c.kind!=="system").length?" ("+Object.values(S.comments).filter(c=>c.brand===id&&c.kind!=="system").length+")":""}`]];
   h+=`<div class="tabs" role="tablist">${tabs.map(([k,l])=>`<button role="tab" aria-selected="${brandTab===k}" class="${brandTab===k?"on":""}" data-act="tab" data-tab="${k}">${esc(l)}</button>`).join("")}</div>`;
   if(brandTab==="updates")h+=updatesTab(id);else if(brandTab==="steps")h+=stepsTab(id);else if(brandTab==="access")h+=accessTable(id);else if(brandTab==="sow")h+=sowCard(id);else if(brandTab==="bp")h+=bpCard(id);else h+=tasksTab(id);
   return h}
@@ -756,17 +774,8 @@ function stepsTab(bid){
     h+=`</details>`}
   return h}
 function accessTable(bid){
-  let rows=withId(S.access);if(bid)rows=rows.filter(a=>a.brand===bid);
-  if(!bid){if(flt.accBrand)rows=rows.filter(a=>a.brand===flt.accBrand);if(flt.accStatus)rows=rows.filter(a=>a.status===flt.accStatus)}
-  rows.sort((a,b)=>bname(a.brand).localeCompare(bname(b.brand))||String(a.platform).localeCompare(b.platform));
-  let h=canWrite?`<div class="row" style="margin-bottom:10px"><button class="btn pri" data-act="add-access" data-id="${esc(bid||flt.accBrand||"")}">Add platform</button><span class="muted">Any Blocked row turns the brand Blocked. Use Not Needed to leave a platform out.</span></div>`:"";
-  if(!rows.length)return h+`<div class="tw"><div class="empty">No platforms tracked${bid?" for this brand":" for these filters"} yet. Add one when access is needed.</div></div>`;
-  h+=`<div class="tw"><table><thead><tr>${bid?"":"<th>Brand</th>"}<th>Platform</th>${simple?"":"<th>Access level</th><th>Needed for</th>"}<th>Valerie owner</th>${simple?"":"<th>Brand contact</th><th>Requested</th>"}<th>Waiting</th><th>Due</th><th>Status</th><th>Blocker</th></tr></thead><tbody>`;
-  for(const a of rows){const d=parseD(a.requested_date);const wait=d&&!["Granted","Not Needed"].includes(a.status)?Math.round((today()-d)/864e5):"";
-    h+=`<tr class="click" data-act="open" data-kind="access" data-id="${esc(a._id)}">${bid?"":`<td><a class="bname" href="#brand-${esc(a.brand)}">${esc(bname(a.brand))}</a></td>`}<td>${esc(a.platform)}</td>${simple?"":`<td>${esc(a.access_level)}</td><td>${esc(a.needed_for)}</td>`}
-    <td>${a.owner?esc(a.owner):`<span class="tag warn">No owner</span>`}</td>${simple?"":`<td>${esc(a.brand_contact)}</td><td class="faint">${esc(fmtD(a.requested_date))}</td>`}<td>${wait!==""?`<span class="${wait>5?"hot":""}">${wait} days</span>`:""}</td>
-    <td>${dueHtml(a.deadline,["Granted","Not Needed"].includes(a.status))}</td><td>${statusSel("access",a._id,a.status,L("access_status"),canWrite)}</td><td class="muted clip">${esc(a.blocker)}</td></tr>`}
-  return h+`</tbody></table></div>`}
+  const waiting=withId(S.access).filter(a=>a.brand===bid&&ACC_FOUNDER.includes(a.status)).length;
+  return`<div class="row" style="margin-bottom:10px">${canWrite?`<button class="btn pri" data-act="add-access" data-id="${esc(bid)}">Add platform</button>`:""}${waiting?`<button class="btn" data-act="fm-open" data-id="${esc(bid)}">Message for founder (${waiting} missing)</button>`:""}<span class="muted">Any Blocked row turns the brand Blocked. Use Not Needed to leave a platform out.</span></div>`+accFull(bid)}
 function sowCard(bid){
   const b=S.brands[bid];if(isInternal(b))return`<div class="tw"><div class="empty">Internal work has no SOW.</div></div>`;
   const s=S.sow[bid];if(!s)return`<div class="tw"><div class="empty">No SOW row yet. ${canWrite?`<button class="btn sm" data-act="add-sow" data-id="${esc(bid)}">Start one</button>`:""}</div></div>`;
@@ -787,7 +796,7 @@ function vBp(){
   const groups=BPGROUPS();const secs=groups.flatMap(g=>g.sections);
   let rows=brandList().filter(b=>S.bps[b.id]);const others=brandList().filter(b=>!S.bps[b.id]&&!isInternal(b));
   let h=`<h1>Best Practices</h1><p class="sub">One row per brand, one dot per section. Click a dot to set that section. Use Edit on a row for owner, due date, blocker and notes.</p>
-  <div class="legend">${L("bp_status").map(v=>`<span><span class="bpd bp-${key(v)}">${esc(BPMARK[v]??"")}</span>${esc(v)}</span>`).join("")}</div>
+  <div class="legend">${L("bp_status").map(v=>`<span><span class="bpd bp-${key(v)}">${esc(BPMARK[v]??"")}</span>${esc(v)}</span>`).join("")}<span><span class="bpd bp-Locked">${LOCK}</span>Waiting on access</span><span><span class="bpd bp-NotStarted bp-Ready"></span>Access in place, ready to start</span></div>
   <div class="toolbar"><div class="seg" role="group" aria-label="Show"><button data-act="bpf" data-v="all" class="${bpFilter==="all"?"on":""}">All</button><button data-act="bpf" data-v="open" class="${bpFilter==="open"?"on":""}">Not complete</button><button data-act="bpf" data-v="blocked" class="${bpFilter==="blocked"?"on":""}">Blocked</button></div>
    <label class="tl">Sort by <select data-act="bps" id="bp-sort"><option value="progress" ${bpSort==="progress"?"selected":""}>Needs work first</option><option value="name" ${bpSort==="name"?"selected":""}>Brand A to Z</option><option value="due" ${bpSort==="due"?"selected":""}>Due date</option></select></label>
    ${canWrite&&others.length?`<select data-act="bp-add" aria-label="Start tracking a brand" class="btn"><option value="">Start tracking a brand...</option>${others.map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join("")}</select>`:""}</div>`;
@@ -801,7 +810,8 @@ function vBp(){
    <tr>${groups.map((g,i)=>g.sections.map(x=>`<th class="pc g${i%6}" title="${esc(x)}"><span>${esc(x)}</span></th>`).join("")).join("")}</tr></thead><tbody>`;
   for(const b of rows){const d=S.bps[b.id];const r=R[b.id];
     h+=`<tr class="${onHold(b)?"held":""}"><td class="stick"><a class="bname" href="#brand-${esc(b.id)}">${esc(b.name)}</a></td><td class="nowrap"><span class="bar"><i style="width:${Math.round(r.progress*100)}%"></i></span> <span class="faint">${r.done}/${r.total}</span></td><td>${pill(r.overall)}</td>${secs.map(x=>{const v=(d.sections||{})[x]||"Not Started";
-      return`<td class="gc"><button class="bpd bp-${key(v)}" data-act="bpdot" data-id="${esc(b.id)}" data-sec="${esc(x)}" title="${esc(x+": "+v)}" aria-label="${esc(b.name+", "+x+": "+v)}" ${canWrite?"":"disabled"}>${esc(BPMARK[v]??"")}</button></td>`}).join("")}
+      const ax=v==="Not Started"?bpAccess(b.id,x):null;const lk=ax&&ax.state==="locked";const rd=ax&&ax.state==="ready";
+      return`<td class="gc"><button class="bpd bp-${lk?"Locked":key(v)}${rd?" bp-Ready":""}" data-act="bpdot" data-id="${esc(b.id)}" data-sec="${esc(x)}" title="${esc(x+": "+v+(lk?"\nWaiting on access: "+ax.missing.join(", "):rd?"\nAccess is in place. Ready to start":""))}" aria-label="${esc(b.name+", "+x+": "+v+(lk?", waiting on access":rd?", ready to start":""))}" ${canWrite?"":"disabled"}>${lk?LOCK:esc(BPMARK[v]??"")}</button></td>`}).join("")}
       ${simple?"":`<td class="nowrap">${esc(d.owner)||`<span class="faint">Not set</span>`}</td><td class="nowrap">${dueHtml(d.due_date,r.progress===1)||`<span class="faint">No date</span>`}</td>`}
       <td><button class="btn sm quiet" data-act="open" data-kind="bp" data-id="${esc(b.id)}">Edit</button></td></tr>`}
   if(!rows.length)h+=`<tr><td colspan="${secs.length+6}"><div class="empty">No brands match this filter.</div></td></tr>`;
@@ -810,7 +820,7 @@ function bpCard(bid){
   const d=S.bps[bid];if(!d)return`<div class="tw"><div class="empty">Best Practices not started for this brand. ${canWrite?`<button class="btn sm" data-act="add-bp" data-id="${esc(bid)}">Start tracking</button>`:""}</div></div>`;
   const r=bpRoll(bid);
   return`<div class="row" style="margin-bottom:10px">${pill(r.overall)}<span class="muted">${r.done} of ${r.total} sections complete</span>${d.due_date?dueHtml(d.due_date,r.progress===1):""}<span class="grow"></span>${canWrite?`<button class="btn" data-act="open" data-kind="bp" data-id="${esc(bid)}">Edit owner, due date and notes</button>`:""}</div>
-   <div class="bpcards">${BPGROUPS().map((g,i)=>`<div class="bpc g${i%6}"><h3>${esc(g.name||"Sections")}</h3>${g.sections.map(x=>{const v=(d.sections||{})[x]||"Not Started";return`<div class="bpr"><span>${esc(x)}</span>${canWrite?`<select class="ps ${cls(v)}" data-act="bpsec" data-id="${esc(bid)}" data-sec="${esc(x)}" aria-label="${esc(x)}">${opts(L("bp_status"),v,false)}</select>`:pill(v)}</div>`}).join("")}</div>`).join("")}</div>
+   <div class="bpcards">${BPGROUPS().map((g,i)=>`<div class="bpc g${i%6}"><h3>${esc(g.name||"Sections")}</h3>${g.sections.map(x=>{const v=(d.sections||{})[x]||"Not Started";const ax=v==="Not Started"?bpAccess(bid,x):null;return`<div class="bpr"><span>${esc(x)}${ax&&ax.state==="locked"?`<span class="lockt">${LOCK} Waiting on ${esc(ax.missing.join(", "))}</span>`:ax&&ax.state==="ready"?`<span class="readyt">Ready to start</span>`:""}</span>${canWrite?`<select class="ps ${cls(v)}" data-act="bpsec" data-id="${esc(bid)}" data-sec="${esc(x)}" aria-label="${esc(x)}">${opts(L("bp_status"),v,false)}</select>`:pill(v)}</div>`}).join("")}</div>`).join("")}</div>
    <div class="next"><label>Owner</label><div>${esc(d.owner)||`<span class="faint">Not set</span>`}</div></div><div class="next"><label>Blocker</label><div>${esc(d.blocker)||`<span class="faint">None</span>`}</div></div>${simple?"":`<div class="next"><label>Notes</label><div>${esc(d.notes)||`<span class="faint">None</span>`}</div></div>`}`}
 function openPop(btn){closePop();const id=btn.dataset.id,sec=btn.dataset.sec;const cur=((S.bps[id]||{}).sections||{})[sec]||"Not Started";
   const el=document.createElement("div");el.id="pop";el.className="pop";el.setAttribute("role","menu");
@@ -830,8 +840,9 @@ function vSow(){
    <td class="muted clip">${esc(s.blocker)}</td><td class="muted clip">${esc(s.next_step)}</td></tr>`}
   return h+`</tbody></table></div>`}
 function vAccess(){
-  const head=`<h1>Platform access</h1>`+viewSeg("accview",accView,[["grid","By brand"],["list","List"]]);
-  if(accView==="grid")return head+accessGrid();
+  const head=`<h1>Platform access</h1>`+viewSeg("accview",accView,[["grid","Simple"],["full","Full"]]);
+  if(accView!=="full")return head+accessGrid();
+  return head+`<p class="sub">Who has access to what, what kind, and what happens next. Click a row for the steps, team logins, chasing and the comment thread.</p>`+accFull("");
   return head+`<p class="sub">One row per brand and platform. Status only. Never store passwords or logins here.</p>
   <div class="filters"><select data-act="fa" data-k="accBrand" aria-label="Brand"><option value="">All brands</option>${brandList().map(b=>`<option value="${esc(b.id)}" ${flt.accBrand===b.id?"selected":""}>${esc(b.name)}</option>`).join("")}</select>
   <select data-act="fa" data-k="accStatus" aria-label="Status"><option value="">Any status</option>${L("access_status").map(s=>`<option ${flt.accStatus===s?"selected":""}>${esc(s)}</option>`).join("")}</select></div>`+accessTable("")}
@@ -855,8 +866,9 @@ function attention(bs,R){const out=[];
     if(s.target_sign&&s.stage!=="Signed"&&dayDiff(s.target_sign)<0)add("Past SOW target",`Target ${fmtD(s.target_sign,true)}, SOW ${s.stage||"Not Started"}`,"sow");
     if(b.stage==="Live"&&s.stage&&s.stage!=="Signed")add("Stage mismatch",`Brand is Live but the SOW is ${s.stage}`,"sow");
     if(s.stage==="Signed"&&b.stage!=="Live")add("Stage mismatch",`SOW is Signed but the brand is at ${b.stage}`,"sow");
+    const ch=withId(S.access).filter(a=>a.brand===b.id&&needsChase(a));if(ch.length)add("Chase founder",`${ch.map(a=>a.platform).join(", ")}: asked ${chaseDays()}+ working days ago`,"access");
     const lu=lastUpdated(b.id);if(lu&&Date.now()-lu>7*DAY)add("No update",`Nothing changed for ${Math.floor((Date.now()-lu)/DAY)} days`,"updates")}
-  const order={"Blocked":0,"Past SOW target":1,"Stage mismatch":2,"No update":3};
+  const order={"Blocked":0,"Past SOW target":1,"Chase founder":2,"Stage mismatch":3,"No update":4};
   return out.sort((x,y)=>order[x.kind]-order[y.kind])}
 function hygiene(){const open=withId(S.tasks).filter(t=>t.title&&t.status!=="Complete"&&!holdOf(t.brand));
   return[["High or Urgent tasks with no deadline",open.filter(t=>["High","Urgent"].includes(t.priority)&&!t.deadline).length,"people"],
@@ -931,10 +943,10 @@ function linkMentions(text){let h=esc(text);for(const p of activePeople().slice(
 function brandActivity(bid){const ids=new Set([bid]);for(const[id,t]of Object.entries(S.tasks))if(t.brand===bid)ids.add(id);for(const[id,a]of Object.entries(S.access))if(a.brand===bid)ids.add(id);
   const out=[];for(const d of Object.values(S.log))for(const e of d.entries||[])if(ids.has(e.id))out.push(Object.assign({person:d.person},e));return out.sort((a,b)=>b.at-a.at).slice(0,15)}
 function updatesTab(bid){
-  const cs=withId(S.comments).filter(c=>c.brand===bid).sort((a,b)=>b.at-a.at);
+  const cs=withId(S.comments).filter(c=>c.brand===bid&&c.kind!=="system").sort((a,b)=>b.at-a.at);
   let h=`<div class="cols2 upd"><div><h3 class="h3">Comments</h3>${canWrite?`<form id="cform" class="card cform"><label for="c-text" class="sr">Add a comment</label><textarea id="c-text" name="text" placeholder="Write an update. Type @ and a name to mention someone, for example @Noopur" required></textarea>
     <div class="row"><span class="faint" style="font-size:12px">Mentions show in that person's My tasks. Links only, never passwords or contract text.</span><span class="grow"></span><button class="btn pri" type="submit">Post</button></div><input type="hidden" name="brand" value="${esc(bid)}"></form>`:""}`;
-  h+=cs.length?cs.map(c=>`<div class="cmt"><div class="row" style="gap:8px"><b>${esc(c.by||"Someone")}</b><span class="faint" style="font-size:12px">${esc(new Date(c.at).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}))}</span><span class="grow"></span>${canWrite&&(c.by===me||canEdit)?`<button class="btn sm quiet" data-act="del-comment" data-id="${esc(c._id)}">Delete</button>`:""}</div><div class="ctext">${linkMentions(c.text)}</div></div>`).join("")
+  h+=cs.length?cs.map(c=>`<div class="cmt"><div class="row" style="gap:8px"><b>${esc(c.by||"Someone")}</b><span class="faint" style="font-size:12px">${esc(new Date(c.at).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}))}</span><span class="grow"></span>${canWrite&&(c.by===me||canEdit)?`<button class="btn sm quiet" data-act="del-comment" data-id="${esc(c._id)}">Delete</button>`:""}</div><div class="ctext">${c.access&&S.access[c.access]?`<span class="tag">${esc(S.access[c.access].platform)}</span> `:""}${linkMentions(c.text)}</div></div>`).join("")
     :`<div class="empty card">No comments yet. Post the first update for ${esc(bname(bid))} above.</div>`;
   const act=brandActivity(bid);
   h+=`</div><div><h3 class="h3">Recent changes</h3>${act.length?`<div class="card actlist">${act.map(e=>`<div class="act"><span class="faint">${esc(new Date(e.at).toLocaleDateString("en-GB",{day:"numeric",month:"short"}))}</span> <b>${esc(e.person||"Someone")}</b> changed ${esc(e.field)} on ${esc(e.label||e.id)}${e.new!==undefined&&e.new!==""&&e.field!=="created"?` to <i>${esc(String(e.new).slice(0,60))}</i>`:""}</div>`).join("")}</div>`:`<div class="empty card">No changes recorded in the last 30 days.</div>`}</div></div>`;
@@ -949,7 +961,7 @@ function parseTemplateLines(text){return text.split("\n").map(l=>l.trim()).filte
 function clientModel(bid){const b=S.brands[bid]||{};const s=S.sow[bid]||{};const groups=boardCols();
   const g=groups.map(gr=>{const vals=gr.cols.map(c=>boardCell(bid,c)).filter(v=>v&&v!=="N/A");const done=vals.filter(v=>v==="Done").length;
     return{name:gr.name,state:!vals.length?"Not started":done===vals.length?"Done":vals.some(v=>v!=="Not done")?"In progress":"Not started",done,total:vals.length}});
-  const need=withId(S.access).filter(a=>a.brand===bid&&!["Granted","Not Needed"].includes(a.status)).map(a=>a.platform);
+  const need=withId(S.access).filter(a=>a.brand===bid&&accOpen(a)).map(a=>a.platform);
   return{name:b.name,stage:onHold(b)?"On hold":b.stage,pct:Math.round(onboarding(bid)*100),groups:g,target:s.target_sign||"",signed:s.stage==="Signed",need,date:isoToday()}}
 function clientHtml(m,standalone){
   const rows=m.groups.map(g=>`<div class="cg"><span class="cdot c-${key(g.state)}" aria-hidden="true"></span><span class="cn">${esc(g.name)}</span><span class="cs">${esc(g.state)}${g.total?` · ${g.done} of ${g.total}`:""}</span></div>`).join("");
@@ -976,30 +988,111 @@ const GUIDES={
   sow:["Each square rolls up a few onboarding steps. ✓ done, • in progress, empty not started.","Click a square to tick its steps. Signed comes from the SOW stage."]};
 function guide(k){if(!GUIDES[k]||ls.get("vt-guide-"+k))return"";return`<div class="guide"><div><b>How to use this page</b><ul>${GUIDES[k].map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div><button class="btn sm quiet" data-act="guide-off" data-k="${k}">Got it</button></div>`}
 
+
+/* ---------- platform access: 5 steps, who has a login, next step, chasing, one thread per row ----------
+   Teams, leads, chase days, BP section map and founder instructions live in config/access_setup. */
+const ACC_DONE=["Granted","Team confirmed"],ACC_FOUNDER=["Needed","Asked founder","Founder actioned"],ACC_STEPS=["Needed","Asked founder","Founder actioned","Granted","Team confirmed"];
+const SEAT_STATES=["Has login","Asked","Waiting"];
+const accGranted=a=>!!a&&ACC_DONE.includes(a.status);
+const accOpen=a=>!!a&&a.status!=="Not Needed"&&!accGranted(a);
+const ACCESS_SETUP=()=>S.config.access_setup||{};
+const accTeams=()=>(ACCESS_SETUP().teams||[]).map(t=>t.name).concat(["Other"]);
+function accTeamOf(a){if(a.team)return a.team;for(const t of(ACCESS_SETUP().teams||[]))if((t.platforms||[]).includes(a.platform))return t.name;return"Other"}
+function teamLead(n){const t=(ACCESS_SETUP().teams||[]).find(x=>x.name===n);return t&&t.lead||""}
+const chaseDays=()=>+ACCESS_SETUP().chase_days||2;
+function workdaysSince(iso){const d=parseD(iso);if(!d)return null;let n=0;const x=new Date(d);const t=today();while(x<t){x.setDate(x.getDate()+1);const w=x.getDay();if(w&&w!==6)n++}return n}
+function lastContact(a){const c=(a.chases||[]);return c.length?c[c.length-1].date:(a.requested_date||"")}
+function needsChase(a){if(a.status!=="Asked founder")return false;const w=workdaysSince(lastContact(a));return w===null||w>=chaseDays()}
+const accThread=id=>withId(S.comments).filter(c=>c.access===id).sort((a,b)=>a.at-b.at);
+function accSystemNote(a,id,text){if(!db||!canWrite)return;create("comments",null,{brand:a.brand,access:id,kind:"system",text,by:me||"",at:Date.now(),mentions:[]},"Access note")}
+function setAccStatus(id,v){const a=S.access[id];if(!a||a.status===v)return;const p={status:v};if(v==="Asked founder"&&!a.requested_date)p.requested_date=isoToday();
+  save("access",id,p,bname(a.brand)+" "+a.platform);accSystemNote(a,id,`Status changed from ${a.status||"Needed"} to ${v}`)}
+
+/* BP sections wait for the platforms they audit */
+function bpAccess(bid,sec){const need=(ACCESS_SETUP().bp_map||{})[sec]||[];if(!need.length)return null;
+  const rows=Object.values(S.access).filter(a=>a.brand===bid&&need.includes(a.platform)&&a.status!=="Not Needed");
+  if(!rows.length)return{state:"untracked",need};const missing=rows.filter(a=>!accGranted(a)).map(a=>a.platform);
+  return missing.length?{state:"locked",missing}:{state:"ready"}}
+const LOCK=`<svg viewBox="0 0 16 16" width="11" height="11" aria-hidden="true"><path fill="currentColor" d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2h.5A1 1 0 0 1 13 8v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1zm1.5 0h4V5a2 2 0 0 0-4 0z"/></svg>`;
+
+/* message to the founder: every missing platform for one brand, with set-up steps */
+function founderMessage(bid){const b=S.brands[bid]||{};const rows=withId(S.access).filter(a=>a.brand===bid&&ACC_FOUNDER.includes(a.status));const help=ACCESS_SETUP().help||{};
+  if(!rows.length)return"";return`Hi ${b.founder||"there"},\n\nTo start our audit for ${b.name||"the brand"} we still need access to ${rows.length===1?"one platform":rows.length+" platforms"}:\n\n`+
+  rows.map((a,i)=>`${i+1}. ${a.platform}${a.access_level&&a.access_level!=="TBC"?` (${a.access_level})`:""}\n   ${help[a.platform]||"Please add our team email with admin access."}`).join("\n\n")+`\n\nLet us know once done and we will confirm we can log in. Thank you!`}
+function openFounderMessage(bid){const txt=founderMessage(bid);if(!txt){toast("Nothing is waiting on the founder for this brand.");return}
+  const m=$("#modal");const asked=withId(S.access).filter(a=>a.brand===bid&&a.status==="Needed").length;
+  m.innerHTML=`<div class="box wide"><h3>Message for ${esc((S.brands[bid]||{}).founder||"the founder")}</h3><p class="muted" style="margin-top:0">One message for every platform still missing at ${esc(bname(bid))}. Copy it into WhatsApp or email. Edit the steps per platform in Settings > Access setup.</p>
+   <label for="fm-text" class="sr">Message</label><textarea id="fm-text" rows="12" readonly>${esc(txt)}</textarea>
+   <div class="row"><button class="btn pri" data-act="fm-copy">Copy message</button>${asked&&canWrite?`<button class="btn" data-act="fm-asked" data-id="${esc(bid)}">Copy and mark ${asked} as Asked founder</button>`:""}<span class="grow"></span><button class="btn" data-act="mclose">Close</button></div></div>`;m.hidden=false}
+async function copyText(t){try{await navigator.clipboard.writeText(t);toast("Copied")}catch(e){const x=$("#fm-text");if(x){x.focus();x.select()}toast("Press Ctrl+C or Cmd+C to copy")}}
+
+/* views */
+const ACC_MARK={"Needed":"✗","Asked founder":"A","Founder actioned":"F","Granted":"✓","Team confirmed":"✓✓","Blocked":"!","Not Needed":"–"};
+let accQueue="open";
+function accQueues(){const q=[["open","All open"],["founder","Waiting on founder"],["chase","Needs a chase"]];for(const t of accTeams())q.push(["team:"+t,t]);q.push(["logins","Team logins missing"],["done","Done"]);return q}
+function inQueue(a,q){if(q==="open")return accOpen(a)||a.status==="Granted";if(q==="founder")return ACC_FOUNDER.includes(a.status);if(q==="chase")return needsChase(a);
+  if(q==="logins")return a.status==="Granted";if(q==="done")return a.status==="Team confirmed"||a.status==="Not Needed";if(q.startsWith("team:"))return accTeamOf(a)===q.slice(5)&&a.status!=="Not Needed";return true}
+function seatChips(a){const s=a.seats||[];if(!s.length)return`<span class="faint">No one yet</span>`;return s.map(x=>`<span class="seat st-${key(x.s)}" title="${esc(x.p+": "+x.s)}">${esc(x.p)}${x.s==="Has login"?" ✓":x.s==="Asked"?" ·":""}</span>`).join("")}
+function accFull(bid){
+  let rows=withId(S.access).filter(a=>!bid||a.brand===bid);if(!bid)rows=rows.filter(a=>inQueue(a,accQueue));
+  const ord=a=>ACC_STEPS.indexOf(a.status)<0?(a.status==="Blocked"?-1:9):ACC_STEPS.indexOf(a.status);
+  let h="";
+  if(!bid)h+=`<div class="chips">${accQueues().map(([k,l])=>{const n=withId(S.access).filter(a=>inQueue(a,k)).length;return`<button class="chipbtn ${accQueue===k?"on":""}" data-act="accq" data-v="${esc(k)}">${esc(l)} <span>${n}</span></button>`}).join("")}</div>`;
+  if(!rows.length)return h+`<div class="tw"><div class="empty">${bid?`No platforms tracked for ${esc(bname(bid))} yet. Add the ones the team needs.`:"Nothing in this list."}</div></div>`;
+  const by={};for(const a of rows)(by[a.brand]=by[a.brand]||[]).push(a);
+  const bids=Object.keys(by).sort((x,y)=>(holdOf(x)?1:0)-(holdOf(y)?1:0)||bname(x).localeCompare(bname(y)));
+  h+=`<div class="tw"><table class="accfull"><thead><tr><th>Platform</th><th>Team</th><th>Status</th><th>Type</th><th>Team logins</th><th>Next step</th><th>Last chased</th><th class="num">Notes</th></tr></thead><tbody>`;
+  for(const b of bids){const list=by[b].sort((x,y)=>ord(x)-ord(y)||String(x.platform).localeCompare(y.platform));const br=S.brands[b]||{};const waiting=withId(S.access).filter(a=>a.brand===b&&ACC_FOUNDER.includes(a.status)).length;
+    if(!bid)h+=`<tr class="grp"><td colspan="8"><a class="bname" href="#brand-${esc(b)}">${esc(bname(b))}</a> <span class="faint">${esc(br.founder?"Founder: "+br.founder:"")}</span>${waiting?` <button class="btn sm" data-act="fm-open" data-id="${esc(b)}">Message for founder (${waiting})</button>`:""}</td></tr>`;
+    for(const a of list){const lc=lastContact(a);const wd=workdaysSince(lc);const th=accThread(a._id).filter(c=>c.kind!=="system").length;const ns=a.next_step||{};
+      h+=`<tr class="click" data-act="open" data-kind="access" data-id="${esc(a._id)}"><td><b>${esc(a.platform)}</b>${a.needed_for&&a.needed_for.toLowerCase()!==accTeamOf(a).toLowerCase()?`<div class="faint" style="font-size:12px">${esc(a.needed_for)}</div>`:""}</td><td class="nowrap">${esc(accTeamOf(a))}</td>
+       <td>${statusSel("access",a._id,a.status||"Needed",L("access_status"),canWrite)}${a.status==="Blocked"&&a.blocker?`<div class="blk">${esc(a.blocker)}</div>`:""}</td>
+       <td class="nowrap">${esc(a.access_level&&a.access_level!=="TBC"?a.access_level:"")||`<span class="faint">TBC</span>`}${a.access_via?`<div class="faint" style="font-size:12px">${esc(a.access_via)}</div>`:""}</td>
+       <td><div class="seats">${seatChips(a)}</div></td>
+       <td class="clip">${ns.text?`${esc(ns.text)}<div class="faint" style="font-size:12px">${esc(ns.who||"No one")}${ns.due?" · "+esc(fmtD(ns.due)):""}</div>`:accOpen(a)?`<span class="tag warn">No next step</span>`:""}</td>
+       <td class="nowrap">${lc&&ACC_FOUNDER.includes(a.status)?`<span class="${needsChase(a)?"hot":""}">${esc(fmtD(lc))}${wd!==null?` · ${wd} working day${wd===1?"":"s"}`:""}</span>`:`<span class="faint">-</span>`}</td>
+       <td class="num">${th?`<span class="cnt">${th}</span>`:""}</td></tr>`}}
+  return h+`</tbody></table></div>`}
+function accDrawer(id){const a=S.access[id];const th=accThread(id);const team=accTeamOf(a);const ns=a.next_step||{};const st=a.status||"Needed";
+  const steps=`<div class="stepper w">${ACC_STEPS.map((x,i)=>`<span class="sp ${x===st?"cur":ACC_STEPS.indexOf(st)>i?"past":""}">${i+1}. ${esc(x)}</span>`).join("")}${["Blocked","Not Needed"].includes(st)?`<span class="sp cur">${esc(st)}</span>`:""}</div>`;
+  const teamPeople=activePeople();
+  return steps+"<!--platform-->"+field("Status",sel("status",L("access_status"),st,false))+field("Team",sel("team",accTeams(),team,false),0,team==="Other"?"":"Lead: "+(teamLead(team)||"not set"))
+   +field("Access type",sel("access_level",L("access_level"),a.access_level))+field("How it is given",sel("access_via",L("access_via"),a.access_via),0,"Never store passwords here")
+   +field("Needed for",inp("needed_for",a.needed_for),1)+field("Valerie owner",sel("owner",activePeople(),a.owner))+field("Brand contact",inp("brand_contact",a.brand_contact))
+   +field("Asked founder on",inp("requested_date",a.requested_date,"date"))+field("Deadline",inp("deadline",a.deadline,"date"))
+   +`<h4 class="dh">Next step</h4>`+field("What happens next",inp("ns_text",ns.text),1,"One line, for example: Noopur to ask Zach to add our email in GA4")+field("Who",sel("ns_who",activePeople(),ns.who))+field("By",inp("ns_due",ns.due,"date"))
+   +field("Blocker",inp("blocker",a.blocker),1)+field("Notes",area("notes",a.notes),1,"Status only. No passwords or login details.")
+   +`<h4 class="dh">Team logins</h4><div class="w seatedit">${(a.seats||[]).map((x,i)=>`<div class="seatrow"><b>${esc(x.p)}</b><select data-act="seat" data-i="${i}" aria-label="${esc(x.p)} login">${opts(SEAT_STATES,x.s,false)}</select><button type="button" class="btn sm quiet" data-act="seat-del" data-i="${i}" aria-label="Remove ${esc(x.p)}">Remove</button></div>`).join("")||`<p class="faint" style="margin:0">No one added yet.</p>`}
+     ${canWrite?`<div class="row" style="gap:6px;margin-top:6px"><select id="seat-p" aria-label="Person">${opts(teamPeople.filter(p=>!(a.seats||[]).some(x=>x.p===p)),"")}</select><button type="button" class="btn sm" data-act="seat-add">Add person</button></div>`:""}</div>`
+   +(ACC_FOUNDER.includes(st)?`<h4 class="dh">Chasing the founder</h4><div class="w">${(a.chases||[]).slice(-5).map(c=>`<div class="faint" style="font-size:12.5px">${esc(fmtD(c.date,true))} · ${esc(c.by||"")} · ${esc(c.how||"")}${c.note?": "+esc(c.note):""}</div>`).join("")||`<p class="faint" style="margin:0">Not chased yet.</p>`}
+     ${canWrite?`<div class="row" style="gap:6px;margin-top:6px"><select id="ch-how" aria-label="How">${opts(["WhatsApp","Email","Call","Slack","In a meeting"],"WhatsApp",false)}</select><input id="ch-note" placeholder="Optional note" aria-label="Chase note" style="flex:1;min-width:120px"><button type="button" class="btn sm" data-act="chase">Log a chase</button></div>`:""}
+     <button type="button" class="btn sm" style="margin-top:8px" data-act="fm-open" data-id="${esc(a.brand)}">Message for founder</button></div>`:"")
+   +`<h4 class="dh">Notes and comments</h4><div class="w thread">${th.map(c=>c.kind==="system"?`<div class="sysn">${esc(new Date(c.at).toLocaleDateString("en-GB",{day:"numeric",month:"short"}))} · ${esc(c.by||"")} · ${esc(c.text)}</div>`:`<div class="cmt"><div class="row" style="gap:8px"><b>${esc(c.by||"Someone")}</b><span class="faint" style="font-size:12px">${esc(agoText(c.at))}</span></div><div class="ctext">${linkMentions(c.text)}</div></div>`).join("")||`<p class="faint" style="margin:0">No comments yet.</p>`}
+     ${canWrite?`<label for="acc-c" class="sr">Comment</label><textarea id="acc-c" placeholder="Update or question. @name to tag someone" rows="2"></textarea><button type="button" class="btn sm pri" data-act="acc-post" style="align-self:flex-start">Post</button>`:""}</div>`}
+
 /* ---------- view switch ---------- */
 function viewSeg(k,cur,items){return`<div class="seg viewseg" role="group" aria-label="View">${items.map(([v,l])=>`<button data-act="${k}" data-v="${v}" class="${cur===v?"on":""}">${esc(l)}</button>`).join("")}</div>`}
 
 /* ---------- platform access grid: brands down, platforms across ---------- */
-const ACC_MARK={"Granted":"✓","Requested":"R","In Progress":"…","Blocked":"!","Not Requested":"✗","Not Needed":"–"};
 function accessGrid(){
   const rows=withId(S.access);const order=L("platform");
   const used=[...new Set(rows.filter(a=>a.status!=="Not Needed").map(a=>a.platform).filter(Boolean))]
     .sort((a,b)=>(order.indexOf(a)<0?999:order.indexOf(a))-(order.indexOf(b)<0?999:order.indexOf(b))||a.localeCompare(b));
   const cell={};for(const a of rows){const k=a.brand+"|"+a.platform;(cell[k]=cell[k]||[]).push(a)}
   let bs=brandList().filter(b=>!isInternal(b));
-  const missing=bid=>rows.filter(a=>a.brand===bid&&!["Granted","Not Needed"].includes(a.status)).length;
+  const missing=bid=>rows.filter(a=>a.brand===bid&&accOpen(a)).length;
   if(flt.accGap)bs=bs.filter(b=>missing(b.id)>0);
   bs.sort((x,y)=>(onHold(x)?1:0)-(onHold(y)?1:0));
   let h=`<p class="sub">Each row is a brand, each column a platform. Click a square to update it, or a + to add a platform the brand needs. Status only, never passwords.</p>
-  <div class="legend">${L("access_status").map(v=>`<span><span class="acd ${cls(v)}">${esc(ACC_MARK[v]??"")}</span>${esc(v)}</span>`).join("")}<span><span class="acd acd-empty">+</span>Not tracked</span></div>
+  <div class="legend">${L("access_status").map(v=>`<span><span class="acd ${cls(v)}">${esc(ACC_MARK[v]??"")}</span>${esc(v)}</span>`).join("")}<span><span class="acd acd-empty">+</span>Not tracked</span><span><i class="nsdot inl"></i>Has a next step</span><span><i class="chdot inl"></i>Needs a chase</span></div>
   <div class="filters"><div class="seg" role="group" aria-label="Show"><button data-act="accgap" data-v="0" class="${flt.accGap?"":"on"}">All brands</button><button data-act="accgap" data-v="1" class="${flt.accGap?"on":""}">Missing access only</button></div>
   ${canWrite?`<button class="btn" data-act="add-access" data-id="">Add another platform</button>`:""}</div>`;
   if(!used.length)return h+`<div class="tw"><div class="empty">No platforms tracked yet.</div></div>`;
   h+=`<div class="tw"><table class="grid acc"><thead><tr><th class="stick">Brand</th>${used.map(p=>`<th class="pc"><span>${esc(p)}</span></th>`).join("")}<th>Access</th></tr></thead><tbody>`;
-  for(const b of bs){const mine=rows.filter(a=>a.brand===b.id&&a.status!=="Not Needed");const g=mine.filter(a=>a.status==="Granted").length;const bl=mine.some(a=>a.status==="Blocked");
+  for(const b of bs){const mine=rows.filter(a=>a.brand===b.id&&a.status!=="Not Needed");const g=mine.filter(accGranted).length;const bl=mine.some(a=>a.status==="Blocked");
     h+=`<tr class="${onHold(b)?"held":""}"><td class="stick"><a class="bname" href="#brand-${esc(b.id)}">${esc(b.name)}</a>${onHold(b)?` <span class="tag">On hold</span>`:""}</td>`;
     for(const p of used){const list=cell[b.id+"|"+p]||[];const a=list[0];
-      if(a)h+=`<td class="gc"><button class="acd ${cls(a.status)}" data-act="open" data-kind="access" data-id="${esc(a._id)}" title="${esc(p+": "+a.status+(a.owner?" · "+a.owner:"")+(a.notes?"\n"+a.notes:""))}">${esc(ACC_MARK[a.status]??"?")}<span class="sr">${esc(p+" "+a.status)}</span></button>${list.length>1?`<span class="faint" style="font-size:11px">+${list.length-1}</span>`:""}</td>`;
+      if(a)h+=`<td class="gc"><button class="acd ${cls(a.status)}" data-act="open" data-kind="access" data-id="${esc(a._id)}" title="${esc(p+": "+(a.status||"Needed")+(a.next_step&&a.next_step.text?"\nNext: "+a.next_step.text:"")+((a.seats||[]).length?"\nLogins: "+a.seats.map(x=>x.p+" ("+x.s+")").join(", "):""))}">${esc(ACC_MARK[a.status]??"?")}${a.next_step&&a.next_step.text&&accOpen(a)?`<i class="nsdot" aria-hidden="true"></i>`:""}${needsChase(a)?`<i class="chdot" aria-hidden="true"></i>`:""}<span class="sr">${esc(p+" "+a.status)}</span></button>${list.length>1?`<span class="faint" style="font-size:11px">+${list.length-1}</span>`:""}</td>`;
       else h+=`<td class="gc">${canWrite?`<button class="acd acd-empty" data-act="acc-new" data-b="${esc(b.id)}" data-p="${esc(p)}" title="Add ${esc(p)} for ${esc(b.name)}">+<span class="sr">Add ${esc(p)}</span></button>`:`<span class="faint">·</span>`}</td>`}
     h+=`<td style="white-space:nowrap">${mine.length?(bl?pill("Blocked"):g===mine.length?pill("All Granted"):`<span class="pill s-warn">${mine.length-g} missing</span>`)+` <span class="faint">${g}/${mine.length}</span>`:`<span class="faint">None tracked</span>`}</td></tr>`}
   return h+`</tbody></table></div>`}
@@ -1048,7 +1141,7 @@ const BPMARK={"Not Started":"","Foundations":"F","Tactics In":"T","In QA":"Q","C
 /* ---------- Settings ---------- */
 let setTab="people";
 function vSettings(){
-  const tabs=[["people","People"],["lists","Lists"],["steps","Step list"],["templates","Task templates"],["nobrand","Needs a brand"],["log","Change log"],["export","Export and backup"]];
+  const tabs=[["people","People"],["lists","Lists"],["steps","Step list"],["templates","Task templates"],["access","Access setup"],["nobrand","Needs a brand"],["log","Change log"],["export","Export and backup"]];
   let h=`<h1>Settings</h1><p class="sub">For leads and admins. Changes here apply to everyone.</p><div class="tabs">${tabs.map(([k,l])=>`<button class="${setTab===k?"on":""}" data-act="settab" data-tab="${k}">${esc(l)}</button>`).join("")}</div>`;
   if(setTab==="people"){const ps=people();
     h+=`<div class="row" style="margin-bottom:10px"><button class="btn pri" data-act="add-person">Add person</button><span class="muted">Unconfirmed names came from the Excel. Mark each as team, external or group. Aliases let one person match other spellings.</span></div>
@@ -1060,6 +1153,13 @@ function vSettings(){
     h+=`<p class="muted">Gates and optional steps are a proposal from the Stage 0 report. Change them here. Codes stay the same so progress is kept.</p><div class="tw"><table><thead><tr><th>Code</th><th>Step</th><th>Gate</th><th>Optional</th><th>Default owner</th><th>Document</th></tr></thead><tbody>${stepsSorted().map(s=>`<tr><td class="code">${esc(s.code)}</td><td><input data-act="stepdef" data-id="${esc(s.id)}" data-f="name" value="${esc(s.name)}" aria-label="Step name" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:4px 6px;background:var(--panel)"></td><td><input type="checkbox" data-act="stepdef" data-id="${esc(s.id)}" data-f="is_gate" ${s.is_gate?"checked":""} aria-label="Gate"></td><td><input type="checkbox" data-act="stepdef" data-id="${esc(s.id)}" data-f="is_optional" ${s.is_optional?"checked":""} aria-label="Optional"></td><td><input data-act="stepdef" data-id="${esc(s.id)}" data-f="default_owner" value="${esc(s.default_owner)}" aria-label="Default owner" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:4px 6px;background:var(--panel)"></td><td><input data-act="stepdef" data-id="${esc(s.id)}" data-f="doc_label" value="${esc(s.doc_label)}" aria-label="Document" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:4px 6px;background:var(--panel)"></td></tr>`).join("")}</tbody></table></div>`}
   else if(setTab==="nobrand"){const rows=withId(S.tasks).filter(t=>!t.brand);
     h+=rows.length?`<p class="muted">Completed rows from the old sheet have no brand. Pick one for each.</p><div class="tw"><table><thead><tr><th>Task</th><th>Owner</th><th>Deadline</th><th>Notes</th><th>Brand</th></tr></thead><tbody>${rows.map(t=>`<tr><td><b>${esc(t.title)}</b></td><td>${esc(t.owner)}</td><td>${esc(fmtD(t.deadline))}</td><td class="muted">${esc(t.notes)}</td><td><select data-act="setbrand" data-id="${esc(t._id)}" aria-label="Brand"><option value="">Pick a brand</option>${brandList().map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join("")}</select></td></tr>`).join("")}</tbody></table></div>`:`<div class="tw"><div class="empty">Every task has a brand.</div></div>`}
+  else if(setTab==="access"){const cfg=ACCESS_SETUP();const teams=cfg.teams||[];const help=cfg.help||{};const bm=cfg.bp_map||{};
+    h+=`<p class="muted">Who leads each access team, which platforms each team uses, how long before a founder needs a chase, which Best Practices sections wait on which platforms, and the set-up steps that go into the message for founders.</p><form id="aform">
+    <div class="card"><h3 style="margin-top:0">Teams</h3><div class="tw"><table><thead><tr><th>Team</th><th>Lead</th><th>Platforms (comma separated)</th></tr></thead><tbody>${teams.map((t,i)=>`<tr><td><input name="tn${i}" value="${esc(t.name)}" aria-label="Team name"></td><td><select name="tl${i}" aria-label="Lead">${opts(activePeople(),t.lead||"")}</select></td><td><input name="tp${i}" value="${esc((t.platforms||[]).join(", "))}" style="width:100%" aria-label="Platforms"></td></tr>`).join("")}<tr><td><input name="tn${teams.length}" placeholder="New team" aria-label="New team name"></td><td><select name="tl${teams.length}" aria-label="Lead">${opts(activePeople(),"")}</select></td><td><input name="tp${teams.length}" style="width:100%" aria-label="Platforms"></td></tr></tbody></table></div>
+     <div class="f" style="max-width:260px;margin-top:10px"><label for="a-cd">Working days before a chase is due</label><input id="a-cd" name="chase_days" type="number" min="1" value="${chaseDays()}"></div></div>
+    <div class="card"><h3 style="margin-top:0">Best Practices sections that wait on access</h3><div class="tw"><table><tbody>${L("bp_section").map((x,i)=>`<tr><td style="width:220px">${esc(x)}</td><td><input name="bm${i}" value="${esc((bm[x]||[]).join(", "))}" placeholder="No platform needed" style="width:100%" aria-label="Platforms for ${esc(x)}"></td></tr>`).join("")}</tbody></table></div></div>
+    <div class="card"><h3 style="margin-top:0">Set-up steps for founders</h3><div class="tw"><table><tbody>${L("platform").map((x,i)=>`<tr><td style="width:220px">${esc(x)}</td><td><textarea name="hp${i}" rows="2" style="width:100%" aria-label="Steps for ${esc(x)}">${esc(help[x]||"")}</textarea></td></tr>`).join("")}</tbody></table></div></div>
+    <button class="btn pri" type="submit">Save access setup</button></form>`}
   else if(setTab==="templates"){const ts=TEMPLATES();
     h+=`<p class="muted">A template is a set of tasks you add to a brand in one go, for example a UGC kickoff. One task per line: name | team | days from today until due. Team and days are optional.</p>`;
     h+=ts.length?`<div class="tw"><table><thead><tr><th>Template</th><th>Vertical</th><th>Tasks</th><th></th></tr></thead><tbody>${ts.map((t,i)=>`<tr><td><b>${esc(t.name)}</b></td><td>${esc(t.vertical||"")}</td><td class="muted">${t.tasks.map(x=>esc(x.title)).join(", ")}</td><td><button class="btn sm danger" data-act="tpl-del" data-i="${i}">Delete</button></td></tr>`).join("")}</tbody></table></div>`:`<div class="tw"><div class="empty">No templates yet. Add the first one below.</div></div>`;
@@ -1076,6 +1176,7 @@ const inp=(n,v,t)=>`<input name="${n}" id="d-${n}" type="${t||"text"}" value="${
 const area=(n,v)=>`<textarea name="${n}" id="d-${n}">${esc(v||"")}</textarea>`;
 const sel=(n,list,v,blank)=>`<select name="${n}" id="d-${n}">${opts(list,v||"",blank)}</select>`;
 function openDrawer(kind,id,extra,refresh){
+  if(!refresh||!drawerCtx||drawerCtx.kind!==kind||drawerCtx.id!==id)drawerDirty={};
   drawerCtx={kind,id,extra};let title="",body="",foot="",ro=!canWrite;
   if(kind==="task"){const t=S.tasks[id];if(!t){closeDrawer();return}ro=!canChangeTask(t);title=t.title||"New task";
     body=field("Task",inp("title",t.title),1)+field("Brand",`<select name="brand" id="d-brand">${brandList().map(b=>`<option value="${esc(b.id)}" ${b.id===t.brand?"selected":""}>${esc(b.name)}</option>`).join("")}</select>`)+field("Owner",sel("owner",activePeople(),t.owner))+field("Team",sel("department",DEPTS(),depOf(t),false))
@@ -1095,9 +1196,7 @@ function openDrawer(kind,id,extra,refresh){
      +field(s.doc_label?"Link to "+s.doc_label:"Document link",inp("link",st.link,"url"))+field("Blocked because",inp("blk_text",st.blocker&&st.blocker.text),1,"Leave empty when nothing blocks it")+field("Waiting on",sel("blk_person",activePeople(),st.blocker&&st.blocker.person))
      +field("Notes",area("notes",st.notes),1)}
   else if(kind==="access"){const a=S.access[id];if(!a){closeDrawer();return}title=bname(a.brand)+" · "+(a.platform||"Platform");
-    body=field("Platform",sel("platform",L("platform"),a.platform))+field("Status",sel("status",L("access_status"),a.status,false))+field("Access level",sel("access_level",L("access_level"),a.access_level))+field("Needed for",inp("needed_for",a.needed_for))
-     +field("Valerie owner",sel("owner",activePeople(),a.owner))+field("Brand contact",inp("brand_contact",a.brand_contact))+field("Requested on",inp("requested_date",a.requested_date,"date"))+field("Deadline",inp("deadline",a.deadline,"date"))
-     +field("Blocker",inp("blocker",a.blocker),1)+field("Notes",area("notes",a.notes),1,"Status only. No passwords or login details.");
+    body=accDrawer(id).replace("<!--platform-->",field("Platform",sel("platform",L("platform"),a.platform)));
     if(canEdit&&canWrite)foot=`<button class="btn danger" data-act="del" data-kind="access" data-id="${esc(id)}">Delete row</button>`}
   else if(kind==="sow"){const s=S.sow[id]||{};title="SOW · "+bname(id);ro=!canWrite;
     body=field("Stage",sel("stage",L("sow_stage"),s.stage||"Not Started",false))+field("Owner",sel("owner",activePeople(),s.owner))+field("Target sign",inp("target_sign",s.target_sign,"date"))+field("Draft due",inp("draft_due",s.draft_due,"date"))
@@ -1109,13 +1208,19 @@ function openDrawer(kind,id,extra,refresh){
     body=BPGROUPS().map(g=>(g.name?`<h4 class="dh">${esc(g.name)}</h4>`:"")+g.sections.map(x=>field(x,`<select name="sec:${esc(x)}" id="d-sec-${key(x)}">${opts(L("bp_status"),(d.sections||{})[x]||"Not Started",false)}</select>`)).join("")).join("")+`<h4 class="dh">Details</h4>`
      +field("BP owner",sel("owner",activePeople(),d.owner))+field("Due date",inp("due_date",d.due_date,"date"))+field("Blocker",inp("blocker",d.blocker),1)+field("BP document link",inp("doc_link",d.doc_link,"url"),1)+field("Notes",area("notes",d.notes),1)}
   const dr=$("#drawer");
-  if(refresh&&dr.contains(document.activeElement))return;
+  // While someone types in the panel, wait. Otherwise redraw it and put back anything changed but not saved yet.
+  const ae=document.activeElement;if(refresh&&dr.contains(ae)&&(ae.tagName==="TEXTAREA"||ae.tagName==="INPUT"&&!/checkbox|radio|button|submit/.test(ae.type)))return;
+  const keepFocus=refresh&&dr.contains(ae)?(ae.id||(ae.dataset&&ae.dataset.act?`[data-act="${ae.dataset.act}"]${ae.dataset.i!==undefined?`[data-i="${ae.dataset.i}"]`:""}`:"")):"";
+  const sc=refresh?(dr.querySelector(".body")||{}).scrollTop||0:0;
   dr.innerHTML=`<header><h3>${esc(title)}</h3><button class="btn sm quiet" data-act="close">Close</button></header><form class="body" id="dform">${body}</form>
    <footer>${foot==="board"?`<span class="muted">Changes save straight away.</span><span class="grow"></span><button class="btn" data-act="nav-steps" data-id="${esc(id)}">All steps for this brand</button>`:(ro?`<span class="muted">You can view this but not change it.</span>`:`<button class="btn pri" data-act="dsave">Save</button><button class="btn" data-act="close">Cancel</button>`)+`<span class="grow"></span>${foot}`}</footer>`;
+  if(refresh){const f=$("#dform");if(f)for(const[n,v]of Object.entries(drawerDirty)){const el=f.elements[n];if(el&&"value"in el)el.value=v}const b=dr.querySelector(".body");if(b)b.scrollTop=sc;
+    if(keepFocus){const el=keepFocus.startsWith("[")?dr.querySelector(keepFocus):document.getElementById(keepFocus);if(el)el.focus()}}
   if(ro)dr.querySelectorAll("input,select,textarea").forEach(e=>e.disabled=true);
   dr.hidden=false;$("#scrim").hidden=false;if(!refresh){const f=dr.querySelector("input,select");if(f)f.focus()}
 }
-function closeDrawer(){drawerCtx=null;$("#drawer").hidden=true;$("#scrim").hidden=true}
+let drawerDirty={};
+function closeDrawer(){drawerCtx=null;drawerDirty={};$("#drawer").hidden=true;$("#scrim").hidden=true}
 const splitNames=v=>String(v||"").split(",").map(s=>s.trim()).filter(Boolean);
 async function drawerSave(){
   const{kind,id,extra}=drawerCtx;const fd={};for(const el of $("#dform").elements)if(el.name)fd[el.name]=el.value.trim();
@@ -1134,9 +1239,11 @@ async function drawerSave(){
     if(fd.blk_text&&!fd.blk_person){toast("A blocker needs a person too.");return}
     const next={status:fd.status,owner:fd.owner,deadline:fd.deadline,link:fd.link,notes:fd.notes,blocker:fd.blk_text?{text:fd.blk_text,person:fd.blk_person}:null};
     await saveStep(id,extra,next)}
-  else if(kind==="access"){const a=S.access[id];const next={platform:fd.platform,status:fd.status,access_level:fd.access_level,needed_for:fd.needed_for,owner:fd.owner,brand_contact:fd.brand_contact,requested_date:fd.requested_date,deadline:fd.deadline,blocker:fd.blocker,notes:fd.notes};
+  else if(kind==="access"){const a=S.access[id];const next={platform:fd.platform,status:fd.status,team:fd.team===accTeamOf(Object.assign({},a,{team:""}))?"":fd.team,access_level:fd.access_level,access_via:fd.access_via||"",needed_for:fd.needed_for,owner:fd.owner,brand_contact:fd.brand_contact,requested_date:fd.requested_date,deadline:fd.deadline,blocker:fd.blocker,notes:fd.notes,
+      next_step:fd.ns_text?{text:fd.ns_text,who:fd.ns_who||"",due:fd.ns_due||""}:null};
     if(next.status==="Blocked"&&(!next.blocker||!next.owner)){toast("A blocked row needs a blocker and a Valerie owner.");return}
-    const p=diff(a,next);if(Object.keys(p).length)await save("access",id,p,bname(a.brand)+" "+a.platform)}
+    if(next.status==="Asked founder"&&!next.requested_date)next.requested_date=isoToday();
+    const p=diff(a,next);if(Object.keys(p).length){await save("access",id,p,bname(a.brand)+" "+a.platform);if(p.status)accSystemNote(a,id,`Status changed from ${a.status||"Needed"} to ${p.status}`);if(p.next_step&&p.next_step.text)accSystemNote(a,id,`Next step: ${p.next_step.text}${p.next_step.who?" ("+p.next_step.who+(p.next_step.due?", by "+fmtD(p.next_step.due):"")+")":""}`)}}
   else if(kind==="sow"){const s=S.sow[id]||{};const next={stage:fd.stage,owner:fd.owner,target_sign:fd.target_sign,draft_due:fd.draft_due,start_date:fd.start_date,batch:fd.batch,support:splitNames(fd.support),sow_link:fd.sow_link,gf_link:fd.gf_link,gf_updated:fd.gf_updated==="Yes",gf_status:fd.gf_status||"",blocker:fd.blocker,next_step:fd.next_step};
     if(next.stage==="Blocked"&&!next.blocker){toast("Say what blocks the SOW.");return}
     if(!S.sow[id]){await create("sow",id,Object.assign({brand:id},next),"SOW "+bname(id))}else{const p=diff(s,next);if(Object.keys(p).length)await save("sow",id,p,"SOW "+bname(id))}}
@@ -1184,6 +1291,7 @@ document.addEventListener("click",e=>{
   else if(act==="tflt"){flt.taskStatus=a.dataset.v;render()}
   else if(act==="goto-item"){const{kind,id,code}=a.dataset;
     if(kind==="task"){const t=S.tasks[id];if(!t)return;brandTab="tasks";deptSel={bid:t.brand,dep:depOf(t)};flt.taskStatus=t.status==="Complete"?"all":"open";focusItem={sel:`tr[data-kind="task"][data-id="${CSS.escape(id)}"]`};go("brand-"+t.brand)}
+    else if(kind==="access"){accView="full";ls.set("vt-accview","full");go("access");setTimeout(()=>openDrawer("access",id),60);return}
     else{brandTab="steps";showAllPhases=true;focusItem={sel:`select[data-code="${CSS.escape(code)}"]`,up:".step"};go("brand-"+id)}
     ls.set("vt-tab",brandTab)}
   else if(act==="sort"){const k=a.dataset.k;ovSort=ovSort.k===k?{k,dir:-ovSort.dir}:{k,dir:1};render()}
@@ -1194,6 +1302,7 @@ document.addEventListener("click",e=>{
   else if(act==="mlayout"){mineLayout=a.dataset.v;ls.set("vt-mlayout",mineLayout);render()}
   else if(act==="mfold1"){const k=a.dataset.k;if(mineFold.has(k))mineFold.delete(k);else mineFold.add(k);render()}
   else if(act==="mfold"){if(a.dataset.v==="open")mineFold.clear();else{const all=myItems();const list=mineTab==="onboarding"?all.filter(i=>!isLiveBrand(i.brand)):mineTab==="live"?all.filter(i=>isLiveBrand(i.brand)):all;const grp=mineGroup[mineTab]||(mineTab==="live"?"due":"brand");for(const g of mineGroups(list,grp))mineFold.add(mineTab+"|"+grp+"|"+g.key)}render()}
+  else if(act==="men-go"&&a.dataset.acc){accView="full";go("access");setTimeout(()=>openDrawer("access",a.dataset.acc),60)}
   else if(act==="men-go"){brandTab="updates";ls.set("vt-tab",brandTab);go("brand-"+a.dataset.id)}
   else if(act==="guide-off"){ls.set("vt-guide-"+a.dataset.k,"1");render()}
   else if(act==="client-dl"){const m=clientModel(a.dataset.id);offer((m.name||"brand").replace(/[^A-Za-z0-9]+/g,"_")+"_onboarding_status_"+isoToday()+".html",clientDoc(m))}
@@ -1206,13 +1315,23 @@ document.addEventListener("click",e=>{
   else if(act==="bpset"){if(!pop)return;const{id,sec}=pop;const d=S.bps[id];closePop();if(!d)return;const v=a.dataset.v;if(((d.sections||{})[sec]||"Not Started")!==v)save("bps",id,{sections:Object.assign({},d.sections||{},{[sec]:v})},"BPs "+bname(id)+" "+sec);
     setTimeout(()=>{const b=document.querySelector(`[data-act=bpdot][data-id="${CSS.escape(id)}"][data-sec="${CSS.escape(sec)}"]`);if(b)b.focus()},30)}
   else if(act==="bpf"){bpFilter=a.dataset.v;render()}
+  else if(act==="accq"){accQueue=a.dataset.v;render()}
+  else if(act==="fm-open"){e.stopPropagation();openFounderMessage(a.dataset.id)}
+  else if(act==="fm-copy")copyText($("#fm-text").value);
+  else if(act==="fm-asked"){const bid=a.dataset.id;copyText($("#fm-text").value);for(const r of withId(S.access).filter(x=>x.brand===bid&&x.status==="Needed")){setAccStatus(r._id,"Asked founder")}$("#modal").hidden=true}
+  else if(act==="seat-add"){const id=drawerCtx&&drawerCtx.id;const a=S.access[id];const p=$("#seat-p").value;if(!a||!p){toast("Pick a person.");return}save("access",id,{seats:(a.seats||[]).concat([{p,s:"Asked"}])},bname(a.brand)+" "+a.platform+" logins");accSystemNote(a,id,p+" asked for a login")}
+  else if(act==="seat-del"){const id=drawerCtx&&drawerCtx.id;const a=S.access[id];const i=+a.dataset.i;const x=(a.seats||[])[i];save("access",id,{seats:(a.seats||[]).filter((_,j)=>j!==i)},bname(a.brand)+" "+a.platform+" logins");if(x)accSystemNote(a,id,x.p+" removed from logins")}
+  else if(act==="chase"){const id=drawerCtx&&drawerCtx.id;const a=S.access[id];if(!a)return;const c={date:isoToday(),by:me||"",how:$("#ch-how").value,note:$("#ch-note").value.trim()};
+    const p={chases:(a.chases||[]).concat([c])};if(a.status==="Needed")p.status="Asked founder";if(!a.requested_date)p.requested_date=isoToday();save("access",id,p,bname(a.brand)+" "+a.platform+" chase");accSystemNote(a,id,`Chased the founder by ${c.how}${c.note?": "+c.note:""}`)}
+  else if(act==="acc-post"){const id=drawerCtx&&drawerCtx.id;const a=S.access[id];const t=$("#acc-c");const text=t.value.trim();if(!a||!text)return;if(!me){toast("Pick your name in the top bar first.");return}
+    create("comments",null,{brand:a.brand,access:id,text,by:me,at:Date.now(),mentions:mentionsIn(text)},"Comment on "+bname(a.brand)+" "+a.platform).then(r=>{if(r)t.value=""})}
   else if(act==="minetab"){mineTab=a.dataset.v;ls.set("vt-minetab",mineTab);render()}
   else if(act==="accview"){accView=a.dataset.v;ls.set("vt-accview",accView);render()}
   else if(act==="sowview"){sowView=a.dataset.v;ls.set("vt-sowview",sowView);render()}
   else if(act==="accgap"){flt.accGap=a.dataset.v==="1";render()}
   else if(act==="board")openDrawer("board",a.dataset.b,a.dataset.c);
   else if(act==="nav-steps"){brandTab="steps";ls.set("vt-tab",brandTab);closeDrawer();go("brand-"+a.dataset.id)}
-  else if(act==="acc-new"){const bid=a.dataset.b,pl=a.dataset.p;create("access",null,{brand:bid,platform:pl,access_level:"TBC",needed_for:"",owner:"",brand_contact:(S.brands[bid]||{}).founder||"",requested_date:"",deadline:"",status:"Not Requested",blocker:"",notes:""},bname(bid)+" "+pl).then(id=>{if(id)openDrawer("access",id)})}
+  else if(act==="acc-new"){const bid=a.dataset.b,pl=a.dataset.p;create("access",null,{brand:bid,platform:pl,access_level:"TBC",needed_for:"",owner:"",brand_contact:(S.brands[bid]||{}).founder||"",requested_date:"",deadline:"",status:"Needed",blocker:"",notes:""},bname(bid)+" "+pl).then(id=>{if(id)openDrawer("access",id)})}
   else if(act==="dept"){deptSel={bid:route.id,dep:a.dataset.dep};flt.taskStatus="open";render();$("#main").scrollTop=Math.min($("#main").scrollTop,$(".tabs").offsetTop-20)}
   else if(act==="allphases"){showAllPhases=!showAllPhases;render()}
   else if(act==="settab"){setTab=a.dataset.tab;render()}
@@ -1223,7 +1342,7 @@ document.addEventListener("click",e=>{
   else if(act==="add-task"){const bid=a.dataset.id,dep0=a.dataset.dep||"";formBox("New task",`<div class="f"><label for="n-title">Task</label><input id="n-title" name="title" required></div><div class="f"><label for="n-dep">Team</label><select id="n-dep" name="department">${opts(DEPTS(),dep0||DEPTS()[0],false)}</select></div><div class="f"><label for="n-owner">Owner</label><select id="n-owner" name="owner">${opts(activePeople(),me)}</select></div><div class="f"><label for="n-dl">Deadline</label><input id="n-dl" name="deadline" type="date"></div><div class="f"><label for="n-pr">Priority</label><select id="n-pr" name="priority">${opts(L("priority"),"Medium")}</select></div>`,"Add task",
     v=>{if(!v.title){toast("Give the task a name.");return false}create("tasks",null,{brand:bid,department:v.department,title:v.title,owner:v.owner,support:[],status:"Not Started",priority:v.priority,start:"",deadline:v.deadline,notes:"",brief_link:"",creative_link:"",blocker:null,source:"Added in tracker"},v.title)})}
   else if(act==="add-access"){const bid=a.dataset.id;formBox("New platform access row",`<div class="f"><label for="n-b">Brand</label><select id="n-b" name="brand">${brandList().map(b=>`<option value="${esc(b.id)}" ${b.id===bid?"selected":""}>${esc(b.name)}</option>`).join("")}</select></div><div class="f"><label for="n-p">Platform</label><select id="n-p" name="platform">${opts(L("platform"),"")}</select></div><div class="f"><label for="n-o">Valerie owner</label><select id="n-o" name="owner">${opts(activePeople(),"")}</select></div>`,"Add row",
-    v=>{if(!v.platform){toast("Pick a platform.");return false}create("access",null,{brand:v.brand,platform:v.platform,access_level:"TBC",needed_for:"",owner:v.owner,brand_contact:(S.brands[v.brand]||{}).founder||"",requested_date:"",deadline:"",status:"Not Requested",blocker:"",notes:""},bname(v.brand)+" "+v.platform)})}
+    v=>{if(!v.platform){toast("Pick a platform.");return false}create("access",null,{brand:v.brand,platform:v.platform,access_level:"TBC",needed_for:"",owner:v.owner,brand_contact:(S.brands[v.brand]||{}).founder||"",requested_date:"",deadline:"",status:"Needed",blocker:"",notes:""},bname(v.brand)+" "+v.platform)})}
   else if(act==="add-sow"){const bid=a.dataset.id;create("sow",bid,{brand:bid,owner:"",support:[],stage:"Not Started",start_date:"",draft_due:"",target_sign:"",blocker:"",next_step:"",sow_link:"",gf_link:"",gf_updated:false,gf_status:"",batch:""},"SOW "+bname(bid))}
   else if(act==="add-bp"){const bid=a.dataset.id;create("bps",bid,{brand:bid,owner:"",due_date:"",sections:{},blocker:"",doc_link:"",notes:""},"BPs "+bname(bid))}
   else if(act==="add-brand"){formBox("Add brand",`<div class="f"><label for="n-name">Brand name</label><input id="n-name" name="name" required></div><div class="f"><label for="n-st">Stage</label><select id="n-st" name="stage">${opts(L("stage"),"Qualification",false)}</select></div>`,"Add brand",
@@ -1243,18 +1362,20 @@ document.addEventListener("click",e=>{
   else if(act==="export-json")exportJson();
 });
 document.addEventListener("change",e=>{
+  if(e.target.form&&e.target.form.id==="dform"&&e.target.name)drawerDirty[e.target.name]=e.target.value;
   const t=e.target;const act=t.dataset&&t.dataset.act;if(!act)return;
   if(act==="who"){me=t.value;ls.set("vt-me",me);if(db&&uid)db.doc("data/users/"+uid+"/profile").set({person:me}).catch(()=>{});render();return}
   if(act==="status"){const kind=t.dataset.kind,id=t.dataset.id,v=t.value;
     if(kind==="task"){const cur=S.tasks[id];if(v==="Blocked"){t.value=cur.status;askBlocker(r=>save("tasks",id,{status:"Blocked",blocker:r},cur.title));return}
       save("tasks",id,{status:v,blocker:null},cur.title)}
     else if(kind==="step"){const code=t.dataset.code;if(v==="Done"){const why=gateBlock(id,code);if(why){t.value=stepState(id,code).status||"Not Started";toast(why);return}}saveStep(id,code,{status:v})}
-    else if(kind==="access"){const cur=S.access[id];if(v==="Blocked"&&!cur.blocker){t.value=cur.status;askBlocker(r=>save("access",id,{status:"Blocked",blocker:r.text,owner:cur.owner||r.person},bname(cur.brand)+" "+cur.platform));return}save("access",id,{status:v},bname(cur.brand)+" "+cur.platform)}
+    else if(kind==="access"){const cur=S.access[id];if(v==="Blocked"&&!cur.blocker){t.value=cur.status;askBlocker(r=>{save("access",id,{status:"Blocked",blocker:r.text,owner:cur.owner||r.person},bname(cur.brand)+" "+cur.platform);accSystemNote(cur,id,"Blocked: "+r.text+" (waiting on "+r.person+")")});return}setAccStatus(id,v)}
     else if(kind==="sow"){const cur=S.sow[id]||{};if(v==="Blocked"&&!cur.blocker){t.value=cur.stage||"Not Started";askBlocker(r=>save("sow",id,{stage:"Blocked",blocker:r.text+" (waiting on "+r.person+")"},"SOW "+bname(id)));return}
       if(!S.sow[id])create("sow",id,{brand:id,stage:v},"SOW "+bname(id));else save("sow",id,{stage:v},"SOW "+bname(id))}
     return}
   if(act==="bpsec"){const id=t.dataset.id;const d=S.bps[id];save("bps",id,{sections:Object.assign({},d.sections||{},{[t.dataset.sec]:t.value})},"BPs "+bname(id));return}
   if(act==="fa"){flt[t.dataset.k]=t.value;render();return}
+  if(act==="seat"){const id=drawerCtx&&drawerCtx.id;const a=S.access[id];if(!a)return;const seats=(a.seats||[]).map(x=>Object.assign({},x));const x=seats[+t.dataset.i];const old=x.s;x.s=t.value;save("access",id,{seats},bname(a.brand)+" "+a.platform+" logins");accSystemNote(a,id,`${x.p}: ${old} to ${x.s}`);return}
   if(act==="bps"){bpSort=t.value;render();return}
   if(act==="mgroup"){mineGroup[mineTab]=t.value;ls.set("vt-mgroup",JSON.stringify(mineGroup));render();return}
   if(act==="msort"){mineSort=t.value;ls.set("vt-msort",mineSort);render();return}
@@ -1275,9 +1396,13 @@ document.addEventListener("submit",e=>{const f=e.target;
   if(f.id==="cform"){e.preventDefault();const text=f.elements.text.value.trim(),bid=f.elements.brand.value;if(!text)return;
     if(!me){toast("Pick your name in the top bar first, so people know who wrote it.");return}
     create("comments",null,{brand:bid,text,by:me,at:Date.now(),mentions:mentionsIn(text)},"Comment on "+bname(bid)).then(id=>{if(id)f.reset()})}
+  if(f.id==="aform"){e.preventDefault();const el=f.elements;const teams=[];for(let i=0;el["tn"+i];i++){const n=el["tn"+i].value.trim();if(!n)continue;teams.push({name:n,lead:el["tl"+i].value,platforms:el["tp"+i].value.split(",").map(x=>x.trim()).filter(Boolean)})}
+    const bp_map={};L("bp_section").forEach((x,i)=>{const v=el["bm"+i].value.split(",").map(y=>y.trim()).filter(Boolean);if(v.length)bp_map[x]=v});
+    const help={};L("platform").forEach((x,i)=>{const v=el["hp"+i].value.trim();if(v)help[x]=v});
+    const body={teams,bp_map,help,chase_days:Math.max(1,+el.chase_days.value||2)};if(S.config.access_setup)save("config","access_setup",body,"Access setup");else create("config","access_setup",body,"Access setup")}
   if(f.id==="tform"){e.preventDefault();const name=f.elements.name.value.trim(),tasks=parseTemplateLines(f.elements.lines.value);
     if(!name||!tasks.length){toast("Give the template a name and at least one task.");return}saveTemplates(TEMPLATES().concat([{name,vertical:f.elements.vertical.value,tasks}]))}});
-document.addEventListener("input",e=>{if(e.target.id==="q"){searchQ=e.target.value;renderSearch()}});
+document.addEventListener("input",e=>{if(e.target.form&&e.target.form.id==="dform"&&e.target.name)drawerDirty[e.target.name]=e.target.value;if(e.target.id==="q"){searchQ=e.target.value;renderSearch()}});
 document.addEventListener("focusout",e=>{if(e.target.id==="q")setTimeout(()=>{if(!$(".search")||!$(".search").contains(document.activeElement)){const b=$("#sres");if(b)b.hidden=true;renderTop()}},150)});
 document.addEventListener("keydown",e=>{if(e.key==="/"&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||"")){const q=$("#q");if(q){e.preventDefault();q.focus()}}
   if(e.target.id==="q"&&e.key==="Enter"){const first=$("#sres .sr-row");if(first)first.click()}
@@ -1298,7 +1423,7 @@ async function exportXlsx(){
     .concat(bs.map(b=>{const r=roll(b.id);return[b.name,b.founder,b.website,b.stage,b.lead,r.open,r.blocked,r.overdue,r.acc.summary,r.acc.text,r.sow,r.sowRow.owner||"",r.sowRow.target_sign||"",r.bp?r.bp.overall:"",r.bp?Math.round(r.bp.progress*100)/100:"",Math.round(r.pct*100)/100,r.health,b.next_step]})));
   for(const b of bs){const ts=withId(S.tasks).filter(t=>t.brand===b.id);add(b.name,[["Task / Deliverable","Owner","Support Team","Status","Priority","Start Date","Deadline","Due Flag","Notes / Next Step","Brief Link","Creative Link"]]
     .concat(ts.map(t=>[t.title,t.owner,(t.support||[]).join(", "),t.status,t.priority,t.start,t.deadline,dueFlag(t.deadline,t.status==="Complete"),t.notes,t.brief_link,t.creative_link])))}
-  add("Platform Access",[["Brand","Platform","Access Level","Needed For","Valerie Owner","Brand Contact","Requested Date","Deadline","Status","Days Waiting","Due Flag","Blocker","Notes"]].concat(withId(S.access).map(a=>{const d=parseD(a.requested_date);return[bname(a.brand),a.platform,a.access_level,a.needed_for,a.owner,a.brand_contact,a.requested_date,a.deadline,a.status,d&&!["Granted","Not Needed"].includes(a.status)?Math.round((today()-d)/864e5):"",dueFlag(a.deadline,["Granted","Not Needed"].includes(a.status)),a.blocker,a.notes]})));
+  add("Platform Access",[["Brand","Platform","Team","Status","Access Type","How Given","Team Logins","Next Step","Next Step Who","Next Step By","Last Chased","Needed For","Valerie Owner","Brand Contact","Asked Founder On","Deadline","Blocker","Notes"]].concat(withId(S.access).map(a=>{const ns=a.next_step||{};return[bname(a.brand),a.platform,accTeamOf(a),a.status,a.access_level,a.access_via||"",(a.seats||[]).map(x=>x.p+" ("+x.s+")").join(", "),ns.text||"",ns.who||"",ns.due||"",ACC_FOUNDER.includes(a.status)?lastContact(a):"",a.needed_for,a.owner,a.brand_contact,a.requested_date,a.deadline,a.blocker,a.notes]})));
   add("SOW Tracker",[["Brand","SOW Owner","Support Team","SOW Stage","Start Date","Draft Due","Target Sign Date","Due Flag","Blocker / Dependency","Next Step","SOW Link","GF Link","Updated GF?","Batch","GF Status"]].concat(bs.filter(b=>S.sow[b.id]).map(b=>{const s=S.sow[b.id];return[b.name,s.owner,(s.support||[]).join(", "),s.stage,s.start_date,s.draft_due,s.target_sign,sowDue(s),s.blocker,s.next_step,s.sow_link,s.gf_link,s.gf_updated?"yes":"",s.batch,s.gf_status||""]})));
   const secs=L("bp_section");add("BP Tracker",[["Brand","BP Owner","Due Date","Due Flag"].concat(secs,["Progress","Overall","Blocker","BP Doc Link","Notes"])].concat(bs.filter(b=>S.bps[b.id]).map(b=>{const d=S.bps[b.id],r=bpRoll(b.id);return[b.name,d.owner,d.due_date,r.due].concat(secs.map(x=>(d.sections||{})[x]||""),[Math.round(r.progress*100)/100,r.overall,d.blocker,d.doc_link,d.notes])})));
   const st=stepsSorted();add("Onboarding Steps",[["Phase","Code","Step"].concat(bs.map(b=>b.name))].concat([["","","% Complete"].concat(bs.map(b=>Math.round(onboarding(b.id)*100)/100))],st.map(s=>[s.phase+" "+s.phase_name,s.code,s.name].concat(bs.map(b=>stepState(b.id,s.code).status||"")))));
