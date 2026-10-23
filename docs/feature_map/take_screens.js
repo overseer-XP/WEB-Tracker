@@ -70,7 +70,7 @@ const shots = [];
   await snap('S08', 'Brand page: team cards (bird\'s-eye view)', 'F31, F33', [['.team', 'F31'], ['.team.t-bad', 'F31'], ['[data-act=add-task]', 'F33']]);
   // S09 team list
   await click('.team.t-bad'); await scrollTo('.secs');
-  await snap('S09', 'Brand page: one team\'s task list', 'F32, F33', [['.teamnav', 'F32'], ['main table', 'F32'], ['[data-act=add-task]', 'F33']]);
+  await snap('S09', 'Brand page: one team\'s board', 'F32, F33', [['.teamnav', 'F32'], ['main .kb', 'F86'], ['[data-act=add-task]', 'F33']]);
   // S10 task editor
   await click('main tbody tr');
   await snap('S10', 'Task editor (side panel)', 'F34', [['#drawer', 'F34']]);

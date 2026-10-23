@@ -18,12 +18,12 @@ const res = []; const check = (who, what, ok, d = '') => res.push([ok ? 'OK  ' :
   await go(p, 'brand-bespoke');
   check('Member', 'No Client view or Edit details button', !(await p.$('a[href="#client-bespoke"]')) && !(await p.$('.bhead [data-kind=brand]')));
   await go(p, 'client-bespoke'); check('Member', 'Client page link is not available', !(await p.$('.client')));
-  await go(p, 'brand-bespoke'); await p.click('button[data-tab=tasks]'); await p.click('[data-act=tview][data-v=team]').catch(() => {}); await p.click('button.team:not(.empty-team)'); await p.waitForTimeout(200); await p.click('[data-act=tlay][data-v=list]').catch(() => {}); await p.waitForTimeout(150);
+  await go(p, 'brand-bespoke'); await p.click('button[data-tab=tasks]'); await p.click('button.team:not(.empty-team)'); await p.waitForTimeout(200);
   await p.selectOption('#whoSel', 'Cat'); await p.waitForTimeout(200);
-  const own = await p.$$eval('main tbody tr', rs => rs.findIndex(r => r.children[1] && r.children[1].innerText.trim() === 'Cat'));
-  if (own >= 0) { const sel = (await p.$$('main tbody tr'))[own]; const s = await sel.$('select[data-kind=task]'); check('Member', 'Can change status on their own task', s && !(await s.isDisabled())) }
-  const notOwn = await p.$$eval('main tbody tr', rs => rs.findIndex(r => r.children[1] && !['Cat', ''].includes(r.children[1].innerText.trim()) && !(r.children[2] || {}).innerText?.includes('Cat')));
-  if (notOwn >= 0) { const s = await (await p.$$('main tbody tr'))[notOwn].$('select[data-kind=task]'); check('Member', 'Cannot change status on someone else\'s task', s && await s.isDisabled()) }
+  const own = await p.$$eval('main .kc', cs => { const c = cs.find(x => x.querySelector('.av[title="Cat (owner)"]')); return c ? c.getAttribute('draggable') : null });
+  if (own !== null) check('Member', 'Can move their own card', own === 'true');
+  const notOwn = await p.$$eval('main .kc', cs => { const c = cs.find(x => ![...x.querySelectorAll('.av')].some(a => (a.title || '').startsWith('Cat '))); return c ? c.getAttribute('draggable') : null });
+  if (notOwn !== null) check('Member', 'Cannot move someone else\'s card', notOwn === 'false');
   await go(p, 'sow'); await p.click('[data-act=sowview][data-v=list]'); await p.waitForTimeout(150);
   check('Member', 'SOW stage picker is read-only', await p.$eval('select[data-kind=sow]', e => e.disabled));
   check('Member', 'No script errors', p.errs.length === 0, p.errs.join(' | '));

@@ -14,7 +14,6 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   const errors = []; p.on('pageerror', e => errors.push(e.message));
   const url = 'file://' + preview;
   await p.goto(url + '#overview'); await p.waitForTimeout(500);
-  await p.evaluate(() => localStorage.setItem('vt-tasklayout', 'list')); await p.reload(); await p.waitForTimeout(500);
   const go = async h => { await p.evaluate(h => { location.hash = h }, h); await p.waitForTimeout(250); };
   const text = sel => p.$eval(sel, e => e.innerText).catch(() => '');
   const mainText = () => text('main');
@@ -75,7 +74,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   // 5. Task status to Blocked, with reason, on a brand that was On Track (CELF)
   await go('overview'); const celf0 = await overviewRow('CELF');
   await go('brand-celf'); await p.click('button[data-tab=tasks]'); await p.waitForTimeout(150); await p.click('button.team:not(.empty-team)'); await p.waitForTimeout(200);
-  await p.selectOption('main select[data-kind=task]', 'Blocked'); await p.waitForTimeout(200);
+  await p.click('main .kc'); await p.waitForTimeout(250); await p.selectOption('#d-status', 'Blocked'); await p.click('[data-act=dsave]'); await p.waitForTimeout(250);
   await p.fill('#b-text', 'Need founder files'); await p.selectOption('#b-person', 'Cat'); await p.click('#bform button[type=submit]'); await p.waitForTimeout(350);
   await go('overview');
   check('Task blocked', 'Brand health turns Has blockers (or Blocked if the task is High or Urgent)', !celf0.includes('Blocked') && !celf0.includes('Has blockers') && /Has blockers|Blocked/.test(await overviewRow('CELF')), (await overviewRow('CELF')).slice(0, 60));
@@ -85,7 +84,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
 
   // 6. Task deadline in the past makes it late (Tiny Wins)
   await go('brand-tiny-wins'); await p.click('button[data-tab=tasks]'); await p.waitForTimeout(150); await p.click('button.team:not(.empty-team)'); await p.waitForTimeout(200);
-  await p.click('main tbody tr'); await p.waitForTimeout(200);
+  await p.click('main .kc'); await p.waitForTimeout(200);
   const past = new Date(); past.setDate(past.getDate() - 2); await p.fill('#d-deadline', past.toISOString().slice(0, 10)); await drawerSave();
   await go('overview');
   check('Task deadline', 'Brand health turns At Risk', (await overviewRow('Tiny Wins')).includes('At Risk'), (await overviewRow('Tiny Wins')).slice(0, 60));
@@ -131,7 +130,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   // 11. Task team change moves it between cards (Eco Protein)
   await go('brand-eco-protein'); await p.click('button[data-tab=tasks]'); await p.waitForTimeout(150); const before = await text('.teams');
   await p.click('button[data-tab=tasks]'); await p.waitForTimeout(150); await p.click('button.team:not(.empty-team)'); await p.waitForTimeout(200);
-  await p.click('main tbody tr'); await p.waitForTimeout(200); await p.selectOption('#d-department', 'Finance'); await drawerSave();
+  await p.click('main .kc'); await p.waitForTimeout(200); await p.selectOption('#d-department', 'Finance'); await drawerSave();
   await p.click('[data-act=dept][data-dep=""]'); await p.waitForTimeout(200);
   check('Task team', 'Team cards change', (await text('.teams')) !== before);
 
@@ -184,7 +183,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await p.click('#q'); await p.keyboard.type(anyTask.slice(0, 12)); await p.waitForTimeout(150);
   const taskRow = await p.$$eval('#sres .sr-row', rs => rs.findIndex(r => r.innerText.toLowerCase().startsWith('task')));
   await (await p.$$('#sres .sr-row'))[taskRow].click(); await p.waitForTimeout(400);
-  check('Search', 'Task result opens its brand page with the task highlighted', !!(await p.$('tr.flash')));
+  check('Search', 'Task result opens its brand page with the task highlighted', !!(await p.$('.kc.flash')));
 
   // 17. Sort the brands table
   await go('overview'); await p.click('[data-act=sort][data-k=health]'); await p.waitForTimeout(150);
@@ -352,19 +351,18 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
 
   // 31. Campaigns: add one, move tasks in, timeline, dependencies, team cards, section tiles
   await go('brand-celf'); await p.click('button[data-tab=tasks]'); await p.waitForTimeout(150);
-  await view('tview', 'camp');
-  check('Campaigns', 'Brand with no campaigns offers to add the first one', !!(await p.$('.empty-camp [data-act=add-camp]')));
+  check('Campaigns', 'Brand with no campaigns shows its teams and offers Add campaign', !!(await p.$('main [data-act=add-camp]')) && !!(await p.$('.teams .team')));
   await p.click('[data-act=add-camp]'); await p.fill('#n-cn', 'Spring launch'); await p.fill('#n-cp', 'Launch the spring range with creators and paid'); await p.fill('#n-cs', '2026-10-01'); await p.fill('#n-ce', '2026-11-15');
   await p.click('#fbox button[type=submit]'); await p.waitForTimeout(400);
   check('Campaigns', 'New campaign opens with what it is for', (await text('.cbox')).includes('Launch the spring range'));
   check('Campaigns', 'Section tile now counts the campaign', (await text('[data-tab=tasks] .sv')) === '1 campaign');
   await p.click('[data-act=camp][data-id=""]'); await p.waitForTimeout(150);
   await p.click('[data-act=camp][data-id=_none]'); await p.waitForTimeout(200);
-  await view('cwork', 'board'); await p.click('.kc'); await p.waitForTimeout(250);
+  await p.click('.teams .team'); await p.waitForTimeout(200); await p.click('.kc'); await p.waitForTimeout(250);
   const campOpt = await p.$eval('#d-campaign', e => [...e.options].find(o => o.text === 'Spring launch').value);
   await p.selectOption('#d-campaign', campOpt); await p.fill('#d-start', '2026-10-05'); await p.fill('#d-deadline', '2026-10-20'); await drawerSave();
+  await p.click('.crumb [data-act=camp][data-id=""]'); await p.waitForTimeout(150);
   await p.click(`[data-act=camp][data-id="${campOpt}"]`); await p.waitForTimeout(250);
-  await view('cwork', 'timeline');
   check('Campaigns', 'Moved task shows on the campaign timeline as a bar', !!(await p.$('.gantt .gr .gb')));
   check('Campaigns', 'Campaign shows the team that owns the task', (await p.$$('.cbox .tchip')).length === 1);
   await p.click('[data-act=dep-add]'); await p.fill('#n-dt', 'Client sign-off on the PR box'); await p.selectOption('#n-dk', 'Client sign-off'); await p.selectOption('#n-dw', 'Cat');
@@ -376,16 +374,13 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await p.click('[data-act=dep-state]'); await p.waitForTimeout(250);
   check('Campaigns', 'Clearing a dependency moves it to cleared', (await p.$$('.dep.cleared')).length === 1);
   await p.click('.cbox .tchip'); await p.waitForTimeout(200);
-  check('Campaigns', 'Team chip opens that team list for this campaign only', (await text('.crumb')).includes('Spring launch') && (await p.$$('main tbody tr')).length === 1);
+  check('Campaigns', 'Team chip opens that team board for this campaign only', (await text('.crumb')).includes('Spring launch') && (await p.$$('main .kc')).length === 1);
   await p.click('.crumb [data-act=camp]'); await p.waitForTimeout(150);
   check('Campaigns', 'Breadcrumb goes back to the campaign list', !!(await p.$('.camps')));
-  await view('tview', 'team');
-  check('Campaigns', 'By team still shows team cards', (await p.$$('.teams .team')).length > 0);
-  await view('tview', 'camp');
   await go('mine'); await go('brand-celf');
 
   // 32. Board: drag to change status, Blocked asks why, add a card, checklist and comments show on the card
-  await go('brand-celf'); await p.click('button[data-tab=tasks]'); await p.waitForTimeout(150); await view('tview', 'board');
+  await go('brand-celf'); await p.click('button[data-tab=tasks]'); await p.waitForTimeout(150); await p.click('[data-act=camp][data-id=_none]'); await p.waitForTimeout(150); await p.click('.teams .team'); await p.waitForTimeout(200);
   check('Board', 'One column per task status', (await p.$$('.kcol')).length === (await p.evaluate(() => JSON.parse(JSON.stringify(window.__SEED.config.lists.task_status)).length)));
   const kcard = await p.$eval('.kcards:not([data-drop="Complete"]) .kc', e => e.dataset.id);
   await p.locator(`.kc[data-id="${kcard}"]`).dragTo(p.locator('.kcards[data-drop="In Progress"]')); await p.waitForTimeout(350);
@@ -411,7 +406,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await p.click('[data-act=kbf-clear]'); await p.waitForTimeout(150);
   await setMe('Ash Ghorab'); await go('mine');
   check('Board', 'Card comment mention reaches Ash', await p.evaluate(() => [...document.querySelectorAll('.item.men')].some(x => x.innerText.includes('photos come Friday'))));
-  await setMe('Noopur'); await go('brand-celf'); await view('tview', 'camp');
+  await setMe('Noopur');
   check('Page', 'No script errors', errors.length === 0, errors.join(' | '));
   const failed = results.filter(r => !r.ok);
   for (const r of results) console.log(`${r.ok ? 'PASS' : 'FAIL'} | ${r.area} | ${r.what}${r.ok ? '' : ' | ' + r.detail}`);

@@ -822,32 +822,22 @@ const byUrgency=(a,b)=>urgency(a)-urgency(b)||String(a.deadline||"9").localeComp
 let deptSel={bid:"",dep:""};
 function tasksTab(bid){
   const all=withId(S.tasks).filter(t=>t.brand===bid&&t.title);
-  const cid=campSel.bid===bid?campSel.id:"";
+  const cs=campsOf(bid);const cid=campSel.bid===bid?campSel.id:"";
   const sel=deptSel.bid===bid?deptSel.dep:"";
-  if(sel)return taskTable(bid,sel,cid?all.filter(t=>campOf(t)===cid):all,cid);
+  if(sel)return teamBoard(bid,sel,cid&&(cid===NOCAMP||S.camps[cid])?cid:"",all);
   if(cid&&(cid===NOCAMP||S.camps[cid]))return campDetail(bid,cid,all);
-  const view=taskView||(campsOf(bid).length?"camp":"team");const open=all.filter(t=>t.status!=="Complete");
-  let h=`<div class="row" style="margin-bottom:12px"><div class="seg viewseg" role="group" aria-label="Group tasks"><button data-act="tview" data-v="camp" class="${view==="camp"?"on":""}">By campaign</button><button data-act="tview" data-v="team" class="${view==="team"?"on":""}">By team</button><button data-act="tview" data-v="board" class="${view==="board"?"on":""}">Board</button></div>
-   <span class="muted">${open.length} open tasks${view==="board"?".":view==="camp"?`, ${campsOf(bid).length} campaign${campsOf(bid).length===1?"":"s"}. Open a campaign for its timeline, dependencies and teams.`:` across ${DEPTS().filter(d=>open.some(t=>depOf(t)===d)).length} teams. Click a team to see its full list.`}</span><span class="grow"></span>
+  const open=all.filter(t=>t.status!=="Complete");
+  let h=`<div class="row" style="margin-bottom:12px"><span class="muted">${cs.length?`${cs.length} campaign${cs.length>1?"s":""}, ${open.length} open tasks. Open a campaign to see its teams, then a team to see its board.`:`${open.length} open tasks. No campaigns yet, so the teams are shown straight away. Open a team to see its board.`}</span><span class="grow"></span>
    ${canWrite&&TEMPLATES().length?`<select data-act="use-tpl" data-id="${esc(bid)}" aria-label="Add tasks from a template" class="btn"><option value="">Add from template...</option>${TEMPLATES().map((t,i)=>`<option value="${i}">${esc(t.name)} (${t.tasks.length})</option>`).join("")}</select>`:""}
-   ${canWrite&&view==="camp"?`<button class="btn" data-act="add-camp" data-id="${esc(bid)}">Add campaign</button>`:""}${canWrite?`<button class="btn pri" data-act="add-task" data-id="${esc(bid)}">Add task</button>`:""}</div>`;
-  return h+(view==="board"?taskBoard(bid,all,{showCamp:true}):view==="camp"?campList(bid,all):teamCards(all))}
-function taskTable(bid,dep,all,cid){
-  let rows=all.filter(t=>depOf(t)===dep);const done=rows.filter(t=>t.status==="Complete").length;
-  if(flt.taskStatus==="open")rows=rows.filter(t=>t.status!=="Complete");
-  rows.sort(byUrgency);
-  const counts=d=>all.filter(t=>depOf(t)===d&&t.status!=="Complete").length;
-  let h=(cid?`<p class="crumb"><button class="linkb" data-act="camp" data-id="">Campaigns</button> › <button class="linkb" data-act="dept" data-dep="">${esc(campName(cid))}</button> › ${esc(dep)}</p>`:"")+`<div class="teamnav"><button class="btn sm" data-act="dept" data-dep="">‹ ${cid?"Back to "+esc(campName(cid)):"All teams"}</button>${DEPTS().map(d=>`<button class="chipbtn ${d===dep?"on":""}" data-act="dept" data-dep="${esc(d)}">${esc(d)} <span>${counts(d)}</span></button>`).join("")}</div>
-  <div class="row" style="margin-bottom:10px">${canWrite?`<button class="btn pri" data-act="add-task" data-id="${esc(bid)}" data-dep="${esc(dep)}" data-camp="${esc(cid&&cid!==NOCAMP?cid:"")}">Add ${esc(dep)} task</button>`:""}
-   <div class="seg viewseg" role="group" aria-label="Show as"><button data-act="tlay" data-v="board" class="${taskLayout==="board"?"on":""}">Board</button><button data-act="tlay" data-v="list" class="${taskLayout==="list"?"on":""}">List</button></div>
-   ${taskLayout==="list"?`<div class="seg"><button data-act="tflt" data-v="open" class="${flt.taskStatus==="open"?"on":""}">Open</button><button data-act="tflt" data-v="all" class="${flt.taskStatus==="all"?"on":""}">All (${done} done)</button></div>`:""}</div>`;
-  if(taskLayout==="board")return h+taskBoard(bid,all.filter(t=>depOf(t)===dep),{camp:cid,dep});
-  if(!rows.length)return h+`<div class="tw"><div class="empty">No open ${esc(dep)} tasks. Add one to start.</div></div>`;
-  h+=`<div class="tw"><table><thead><tr><th>Task</th><th>Owner</th>${simple?"":`<th>Support</th><th>Priority</th><th>Start</th>`}<th>Due</th><th>Status</th>${simple?"":`<th>Links</th>`}</tr></thead><tbody>`;
-  for(const t of rows){h+=`<tr class="click" data-act="open" data-kind="task" data-id="${esc(t._id)}"><td><b>${esc(t.title)}</b>${t.status==="Blocked"&&t.blocker?`<div class="blk">${esc(t.blocker.text)}${t.blocker.person?` (waiting on ${esc(t.blocker.person)})`:""}</div>`:simple||!t.notes?"":`<div class="faint clip" style="font-size:12.5px">${esc(t.notes.slice(0,140))}${t.notes.length>140?"...":""}</div>`}</td>
-    <td>${t.owner?esc(t.owner):`<span class="tag warn">No owner</span>`}</td>${simple?"":`<td class="muted">${esc((t.support||[]).join(", "))}</td><td>${t.priority?pill(t.priority):""}</td><td class="faint" style="white-space:nowrap">${esc(fmtD(t.start))}</td>`}
-    <td>${dueHtml(t.deadline,t.status==="Complete")}</td><td>${statusSel("task",t._id,t.status,L("task_status"),canChangeTask(t))}</td>${simple?"":`<td>${t.brief_link?`<a href="${esc(t.brief_link)}" target="_blank" rel="noopener">Brief</a> `:""}${t.creative_link?`<a href="${esc(t.creative_link)}" target="_blank" rel="noopener">Creative</a>`:""}</td>`}</tr>`}
-  return h+`</tbody></table></div>`}
+   ${canWrite?`<button class="btn" data-act="add-camp" data-id="${esc(bid)}">Add campaign</button><button class="btn pri" data-act="add-task" data-id="${esc(bid)}">Add task</button>`:""}</div>`;
+  return h+(cs.length?campList(bid,all):teamCards(all))}
+function teamBoard(bid,dep,cid,all){
+  const scope=cid?all.filter(t=>campOf(t)===cid):all;const counts=d=>scope.filter(t=>depOf(t)===d&&t.status!=="Complete").length;
+  const teams=DEPTS().filter(d=>scope.some(t=>depOf(t)===d));
+  return`<p class="crumb">${cid?`<button class="linkb" data-act="camp" data-id="">Campaigns</button> › <button class="linkb" data-act="dept" data-dep="">${esc(campName(cid))}</button>`:`<button class="linkb" data-act="dept" data-dep="">Teams</button>`} › <b>${esc(dep)}</b></p>
+  <div class="teamnav"><button class="btn sm" data-act="dept" data-dep="">‹ ${cid?"Back to "+esc(campName(cid)):"All teams"}</button>${teams.map(d=>`<button class="chipbtn ${d===dep?"on":""}" data-act="dept" data-dep="${esc(d)}" style="--tc:${teamColor(d)}">${esc(d)} <span>${counts(d)}</span></button>`).join("")}<span class="grow"></span>${canWrite?`<button class="btn pri" data-act="add-task" data-id="${esc(bid)}" data-dep="${esc(dep)}" data-camp="${esc(cid&&cid!==NOCAMP?cid:"")}">Add ${esc(dep)} task</button>`:""}</div>
+  ${taskBoard(bid,scope.filter(t=>depOf(t)===dep),{camp:cid,dep})}`}
+
 function phaseOpen(bid,p){return p.steps.filter(s=>!s.is_optional).some(s=>!["Done","N/A"].includes(stepState(bid,s.code).status))}
 function stepsTab(bid){
   const ps=phases();if(!ps.length)return`<div class="tw"><div class="empty">No step list loaded. An admin can add steps in Settings.</div></div>`;
@@ -1184,7 +1174,7 @@ function brandSections(id,r){
   return`<nav class="secs" role="tablist" aria-label="Sections for ${esc(b.name||"this brand")}">${tiles.map(([k,l,v,sub,st])=>`<button role="tab" aria-selected="${brandTab===k}" class="sec sec-${st} ${brandTab===k?"on":""}" data-act="tab" data-tab="${k}"><span class="sl">${esc(l)}</span><span class="sv">${esc(v)}</span><span class="ss" title="${esc(sub)}">${esc(sub)}</span></button>`).join("")}</nav>`}
 
 /* ---------- campaigns: a brand's work grouped by what it is for ---------- */
-let campSel={bid:"",id:""},taskView="";try{taskView=ls.get("vt-taskview")||""}catch(e){}
+let campSel={bid:"",id:""};
 const NOCAMP="_none";
 const campsOf=bid=>withId(S.camps).filter(c=>c.brand===bid).sort((a,b)=>String(a.start||"9").localeCompare(String(b.start||"9"))||String(a.name).localeCompare(b.name));
 const campOf=t=>t.campaign&&S.camps[t.campaign]&&S.camps[t.campaign].brand===t.brand?t.campaign:NOCAMP;
@@ -1252,13 +1242,13 @@ function campDetail(bid,cid,all){
     <div class="cglance"><h3>At a glance</h3><div class="cstat"><span class="bar wide"><i style="width:${tot?Math.round(r.done/tot*100):0}%"></i></span><span>${r.done} of ${tot} tasks done</span></div>
      <div class="row" style="gap:6px;margin-top:8px">${r.blocked?`<span class="tag bad">${r.blocked} blocked</span>`:""}${r.late?`<span class="tag bad">${r.late} late</span>`:""}${r.deps?`<span class="tag warn">${r.deps} open dependenc${r.deps>1?"ies":"y"}</span>`:`<span class="tag ok">Nothing holding it up</span>`}</div>
      <div class="cteams" style="margin-top:10px">${r.teams.map(([d,o,n])=>`<button class="tchip" style="--tc:${teamColor(d)}" data-act="dept" data-dep="${esc(d)}">${esc(d)} <b>${o}</b><span class="faint"> of ${n}</span></button>`).join("")}</div></div></div></div>
+  <h3 class="sech">Teams on this ${cid===NOCAMP?"work":"campaign"}</h3><p class="faint" style="margin:-4px 0 10px;font-size:13px">Open a team to see its board.</p>${teamCards(r.ts)||`<div class="tw"><div class="empty">No tasks yet. Use Add task above.</div></div>`}
   <h3 class="sech">Key dependencies</h3>${depsHtml(bid,cid)}
-  <div class="row workhead"><h3 class="sech">The work</h3><div class="seg viewseg" role="group" aria-label="Show the work as"><button data-act="cwork" data-v="board" class="${campWork==="board"?"on":""}">Board</button><button data-act="cwork" data-v="timeline" class="${campWork==="timeline"?"on":""}">Timeline</button><button data-act="cwork" data-v="teams" class="${campWork==="teams"?"on":""}">Teams</button></div></div>
-  ${campWork==="timeline"?campTimeline(c,r.ts):campWork==="teams"?`<p class="faint" style="margin:0 0 10px;font-size:13px">Click a team to see its tasks for this ${cid===NOCAMP?"work":"campaign"}.</p>`+teamCards(r.ts):taskBoard(bid,r.ts,{camp:cid})}`;
+  <h3 class="sech">Timeline</h3>${campTimeline(c,r.ts)}`;
   return h}
 function toSection(){const m=$("#main"),n=$(".secs");if(m&&n&&m.scrollTop>n.offsetTop)m.scrollTop=n.offsetTop-10}
 function teamCards(all){
-  let h=`<div class="teams">`;
+  if(!all.length)return"";let h=`<div class="teams">`;
   for(const d of DEPTS()){const ts=all.filter(t=>depOf(t)===d);const op=ts.filter(t=>t.status!=="Complete").sort(byUrgency);
     const done=ts.length-op.length,bl=op.filter(t=>t.status==="Blocked").length,late=op.filter(t=>dueFlag(t.deadline,false)==="Overdue").length;
     if(!ts.length)continue;
@@ -1266,12 +1256,11 @@ function teamCards(all){
      <span class="tstat">${bl?`<span class="tag bad">${bl} blocked</span>`:""}${late?`<span class="tag bad">${late} late</span>`:""}${!bl&&!late?`<span class="tag ok">${op.length?"On track":"All done"}</span>`:""}<span class="faint">${done} of ${ts.length} done</span></span>
      <span class="bar wide"><i style="width:${Math.round(done/ts.length*100)}%"></i></span>
      <span class="tlist">${op.slice(0,3).map(t=>`<span class="tl"><span class="dot ${t.status==="Blocked"?"h-Blocked":urgency(t)===1?"h-Blocked":urgency(t)===2?"h-AtRisk":"h-OnTrack"}" aria-hidden="true"></span><span class="tt">${esc(t.title)}</span><span class="tw2">${t.status==="Blocked"?`<b class="hot">Blocked</b>`:dueHtml(t.deadline,false)||`<span class="faint">${esc(t.owner||"No owner")}</span>`}</span></span>`).join("")||`<span class="faint">Nothing open</span>`}</span>
-     <span class="go">${op.length>3?`See all ${op.length} open ›`:`Open ${esc(d)} list ›`}</span></button>`}
+     <span class="go">Open ${esc(d)} board ›</span></button>`}
   return h+`</div>`}
 
 /* ---------- task board, Trello style: one column per status, drag a card to change it ---------- */
-let kbFilter={who:"",team:"",due:""},kbMore={},campWork="board",taskLayout="board";
-try{campWork=ls.get("vt-campwork")||"board";taskLayout=ls.get("vt-tasklayout")||"board"}catch(e){}
+let kbFilter={who:"",team:"",due:""},kbMore={};
 const taskThread=id=>withId(S.comments).filter(c=>c.task===id).sort((a,b)=>a.at-b.at);
 function taskNote(t,id,text){if(!db||!canWrite)return;create("comments",null,{brand:t.brand,task:id,kind:"system",text,by:me||"",at:Date.now(),mentions:[]},"Task note")}
 function setTaskStatus(id,v){const cur=S.tasks[id];if(!cur||(cur.status||"")===v)return;
@@ -1285,9 +1274,9 @@ const ICON={check:`<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3
   clock:`<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 4.5V8l2.5 1.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>`};
 function dueBadge(t){if(!t.deadline)return"";const done=t.status==="Complete";const f=dueFlag(t.deadline,done);
   const c=done?"ok":f==="Overdue"?"bad":f==="Due Soon"?"warn":"";return`<span class="kbg ${c}" title="Due ${esc(fmtD(t.deadline,true))}">${done?ICON.check:ICON.clock}${esc(fmtD(t.deadline))}</span>`}
-function kbCard(t,showCamp){const cl=t.checklist||[];const cd=cl.filter(x=>x.done).length;const nc=taskThread(t._id).filter(c=>c.kind!=="system").length;const d=depOf(t);const ppl=[t.owner].concat(t.support||[]).filter(Boolean);
+function kbCard(t,showCamp,hideTeam){const cl=t.checklist||[];const cd=cl.filter(x=>x.done).length;const nc=taskThread(t._id).filter(c=>c.kind!=="system").length;const d=depOf(t);const ppl=[t.owner].concat(t.support||[]).filter(Boolean);
   return`<div class="kc ${t.status==="Blocked"?"kc-bad":""}" draggable="${canChangeTask(t)}" data-act="open" data-kind="task" data-id="${esc(t._id)}" tabindex="0" role="button" aria-label="${esc(t.title+", "+(t.status||"")+(t.owner?", "+t.owner:""))}">
-   <span class="kls"><span class="klabel" style="--tc:${teamColor(d)}">${esc(d)}</span>${showCamp&&campOf(t)!==NOCAMP?`<span class="klabel kcamp">${esc(campName(campOf(t)))}</span>`:""}</span>
+   <span class="kls">${hideTeam?"":`<span class="klabel" style="--tc:${teamColor(d)}">${esc(d)}</span>`}${showCamp&&campOf(t)!==NOCAMP?`<span class="klabel kcamp">${esc(campName(campOf(t)))}</span>`:""}</span>
    <span class="kt">${esc(t.title)}</span>${t.status==="Blocked"&&t.blocker&&t.blocker.text?`<span class="blk">${esc(t.blocker.text)}</span>`:""}
    <span class="kb2">${dueBadge(t)}${["High","Urgent"].includes(t.priority)?`<span class="kbg warn">${esc(t.priority)}</span>`:""}${cl.length?`<span class="kbg ${cd===cl.length?"ok":""}" title="Checklist">${ICON.check}${cd}/${cl.length}</span>`:""}${nc?`<span class="kbg" title="${nc} comment${nc>1?"s":""}">${ICON.talk}${nc}</span>`:""}${t.brief_link||t.creative_link?`<span class="kbg" title="Has brief or creative links">${ICON.link}</span>`:""}
     <span class="grow"></span><span class="avs">${ppl.slice(0,3).map((p,i)=>`<span class="av ${i?"sup":""}" title="${esc(p)}${i?" (support)":" (owner)"}">${esc(ini(p))}</span>`).join("")}${ppl.length>3?`<span class="av more">+${ppl.length-3}</span>`:""}</span></span></div>`}
@@ -1303,7 +1292,7 @@ function taskBoard(bid,ts,ctx){ctx=ctx||{};
    <label class="tl">Due <select data-act="kbf" data-k="due"><option value="">Any time</option><option value="week" ${f.due==="week"?"selected":""}>Late or due this week</option><option value="none" ${f.due==="none"?"selected":""}>No due date</option></select></label>
    ${f.who||f.due||(f.team&&!ctx.dep)?`<button class="btn sm quiet" data-act="kbf-clear">Clear filters</button>`:""}<span class="grow"></span><span class="faint" style="font-size:12.5px">${canWrite?"Drag a card to another column to change its status. Click a card to open it.":"Click a card to open it."}</span></div><div class="kb" role="list">`;
   for(const st of L("task_status")){const col=rows.filter(t=>(t.status||"Not Started")===st).sort(byUrgency);const lim=st==="Complete"&&!kbMore[bid+st]?6:999;
-    h+=`<section class="kcol" role="listitem" aria-label="${esc(st)}, ${col.length} cards"><header>${pill(st)}<span class="kn">${col.length}</span></header><div class="kcards" data-drop="${esc(st)}">${col.slice(0,lim).map(t=>kbCard(t,ctx.showCamp)).join("")||`<span class="kempty">No cards</span>`}
+    h+=`<section class="kcol" role="listitem" aria-label="${esc(st)}, ${col.length} cards"><header>${pill(st)}<span class="kn">${col.length}</span></header><div class="kcards" data-drop="${esc(st)}">${col.slice(0,lim).map(t=>kbCard(t,ctx.showCamp,!!ctx.dep)).join("")||`<span class="kempty">No cards</span>`}
      ${col.length>lim?`<button class="kadd" data-act="kb-more" data-k="${esc(bid+st)}">Show ${col.length-lim} more</button>`:""}</div>
      ${canWrite&&st!=="Complete"?`<button class="kadd" data-act="kb-add" data-st="${esc(st)}" data-id="${esc(bid)}" data-camp="${esc(ctx.camp&&ctx.camp!==NOCAMP?ctx.camp:"")}" data-dep="${esc(ctx.dep||"")}">+ Add a card</button>`:""}</section>`}
   return h+`</div>`}
@@ -1541,9 +1530,8 @@ document.addEventListener("click",e=>{
   else if(act==="theme"){theme=a.dataset.v==="dark"?"dark":"light";ls.set("vt-theme",theme);applyTheme();renderTop()}
   else if(act==="lens"){lens=leaderOn()?"":"leadership";ls.set("vt-lens",lens);if(lens){simple=true;go("overview")}else render()}
   else if(act==="tab"){if(a.dataset.tab==="tasks"&&brandTab==="tasks"){campSel={bid:"",id:""};deptSel={bid:"",dep:""}}brandTab=a.dataset.tab;ls.set("vt-tab",brandTab);render()}
-  else if(act==="tflt"){flt.taskStatus=a.dataset.v;render()}
   else if(act==="goto-item"){const{kind,id,code}=a.dataset;
-    if(kind==="task"){const t=S.tasks[id];if(!t)return;brandTab="tasks";campSel={bid:"",id:""};deptSel={bid:t.brand,dep:depOf(t)};flt.taskStatus=t.status==="Complete"?"all":"open";focusItem={sel:`tr[data-kind="task"][data-id="${CSS.escape(id)}"]`};go("brand-"+t.brand)}
+    if(kind==="task"){const t=S.tasks[id];if(!t)return;brandTab="tasks";campSel={bid:t.brand,id:campsOf(t.brand).length?campOf(t):""};deptSel={bid:t.brand,dep:depOf(t)};kbMore[t.brand+"Complete"]=true;focusItem={sel:`.kc[data-id="${CSS.escape(id)}"]`};go("brand-"+t.brand)}
     else if(kind==="access"){accBrand=(S.access[id]||{}).brand||accBrand;go("access");setTimeout(()=>openDrawer("access",id),60);return}
     else{brandTab="steps";showAllPhases=true;focusItem={sel:`select[data-code="${CSS.escape(code)}"]`,up:".step"};go("brand-"+id)}
     ls.set("vt-tab",brandTab)}
@@ -1563,7 +1551,7 @@ document.addEventListener("click",e=>{
   else if(act==="del-comment"){const id=a.dataset.id;confirmBox("Delete this comment?","Delete",()=>remove("comments",id,"Comment"))}
   else if(act==="tpl-del"){const i=+a.dataset.i;confirmBox("Delete this template?","Delete",()=>{const list=TEMPLATES().filter((_,j)=>j!==i);saveTemplates(list)})}
   else if(act==="search-go"){const r=searchResults(searchQ)[+a.dataset.i];searchQ="";$("#q").value="";renderSearch();if(!r)return;
-    if(r.go)go(r.go);else if(r.person){peopleSel=r.person;go("people")}else if(r.task){const t=S.tasks[r.task];if(t){brandTab="tasks";campSel={bid:"",id:""};deptSel={bid:t.brand,dep:depOf(t)};flt.taskStatus=t.status==="Complete"?"all":"open";focusItem={sel:`tr[data-kind="task"][data-id="${CSS.escape(r.task)}"]`};go("brand-"+t.brand)}else{setTab="nobrand";go("settings")}}
+    if(r.go)go(r.go);else if(r.person){peopleSel=r.person;go("people")}else if(r.task){const t=S.tasks[r.task];if(t){brandTab="tasks";campSel={bid:t.brand,id:campsOf(t.brand).length?campOf(t):""};deptSel={bid:t.brand,dep:depOf(t)};kbMore[t.brand+"Complete"]=true;focusItem={sel:`.kc[data-id="${CSS.escape(r.task)}"]`};go("brand-"+t.brand)}else{setTab="nobrand";go("settings")}}
     else if(r.step){setTab="steps";go("settings")}}
   else if(act==="bpdot"){if(pop&&pop.btn===a.getAttribute("aria-label")){closePop();return}openPop(a)}
   else if(act==="bpset"){if(!pop)return;const{id,sec}=pop;const d=S.bps[id];closePop();if(!d)return;const v=a.dataset.v;if(((d.sections||{})[sec]||"Not Started")!==v)save("bps",id,{sections:Object.assign({},d.sections||{},{[sec]:v})},"BPs "+bname(id)+" "+sec);
@@ -1588,8 +1576,6 @@ document.addEventListener("click",e=>{
   else if(act==="acc-new"){const bid=a.dataset.b,pl=a.dataset.p;create("access",null,{brand:bid,platform:pl,access_level:"TBC",needed_for:"",owner:"",brand_contact:(S.brands[bid]||{}).founder||"",requested_date:"",deadline:"",status:"Needed",blocker:"",notes:""},bname(bid)+" "+pl).then(id=>{if(id)openDrawer("access",id)})}
   else if(act==="dept"){deptSel={bid:route.id,dep:a.dataset.dep};flt.taskStatus="open";render();toSection()}
   else if(act==="camp"){campSel={bid:route.id,id:a.dataset.id};deptSel={bid:"",dep:""};render();toSection()}
-  else if(act==="cwork"){campWork=a.dataset.v;ls.set("vt-campwork",campWork);render()}
-  else if(act==="tlay"){taskLayout=a.dataset.v;ls.set("vt-tasklayout",taskLayout);render()}
   else if(act==="kbf-clear"){kbFilter={who:"",team:"",due:""};render()}
   else if(act==="kb-more"){kbMore[a.dataset.k]=true;render()}
   else if(act==="kb-add"){const bid=a.dataset.id,st=a.dataset.st,camp=a.dataset.camp||"",dep0=a.dataset.dep||kbFilter.team||"";formBox("New card in "+st,`<div class="f"><label for="n-title">Task</label><input id="n-title" name="title" required></div><div class="f"><label for="n-dep">Team</label><select id="n-dep" name="department">${opts(DEPTS(),dep0||DEPTS()[0],false)}</select></div><div class="f"><label for="n-owner">Owner</label><select id="n-owner" name="owner">${opts(activePeople(),me)}</select></div><div class="f"><label for="n-dl">Due</label><input id="n-dl" name="deadline" type="date"></div>`,"Add card",
@@ -1599,9 +1585,8 @@ document.addEventListener("click",e=>{
   else if(act==="ck-del"){const id=drawerCtx&&drawerCtx.id;const tk=S.tasks[id];if(!tk)return;save("tasks",id,{checklist:(tk.checklist||[]).filter((x,i)=>i!==+a.dataset.i)},tk.title+" checklist")}
   else if(act==="task-post"){const id=drawerCtx&&drawerCtx.id;const tk=S.tasks[id];const t=$("#task-c");const text=t&&t.value.trim();if(!tk||!text)return;if(!me){toast("Pick your name in the top bar first.");return}
     create("comments",null,{brand:tk.brand,task:id,text,by:me,at:Date.now(),mentions:mentionsIn(text)},"Comment on "+tk.title).then(r=>{if(r&&$("#task-c"))$("#task-c").value=""})}
-  else if(act==="tview"){taskView=a.dataset.v;ls.set("vt-taskview",taskView);campSel={bid:"",id:""};deptSel={bid:"",dep:""};render()}
   else if(act==="add-camp"){const bid=a.dataset.id;formBox("New campaign",`<div class="f"><label for="n-cn">Campaign name</label><input id="n-cn" name="name" required placeholder="For example: Spring launch"></div><div class="f"><label for="n-cp">What it is for</label><textarea id="n-cp" name="purpose" placeholder="One or two lines: the product, the goal, the audience"></textarea></div><div class="row" style="gap:10px"><div class="f" style="flex:1"><label for="n-cs">Start</label><input id="n-cs" name="start" type="date"></div><div class="f" style="flex:1"><label for="n-ce">Launch or end</label><input id="n-ce" name="end" type="date"></div></div><div class="f"><label for="n-co">Owner</label><select id="n-co" name="owner">${opts(activePeople(),me)}</select></div>`,"Add campaign",
-    v=>{if(!v.name){toast("Give the campaign a name.");return false}create("camps",null,{brand:bid,name:v.name,purpose:v.purpose,goal:"",start:v.start,end:v.end,owner:v.owner,status:L("campaign_status")[0]||"",deps:[]},v.name).then(id=>{if(id){campSel={bid,id};deptSel={bid:"",dep:""};taskView="camp";render()}})})}
+    v=>{if(!v.name){toast("Give the campaign a name.");return false}create("camps",null,{brand:bid,name:v.name,purpose:v.purpose,goal:"",start:v.start,end:v.end,owner:v.owner,status:L("campaign_status")[0]||"",deps:[]},v.name).then(id=>{if(id){campSel={bid,id};deptSel={bid:"",dep:""};render()}})})}
   else if(act==="dep-add"){const cid=a.dataset.id;const c=S.camps[cid];if(!c)return;formBox("Add a dependency",`<div class="f"><label for="n-dt">What the campaign is waiting on</label><input id="n-dt" name="text" required></div><div class="f"><label for="n-dk">Kind</label><select id="n-dk" name="kind">${opts(L("dependency_kind"),"")}</select></div><div class="f"><label for="n-dw">Who it depends on</label><select id="n-dw" name="who">${opts(activePeople(),"")}</select><span class="hint">Pick the Valerie person who chases it</span></div><div class="f"><label for="n-dd">Needed by</label><input id="n-dd" name="due" type="date"></div>`,"Add",
     v=>{if(!v.text){toast("Say what it is waiting on.");return false}save("camps",cid,{deps:(c.deps||[]).concat([{text:v.text,kind:v.kind,who:v.who,due:v.due,state:"Open",added:isoToday(),by:me||""}])},c.name)})}
   else if(act==="dep-state"){const c=S.camps[a.dataset.id];if(!c)return;const ds=(c.deps||[]).map(x=>Object.assign({},x));const d=ds[+a.dataset.i];if(!d)return;d.state=d.state==="Cleared"?"Open":"Cleared";if(d.state==="Cleared")d.cleared=isoToday();save("camps",a.dataset.id,{deps:ds},c.name)}
