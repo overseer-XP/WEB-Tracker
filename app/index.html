@@ -4,7 +4,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
 /* Calm palette: misty sage-grey ground, soft teal accent, pastel status fills. Layout: left rail, top bar with search and Simple / Full, work area, edit drawer */
-:root{color-scheme:light;
+:root{color-scheme:light;--shadow:0 1px 2px rgb(30 50 60/.07),0 4px 12px rgb(30 50 60/.07);
   --bg:#F3F6F5; --panel:#FFFFFF; --panel2:#EDF2F0; --ink:#2A3337; --muted:#66747A; --faint:#94A0A5; --line:#E1E8E5; --line2:#D0D9D5;
   --rail:#EAF0ED; --railHover:#DEE7E3; --accent:#3D7486; --accentInk:#FFFFFF; --accentSoft:#DFECEF;
   --ok:#3E7C5A; --okBg:#E2F0E7; --warn:#8A6727; --warnBg:#F7EDD8; --bad:#A4514B; --badBg:#F6E2DF;
@@ -23,7 +23,7 @@
   --info:#9DBAD8; --infoBg:#212F3B; --off:#ADB8BC; --offBg:#293033;
   --fDone:#4D7B60; --fProg:#64578A; --fNot:#48302E; --fNA:#2C3437;
   --dLive:#7BBE95; --dRisk:#D9AE5E; --dTrack:#8FB3D6;
-  --g0:#5E8A6D; --g1:#5F80A0; --g2:#7F70A3; --g3:#A37B5F; --g4:#5F9483; --g5:#978A5F; color-scheme:dark}}
+  --g0:#5E8A6D; --g1:#5F80A0; --g2:#7F70A3; --g3:#A37B5F; --g4:#5F9483; --g5:#978A5F; color-scheme:dark; --shadow:0 1px 2px rgb(0 0 0/.45),0 3px 10px rgb(0 0 0/.25)}}
 :root[data-theme="dark"]{
   --bg:#161B1D; --panel:#1E2427; --panel2:#252C30; --ink:#E1E7E8; --muted:#A2AEB2; --faint:#7B878B; --line:#2E373B; --line2:#3A4448;
   --rail:#1A2023; --railHover:#253034; --accent:#86B9CA; --accentInk:#10181B; --accentSoft:#22353B;
@@ -31,7 +31,7 @@
   --info:#9DBAD8; --infoBg:#212F3B; --off:#ADB8BC; --offBg:#293033;
   --fDone:#4D7B60; --fProg:#64578A; --fNot:#48302E; --fNA:#2C3437;
   --dLive:#7BBE95; --dRisk:#D9AE5E; --dTrack:#8FB3D6;
-  --g0:#5E8A6D; --g1:#5F80A0; --g2:#7F70A3; --g3:#A37B5F; --g4:#5F9483; --g5:#978A5F; color-scheme:dark}
+  --g0:#5E8A6D; --g1:#5F80A0; --g2:#7F70A3; --g3:#A37B5F; --g4:#5F9483; --g5:#978A5F; color-scheme:dark; --shadow:0 1px 2px rgb(0 0 0/.45),0 3px 10px rgb(0 0 0/.25)}
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{height:100%}
@@ -145,6 +145,12 @@ h2{font-size:16px;margin:26px 0 10px;font-weight:600}
 .week .chip{display:flex;align-items:center;gap:6px;font-size:13px;padding:3px 0;color:var(--ink);text-decoration:none;flex-wrap:wrap}
 .week .chip:hover span.nm{text-decoration:underline}
 /* tables */
+main.themed{background:linear-gradient(180deg,var(--btint) 0,color-mix(in srgb,var(--btint) 55%,var(--bg)) 300px,var(--bg) 700px);background-attachment:local}
+main.themed .bhead h1{color:var(--bink);font-size:34px;letter-spacing:.01em}
+main.themed .secs{background:color-mix(in srgb,color-mix(in srgb,var(--btint) 42%,var(--bg)) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+main.themed .facts{border-color:transparent}
+:root[data-theme="dark"] main.themed{background:linear-gradient(180deg,color-mix(in srgb,var(--btint) 30%,var(--bg)) 0,var(--bg) 600px);background-attachment:local}:root[data-theme="dark"] main.themed .bhead h1{color:var(--ink)}
+.tw,.tile,.card,.item,.team,.camp,.sec,.facts,.cbox,.deps,.gantt,.undated,.acclist,.bcard,.bpc,.next,.chipbtn,.btn:not(.pri){box-shadow:var(--shadow)}
 .tw{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);overflow-x:auto;position:relative}
 table{border-collapse:collapse;width:100%}
 th{font-size:12px;font-weight:600;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);background:var(--panel2);white-space:nowrap}
@@ -301,7 +307,7 @@ tr.sel td{background:var(--accentSoft)}
 @media (prefers-reduced-motion:reduce){.flash,.flash td{transition:none}}
 .cnt{font-size:11.5px;margin-left:6px;padding:0 6px;border-radius:999px;background:var(--offBg);color:var(--off);font-weight:600}
 .cnt.bad{background:var(--badBg);color:var(--bad)}
-.bcard{background:var(--panel2);border:1px solid var(--line);border-radius:var(--r);padding:12px 12px 6px;margin-bottom:14px}
+.bcard{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:12px 12px 6px;margin-bottom:14px}
 .bcard.held{opacity:.7}
 .bcard header{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 2px 10px}
 .bcard header .bname{font-size:15px}
@@ -633,6 +639,9 @@ function renderTop(){
 }
 function renderMain(){
   const m=$("#main");
+  // a brand page can carry the brand's own colours (set in Edit details)
+  const tb=route.v==="brand"&&S.brands[route.id];const hex=v=>/^#[0-9a-f]{6}$/i.test(v||"");const th=tb&&tb.theme_on&&hex(tb.tint)?tb:null;
+  m.classList.toggle("themed",!!th);if(th){m.style.setProperty("--btint",th.tint);m.style.setProperty("--bink",hex(th.color)?th.color:"var(--ink)")}else{m.style.removeProperty("--btint");m.style.removeProperty("--bink")}
   if(!db){return}
   if(!ready.brands||!ready.config){m.innerHTML=`<h1>Valerie COE Tracker</h1><p class="sub">Loading brands, tasks and steps.</p>`;return}
   if(!Object.keys(S.brands).length){m.innerHTML=`<h1>No brands yet</h1><p class="sub">${canEdit?"Use Add brand in the left menu to add the first one.":"Ask a lead to add brands."}</p>`;return}
@@ -1354,6 +1363,7 @@ function openDrawer(kind,id,extra,refresh){
     if(canEdit&&canWrite)foot=`<button class="btn danger" data-act="del" data-kind="task" data-id="${esc(id)}">Delete task</button>`}
   else if(kind==="brand"){const b=S.brands[id];if(!b){closeDrawer();return}ro=!(canEdit&&canWrite);title=b.name;
     body=field("Name",inp("name",b.name))+field("Stage",sel("stage",L("stage"),b.stage,false))+field("Brand lead",sel("lead",activePeople(),b.lead))+field("Founder",inp("founder",b.founder))+field("Website",inp("website",b.website,"url"),1)
+     +field("Brand colours on this page",`<select name="theme_on" id="d-theme_on">${opts(["No","Yes"],b.theme_on?"Yes":"No",false)}</select>`,0,"A soft background in the brand's colour")+field("Brand colour",inp("color",b.color||"#2A3337","color"),0,"Used for the brand name")+field("Background colour",inp("tint",b.tint||"#DCE6EE","color"),0,"Shown behind the top of the page")
      +field("Sprint",inp("sprint_label",b.sprint_label),1)+field("Next step",area("next_step",b.next_step),1)
      +field("On hold (paused)",`<select name="paused" id="d-paused">${opts(["No","Yes"],b.paused?"Yes":"No",false)}</select>`)+field("Restricted",`<select name="restricted" id="d-restricted">${opts(["No","Yes"],b.restricted?"Yes":"No",false)}</select>`,0,"Marks the brand as sensitive. Access limits come with the full build")}
   else if(kind==="step"){const s=S.steps[extra];const st=stepState(id,extra);if(!s){closeDrawer();return}title=s.code+" "+s.name;
@@ -1402,7 +1412,7 @@ async function drawerSave(){
       if(!text||!person){if(t.status!=="Blocked"){closeDrawer();askBlocker(r=>save("tasks",id,Object.assign(diff(t,next),{status:"Blocked",blocker:r}),t.title));return}toast("A blocker needs one line and a person.");return}
       next.blocker={text,person}}else next.blocker=null;
     const p=diff(t,next);if(Object.keys(p).length)await save("tasks",id,p,t.title)}
-  else if(kind==="brand"){const b=S.brands[id];const next={name:fd.name,stage:fd.stage,lead:fd.lead,founder:fd.founder,website:fd.website,sprint_label:fd.sprint_label,next_step:fd.next_step,paused:fd.paused==="Yes",restricted:fd.restricted==="Yes"};
+  else if(kind==="brand"){const b=S.brands[id];const next={name:fd.name,stage:fd.stage,lead:fd.lead,founder:fd.founder,website:fd.website,theme_on:fd.theme_on==="Yes",color:fd.color||"",tint:fd.tint||"",sprint_label:fd.sprint_label,next_step:fd.next_step,paused:fd.paused==="Yes",restricted:fd.restricted==="Yes"};
     if(!next.name){toast("A brand needs a name.");return}const p=diff(b,next);if(Object.keys(p).length)await save("brands",id,p,b.name)}
   else if(kind==="step"){const st=stepState(id,extra);
     if(fd.status==="Done"&&st.status!=="Done"){const why=gateBlock(id,extra);if(why){toast(why);return}}
