@@ -2,7 +2,7 @@
 // Usage: node tests/controls.js <preview.html>
 const path=require('path');const { chromium } = require('/opt/node-tools/node_modules/playwright');
 (async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1440,height:900}});const errs=[];p.on('pageerror',e=>errs.push(e.message));
-const u='file://'+path.resolve(process.argv[2]);await p.goto(u+'#overview');await p.waitForTimeout(500);
+const u='file://'+path.resolve(process.argv[2]);await p.goto(u+'#overview');await p.waitForTimeout(500);await p.evaluate(()=>localStorage.setItem('vt-tasklayout','list'));await p.reload();await p.waitForTimeout(500);
 const go=async h=>{await p.evaluate(h=>{location.hash=h},h);await p.waitForTimeout(250)};
 const res=[];const t=async(name,fn)=>{try{const r=await fn();res.push([r?'OK  ':'FAIL',name])}catch(e){res.push(['FAIL',name+' '+e.message.split('\n')[0]])}};
 const drawerOpen=()=>p.evaluate(()=>!document.getElementById('drawer').hidden);const modalOpen=()=>p.evaluate(()=>!document.getElementById('modal').hidden);

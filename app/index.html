@@ -228,6 +228,27 @@ select.ps:disabled{cursor:default;background-image:none;padding-right:9px}
 .deps{background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}.deps>.empty{padding:14px}
 .dep{display:grid;grid-template-columns:140px minmax(0,1fr) 140px auto;gap:10px;align-items:center;padding:9px 12px;border-bottom:1px solid var(--line);font-size:13.5px}.dep.cleared{opacity:.6}.dep.cleared .dt{text-decoration:line-through}
 .dep .tag{justify-self:start}.dep .da{display:flex;gap:4px;justify-content:flex-end}.deps details{padding:6px 12px}.deps summary{cursor:pointer;font-size:13px;color:var(--muted)}
+.workhead{align-items:center;gap:12px;margin:22px 0 10px}.workhead .sech{margin:0}
+.kbbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 10px}.kbbar select{border:1px solid var(--line2);background:var(--panel);border-radius:7px;padding:4px 8px}
+.kb{display:flex;gap:12px;overflow-x:auto;padding:2px 2px 14px;align-items:flex-start}
+.kcol{flex:0 0 268px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;display:flex;flex-direction:column;box-shadow:var(--shadow)}
+.kcol header{display:flex;gap:8px;align-items:center;padding:10px 12px 6px}.kcol .kn{font-weight:700;color:var(--muted);font-size:13px}
+.kcards{display:flex;flex-direction:column;gap:8px;padding:4px 8px 8px;min-height:44px;border-radius:9px;transition:background .1s}
+.kcards.over{background:var(--accentSoft);outline:2px dashed var(--accent);outline-offset:-2px}
+.kempty{font-size:12px;color:var(--faint);padding:6px 4px}
+.kc{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:9px 10px;box-shadow:0 1px 2px rgb(0 0 0/.08);cursor:pointer;display:flex;flex-direction:column;gap:6px;transition:box-shadow .12s,border-color .12s}
+.kc:hover{border-color:var(--line2);box-shadow:0 4px 12px rgb(0 0 0/.12)}.kc:focus-visible{outline:2px solid var(--accent);outline-offset:1px}.kc.dragging{opacity:.45}
+.kc[draggable=true]{cursor:grab}.kc-bad{border-left:4px solid var(--bad)}
+.kls{display:flex;gap:4px;flex-wrap:wrap}.klabel{font-size:11px;font-weight:700;padding:1px 7px;border-radius:4px;background:color-mix(in srgb,var(--tc) 20%,var(--panel));border-left:3px solid var(--tc);color:var(--ink);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kcamp{--tc:var(--accent)}
+.kt{font-size:13.5px;font-weight:600;line-height:1.35}
+.kb2{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.kbg{font-size:11.5px;padding:1px 6px;border-radius:4px;background:var(--offBg);color:var(--muted);display:inline-flex;gap:3px;align-items:center;font-weight:600}.kbg svg{width:12px;height:12px}
+.kbg.ok{background:var(--okBg);color:var(--ok)}.kbg.bad{background:var(--bad);color:#fff}.kbg.warn{background:var(--warnBg);color:var(--warn)}
+.avs{display:inline-flex}.av{width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--accentInk);font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;border:2px solid var(--panel);margin-left:-6px}.av:first-child{margin-left:0}.av.sup{background:var(--g2)}.av.more{background:var(--offBg);color:var(--muted)}
+.kadd{all:unset;box-sizing:border-box;cursor:pointer;margin:0 8px 8px;padding:6px 8px;border-radius:7px;color:var(--muted);font-size:13px;font-weight:600}.kadd:hover{background:var(--offBg);color:var(--ink)}.kadd:focus-visible{outline:2px solid var(--accent)}
+.kcards .kadd{margin:0}
+.cklist{display:flex;flex-direction:column;gap:4px}.ckrow{display:grid;grid-template-columns:20px minmax(0,1fr) auto auto;gap:8px;align-items:center;font-size:13.5px;padding:3px 0}.ckrow.done .ckt{text-decoration:line-through;color:var(--muted)}.ckrow input{width:16px;height:16px}
 .teams{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
 .team{all:unset;box-sizing:border-box;cursor:pointer;background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--tc,var(--line2));border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:9px;min-width:0;transition:box-shadow .15s,transform .15s}
 .team:hover{box-shadow:0 6px 18px rgb(0 0 0/.08);transform:translateY(-1px)}.team:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -401,7 +422,8 @@ table.grid td{vertical-align:middle}
 .drawer .body{overflow-y:auto;padding:16px 18px 30px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .drawer footer{border-top:1px solid var(--line);padding:12px 18px calc(12px + env(safe-area-inset-bottom,0px));display:flex;gap:8px}
 .f{display:flex;flex-direction:column;gap:4px;min-width:0}
-.f.w{grid-column:1/-1}
+.f.w{grid-column:1/-1}.drawer .body>.w,.drawer .body>.dh{grid-column:1/-1}
+.cklist input:not([type=checkbox]),.cklist select{border:1px solid var(--line2);background:var(--panel);border-radius:7px;padding:5px 8px}
 .f label{font-size:12px;color:var(--muted)}
 .f input,.f select,.f textarea{border:1px solid var(--line2);background:var(--panel);border-radius:7px;padding:7px 9px;width:100%}
 .f textarea{min-height:72px;resize:vertical}
@@ -668,7 +690,7 @@ function vMine(){
   const all=myItems();const items=mineVert?all.filter(it=>it.kind==="task"&&vertOf(S.tasks[it.id]||{})===mineVert):all;
   const onb=items.filter(it=>!isLiveBrand(it.brand)),live=items.filter(it=>isLiveBrand(it.brand));
   h+=sinceBanner(all)+guide("mine");
-  const men=myMentions(me);if(men.length)h+=`<section class="group"><h2>Mentions <span class="count">${men.length}</span></h2>${men.slice(0,5).map(c=>`<a class="item men" href="#brand-${esc(c.brand)}" data-act="men-go" data-id="${esc(c.brand)}" data-acc="${esc(c.access||"")}"><div><div class="t">${esc(c.by||"Someone")} on ${esc(bname(c.brand))}${c.access&&S.access[c.access]?" · "+esc(S.access[c.access].platform):""}</div><div class="meta">${linkMentions(c.text).slice(0,400)}</div></div><div class="faint" style="font-size:12px">${esc(agoText(c.at))}</div><div></div></a>`).join("")}</section>`;
+  const men=myMentions(me);if(men.length)h+=`<section class="group"><h2>Mentions <span class="count">${men.length}</span></h2>${men.slice(0,5).map(c=>`<a class="item men" href="#brand-${esc(c.brand)}" data-act="men-go" data-id="${esc(c.brand)}" data-acc="${esc(c.access||"")}" data-task="${esc(c.task||"")}"><div><div class="t">${esc(c.by||"Someone")} on ${esc(bname(c.brand))}${c.access&&S.access[c.access]?" · "+esc(S.access[c.access].platform):""}${c.task&&S.tasks[c.task]?" · "+esc(S.tasks[c.task].title):""}</div><div class="meta">${linkMentions(c.text).slice(0,400)}</div></div><div class="faint" style="font-size:12px">${esc(agoText(c.at))}</div><div></div></a>`).join("")}</section>`;
   if(mineTab===null)mineTab=ls.get("vt-minetab")||(onb.length?"onboarding":"live");
   const urgent=a=>a.filter(it=>!holdOf(it.brand)&&(it.blocked||it.flag==="Overdue")).length;
   const tabBtn=(k,l,a)=>`<button data-act="minetab" data-v="${k}" class="${mineTab===k?"on":""}">${l} <span class="cnt">${a.length}</span>${urgent(a)?`<span class="cnt bad">${urgent(a)} need you</span>`:""}</button>`;
@@ -805,11 +827,11 @@ function tasksTab(bid){
   if(sel)return taskTable(bid,sel,cid?all.filter(t=>campOf(t)===cid):all,cid);
   if(cid&&(cid===NOCAMP||S.camps[cid]))return campDetail(bid,cid,all);
   const view=taskView||(campsOf(bid).length?"camp":"team");const open=all.filter(t=>t.status!=="Complete");
-  let h=`<div class="row" style="margin-bottom:12px"><div class="seg viewseg" role="group" aria-label="Group tasks"><button data-act="tview" data-v="camp" class="${view==="camp"?"on":""}">By campaign</button><button data-act="tview" data-v="team" class="${view==="team"?"on":""}">By team</button></div>
-   <span class="muted">${open.length} open tasks${view==="camp"?`, ${campsOf(bid).length} campaign${campsOf(bid).length===1?"":"s"}. Open a campaign for its timeline, dependencies and teams.`:` across ${DEPTS().filter(d=>open.some(t=>depOf(t)===d)).length} teams. Click a team to see its full list.`}</span><span class="grow"></span>
+  let h=`<div class="row" style="margin-bottom:12px"><div class="seg viewseg" role="group" aria-label="Group tasks"><button data-act="tview" data-v="camp" class="${view==="camp"?"on":""}">By campaign</button><button data-act="tview" data-v="team" class="${view==="team"?"on":""}">By team</button><button data-act="tview" data-v="board" class="${view==="board"?"on":""}">Board</button></div>
+   <span class="muted">${open.length} open tasks${view==="board"?".":view==="camp"?`, ${campsOf(bid).length} campaign${campsOf(bid).length===1?"":"s"}. Open a campaign for its timeline, dependencies and teams.`:` across ${DEPTS().filter(d=>open.some(t=>depOf(t)===d)).length} teams. Click a team to see its full list.`}</span><span class="grow"></span>
    ${canWrite&&TEMPLATES().length?`<select data-act="use-tpl" data-id="${esc(bid)}" aria-label="Add tasks from a template" class="btn"><option value="">Add from template...</option>${TEMPLATES().map((t,i)=>`<option value="${i}">${esc(t.name)} (${t.tasks.length})</option>`).join("")}</select>`:""}
    ${canWrite&&view==="camp"?`<button class="btn" data-act="add-camp" data-id="${esc(bid)}">Add campaign</button>`:""}${canWrite?`<button class="btn pri" data-act="add-task" data-id="${esc(bid)}">Add task</button>`:""}</div>`;
-  return h+(view==="camp"?campList(bid,all):teamCards(all))}
+  return h+(view==="board"?taskBoard(bid,all,{showCamp:true}):view==="camp"?campList(bid,all):teamCards(all))}
 function taskTable(bid,dep,all,cid){
   let rows=all.filter(t=>depOf(t)===dep);const done=rows.filter(t=>t.status==="Complete").length;
   if(flt.taskStatus==="open")rows=rows.filter(t=>t.status!=="Complete");
@@ -817,7 +839,9 @@ function taskTable(bid,dep,all,cid){
   const counts=d=>all.filter(t=>depOf(t)===d&&t.status!=="Complete").length;
   let h=(cid?`<p class="crumb"><button class="linkb" data-act="camp" data-id="">Campaigns</button> › <button class="linkb" data-act="dept" data-dep="">${esc(campName(cid))}</button> › ${esc(dep)}</p>`:"")+`<div class="teamnav"><button class="btn sm" data-act="dept" data-dep="">‹ ${cid?"Back to "+esc(campName(cid)):"All teams"}</button>${DEPTS().map(d=>`<button class="chipbtn ${d===dep?"on":""}" data-act="dept" data-dep="${esc(d)}">${esc(d)} <span>${counts(d)}</span></button>`).join("")}</div>
   <div class="row" style="margin-bottom:10px">${canWrite?`<button class="btn pri" data-act="add-task" data-id="${esc(bid)}" data-dep="${esc(dep)}" data-camp="${esc(cid&&cid!==NOCAMP?cid:"")}">Add ${esc(dep)} task</button>`:""}
-   <div class="seg"><button data-act="tflt" data-v="open" class="${flt.taskStatus==="open"?"on":""}">Open</button><button data-act="tflt" data-v="all" class="${flt.taskStatus==="all"?"on":""}">All (${done} done)</button></div></div>`;
+   <div class="seg viewseg" role="group" aria-label="Show as"><button data-act="tlay" data-v="board" class="${taskLayout==="board"?"on":""}">Board</button><button data-act="tlay" data-v="list" class="${taskLayout==="list"?"on":""}">List</button></div>
+   ${taskLayout==="list"?`<div class="seg"><button data-act="tflt" data-v="open" class="${flt.taskStatus==="open"?"on":""}">Open</button><button data-act="tflt" data-v="all" class="${flt.taskStatus==="all"?"on":""}">All (${done} done)</button></div>`:""}</div>`;
+  if(taskLayout==="board")return h+taskBoard(bid,all.filter(t=>depOf(t)===dep),{camp:cid,dep});
   if(!rows.length)return h+`<div class="tw"><div class="empty">No open ${esc(dep)} tasks. Add one to start.</div></div>`;
   h+=`<div class="tw"><table><thead><tr><th>Task</th><th>Owner</th>${simple?"":`<th>Support</th><th>Priority</th><th>Start</th>`}<th>Due</th><th>Status</th>${simple?"":`<th>Links</th>`}</tr></thead><tbody>`;
   for(const t of rows){h+=`<tr class="click" data-act="open" data-kind="task" data-id="${esc(t._id)}"><td><b>${esc(t.title)}</b>${t.status==="Blocked"&&t.blocker?`<div class="blk">${esc(t.blocker.text)}${t.blocker.person?` (waiting on ${esc(t.blocker.person)})`:""}</div>`:simple||!t.notes?"":`<div class="faint clip" style="font-size:12.5px">${esc(t.notes.slice(0,140))}${t.notes.length>140?"...":""}</div>`}</td>
@@ -1015,7 +1039,7 @@ function updatesTab(bid){
   const cs=withId(S.comments).filter(c=>c.brand===bid&&c.kind!=="system").sort((a,b)=>b.at-a.at);
   let h=`<div class="cols2 upd"><div><h3 class="h3">Comments</h3>${canWrite?`<form id="cform" class="card cform"><label for="c-text" class="sr">Add a comment</label><textarea id="c-text" name="text" placeholder="Write an update. Type @ and a name to mention someone, for example @Noopur" required></textarea>
     <div class="row"><span class="faint" style="font-size:12px">Mentions show in that person's My tasks. Links only, never passwords or contract text.</span><span class="grow"></span><button class="btn pri" type="submit">Post</button></div><input type="hidden" name="brand" value="${esc(bid)}"></form>`:""}`;
-  h+=cs.length?cs.map(c=>`<div class="cmt"><div class="row" style="gap:8px"><b>${esc(c.by||"Someone")}</b><span class="faint" style="font-size:12px">${esc(new Date(c.at).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}))}</span><span class="grow"></span>${canWrite&&(c.by===me||canEdit)?`<button class="btn sm quiet" data-act="del-comment" data-id="${esc(c._id)}">Delete</button>`:""}</div><div class="ctext">${c.access&&S.access[c.access]?`<span class="tag">${esc(S.access[c.access].platform)}</span> `:""}${linkMentions(c.text)}</div></div>`).join("")
+  h+=cs.length?cs.map(c=>`<div class="cmt"><div class="row" style="gap:8px"><b>${esc(c.by||"Someone")}</b><span class="faint" style="font-size:12px">${esc(new Date(c.at).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}))}</span><span class="grow"></span>${canWrite&&(c.by===me||canEdit)?`<button class="btn sm quiet" data-act="del-comment" data-id="${esc(c._id)}">Delete</button>`:""}</div><div class="ctext">${c.access&&S.access[c.access]?`<span class="tag">${esc(S.access[c.access].platform)}</span> `:""}${c.task&&S.tasks[c.task]?`<span class="tag">${esc(S.tasks[c.task].title)}</span> `:""}${linkMentions(c.text)}</div></div>`).join("")
     :`<div class="empty card">No comments yet. Post the first update for ${esc(bname(bid))} above.</div>`;
   const act=brandActivity(bid);
   h+=`</div><div><h3 class="h3">Recent changes</h3>${act.length?`<div class="card actlist">${act.map(e=>`<div class="act"><span class="faint">${esc(new Date(e.at).toLocaleDateString("en-GB",{day:"numeric",month:"short"}))}</span> <b>${esc(e.person||"Someone")}</b> changed ${esc(e.field)} on ${esc(e.label||e.id)}${e.new!==undefined&&e.new!==""&&e.field!=="created"?` to <i>${esc(String(e.new).slice(0,60))}</i>`:""}</div>`).join("")}</div>`:`<div class="empty card">No changes recorded in the last 30 days.</div>`}</div></div>`;
@@ -1228,9 +1252,9 @@ function campDetail(bid,cid,all){
     <div class="cglance"><h3>At a glance</h3><div class="cstat"><span class="bar wide"><i style="width:${tot?Math.round(r.done/tot*100):0}%"></i></span><span>${r.done} of ${tot} tasks done</span></div>
      <div class="row" style="gap:6px;margin-top:8px">${r.blocked?`<span class="tag bad">${r.blocked} blocked</span>`:""}${r.late?`<span class="tag bad">${r.late} late</span>`:""}${r.deps?`<span class="tag warn">${r.deps} open dependenc${r.deps>1?"ies":"y"}</span>`:`<span class="tag ok">Nothing holding it up</span>`}</div>
      <div class="cteams" style="margin-top:10px">${r.teams.map(([d,o,n])=>`<button class="tchip" style="--tc:${teamColor(d)}" data-act="dept" data-dep="${esc(d)}">${esc(d)} <b>${o}</b><span class="faint"> of ${n}</span></button>`).join("")}</div></div></div></div>
-  <h3 class="sech">Timeline</h3>${campTimeline(c,r.ts)}
   <h3 class="sech">Key dependencies</h3>${depsHtml(bid,cid)}
-  <h3 class="sech">Teams on this ${cid===NOCAMP?"work":"campaign"}</h3><p class="faint" style="margin:-4px 0 10px;font-size:13px">Click a team to see its tasks for this ${cid===NOCAMP?"work":"campaign"}.</p>${teamCards(r.ts)}`;
+  <div class="row workhead"><h3 class="sech">The work</h3><div class="seg viewseg" role="group" aria-label="Show the work as"><button data-act="cwork" data-v="board" class="${campWork==="board"?"on":""}">Board</button><button data-act="cwork" data-v="timeline" class="${campWork==="timeline"?"on":""}">Timeline</button><button data-act="cwork" data-v="teams" class="${campWork==="teams"?"on":""}">Teams</button></div></div>
+  ${campWork==="timeline"?campTimeline(c,r.ts):campWork==="teams"?`<p class="faint" style="margin:0 0 10px;font-size:13px">Click a team to see its tasks for this ${cid===NOCAMP?"work":"campaign"}.</p>`+teamCards(r.ts):taskBoard(bid,r.ts,{camp:cid})}`;
   return h}
 function toSection(){const m=$("#main"),n=$(".secs");if(m&&n&&m.scrollTop>n.offsetTop)m.scrollTop=n.offsetTop-10}
 function teamCards(all){
@@ -1244,6 +1268,52 @@ function teamCards(all){
      <span class="tlist">${op.slice(0,3).map(t=>`<span class="tl"><span class="dot ${t.status==="Blocked"?"h-Blocked":urgency(t)===1?"h-Blocked":urgency(t)===2?"h-AtRisk":"h-OnTrack"}" aria-hidden="true"></span><span class="tt">${esc(t.title)}</span><span class="tw2">${t.status==="Blocked"?`<b class="hot">Blocked</b>`:dueHtml(t.deadline,false)||`<span class="faint">${esc(t.owner||"No owner")}</span>`}</span></span>`).join("")||`<span class="faint">Nothing open</span>`}</span>
      <span class="go">${op.length>3?`See all ${op.length} open ›`:`Open ${esc(d)} list ›`}</span></button>`}
   return h+`</div>`}
+
+/* ---------- task board, Trello style: one column per status, drag a card to change it ---------- */
+let kbFilter={who:"",team:"",due:""},kbMore={},campWork="board",taskLayout="board";
+try{campWork=ls.get("vt-campwork")||"board";taskLayout=ls.get("vt-tasklayout")||"board"}catch(e){}
+const taskThread=id=>withId(S.comments).filter(c=>c.task===id).sort((a,b)=>a.at-b.at);
+function taskNote(t,id,text){if(!db||!canWrite)return;create("comments",null,{brand:t.brand,task:id,kind:"system",text,by:me||"",at:Date.now(),mentions:[]},"Task note")}
+function setTaskStatus(id,v){const cur=S.tasks[id];if(!cur||(cur.status||"")===v)return;
+  if(!canChangeTask(cur)){toast("Only the owner, the support team or a lead can move this card.");render();return}
+  if(v==="Blocked"){askBlocker(r=>{save("tasks",id,{status:"Blocked",blocker:r},cur.title);taskNote(cur,id,`Moved to Blocked: ${r.text} (waiting on ${r.person})`)});return}
+  save("tasks",id,{status:v,blocker:null},cur.title);taskNote(cur,id,`Moved from ${cur.status||"Not Started"} to ${v}`)}
+const ini=n=>String(n||"").split(/\s+/).filter(Boolean).map(w=>w[0]).join("").slice(0,2).toUpperCase();
+const ICON={check:`<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2"/></svg>`,
+  talk:`<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12v8H6l-3 3v-3H2z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>`,
+  link:`<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 9.5l3-3M5 11a2.5 2.5 0 010-3.5l1.5-1.5M11 5a2.5 2.5 0 010 3.5L9.5 10" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>`,
+  clock:`<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 4.5V8l2.5 1.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>`};
+function dueBadge(t){if(!t.deadline)return"";const done=t.status==="Complete";const f=dueFlag(t.deadline,done);
+  const c=done?"ok":f==="Overdue"?"bad":f==="Due Soon"?"warn":"";return`<span class="kbg ${c}" title="Due ${esc(fmtD(t.deadline,true))}">${done?ICON.check:ICON.clock}${esc(fmtD(t.deadline))}</span>`}
+function kbCard(t,showCamp){const cl=t.checklist||[];const cd=cl.filter(x=>x.done).length;const nc=taskThread(t._id).filter(c=>c.kind!=="system").length;const d=depOf(t);const ppl=[t.owner].concat(t.support||[]).filter(Boolean);
+  return`<div class="kc ${t.status==="Blocked"?"kc-bad":""}" draggable="${canChangeTask(t)}" data-act="open" data-kind="task" data-id="${esc(t._id)}" tabindex="0" role="button" aria-label="${esc(t.title+", "+(t.status||"")+(t.owner?", "+t.owner:""))}">
+   <span class="kls"><span class="klabel" style="--tc:${teamColor(d)}">${esc(d)}</span>${showCamp&&campOf(t)!==NOCAMP?`<span class="klabel kcamp">${esc(campName(campOf(t)))}</span>`:""}</span>
+   <span class="kt">${esc(t.title)}</span>${t.status==="Blocked"&&t.blocker&&t.blocker.text?`<span class="blk">${esc(t.blocker.text)}</span>`:""}
+   <span class="kb2">${dueBadge(t)}${["High","Urgent"].includes(t.priority)?`<span class="kbg warn">${esc(t.priority)}</span>`:""}${cl.length?`<span class="kbg ${cd===cl.length?"ok":""}" title="Checklist">${ICON.check}${cd}/${cl.length}</span>`:""}${nc?`<span class="kbg" title="${nc} comment${nc>1?"s":""}">${ICON.talk}${nc}</span>`:""}${t.brief_link||t.creative_link?`<span class="kbg" title="Has brief or creative links">${ICON.link}</span>`:""}
+    <span class="grow"></span><span class="avs">${ppl.slice(0,3).map((p,i)=>`<span class="av ${i?"sup":""}" title="${esc(p)}${i?" (support)":" (owner)"}">${esc(ini(p))}</span>`).join("")}${ppl.length>3?`<span class="av more">+${ppl.length-3}</span>`:""}</span></span></div>`}
+function taskBoard(bid,ts,ctx){ctx=ctx||{};
+  let rows=ts;const f=kbFilter;
+  if(f.who)rows=rows.filter(t=>isPerson(t.owner,f.who)||(t.support||[]).some(x=>isPerson(x,f.who)));
+  if(f.team&&!ctx.dep)rows=rows.filter(t=>depOf(t)===f.team);
+  if(f.due==="week")rows=rows.filter(t=>{const d=parseD(t.deadline);return d&&t.status!=="Complete"&&(d-today())/DAY<=7});
+  if(f.due==="none")rows=rows.filter(t=>!t.deadline&&t.status!=="Complete");
+  const ppl=[...new Set(ts.flatMap(t=>[t.owner].concat(t.support||[])).filter(Boolean))].sort();
+  let h=`<div class="kbbar"><label class="tl">Person <select data-act="kbf" data-k="who"><option value="">Everyone</option>${ppl.map(p=>`<option ${f.who===p?"selected":""}>${esc(p)}</option>`).join("")}</select></label>
+   ${ctx.dep?"":`<label class="tl">Team <select data-act="kbf" data-k="team"><option value="">All teams</option>${DEPTS().filter(d=>ts.some(t=>depOf(t)===d)).map(d=>`<option ${f.team===d?"selected":""}>${esc(d)}</option>`).join("")}</select></label>`}
+   <label class="tl">Due <select data-act="kbf" data-k="due"><option value="">Any time</option><option value="week" ${f.due==="week"?"selected":""}>Late or due this week</option><option value="none" ${f.due==="none"?"selected":""}>No due date</option></select></label>
+   ${f.who||f.due||(f.team&&!ctx.dep)?`<button class="btn sm quiet" data-act="kbf-clear">Clear filters</button>`:""}<span class="grow"></span><span class="faint" style="font-size:12.5px">${canWrite?"Drag a card to another column to change its status. Click a card to open it.":"Click a card to open it."}</span></div><div class="kb" role="list">`;
+  for(const st of L("task_status")){const col=rows.filter(t=>(t.status||"Not Started")===st).sort(byUrgency);const lim=st==="Complete"&&!kbMore[bid+st]?6:999;
+    h+=`<section class="kcol" role="listitem" aria-label="${esc(st)}, ${col.length} cards"><header>${pill(st)}<span class="kn">${col.length}</span></header><div class="kcards" data-drop="${esc(st)}">${col.slice(0,lim).map(t=>kbCard(t,ctx.showCamp)).join("")||`<span class="kempty">No cards</span>`}
+     ${col.length>lim?`<button class="kadd" data-act="kb-more" data-k="${esc(bid+st)}">Show ${col.length-lim} more</button>`:""}</div>
+     ${canWrite&&st!=="Complete"?`<button class="kadd" data-act="kb-add" data-st="${esc(st)}" data-id="${esc(bid)}" data-camp="${esc(ctx.camp&&ctx.camp!==NOCAMP?ctx.camp:"")}" data-dep="${esc(ctx.dep||"")}">+ Add a card</button>`:""}</section>`}
+  return h+`</div>`}
+/* the back of a card: checklist, then comments and activity */
+function taskBack(id,t){const cl=t.checklist||[];const cd=cl.filter(x=>x.done).length;const th=taskThread(id);const ed=canChangeTask(t);
+  return`<h4 class="dh">Checklist${cl.length?` <span class="faint" style="font-weight:500">${cd} of ${cl.length}</span>`:""}</h4><div class="w cklist">${cl.length?`<span class="bar wide"><i style="width:${Math.round(cd/cl.length*100)}%"></i></span>`:""}
+   ${cl.map((x,i)=>`<div class="ckrow ${x.done?"done":""}"><input type="checkbox" data-act="ck" data-i="${i}" ${x.done?"checked":""} ${ed?"":"disabled"} aria-label="${esc(x.text)}"><span class="ckt">${esc(x.text)}</span><span class="faint">${esc(x.who||"")}${x.due?(x.who?" · ":"")+esc(fmtD(x.due)):""}</span>${ed?`<button type="button" class="btn sm quiet" data-act="ck-del" data-i="${i}" aria-label="Remove ${esc(x.text)}">Remove</button>`:"<span></span>"}</div>`).join("")||`<p class="faint" style="margin:0">No checklist yet. Break the work into small steps.</p>`}
+   ${ed?`<div class="row" style="gap:6px;margin-top:6px"><input id="ck-new" placeholder="Add an item" aria-label="New checklist item" style="flex:1;min-width:140px"><select id="ck-who" aria-label="Who does it">${opts(activePeople(),"")}</select><input id="ck-due" type="date" aria-label="Due"><button type="button" class="btn sm" data-act="ck-add">Add</button></div>`:""}</div>
+   <h4 class="dh">Comments and activity</h4><div class="w thread">${th.map(c=>c.kind==="system"?`<div class="sysn">${esc(new Date(c.at).toLocaleDateString("en-GB",{day:"numeric",month:"short"}))} · ${esc(c.by||"")} · ${esc(c.text)}</div>`:`<div class="cmt"><div class="row" style="gap:8px"><b>${esc(c.by||"Someone")}</b><span class="faint" style="font-size:12px">${esc(agoText(c.at))}</span></div><div class="ctext">${linkMentions(c.text)}</div></div>`).join("")||`<p class="faint" style="margin:0">No comments yet.</p>`}
+   ${canWrite?`<label for="task-c" class="sr">Comment</label><textarea id="task-c" placeholder="Update or question. @name to tag someone" rows="2"></textarea><button type="button" class="btn sm pri" data-act="task-post" style="align-self:flex-start">Post</button>`:""}</div>`}
 
 /* ---------- view switch ---------- */
 function viewSeg(k,cur,items){return`<div class="seg viewseg" role="group" aria-label="View">${items.map(([v,l])=>`<button data-act="${k}" data-v="${v}" class="${cur===v?"on":""}">${esc(l)}</button>`).join("")}</div>`}
@@ -1357,9 +1427,9 @@ function openDrawer(kind,id,extra,refresh){
     body=field("Task",inp("title",t.title),1)+field("Brand",`<select name="brand" id="d-brand">${brandList().map(b=>`<option value="${esc(b.id)}" ${b.id===t.brand?"selected":""}>${esc(b.name)}</option>`).join("")}</select>`)+field("Owner",sel("owner",activePeople(),t.owner))+field("Team",sel("department",DEPTS(),depOf(t),false))+(campsOf(t.brand).length||t.campaign?field("Campaign",`<select name="campaign" id="d-campaign"><option value="">Not in a campaign</option>${campsOf(t.brand).map(c=>`<option value="${esc(c._id)}" ${c._id===t.campaign?"selected":""}>${esc(c.name)}</option>`).join("")}</select>`):"")
      +field("Vertical",sel("vertical",VERTS(),t.vertical||""),0,t.vertical?"":(vertOf(t)?"Guessed from the name: "+vertOf(t)+". Pick one to confirm":"Optional"))+field("Status",sel("status",L("task_status"),t.status,false))+field("Priority",sel("priority",L("priority"),t.priority))+field("Deadline",inp("deadline",t.deadline,"date"))
      +(simple?"":field("Start date",inp("start",t.start,"date"))+field("Support team",inp("support",(t.support||[]).join(", ")),1,"Names separated by commas"))
-     +field("Notes / next step",area("notes",t.notes),1)+(simple?"":field("Brief link",inp("brief_link",t.brief_link,"url"))+field("Creative link",inp("creative_link",t.creative_link,"url")))
+     +field("Description and next step",area("notes",t.notes),1)+(simple?"":field("Brief link",inp("brief_link",t.brief_link,"url"))+field("Creative link",inp("creative_link",t.creative_link,"url")))
      +(t.status==="Blocked"?field("Blocked because",inp("blk_text",t.blocker&&t.blocker.text),1)+field("Waiting on",sel("blk_person",activePeople(),t.blocker&&t.blocker.person)):"")
-     +(simple?"":`<p class="faint w" style="font-size:12px;grid-column:1/-1">${esc(t.source||"")}</p>`);
+     +(simple?"":`<p class="faint w" style="font-size:12px;grid-column:1/-1">${esc(t.source||"")}</p>`)+taskBack(id,t);
     if(canEdit&&canWrite)foot=`<button class="btn danger" data-act="del" data-kind="task" data-id="${esc(id)}">Delete task</button>`}
   else if(kind==="brand"){const b=S.brands[id];if(!b){closeDrawer();return}ro=!(canEdit&&canWrite);title=b.name;
     body=field("Name",inp("name",b.name))+field("Stage",sel("stage",L("stage"),b.stage,false))+field("Brand lead",sel("lead",activePeople(),b.lead))+field("Founder",inp("founder",b.founder))+field("Website",inp("website",b.website,"url"),1)
@@ -1397,6 +1467,7 @@ function openDrawer(kind,id,extra,refresh){
   if(refresh){const f=$("#dform");if(f)for(const[n,v]of Object.entries(drawerDirty)){const el=f.elements[n];if(el&&"value"in el)el.value=v}const b=dr.querySelector(".body");if(b)b.scrollTop=sc;
     if(keepFocus){const el=keepFocus.startsWith("[")?dr.querySelector(keepFocus):document.getElementById(keepFocus);if(el)el.focus()}}
   if(ro)dr.querySelectorAll("input,select,textarea").forEach(e=>e.disabled=true);
+  if(ro&&canWrite&&kind==="task"){const c=dr.querySelector("#task-c");if(c)c.disabled=false}
   dr.hidden=false;$("#scrim").hidden=false;if(!refresh){const f=dr.querySelector("input,select");if(f)f.focus()}
 }
 let drawerDirty={};
@@ -1411,7 +1482,7 @@ async function drawerSave(){
     if(next.status==="Blocked"){const text=fd.blk_text!==undefined?fd.blk_text:(t.blocker&&t.blocker.text);const person=fd.blk_person!==undefined?fd.blk_person:(t.blocker&&t.blocker.person);
       if(!text||!person){if(t.status!=="Blocked"){closeDrawer();askBlocker(r=>save("tasks",id,Object.assign(diff(t,next),{status:"Blocked",blocker:r}),t.title));return}toast("A blocker needs one line and a person.");return}
       next.blocker={text,person}}else next.blocker=null;
-    const p=diff(t,next);if(Object.keys(p).length)await save("tasks",id,p,t.title)}
+    const p=diff(t,next);if(Object.keys(p).length){await save("tasks",id,p,t.title);if(p.status)taskNote(t,id,`Moved from ${t.status||"Not Started"} to ${p.status}`)}}
   else if(kind==="brand"){const b=S.brands[id];const next={name:fd.name,stage:fd.stage,lead:fd.lead,founder:fd.founder,website:fd.website,theme_on:fd.theme_on==="Yes",color:fd.color||"",tint:fd.tint||"",sprint_label:fd.sprint_label,next_step:fd.next_step,paused:fd.paused==="Yes",restricted:fd.restricted==="Yes"};
     if(!next.name){toast("A brand needs a name.");return}const p=diff(b,next);if(Object.keys(p).length)await save("brands",id,p,b.name)}
   else if(kind==="step"){const st=stepState(id,extra);
@@ -1484,6 +1555,7 @@ document.addEventListener("click",e=>{
   else if(act==="mlayout"){mineLayout=a.dataset.v;ls.set("vt-mlayout",mineLayout);render()}
   else if(act==="mfold1"){const k=a.dataset.k;if(mineFold.has(k))mineFold.delete(k);else mineFold.add(k);render()}
   else if(act==="mfold"){if(a.dataset.v==="open")mineFold.clear();else{const all=myItems();const list=mineTab==="onboarding"?all.filter(i=>!isLiveBrand(i.brand)):mineTab==="live"?all.filter(i=>isLiveBrand(i.brand)):all;const grp=mineGroup[mineTab]||(mineTab==="live"?"due":"brand");for(const g of mineGroups(list,grp))mineFold.add(mineTab+"|"+grp+"|"+g.key)}render()}
+  else if(act==="men-go"&&a.dataset.task&&S.tasks[a.dataset.task]){const tk=S.tasks[a.dataset.task];brandTab="tasks";go("brand-"+tk.brand);setTimeout(()=>openDrawer("task",a.dataset.task),60)}
   else if(act==="men-go"&&a.dataset.acc){accBrand=(S.access[a.dataset.acc]||{}).brand||accBrand;go("access");setTimeout(()=>openDrawer("access",a.dataset.acc),60)}
   else if(act==="men-go"){brandTab="updates";ls.set("vt-tab",brandTab);go("brand-"+a.dataset.id)}
   else if(act==="guide-off"){ls.set("vt-guide-"+a.dataset.k,"1");render()}
@@ -1516,6 +1588,17 @@ document.addEventListener("click",e=>{
   else if(act==="acc-new"){const bid=a.dataset.b,pl=a.dataset.p;create("access",null,{brand:bid,platform:pl,access_level:"TBC",needed_for:"",owner:"",brand_contact:(S.brands[bid]||{}).founder||"",requested_date:"",deadline:"",status:"Needed",blocker:"",notes:""},bname(bid)+" "+pl).then(id=>{if(id)openDrawer("access",id)})}
   else if(act==="dept"){deptSel={bid:route.id,dep:a.dataset.dep};flt.taskStatus="open";render();toSection()}
   else if(act==="camp"){campSel={bid:route.id,id:a.dataset.id};deptSel={bid:"",dep:""};render();toSection()}
+  else if(act==="cwork"){campWork=a.dataset.v;ls.set("vt-campwork",campWork);render()}
+  else if(act==="tlay"){taskLayout=a.dataset.v;ls.set("vt-tasklayout",taskLayout);render()}
+  else if(act==="kbf-clear"){kbFilter={who:"",team:"",due:""};render()}
+  else if(act==="kb-more"){kbMore[a.dataset.k]=true;render()}
+  else if(act==="kb-add"){const bid=a.dataset.id,st=a.dataset.st,camp=a.dataset.camp||"",dep0=a.dataset.dep||kbFilter.team||"";formBox("New card in "+st,`<div class="f"><label for="n-title">Task</label><input id="n-title" name="title" required></div><div class="f"><label for="n-dep">Team</label><select id="n-dep" name="department">${opts(DEPTS(),dep0||DEPTS()[0],false)}</select></div><div class="f"><label for="n-owner">Owner</label><select id="n-owner" name="owner">${opts(activePeople(),me)}</select></div><div class="f"><label for="n-dl">Due</label><input id="n-dl" name="deadline" type="date"></div>`,"Add card",
+    v=>{if(!v.title){toast("Give the card a name.");return false}if(st==="Blocked"){toast("Add the card first, then move it to Blocked so it asks what is blocking it.");return false}create("tasks",null,{brand:bid,department:v.department,title:v.title,owner:v.owner,support:[],status:st,priority:"Medium",start:"",deadline:v.deadline,notes:"",brief_link:"",creative_link:"",blocker:null,campaign:camp,checklist:[],source:"Added in tracker"},v.title)})}
+  else if(act==="ck-add"){const id=drawerCtx&&drawerCtx.id;const tk=S.tasks[id];const text=($("#ck-new")||{}).value;if(!tk||!text||!text.trim()){toast("Write the checklist item first.");return}
+    save("tasks",id,{checklist:(tk.checklist||[]).concat([{text:text.trim(),who:$("#ck-who").value,due:$("#ck-due").value,done:false}])},tk.title+" checklist")}
+  else if(act==="ck-del"){const id=drawerCtx&&drawerCtx.id;const tk=S.tasks[id];if(!tk)return;save("tasks",id,{checklist:(tk.checklist||[]).filter((x,i)=>i!==+a.dataset.i)},tk.title+" checklist")}
+  else if(act==="task-post"){const id=drawerCtx&&drawerCtx.id;const tk=S.tasks[id];const t=$("#task-c");const text=t&&t.value.trim();if(!tk||!text)return;if(!me){toast("Pick your name in the top bar first.");return}
+    create("comments",null,{brand:tk.brand,task:id,text,by:me,at:Date.now(),mentions:mentionsIn(text)},"Comment on "+tk.title).then(r=>{if(r&&$("#task-c"))$("#task-c").value=""})}
   else if(act==="tview"){taskView=a.dataset.v;ls.set("vt-taskview",taskView);campSel={bid:"",id:""};deptSel={bid:"",dep:""};render()}
   else if(act==="add-camp"){const bid=a.dataset.id;formBox("New campaign",`<div class="f"><label for="n-cn">Campaign name</label><input id="n-cn" name="name" required placeholder="For example: Spring launch"></div><div class="f"><label for="n-cp">What it is for</label><textarea id="n-cp" name="purpose" placeholder="One or two lines: the product, the goal, the audience"></textarea></div><div class="row" style="gap:10px"><div class="f" style="flex:1"><label for="n-cs">Start</label><input id="n-cs" name="start" type="date"></div><div class="f" style="flex:1"><label for="n-ce">Launch or end</label><input id="n-ce" name="end" type="date"></div></div><div class="f"><label for="n-co">Owner</label><select id="n-co" name="owner">${opts(activePeople(),me)}</select></div>`,"Add campaign",
     v=>{if(!v.name){toast("Give the campaign a name.");return false}create("camps",null,{brand:bid,name:v.name,purpose:v.purpose,goal:"",start:v.start,end:v.end,owner:v.owner,status:L("campaign_status")[0]||"",deps:[]},v.name).then(id=>{if(id){campSel={bid,id};deptSel={bid:"",dep:""};taskView="camp";render()}})})}
@@ -1554,10 +1637,11 @@ document.addEventListener("click",e=>{
 document.addEventListener("change",e=>{
   if(e.target.form&&e.target.form.id==="dform"&&e.target.name)drawerDirty[e.target.name]=e.target.value;
   const t=e.target;const act=t.dataset&&t.dataset.act;if(!act)return;
+  if(act==="kbf"){kbFilter[t.dataset.k]=t.value;render();return}
+  if(act==="ck"){const id=drawerCtx&&drawerCtx.id;const tk=S.tasks[id];if(!tk)return;const cl=(tk.checklist||[]).map(x=>Object.assign({},x));const x=cl[+t.dataset.i];if(!x)return;x.done=t.checked;save("tasks",id,{checklist:cl},tk.title+" checklist");return}
   if(act==="who"){me=t.value;ls.set("vt-me",me);if(db&&uid)db.doc("data/users/"+uid+"/profile").set({person:me}).catch(()=>{});render();return}
   if(act==="status"){const kind=t.dataset.kind,id=t.dataset.id,v=t.value;
-    if(kind==="task"){const cur=S.tasks[id];if(v==="Blocked"){t.value=cur.status;askBlocker(r=>save("tasks",id,{status:"Blocked",blocker:r},cur.title));return}
-      save("tasks",id,{status:v,blocker:null},cur.title)}
+    if(kind==="task"){const cur=S.tasks[id];t.value=cur.status;setTaskStatus(id,v)}
     else if(kind==="step"){const code=t.dataset.code;if(v==="Done"){const why=gateBlock(id,code);if(why){t.value=stepState(id,code).status||"Not Started";toast(why);return}}saveStep(id,code,{status:v})}
     else if(kind==="access"){const cur=S.access[id];if(v==="Blocked"&&!cur.blocker){t.value=cur.status;askBlocker(r=>{save("access",id,{status:"Blocked",blocker:r.text,owner:cur.owner||r.person},bname(cur.brand)+" "+cur.platform);accSystemNote(cur,id,"Blocked: "+r.text+" (waiting on "+r.person+")")});return}setAccStatus(id,v)}
     else if(kind==="sow"){const cur=S.sow[id]||{};if(v==="Blocked"&&!cur.blocker){t.value=cur.stage||"Not Started";askBlocker(r=>save("sow",id,{stage:"Blocked",blocker:r.text+" (waiting on "+r.person+")"},"SOW "+bname(id)));return}
@@ -1582,6 +1666,13 @@ document.addEventListener("change",e=>{
 });
 function savePeople(ps,label){save("config","people",{people:ps},"People: "+label)}
 function saveTemplates(list){if(S.config.templates)save("config","templates",{list},"Task templates");else create("config","templates",{list},"Task templates")}
+let dragId="";
+document.addEventListener("dragstart",e=>{const c=e.target.closest&&e.target.closest(".kc");if(!c)return;dragId=c.dataset.id;c.classList.add("dragging");try{e.dataTransfer.setData("text/plain",dragId);e.dataTransfer.effectAllowed="move"}catch(x){}});
+document.addEventListener("dragend",e=>{dragId="";document.querySelectorAll(".kc.dragging,.kcards.over").forEach(x=>x.classList.remove("dragging","over"))});
+document.addEventListener("dragover",e=>{const z=e.target.closest&&e.target.closest(".kcards");if(!z||!dragId)return;e.preventDefault();document.querySelectorAll(".kcards.over").forEach(x=>x!==z&&x.classList.remove("over"));z.classList.add("over")});
+document.addEventListener("drop",e=>{const z=e.target.closest&&e.target.closest(".kcards");if(!z||!dragId)return;e.preventDefault();const id=dragId;dragId="";z.classList.remove("over");setTaskStatus(id,z.dataset.drop)});
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.id==="ck-new"){e.preventDefault();const b=document.querySelector("[data-act=ck-add]");if(b)b.click();return}
+  if((e.key==="Enter"||e.key===" ")&&e.target.classList&&e.target.classList.contains("kc")){e.preventDefault();e.target.click()}});
 document.addEventListener("submit",e=>{const f=e.target;
   if(f.id==="cform"){e.preventDefault();const text=f.elements.text.value.trim(),bid=f.elements.brand.value;if(!text)return;
     if(!me){toast("Pick your name in the top bar first, so people know who wrote it.");return}

@@ -18,7 +18,7 @@ const res = []; const check = (who, what, ok, d = '') => res.push([ok ? 'OK  ' :
   await go(p, 'brand-bespoke');
   check('Member', 'No Client view or Edit details button', !(await p.$('a[href="#client-bespoke"]')) && !(await p.$('.bhead [data-kind=brand]')));
   await go(p, 'client-bespoke'); check('Member', 'Client page link is not available', !(await p.$('.client')));
-  await go(p, 'brand-bespoke'); await p.click('button[data-tab=tasks]'); await p.click('button.team:not(.empty-team)'); await p.waitForTimeout(200);
+  await go(p, 'brand-bespoke'); await p.click('button[data-tab=tasks]'); await p.click('[data-act=tview][data-v=team]').catch(() => {}); await p.click('button.team:not(.empty-team)'); await p.waitForTimeout(200); await p.click('[data-act=tlay][data-v=list]').catch(() => {}); await p.waitForTimeout(150);
   await p.selectOption('#whoSel', 'Cat'); await p.waitForTimeout(200);
   const own = await p.$$eval('main tbody tr', rs => rs.findIndex(r => r.children[1] && r.children[1].innerText.trim() === 'Cat'));
   if (own >= 0) { const sel = (await p.$$('main tbody tr'))[own]; const s = await sel.$('select[data-kind=task]'); check('Member', 'Can change status on their own task', s && !(await s.isDisabled())) }

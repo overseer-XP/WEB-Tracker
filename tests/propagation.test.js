@@ -14,6 +14,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   const errors = []; p.on('pageerror', e => errors.push(e.message));
   const url = 'file://' + preview;
   await p.goto(url + '#overview'); await p.waitForTimeout(500);
+  await p.evaluate(() => localStorage.setItem('vt-tasklayout', 'list')); await p.reload(); await p.waitForTimeout(500);
   const go = async h => { await p.evaluate(h => { location.hash = h }, h); await p.waitForTimeout(250); };
   const text = sel => p.$eval(sel, e => e.innerText).catch(() => '');
   const mainText = () => text('main');
@@ -359,11 +360,11 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   check('Campaigns', 'Section tile now counts the campaign', (await text('[data-tab=tasks] .sv')) === '1 campaign');
   await p.click('[data-act=camp][data-id=""]'); await p.waitForTimeout(150);
   await p.click('[data-act=camp][data-id=_none]'); await p.waitForTimeout(200);
-  if (await p.$('.undated')) await p.click('.undated summary');
-  await p.click('.gr2:visible, .gantt .gr:visible >> nth=0'); await p.waitForTimeout(250);
+  await view('cwork', 'board'); await p.click('.kc'); await p.waitForTimeout(250);
   const campOpt = await p.$eval('#d-campaign', e => [...e.options].find(o => o.text === 'Spring launch').value);
   await p.selectOption('#d-campaign', campOpt); await p.fill('#d-start', '2026-10-05'); await p.fill('#d-deadline', '2026-10-20'); await drawerSave();
   await p.click(`[data-act=camp][data-id="${campOpt}"]`); await p.waitForTimeout(250);
+  await view('cwork', 'timeline');
   check('Campaigns', 'Moved task shows on the campaign timeline as a bar', !!(await p.$('.gantt .gr .gb')));
   check('Campaigns', 'Campaign shows the team that owns the task', (await p.$$('.cbox .tchip')).length === 1);
   await p.click('[data-act=dep-add]'); await p.fill('#n-dt', 'Client sign-off on the PR box'); await p.selectOption('#n-dk', 'Client sign-off'); await p.selectOption('#n-dw', 'Cat');
@@ -382,6 +383,35 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   check('Campaigns', 'By team still shows team cards', (await p.$$('.teams .team')).length > 0);
   await view('tview', 'camp');
   await go('mine'); await go('brand-celf');
+
+  // 32. Board: drag to change status, Blocked asks why, add a card, checklist and comments show on the card
+  await go('brand-celf'); await p.click('button[data-tab=tasks]'); await p.waitForTimeout(150); await view('tview', 'board');
+  check('Board', 'One column per task status', (await p.$$('.kcol')).length === (await p.evaluate(() => JSON.parse(JSON.stringify(window.__SEED.config.lists.task_status)).length)));
+  const kcard = await p.$eval('.kcards:not([data-drop="Complete"]) .kc', e => e.dataset.id);
+  await p.locator(`.kc[data-id="${kcard}"]`).dragTo(p.locator('.kcards[data-drop="In Progress"]')); await p.waitForTimeout(350);
+  check('Board', 'Dragging a card to In Progress changes its status', !!(await p.$(`.kcards[data-drop="In Progress"] .kc[data-id="${kcard}"]`)));
+  await p.evaluate(() => { const kb = document.querySelector('.kb'); kb.scrollLeft = document.querySelector('.kcards[data-drop="In Progress"]').closest('.kcol').offsetLeft - kb.offsetLeft - 10 });
+  await p.locator(`.kc[data-id="${kcard}"]`).dragTo(p.locator('.kcards[data-drop="Blocked"]')); await p.waitForTimeout(250);
+  check('Board', 'Dropping on Blocked asks what is blocking it', !!(await p.$('#bform')));
+  await p.fill('#b-text', 'Waiting on founder photos'); await p.selectOption('#b-person', 'Cat'); await p.click('#bform button[type=submit]'); await p.waitForTimeout(350);
+  check('Board', 'Blocked card shows the reason on its front', (await text(`.kc[data-id="${kcard}"]`)).includes('Waiting on founder photos'));
+  await p.click(`.kc[data-id="${kcard}"]`); await p.waitForTimeout(250);
+  check('Board', 'Card back lists the moves as activity', (await text('.thread')).includes('Moved from') && (await text('.thread')).includes('Moved to Blocked'));
+  await p.fill('#ck-new', 'Collect photos'); await p.click('[data-act=ck-add]'); await p.waitForTimeout(300);
+  await p.fill('#ck-new', 'Brief the editor'); await p.keyboard.press('Enter'); await p.waitForTimeout(300);
+  await p.click('[data-act=ck][data-i="0"]'); await p.waitForTimeout(300);
+  await p.fill('#task-c', '@Ash Ghorab photos come Friday'); await p.click('[data-act=task-post]'); await p.waitForTimeout(300);
+  await p.click('#drawer [data-act=close]'); await p.waitForTimeout(200);
+  const front = await text(`.kc[data-id="${kcard}"]`);
+  check('Board', 'Card front shows checklist 1/2 and 1 comment', front.includes('1/2') && /\b1\b/.test(front.split('1/2')[1] || ''), front.replace(/\n/g, ' '));
+  await p.click('.kcol:first-child [data-act=kb-add]'); await p.fill('#n-title', 'New board card'); await p.click('#fbox button[type=submit]'); await p.waitForTimeout(350);
+  check('Board', '+ Add a card adds it to that column', (await text('.kcol:first-child')).includes('New board card'));
+  await p.selectOption('[data-act=kbf][data-k=who]', 'Cat'); await p.waitForTimeout(200);
+  check('Board', 'Person filter keeps only their cards', await p.$$eval('.kc', cs => cs.length > 0 && cs.every(c => /\bC\b|CA/.test(c.innerText) || c.querySelector('.av[title^="Cat"]'))));
+  await p.click('[data-act=kbf-clear]'); await p.waitForTimeout(150);
+  await setMe('Ash Ghorab'); await go('mine');
+  check('Board', 'Card comment mention reaches Ash', await p.evaluate(() => [...document.querySelectorAll('.item.men')].some(x => x.innerText.includes('photos come Friday'))));
+  await setMe('Noopur'); await go('brand-celf'); await view('tview', 'camp');
   check('Page', 'No script errors', errors.length === 0, errors.join(' | '));
   const failed = results.filter(r => !r.ok);
   for (const r of results) console.log(`${r.ok ? 'PASS' : 'FAIL'} | ${r.area} | ${r.what}${r.ok ? '' : ' | ' + r.detail}`);
