@@ -39,7 +39,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   check('Brand stage On Hold', 'SOW tracker tags it Brand on hold', (await mainText()).includes('MUMUKBrand on hold') || (await mainText()).includes('MUMUK Brand on hold'));
   await go('brand-mumuk');
   check('Brand stage On Hold', 'Brand page shows the on hold notice', (await mainText()).includes('is on hold'));
-  check('Brand stage On Hold', 'Brand page target date says On hold', (await text('.facts')).includes('On hold'));
+  check('Brand stage On Hold', 'Brand page SOW tile says On hold', (await text('[data-tab=sow]')).includes('On hold'));
   await setMe('Cyrus'); await go('mine');
   await view('minetab', 'onboarding');
   check('Brand stage On Hold', 'My tasks: its brand card is greyed as On hold and sorted last', await p.evaluate(() => { const cs = [...document.querySelectorAll('.bcard')]; const c = cs.find(x => x.querySelector('.bname').innerText === 'MUMUK'); return !!c && c.classList.contains('held') && cs.indexOf(c) >= cs.filter(x => !x.classList.contains('held')).length }));
@@ -214,7 +214,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await go('brand-kndz'); await p.click('button[data-tab=updates]'); await p.waitForTimeout(150);
   await p.fill('#c-text', 'Founder sent the GF numbers, @Cat please check'); await p.click('#cform button[type=submit]'); await p.waitForTimeout(300);
   check('Comments', 'Comment shows on the brand Updates tab', (await mainText()).includes('Founder sent the GF numbers'));
-  check('Comments', 'Updates tab counts it', (await text('.tabs')).includes('Updates (1)'));
+  check('Comments', 'Updates tile counts it', (await text('[data-tab=updates] .sv')) === '1');
   await setMe('Cat'); await go('mine');
   check('Comments', 'Mention shows in Cat\'s My tasks', await p.evaluate(() => [...document.querySelectorAll('.item.men')].some(x => x.innerText.includes('KNDZ'))));
 
@@ -224,9 +224,9 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await p.click('#tform button[type=submit]'); await p.waitForTimeout(300);
   check('Templates', 'Template is listed', (await mainText()).includes('UGC kickoff'));
   await go('brand-ora'); await p.click('button[data-tab=tasks]'); await p.click('[data-act=dept][data-dep=""]').catch(() => {}); await p.waitForTimeout(150);
-  const before22 = +(await text('.tabs')).match(/Tasks \((\d+)/)[1];
+  const before22 = +(await text('[data-tab=tasks]')).match(/(\d+) open/)[1];
   await p.selectOption('select[data-act=use-tpl]', '0'); await p.waitForTimeout(150); await p.click('[data-act=mok]'); await p.waitForTimeout(500);
-  check('Templates', 'Using it adds 2 tasks to the brand', +(await text('.tabs')).match(/Tasks \((\d+)/)[1] === before22 + 2);
+  check('Templates', 'Using it adds 2 tasks to the brand', +(await text('[data-tab=tasks]')).match(/(\d+) open/)[1] === before22 + 2);
 
   // 23. People view: pick a person, filter by vertical
   await go('people'); const rows23 = (await p.$$('main tbody tr')).length;
@@ -348,6 +348,40 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await go('overview');
   check('Access', 'Needs attention lists founders to chase', await p.evaluate(() => [...document.querySelectorAll('.att tr')].some(r => r.innerText.includes('Chase founder'))));
 
+
+  // 31. Campaigns: add one, move tasks in, timeline, dependencies, team cards, section tiles
+  await go('brand-celf'); await p.click('button[data-tab=tasks]'); await p.waitForTimeout(150);
+  await view('tview', 'camp');
+  check('Campaigns', 'Brand with no campaigns offers to add the first one', !!(await p.$('.empty-camp [data-act=add-camp]')));
+  await p.click('[data-act=add-camp]'); await p.fill('#n-cn', 'Spring launch'); await p.fill('#n-cp', 'Launch the spring range with creators and paid'); await p.fill('#n-cs', '2026-10-01'); await p.fill('#n-ce', '2026-11-15');
+  await p.click('#fbox button[type=submit]'); await p.waitForTimeout(400);
+  check('Campaigns', 'New campaign opens with what it is for', (await text('.cbox')).includes('Launch the spring range'));
+  check('Campaigns', 'Section tile now counts the campaign', (await text('[data-tab=tasks] .sv')) === '1 campaign');
+  await p.click('[data-act=camp][data-id=""]'); await p.waitForTimeout(150);
+  await p.click('[data-act=camp][data-id=_none]'); await p.waitForTimeout(200);
+  if (await p.$('.undated')) await p.click('.undated summary');
+  await p.click('.gr2:visible, .gantt .gr:visible >> nth=0'); await p.waitForTimeout(250);
+  const campOpt = await p.$eval('#d-campaign', e => [...e.options].find(o => o.text === 'Spring launch').value);
+  await p.selectOption('#d-campaign', campOpt); await p.fill('#d-start', '2026-10-05'); await p.fill('#d-deadline', '2026-10-20'); await drawerSave();
+  await p.click(`[data-act=camp][data-id="${campOpt}"]`); await p.waitForTimeout(250);
+  check('Campaigns', 'Moved task shows on the campaign timeline as a bar', !!(await p.$('.gantt .gr .gb')));
+  check('Campaigns', 'Campaign shows the team that owns the task', (await p.$$('.cbox .tchip')).length === 1);
+  await p.click('[data-act=dep-add]'); await p.fill('#n-dt', 'Client sign-off on the PR box'); await p.selectOption('#n-dk', 'Client sign-off'); await p.selectOption('#n-dw', 'Cat');
+  await p.click('#fbox button[type=submit]'); await p.waitForTimeout(300);
+  check('Campaigns', 'Added dependency shows as open', (await text('.deps')).includes('Client sign-off on the PR box'));
+  await go('brand-celf'); await p.click('button[data-tab=tasks]'); await p.waitForTimeout(150);
+  check('Campaigns', 'Campaign card counts the open dependency', /open dependenc/.test(await text('.camp')));
+  await p.click(`[data-act=camp][data-id="${campOpt}"]`); await p.waitForTimeout(200);
+  await p.click('[data-act=dep-state]'); await p.waitForTimeout(250);
+  check('Campaigns', 'Clearing a dependency moves it to cleared', (await p.$$('.dep.cleared')).length === 1);
+  await p.click('.cbox .tchip'); await p.waitForTimeout(200);
+  check('Campaigns', 'Team chip opens that team list for this campaign only', (await text('.crumb')).includes('Spring launch') && (await p.$$('main tbody tr')).length === 1);
+  await p.click('.crumb [data-act=camp]'); await p.waitForTimeout(150);
+  check('Campaigns', 'Breadcrumb goes back to the campaign list', !!(await p.$('.camps')));
+  await view('tview', 'team');
+  check('Campaigns', 'By team still shows team cards', (await p.$$('.teams .team')).length > 0);
+  await view('tview', 'camp');
+  await go('mine'); await go('brand-celf');
   check('Page', 'No script errors', errors.length === 0, errors.join(' | '));
   const failed = results.filter(r => !r.ok);
   for (const r of results) console.log(`${r.ok ? 'PASS' : 'FAIL'} | ${r.area} | ${r.what}${r.ok ? '' : ' | ' + r.detail}`);

@@ -66,17 +66,17 @@ const shots = [];
   // S07 brand header + team cards
   await go('brand-bespoke');
   await snap('S07', 'Brand page: header, facts, next step and tabs', 'F30, F42', [['.bhead h1', 'F30'], ['.facts', 'F30'], ['.next', 'F30'], ['.bhead .btn:last-child', 'F42'], ['.missing', 'F42']]);
-  await scrollTo('.tabs');
+  await scrollTo('.secs');
   await snap('S08', 'Brand page: team cards (bird\'s-eye view)', 'F31, F33', [['.team', 'F31'], ['.team.t-bad', 'F31'], ['[data-act=add-task]', 'F33']]);
   // S09 team list
-  await click('.team.t-bad'); await scrollTo('.tabs');
+  await click('.team.t-bad'); await scrollTo('.secs');
   await snap('S09', 'Brand page: one team\'s task list', 'F32, F33', [['.teamnav', 'F32'], ['main table', 'F32'], ['[data-act=add-task]', 'F33']]);
   // S10 task editor
   await click('main tbody tr');
   await snap('S10', 'Task editor (side panel)', 'F34', [['#drawer', 'F34']]);
   await p.click('[data-act=close]'); await p.waitForTimeout(200);
   // S11 onboarding steps
-  await go('brand-kndz'); await click('button[data-tab=steps]'); await scrollTo('.tabs');
+  await go('brand-kndz'); await click('button[data-tab=steps]'); await scrollTo('.secs');
   await snap('S11', 'Onboarding steps: current phase, gates, optional steps', 'F35, F36, F37',
     [['.phase summary', 'F35'], ['.step.isgate', 'F36'], ['[data-act=phase-done]', 'F37']]);
   // S12 gate refused
@@ -88,11 +88,11 @@ const shots = [];
   await snap('S13', 'Step editor: status, owner, deadline, link, blocker', 'F38', [['#drawer', 'F38']]);
   await p.click('[data-act=close]'); await p.waitForTimeout(200);
   // S14 brand access, S15 brand SOW, S16 brand BP
-  await go('brand-ideo'); await click('button[data-tab=access]'); await scrollTo('.tabs');
+  await go('brand-ideo'); await click('button[data-tab=access]'); await scrollTo('.secs');
   await snap('S14', 'Brand page: platform access tab', 'F39', [['main table', 'F39']]);
-  await go('brand-ponlu'); await click('button[data-tab=sow]'); await scrollTo('.tabs');
+  await go('brand-ponlu'); await click('button[data-tab=sow]'); await scrollTo('.secs');
   await snap('S15', 'Brand page: SOW tab (blocked SOW keeps its date)', 'F40', [['.notice.bad', 'F40'], ['main .facts:last-of-type', 'F40']]);
-  await go('brand-ideo'); await click('button[data-tab=bp]'); await scrollTo('.tabs');
+  await go('brand-ideo'); await click('button[data-tab=bp]'); await scrollTo('.secs');
   await snap('S16', 'Brand page: Best Practices tab', 'F41', [['main table', 'F41']]);
   // S17 SOW tracker, S18 access, S19 BP
   await go('sow');
@@ -110,7 +110,7 @@ const shots = [];
   for (const [tab, id, title, f] of [['lists', 'S21', 'Settings: Lists (every dropdown)', 'F61'], ['steps', 'S22', 'Settings: Step list', 'F62'],
                                       ['nobrand', 'S23', 'Settings: Needs a brand', 'F63'], ['log', 'S24', 'Settings: Change log', 'F64'], ['export', 'S25', 'Settings: Excel export and backup', 'F65, F66']]) {
     await click(`[data-act=settab][data-tab=${tab}]`);
-    const tg = tab === 'export' ? [['[data-act=export-xlsx]', 'F65'], ['[data-act=export-json]', 'F66']] : [['main .tabs + *', f]];
+    const tg = tab === 'export' ? [['[data-act=export-xlsx]', 'F65'], ['[data-act=export-json]', 'F66']] : [['main .secs + *', f]];
     await snap(id, title, f, tg);
   }
   fs.writeFileSync(path.join(outDir, 'shots.json'), JSON.stringify(shots, null, 1));

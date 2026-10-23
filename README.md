@@ -66,8 +66,8 @@ Build a preview of the real app on exported data, then run the checks. Nothing i
 python3 -I docs/feature_map/make_preview.py .live app/index.html .shots/preview.html          # lead
 python3 -I docs/feature_map/make_preview.py .live app/index.html .shots/member.html member    # member
 python3 -I docs/feature_map/make_preview.py .live app/index.html .shots/view.html view        # view only
-node tests/propagation.test.js .shots/preview.html   # every kind of update reaches every screen (88 checks)
-node tests/controls.js .shots/preview.html           # controls that only appear in a certain mode (51)
+node tests/propagation.test.js .shots/preview.html   # every kind of update reaches every screen (99 checks)
+node tests/controls.js .shots/preview.html           # controls that only appear in a certain mode (52)
 node tests/audit.js .shots/preview.html              # every screen, every view, desktop and phone, every button
 node tests/roles.js .shots/member.html .shots/view.html   # what members and view-only people can do (12)
 python3 -I tests/make_stress_data.py .live .shots/stress 8 && python3 -I docs/feature_map/make_preview.py .shots/stress app/index.html .shots/stress.html
