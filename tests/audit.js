@@ -16,9 +16,9 @@ const SKIP = new Set(['del', 'export-xlsx', 'export-json', 'menu', 'dsave', 'mok
       const errs = []; p.on('pageerror', e => errs.push(e.message));
       await p.goto(url + '#overview'); await p.waitForTimeout(500);
       await p.evaluate(l => { localStorage.setItem('vt-simple', l === 'full' ? '0' : '1'); localStorage.setItem('vt-lens', l === 'leadership' ? 'leadership' : '') }, lens); await p.reload(); await p.waitForTimeout(500);
-      if (lens === 'leadership') { await p.evaluate(() => { location.hash = 'settings' }); await p.waitForTimeout(250); await p.click('[data-act=settab][data-tab=people]'); await p.check('input[aria-label="Leadership view for Noopur"]'); await p.waitForTimeout(250) }
+      if (lens === 'leadership') { await p.evaluate(() => { location.hash = 'settings' }); await p.waitForTimeout(250); await p.click('[data-act=settab][data-tab=people]'); await p.check('input[aria-label="Leadership access for Noopur"]'); await p.waitForTimeout(250) }
       const brands = await p.$$eval('.rail .blink', as => as.map(a => a.getAttribute('href').slice(1)));
-      const screens = ['mine', 'overview', 'people', 'sow', 'access', 'bp', 'settings', ...brands.slice(0, label === 'desktop' ? 99 : 3)];
+      const screens = ['mine', 'leadership', 'overview', 'people', 'sow', 'access', 'bp', 'settings', ...brands.slice(0, label === 'desktop' ? 99 : 3)];
       for (const s of screens) {
         await p.evaluate(h => { location.hash = h }, s); await p.waitForTimeout(250);
         const sw = await p.evaluate(() => document.documentElement.scrollWidth);

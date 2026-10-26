@@ -249,20 +249,17 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   check('Client view', 'No task names appear on the client page', !internal.some(t => t.length > 8 && ct.includes(t)));
   check('Client view', 'Download button is there', !!(await p.$('[data-act=client-dl]')));
 
-  // 26. Leadership view is a role: only people ticked in Settings get the button
+  // 26. Leadership is an access: only people ticked in Settings get the Leadership page
   await setMe('Noopur'); await go('overview');
-  check('Leadership view', 'No Leadership button without the role', !(await p.$('[data-act=lens]')));
+  check('Leadership', 'No Leadership page in the menu without the tick', !(await p.$('.nav a[href="#leadership"]')));
   await go('settings'); await p.click('[data-act=settab][data-tab=people]'); await p.waitForTimeout(150);
-  await p.check('input[aria-label="Leadership view for Noopur"]'); await p.waitForTimeout(250);
-  check('Leadership view', 'Button appears once Noopur has the role', !!(await p.$('[data-act=lens]')));
-  await p.click('[data-act=lens]'); await p.waitForTimeout(250);
-  check('Leadership view', 'Turning it on opens the Overview with the table folded', await p.evaluate(() => location.hash) === '#overview' && !!(await p.$('[data-act=allbrands]')));
-  await p.click('[data-act=allbrands]'); await p.waitForTimeout(150);
-  check('Leadership view', 'Show button opens the table', !(await p.$('[data-act=allbrands]')));
-  await setMe('Cat'); await go('overview');
-  check('Leadership view', 'Someone without the role never gets it', !(await p.$('[data-act=lens]')) && !(await p.$('[data-act=allbrands]')));
-  await setMe('Noopur'); await p.click('[data-act=lens]'); await p.waitForTimeout(200);
-  check('Leadership view', 'Turning it off brings the full Overview back', !(await p.$('[data-act=allbrands]')));
+  await p.check('input[aria-label="Leadership access for Noopur"]'); await p.waitForTimeout(250);
+  check('Leadership', 'Leadership page appears in the menu once Noopur has the tick', !!(await p.$('.nav a[href="#leadership"]')));
+  await go('leadership');
+  check('Leadership', 'Page opens with the weekly brief and top exceptions', (await text('main h1')) === 'Leadership' && (await p.$$('.exc')).length > 0 && (await p.$$('.exc')).length <= 5);
+  await setMe('Cat'); await go('leadership');
+  check('Leadership', 'Someone without the tick is sent to the Overview', (await text('main h1')) === 'Overview' && !(await p.$('.nav a[href="#leadership"]')));
+  await setMe('Noopur');
 
   // 27. Simple / Full is back for everyone
   await go('overview'); await p.click('[data-act=simple][data-v="1"]'); await p.waitForTimeout(150);
@@ -407,6 +404,42 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await setMe('Ash Ghorab'); await go('mine');
   check('Board', 'Card comment mention reaches Ash', await p.evaluate(() => [...document.querySelectorAll('.item.men')].some(x => x.innerText.includes('photos come Friday'))));
   await setMe('Noopur');
+
+  // 33. Leadership room: escalate, decide, sign off and send back gates, launch calendar
+  await setMe('Noopur'); await go('brand-celf'); await p.click('button[data-tab=tasks]'); await p.waitForTimeout(150);
+  await p.click('[data-act=camp][data-id=_none]'); await p.waitForTimeout(150); await p.click('.teams .team'); await p.waitForTimeout(200);
+  const escCard = await p.$eval('.kc', e => e.dataset.id); await p.click(`.kc[data-id="${escCard}"]`); await p.waitForTimeout(250);
+  await p.click('#drawer [data-act=escalate]'); await p.fill('#n-ask', 'Approve the extra shoot day'); await p.click('#fbox button[type=submit]'); await p.waitForTimeout(400);
+  check('Leadership', 'Escalated item says it is with leadership', (await text('#drawer footer')).includes('With leadership'));
+  await p.click('#drawer [data-act=close]'); await p.waitForTimeout(200);
+  check('Leadership', 'Card front shows With leadership', (await text(`.kc[data-id="${escCard}"]`)).includes('With leadership'));
+  await go('leadership');
+  check('Leadership', 'Escalation lands in Decisions', (await text('.decs')).includes('Approve the extra shoot day'));
+  check('Leadership', 'Menu counts the waiting decision', +(await text('.nav a[href="#leadership"] .n')) >= 1);
+  await p.click('.dec:has-text("Approve the extra shoot day") [data-act=esc-decide][data-v=Agreed]'); await p.fill('#n-note', 'Yes, within budget'); await p.click('#fbox button[type=submit]'); await p.waitForTimeout(400);
+  check('Leadership', 'Agreed escalation leaves the inbox and shows in Recently decided', !(await text('.decs')).includes('Approve the extra shoot day') && (await p.$eval('.recent', e => e.textContent).catch(() => '')).includes('Agreed'));
+  await go('brand-celf'); await p.click('button[data-tab=updates]'); await p.waitForTimeout(200);
+  check('Leadership', 'Decision is posted on the brand Updates', (await mainText()).includes('Leadership agreed') && (await mainText()).includes('Yes, within budget'));
+  for (const b of ['bespoke', 'seoul-tonic']) {
+    await go('brand-' + b); await p.click('button[data-tab=steps]'); await p.waitForTimeout(150);
+    if (await p.$('[data-act=allphases]:has-text("Show all phases")')) await p.click('[data-act=allphases]');
+    for (const c of ['P4.12', 'P4.16', 'P5.01', 'P5.02']) { const sel = await p.$(`select[data-code="${c}"]`); if (sel && await sel.inputValue() !== 'Done') { await sel.selectOption('Done'); await p.waitForTimeout(150) } } }
+  await go('leadership');
+  check('Leadership', 'A gate with every earlier step done waits for sign-off', (await text('.decs')).includes('Bespoke') && (await text('.decs')).includes('P6.01'));
+  await p.click('.dec:has-text("Bespoke · P6.01") [data-act=gate-ok]'); await p.waitForTimeout(400);
+  check('Leadership', 'Signed-off gate leaves the inbox', !(await text('.decs')).includes('Bespoke · P6.01'));
+  await p.click('.dec:has-text("Seoul Tonic · P6.01") [data-act=gate-back]'); await p.fill('#n-note', 'Pricing page missing'); await p.click('#fbox button[type=submit]'); await p.waitForTimeout(400);
+  check('Leadership', 'Sent-back gate leaves the inbox', !(await text('.decs')).includes('Seoul Tonic · P6.01'));
+  await go('brand-bespoke'); await p.click('button[data-tab=steps]'); await p.waitForTimeout(150);
+  check('Leadership', 'Signed-off gate is Done with the leader named', (await p.$eval('select[data-code="P6.01"]', e => e.value)) === 'Done' && (await mainText()).includes('Signed off by Noopur'));
+  await p.click('[data-act=open][data-kind=step][data-code="P6.01"]').catch(() => {}); await go('brand-seoul-tonic'); await p.click('button[data-tab=steps]'); await p.waitForTimeout(150);
+  await p.click('[data-act=open][data-kind=step][data-code="P6.01"]'); await p.waitForTimeout(250);
+  check('Leadership', 'Step owner sees why it was sent back', (await text('#drawer')).includes('Sent back by Noopur') && (await text('#drawer')).includes('Pricing page missing'));
+  await p.click('#drawer [data-act=close]').catch(() => {});
+  await go('leadership');
+  check('Leadership', 'Launch calendar shows the CELF campaign', (await text('.cal')).includes('Spring launch'));
+  await p.click('.lc:has-text("Spring launch")'); await p.waitForTimeout(250);
+  check('Leadership', 'Launch card opens the campaign', (await text('.cbox')).includes('Spring launch'));
   check('Page', 'No script errors', errors.length === 0, errors.join(' | '));
   const failed = results.filter(r => !r.ok);
   for (const r of results) console.log(`${r.ok ? 'PASS' : 'FAIL'} | ${r.area} | ${r.what}${r.ok ? '' : ' | ' + r.detail}`);
