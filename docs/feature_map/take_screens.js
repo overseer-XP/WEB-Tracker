@@ -58,7 +58,6 @@ const shots = [];
     [['.group', 'F10'], ['.item select.ps', 'F11'], ['.blk', 'F12']]);
   // S06 blocker prompt
   await go('brand-kndz');
-  await click('.team >> nth=1');
   const sel = await p.$('select[data-kind=task]:not([disabled])');
   if (sel) { const cur = await sel.inputValue(); await sel.selectOption(cur === 'Blocked' ? 'In Progress' : 'Blocked'); await p.waitForTimeout(250); }
   await snap('S06', 'Marking a task Blocked asks for one line and a person', 'F81, F11', [['#modal .box', 'F81']]);
@@ -67,12 +66,11 @@ const shots = [];
   await go('brand-bespoke');
   await snap('S07', 'Brand page: header, facts, next step and tabs', 'F30, F42', [['.bhead h1', 'F30'], ['.facts', 'F30'], ['.next', 'F30'], ['.bhead .btn:last-child', 'F42'], ['.missing', 'F42']]);
   await scrollTo('.secs');
-  await snap('S08', 'Brand page: team cards (bird\'s-eye view)', 'F31, F33', [['.team', 'F31'], ['.team.t-bad', 'F31'], ['[data-act=add-task]', 'F33']]);
+  await snap('S08', 'Brand page: board with one list per team', 'F86, F33', [['main .kb', 'F86'], ['[data-act=kl-add]', 'F86'], ['[data-act=add-task]', 'F33']]);
   // S09 team list
-  await click('.team.t-bad'); await scrollTo('.secs');
-  await snap('S09', 'Brand page: one team\'s board', 'F32, F33', [['.teamnav', 'F32'], ['main .kb', 'F86'], ['[data-act=add-task]', 'F33']]);
+  await click('main .kc'); await snap('S09', 'Brand page: card back', 'F87', [['#drawer', 'F87']]); await click('#drawer [data-act=close]');
   // S10 task editor
-  await click('main tbody tr');
+  await click('main .kc');
   await snap('S10', 'Task editor (side panel)', 'F34', [['#drawer', 'F34']]);
   await p.click('[data-act=close]'); await p.waitForTimeout(200);
   // S11 onboarding steps
