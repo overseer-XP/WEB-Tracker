@@ -69,6 +69,7 @@ python3 -I docs/feature_map/make_preview.py .live app/index.html .shots/view.htm
 node tests/propagation.test.js .shots/preview.html   # every kind of update reaches every screen (118 checks)
 node tests/controls.js .shots/preview.html           # controls that only appear in a certain mode (53)
 node tests/audit.js .shots/preview.html              # every screen, every view, desktop and phone, every button
+node tests/ui_audit.js .shots/preview.html           # UI rules: contrast, text size, target size, labels, headings (light, dark, desktop, phone)
 node tests/roles.js .shots/member.html .shots/view.html   # what members and view-only people can do (12)
 python3 -I tests/make_stress_data.py .live .shots/stress 8 && python3 -I docs/feature_map/make_preview.py .shots/stress app/index.html .shots/stress.html
 node tests/stress.js .shots/stress.html              # page and edit timings with 8 times the brands
