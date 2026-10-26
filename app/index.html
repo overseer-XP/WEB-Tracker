@@ -183,7 +183,16 @@ select.ps:disabled{cursor:default;background-image:none;padding-right:9px}
 .due{font-size:12.5px;white-space:nowrap}
 .due.Overdue{color:var(--bad);font-weight:600}.due.DueSoon{color:var(--warn);font-weight:600}
 /* team cards */
-.secs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin:14px 0 16px;position:sticky;top:-18px;z-index:6;background:var(--bg);padding:8px 0 8px;box-shadow:0 8px 8px -8px rgb(0 0 0/.08)}
+.secs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin:14px 0 16px;padding:8px 0}
+.bslim{position:sticky;top:-24px;z-index:6;margin:-24px -28px 16px;padding:10px 28px;background:var(--panel);border-bottom:1px solid var(--line);box-shadow:var(--shadow);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.bsl{display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap}.bsname{all:unset;cursor:pointer;font-size:19px;font-weight:700;color:var(--bink,var(--ink))}.bsname:hover{text-decoration:underline}.bsh{font-size:13px;font-weight:600}
+.bslim .crumb{margin:0;font-size:14px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}.bslim .crumb b{font-weight:700}
+.mtabs{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}.mt{all:unset;cursor:pointer;font-size:12px;padding:4px 9px;border-radius:7px;border:1px solid var(--line);border-bottom:3px solid var(--line2);color:var(--muted);white-space:nowrap}.mt b{color:var(--ink);font-weight:700;margin-left:2px}
+.mt:hover{background:var(--offBg)}.mt.on{background:var(--accentSoft);border-color:var(--accent);color:var(--accent)}.mt:focus-visible{outline:2px solid var(--accent)}
+.mt-bad{border-bottom-color:var(--bad)}.mt-warn{border-bottom-color:var(--warn)}.mt-ok{border-bottom-color:var(--ok)}.mt-info{border-bottom-color:var(--info)}
+.cwarn{font-size:13px;font-weight:600}.cwarn.bad{color:var(--bad)}.cwarn.warn{color:var(--warn)}.cwarn.ok{color:var(--ok)}
+.bblock{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--bad);border-radius:10px;padding:8px 12px;margin:0 0 12px;box-shadow:var(--shadow);font-size:13px}
+.bbk{all:unset;cursor:pointer;display:inline-flex;gap:6px;align-items:center;padding:3px 8px;border-radius:7px;background:var(--offBg)}.bbk:hover{background:var(--line)}.bbk:focus-visible{outline:2px solid var(--accent)}
 .sec{all:unset;box-sizing:border-box;cursor:pointer;background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--line2);border-radius:10px;padding:9px 12px 10px;display:flex;flex-direction:column;gap:1px;min-width:0;transition:box-shadow .15s,border-color .15s}
 .sec .sl{font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sec .sv{font-size:20px;font-weight:700;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -461,6 +470,7 @@ table.grid td{vertical-align:middle}
   .item{grid-template-columns:minmax(0,1fr)}
   .cols2,.drawer .body{grid-template-columns:1fr}
   .logrow{grid-template-columns:1fr}
+  .bslim{top:-18px;margin:-18px -16px 14px;padding:8px 16px}.mtabs{margin-left:0;flex-wrap:nowrap;overflow-x:auto;width:100%}
   .secs{display:flex;overflow-x:auto;position:static;padding:4px 0 8px}.sec{flex:0 0 150px}
   .excs,.decs{grid-template-columns:1fr}.excd{grid-template-columns:1fr}
   .cgrid{grid-template-columns:1fr}.camps{grid-template-columns:1fr}.gantt{--lw:46%}.gk{font-size:10px}.gk:not(:first-child):not(:last-child){display:none}.dep{grid-template-columns:1fr;gap:4px}
@@ -813,6 +823,8 @@ function sowPlan(bs,R){
 function vBrand(id){
   const b=S.brands[id];if(!b)return`<h1>Brand not found</h1><p class="sub">It may have been removed. <a href="#overview">Back to the overview</a>.</p>`;
   const r=roll(id);const ed=canEdit&&canWrite;
+  const deep=brandTab==="tasks"&&((campSel.bid===id&&campSel.id&&(campSel.id===NOCAMP||S.camps[campSel.id]))||(deptSel.bid===id&&deptSel.dep));
+  if(deep)return(r.hold?`<div class="notice">${esc(b.name)} is on hold.</div>`:"")+brandBar(id,r)+tasksTab(id);
   const miss=(f,l)=>ed?`<button class="missing" data-act="open" data-kind="brand" data-id="${esc(id)}">Add ${esc(l)}</button>`:`<span class="faint">Not set</span>`;
   const fact=(l,v,f)=>`<div class="fact"><label>${esc(l)}</label><div class="v">${v||miss(f,l.toLowerCase())}</div></div>`;
   let h=(r.hold?`<div class="notice">${esc(b.name)} is on hold${b.paused&&b.stage!=="On Hold"?" (marked paused)":""}. Its tasks, SOW and late items are left out of the Overview counts and the SOW signing plan.${ed?" Change the stage or untick Paused in Edit details to bring it back.":""}</div>`:"")+`<div class="bhead"><div><h1>${esc(b.name)} ${b.paused&&b.stage!=="On Hold"?`<span class="tag">On hold</span>`:""} ${b.restricted?`<span class="tag warn" title="Sensitive. Keep notes to links and facts.">Restricted</span>`:""}</h1>
@@ -839,12 +851,11 @@ function tasksTab(bid){
   let h=`<div class="row" style="margin-bottom:12px"><span class="muted">${cs.length?`${cs.length} campaign${cs.length>1?"s":""}, ${open.length} open tasks. Open a campaign to see its teams, then a team to see its board.`:`${open.length} open tasks. No campaigns yet, so the teams are shown straight away. Open a team to see its board.`}</span><span class="grow"></span>
    ${canWrite&&TEMPLATES().length?`<select data-act="use-tpl" data-id="${esc(bid)}" aria-label="Add tasks from a template" class="btn"><option value="">Add from template...</option>${TEMPLATES().map((t,i)=>`<option value="${i}">${esc(t.name)} (${t.tasks.length})</option>`).join("")}</select>`:""}
    ${canWrite?`<button class="btn" data-act="add-camp" data-id="${esc(bid)}">Add campaign</button><button class="btn pri" data-act="add-task" data-id="${esc(bid)}">Add task</button>`:""}</div>`;
-  return h+(cs.length?campList(bid,all):teamCards(all))}
+  return h+brandBlockers(bid)+(cs.length?campList(bid,all):teamCards(all))}
 function teamBoard(bid,dep,cid,all){
   const scope=cid?all.filter(t=>campOf(t)===cid):all;const counts=d=>scope.filter(t=>depOf(t)===d&&t.status!=="Complete").length;
   const teams=DEPTS().filter(d=>scope.some(t=>depOf(t)===d));
-  return`<p class="crumb">${cid?`<button class="linkb" data-act="camp" data-id="">Campaigns</button> › <button class="linkb" data-act="dept" data-dep="">${esc(campName(cid))}</button>`:`<button class="linkb" data-act="dept" data-dep="">Teams</button>`} › <b>${esc(dep)}</b></p>
-  <div class="teamnav"><button class="btn sm" data-act="dept" data-dep="">‹ ${cid?"Back to "+esc(campName(cid)):"All teams"}</button>${teams.map(d=>`<button class="chipbtn ${d===dep?"on":""}" data-act="dept" data-dep="${esc(d)}" style="--tc:${teamColor(d)}">${esc(d)} <span>${counts(d)}</span></button>`).join("")}<span class="grow"></span>${canWrite?`<button class="btn pri" data-act="add-task" data-id="${esc(bid)}" data-dep="${esc(dep)}" data-camp="${esc(cid&&cid!==NOCAMP?cid:"")}">Add ${esc(dep)} task</button>`:""}</div>
+  return`<div class="teamnav" role="tablist" aria-label="Teams">${teams.map(d=>`<button class="chipbtn ${d===dep?"on":""}" data-act="dept" data-dep="${esc(d)}" style="--tc:${teamColor(d)}">${esc(d)} <span>${counts(d)}</span></button>`).join("")}<span class="grow"></span>${canWrite?`<button class="btn pri" data-act="add-task" data-id="${esc(bid)}" data-dep="${esc(dep)}" data-camp="${esc(cid&&cid!==NOCAMP?cid:"")}">Add ${esc(dep)} task</button>`:""}</div>
   ${taskBoard(bid,scope.filter(t=>depOf(t)===dep),{camp:cid,dep})}`}
 
 function phaseOpen(bid,p){return p.steps.filter(s=>!s.is_optional).some(s=>!["Done","N/A"].includes(stepState(bid,s.code).status))}
@@ -1168,7 +1179,7 @@ function accDrawer(id){const a=S.access[id];const th=accThread(id);const team=ac
      ${canWrite?`<label for="acc-c" class="sr">Comment</label><textarea id="acc-c" placeholder="Update or question. @name to tag someone" rows="2"></textarea><button type="button" class="btn sm pri" data-act="acc-post" style="align-self:flex-start">Post</button>`:""}</div>`}
 
 /* ---------- brand sections: one tile per area, each shows its own state ---------- */
-function brandSections(id,r){
+function brandTiles(id,r){
   const b=S.brands[id]||{};const cs=campsOf(id);const ps=phases();const cur=ps.find(p=>phaseOpen(id,p));
   const ar=withId(S.access).filter(a=>a.brand===id&&a.status!=="Not Needed");const g=ar.filter(accGranted).length;const wf=ar.filter(a=>ACC_FOUNDER.includes(a.status)).length;const ch=ar.filter(needsChase).length;
   const s=r.sowRow;const due=sowDue(s);const bp=r.bp;const locked=bp?L("bp_section").filter(x=>((S.bps[id].sections||{})[x]||"Not Started")==="Not Started"&&(bpAccess(id,x)||{}).state==="locked").length:0;
@@ -1180,6 +1191,8 @@ function brandSections(id,r){
     ["sow","SOW",isInternal(b)?"N/A":r.sow,isInternal(b)?"Internal work":r.hold?"On hold, target kept":r.sow==="Signed"?"Signed":s.target_sign?`Target ${fmtD(s.target_sign)}${due==="Overdue"?", overdue":""}`:"No target date",isInternal(b)||r.hold?"off":r.sow==="Blocked"||due==="Overdue"?"bad":r.sow==="Signed"?"ok":due==="Due Soon"?"warn":"info"],
     ["bp","Best Practices",bp?`${bp.done} of ${bp.total}`:"Not started",bp?(locked?`${locked} waiting on access`:bp.overall):"Not tracked yet",bp?(bp.overall==="Blocked"?"bad":bp.overall==="Complete"?"ok":locked?"warn":"info"):"off"],
     ["updates","Updates",nc?String(nc):"None",lastUpdated(id)?"Last change "+agoText(lastUpdated(id)):"No activity yet","off"]];
+  return tiles}
+function brandSections(id,r){const b=S.brands[id]||{};const tiles=brandTiles(id,r);
   return`<nav class="secs" role="tablist" aria-label="Sections for ${esc(b.name||"this brand")}">${tiles.map(([k,l,v,sub,st])=>`<button role="tab" aria-selected="${brandTab===k}" class="sec sec-${st} ${brandTab===k?"on":""}" data-act="tab" data-tab="${k}"><span class="sl">${esc(l)}</span><span class="sv">${esc(v)}</span><span class="ss" title="${esc(sub)}">${esc(sub)}</span></button>`).join("")}</nav>`}
 
 /* ---------- campaigns: a brand's work grouped by what it is for ---------- */
@@ -1189,6 +1202,13 @@ const campsOf=bid=>withId(S.camps).filter(c=>c.brand===bid).sort((a,b)=>String(a
 const campOf=t=>t.campaign&&S.camps[t.campaign]&&S.camps[t.campaign].brand===t.brand?t.campaign:NOCAMP;
 const campName=id=>id===NOCAMP?"Not in a campaign":(S.camps[id]||{}).name||"Campaign";
 const teamColor=d=>`var(--g${Math.max(0,DEPTS().indexOf(d))%6})`;
+const SHORT={tasks:"",steps:"Onboarding",access:"Access",sow:"SOW",bp:"BP",updates:"Updates"};
+function brandBar(id,r){const b=S.brands[id];const cid=campSel.bid===id?campSel.id:"";const dep=deptSel.bid===id?deptSel.dep:"";const hasC=campsOf(id).length;
+  const crumbs=[hasC?`<button class="linkb" data-act="camp" data-id="">Campaigns</button>`:`<button class="linkb" data-act="dept" data-dep="">Teams</button>`];
+  if(cid&&(cid===NOCAMP||S.camps[cid]))crumbs.push(dep?`<button class="linkb" data-act="dept" data-dep="">${esc(campName(cid))}</button>`:`<b>${esc(campName(cid))}</b>`);
+  if(dep)crumbs.push(`<b>${esc(dep)}</b>`);
+  return`<div class="bslim"><div class="bsl"><button class="bsname" data-act="camp" data-id="">${esc(b.name)}</button>${hdot(r.health)}<span class="bsh">${esc(r.health)}</span><nav class="crumb" aria-label="You are here"><span class="faint">›</span> ${crumbs.join(` <span class="faint">›</span> `)}</nav></div>
+   <nav class="mtabs" aria-label="Sections">${brandTiles(id,r).map(([k,l,v,sub,st])=>`<button class="mt mt-${st} ${k==="tasks"?"on":""}" data-act="tab" data-tab="${k}" title="${esc(l+": "+v+(sub?", "+sub:""))}">${esc(SHORT[k]||l)} <b>${esc(k==="tasks"?String(campsOf(id).length||r.open):v)}</b></button>`).join("")}</nav></div>`}
 function campRoll(bid,cid){const ts=withId(S.tasks).filter(t=>t.brand===bid&&t.title&&campOf(t)===cid);const op=ts.filter(t=>t.status!=="Complete");
   return{ts,op,done:ts.length-op.length,blocked:op.filter(t=>t.status==="Blocked").length,late:op.filter(t=>dueFlag(t.deadline,false)==="Overdue").length,
     teams:DEPTS().map(d=>[d,op.filter(t=>depOf(t)===d).length,ts.filter(t=>depOf(t)===d).length]).filter(x=>x[2]),deps:campDeps(bid,cid).filter(d=>d.open).length}}
@@ -1198,13 +1218,14 @@ function campCard(bid,c){const r=campRoll(bid,c._id);const tot=r.ts.length;
   return`<button class="camp" data-act="camp" data-id="${esc(c._id)}"><span class="ch"><span class="cn">${esc(c.name)}</span>${c.status?pill(c.status):""}</span>
    <span class="cp">${c.purpose?esc(c.purpose):`<span class="faint">What it is for is not written yet</span>`}</span>
    <span class="cd">${esc(whenText(c))}${c.owner?" · "+esc(c.owner):""}</span>
-   <span class="cstat"><span class="bar wide"><i style="width:${tot?Math.round(r.done/tot*100):0}%"></i></span><span class="faint">${r.done} of ${tot} done</span>${r.blocked?`<span class="tag bad">${r.blocked} blocked</span>`:""}${r.late?`<span class="tag bad">${r.late} late</span>`:""}${r.deps?`<span class="tag warn">${r.deps} open dependenc${r.deps>1?"ies":"y"}</span>`:""}</span>
-   <span class="cteams">${r.teams.map(([d,o])=>`<span class="tchip" style="--tc:${teamColor(d)}">${esc(d)} <b>${o}</b></span>`).join("")||`<span class="faint">No tasks yet</span>`}</span>
-   <span class="go">Open campaign ›</span></button>`}
+   <span class="cstat"><span class="bar wide"><i style="width:${tot?Math.round(r.done/tot*100):0}%"></i></span><span class="faint">${r.done} of ${tot} done</span></span>
+   ${campWarn(r)}</button>`}
+function campWarn(r){const parts=[r.blocked?r.blocked+" blocked":"",r.late?r.late+" late":"",r.deps?`${r.deps} open dependenc${r.deps>1?"ies":"y"}`:""].filter(Boolean);
+  return parts.length?`<span class="cwarn ${r.blocked||r.late?"bad":"warn"}">${esc(parts.join(" · "))}</span>`:`<span class="cwarn ok">On track</span>`}
 function campList(bid,all){
   const cs=campsOf(bid);const none=all.filter(t=>campOf(t)===NOCAMP);const nOpen=none.filter(t=>t.status!=="Complete").length;
   let h=`<div class="camps">${cs.map(c=>campCard(bid,c)).join("")}`;
-  if(none.length)h+=`<button class="camp nocamp" data-act="camp" data-id="${NOCAMP}"><span class="ch"><span class="cn">Not in a campaign</span></span><span class="cp">Brand-wide and day-to-day work. Move a task into a campaign from its edit panel.</span><span class="cd">${nOpen} open of ${none.length}</span><span class="cteams">${DEPTS().map(d=>[d,none.filter(t=>depOf(t)===d&&t.status!=="Complete").length]).filter(x=>x[1]).map(([d,o])=>`<span class="tchip" style="--tc:${teamColor(d)}">${esc(d)} <b>${o}</b></span>`).join("")}</span><span class="go">Open ›</span></button>`;
+  if(none.length)h+=`<button class="camp nocamp" data-act="camp" data-id="${NOCAMP}"><span class="ch"><span class="cn">Not in a campaign</span></span><span class="cp">Brand-wide and day-to-day work. Move a task into a campaign from its edit panel.</span><span class="cd">${nOpen} open of ${none.length}</span>${campWarn(campRoll(bid,NOCAMP))}</button>`;
   if(!cs.length)h+=`<div class="camp empty-camp"><b>No campaigns yet</b><span class="muted">A campaign groups the work for one launch or push across teams, with its dates and what it depends on.</span>${canWrite?`<button class="btn pri" data-act="add-camp" data-id="${esc(bid)}">Add the first campaign</button>`:""}</div>`;
   return h+`</div>`}
 /* timeline: one bar per task from start to due, grouped by team, with today and the campaign end marked */
@@ -1230,9 +1251,11 @@ function undatedList(ts){if(!ts.length)return"";return`<details class="undated">
 function campDeps(bid,cid){const c=S.camps[cid]||{};const out=(c.deps||[]).map((d,i)=>({own:true,i,text:d.text,kind:d.kind||"",who:d.who||"",due:d.due||"",open:d.state!=="Cleared",state:d.state||"Open"}));
   const ts=withId(S.tasks).filter(t=>t.brand===bid&&t.title&&campOf(t)===cid);
   for(const t of ts)if(t.status==="Blocked")out.push({auto:"task",id:t._id,kind:"Blocked task",text:t.title+(t.blocker&&t.blocker.text?": "+t.blocker.text:""),who:(t.blocker&&t.blocker.person)||"",open:true});
-  if(cid!==NOCAMP){for(const a of withId(S.access).filter(a=>a.brand===bid&&(ACC_FOUNDER.includes(a.status)||a.status==="Blocked")))out.push({auto:"access",id:a._id,kind:"Platform access",text:`${a.platform}: ${a.status}`,who:(a.next_step&&a.next_step.who)||a.owner||"",open:true});
-    const s=S.sow[bid];if(s&&!isInternal(S.brands[bid]||{})&&s.stage!=="Signed")out.push({auto:"sow",kind:"SOW",text:`SOW not signed (${s.stage||"Not Started"}${s.target_sign?", target "+fmtD(s.target_sign):""})`,who:s.owner||"",open:true})}
   return out}
+function brandBlockers(bid){const out=[];
+  for(const a of withId(S.access).filter(a=>a.brand===bid&&(ACC_FOUNDER.includes(a.status)||a.status==="Blocked")))out.push(`<button class="bbk" data-act="open" data-kind="access" data-id="${esc(a._id)}"><span class="tag">Platform access</span>${esc(a.platform)}: ${esc(a.status)}</button>`);
+  const s=S.sow[bid];if(s&&!isInternal(S.brands[bid]||{})&&s.stage!=="Signed")out.push(`<button class="bbk" data-act="tab" data-tab="sow"><span class="tag">SOW</span>Not signed (${esc(s.stage||"Not Started")}${s.target_sign?", target "+esc(fmtD(s.target_sign)):""})</button>`);
+  return out.length?`<div class="bblock"><b>Holding up the whole brand</b>${out.join("")}</div>`:""}
 function depsHtml(bid,cid){const ds=campDeps(bid,cid);const ed=canWrite&&cid!==NOCAMP;
   const row=d=>`<div class="dep ${d.open?"":"cleared"}"><span class="tag ${d.auto?"":"warn"}">${esc(d.kind||"Dependency")}</span><span class="dt">${esc(d.text)}${d.due?` <span class="faint">· by ${esc(fmtD(d.due))}</span>`:""}</span><span class="dw">${d.who?esc(d.who):`<span class="faint">No one named</span>`}</span>
     <span class="da">${d.own?(ed?`<button class="btn sm" data-act="dep-state" data-id="${esc(cid)}" data-i="${d.i}">${d.open?"Mark cleared":"Reopen"}</button><button class="btn sm quiet" data-act="dep-del" data-id="${esc(cid)}" data-i="${d.i}" aria-label="Remove dependency">Remove</button>`:esc(d.state))
@@ -1240,12 +1263,11 @@ function depsHtml(bid,cid){const ds=campDeps(bid,cid);const ed=canWrite&&cid!==N
   const open=ds.filter(d=>d.open),done=ds.filter(d=>!d.open);
   return`<div class="deps">${open.map(row).join("")||`<div class="empty">Nothing is holding this ${cid===NOCAMP?"work":"campaign"} up right now.</div>`}${done.length?`<details><summary>${done.length} cleared</summary>${done.map(row).join("")}</details>`:""}
    ${ed?`<div class="row" style="padding:10px 12px"><button class="btn sm" data-act="dep-add" data-id="${esc(cid)}">Add a dependency</button><span class="faint" style="font-size:12.5px">For example: client sign-off on the PR box, funding for paid media, a supplier date.</span></div>`:""}
-   <p class="faint" style="font-size:12px;margin:0;padding:0 12px 10px">Grey tags come from the tracker (blocked tasks, platform access with the founder, an unsigned SOW). Amber tags were added by the team.</p></div>`}
+   <p class="faint" style="font-size:12px;margin:0;padding:0 12px 10px">Grey tags are blocked tasks in this campaign. Amber tags were added by the team. Brand-wide blockers (SOW, platform access) show once, on the Campaigns page.</p></div>`}
 function campDetail(bid,cid,all){
   const cs=campsOf(bid);const c=cid===NOCAMP?{_id:NOCAMP,name:"Not in a campaign",purpose:"Brand-wide and day-to-day work that is not part of a campaign. Move a task into a campaign from its edit panel."}:Object.assign({_id:cid},S.camps[cid]);
   const r=campRoll(bid,cid);const tot=r.ts.length;
-  let h=`<div class="teamnav"><button class="btn sm" data-act="camp" data-id="">‹ All campaigns</button>${cs.map(x=>`<button class="chipbtn ${x._id===cid?"on":""}" data-act="camp" data-id="${esc(x._id)}">${esc(x.name)} <span>${campRoll(bid,x._id).op.length}</span></button>`).join("")}${all.some(t=>campOf(t)===NOCAMP)?`<button class="chipbtn ${cid===NOCAMP?"on":""}" data-act="camp" data-id="${NOCAMP}">Not in a campaign <span>${campRoll(bid,NOCAMP).op.length}</span></button>`:""}</div>
-  <div class="cbox"><div class="ctop"><h2>${esc(c.name)}</h2>${c.status?pill(c.status):""}<span class="muted">${esc(whenText(c))}${c.owner?" · Owner "+esc(c.owner):""}</span><span class="grow"></span>
+  let h=`<div class="cbox"><div class="ctop"><h2>${esc(c.name)}</h2>${c.status?pill(c.status):""}<span class="muted">${esc(whenText(c))}${c.owner?" · Owner "+esc(c.owner):""}</span><span class="grow"></span>
    ${canWrite&&cid!==NOCAMP?`<button class="btn" data-act="open" data-kind="camp" data-id="${esc(cid)}">Edit campaign</button>`:""}${canWrite?`<button class="btn pri" data-act="add-task" data-id="${esc(bid)}" data-camp="${esc(cid===NOCAMP?"":cid)}">Add task</button>`:""}</div>
    <div class="cgrid"><div><h3>What it is for</h3><p>${c.purpose?esc(c.purpose):`<span class="faint">Not written yet.</span>${canWrite&&cid!==NOCAMP?` <button class="missing" data-act="open" data-kind="camp" data-id="${esc(cid)}">Add it</button>`:""}`}</p>${c.goal?`<h3>Success looks like</h3><p>${esc(c.goal)}</p>`:""}</div>
     <div class="cglance"><h3>At a glance</h3><div class="cstat"><span class="bar wide"><i style="width:${tot?Math.round(r.done/tot*100):0}%"></i></span><span>${r.done} of ${tot} tasks done</span></div>
@@ -1255,7 +1277,7 @@ function campDetail(bid,cid,all){
   <h3 class="sech">Key dependencies</h3>${depsHtml(bid,cid)}
   <h3 class="sech">Timeline</h3>${campTimeline(c,r.ts)}`;
   return h}
-function toSection(){const m=$("#main"),n=$(".secs");if(m&&n&&m.scrollTop>n.offsetTop)m.scrollTop=n.offsetTop-10}
+function toSection(){const m=$("#main"),n=$(".secs");if(!m)return;if(!n){m.scrollTop=0;return}if(m.scrollTop>n.offsetTop)m.scrollTop=n.offsetTop-10}
 function teamCards(all){
   if(!all.length)return"";let h=`<div class="teams">`;
   for(const d of DEPTS()){const ts=all.filter(t=>depOf(t)===d);const op=ts.filter(t=>t.status!=="Complete").sort(byUrgency);
@@ -1287,8 +1309,12 @@ function kbCard(t,showCamp,hideTeam){const cl=t.checklist||[];const cd=cl.filter
   return`<div class="kc ${t.status==="Blocked"?"kc-bad":""}" draggable="${canChangeTask(t)}" data-act="open" data-kind="task" data-id="${esc(t._id)}" tabindex="0" role="button" aria-label="${esc(t.title+", "+(t.status||"")+(t.owner?", "+t.owner:""))}">
    <span class="kls">${hideTeam?"":`<span class="klabel" style="--tc:${teamColor(d)}">${esc(d)}</span>`}${showCamp&&campOf(t)!==NOCAMP?`<span class="klabel kcamp">${esc(campName(campOf(t)))}</span>`:""}</span>
    <span class="kt">${esc(t.title)}</span>${t.status==="Blocked"&&t.blocker&&t.blocker.text?`<span class="blk">${esc(t.blocker.text)}</span>`:""}
-   <span class="kb2">${escFor("task",t._id)?`<span class="kbg warn">With leadership</span>`:""}${dueBadge(t)}${["High","Urgent"].includes(t.priority)?`<span class="kbg warn">${esc(t.priority)}</span>`:""}${cl.length?`<span class="kbg ${cd===cl.length?"ok":""}" title="Checklist">${ICON.check}${cd}/${cl.length}</span>`:""}${nc?`<span class="kbg" title="${nc} comment${nc>1?"s":""}">${ICON.talk}${nc}</span>`:""}${t.brief_link||t.creative_link?`<span class="kbg" title="Has brief or creative links">${ICON.link}</span>`:""}
+   <span class="kb2">${!BOARD_FIXED.includes(t.status)&&t.status&&t.status!==kbCols()[0].set?`<span class="kbg ${t.status==="On Hold"?"warn":""}">${esc(t.status)}</span>`:""}${escFor("task",t._id)?`<span class="kbg warn">With leadership</span>`:""}${dueBadge(t)}${["High","Urgent"].includes(t.priority)?`<span class="kbg warn">${esc(t.priority)}</span>`:""}${cl.length?`<span class="kbg ${cd===cl.length?"ok":""}" title="Checklist">${ICON.check}${cd}/${cl.length}</span>`:""}${nc?`<span class="kbg" title="${nc} comment${nc>1?"s":""}">${ICON.talk}${nc}</span>`:""}${t.brief_link||t.creative_link?`<span class="kbg" title="Has brief or creative links">${ICON.link}</span>`:""}
     <span class="grow"></span><span class="avs">${ppl.slice(0,3).map((p,i)=>`<span class="av ${i?"sup":""}" title="${esc(p)}${i?" (support)":" (owner)"}">${esc(ini(p))}</span>`).join("")}${ppl.length>3?`<span class="av more">+${ppl.length-3}</span>`:""}</span></span></div>`}
+const BOARD_FIXED=["In Progress","Blocked","Complete"];
+function kbCols(){return memo("kbcols",()=>{const todo=L("task_status").filter(x=>!BOARD_FIXED.includes(x));
+  return[{label:"To do",set:todo[0]||"Not Started",has:todo},{label:"In progress",set:"In Progress",has:["In Progress"]},{label:"Blocked",set:"Blocked",has:["Blocked"]},{label:"Done",set:"Complete",has:["Complete"]}]})}
+const colOf=t=>{const cs=kbCols();return cs.find(c=>c.has.includes(t.status))||cs[0]};
 function taskBoard(bid,ts,ctx){ctx=ctx||{};
   let rows=ts;const f=kbFilter;
   if(f.who)rows=rows.filter(t=>isPerson(t.owner,f.who)||(t.support||[]).some(x=>isPerson(x,f.who)));
@@ -1300,8 +1326,8 @@ function taskBoard(bid,ts,ctx){ctx=ctx||{};
    ${ctx.dep?"":`<label class="tl">Team <select data-act="kbf" data-k="team"><option value="">All teams</option>${DEPTS().filter(d=>ts.some(t=>depOf(t)===d)).map(d=>`<option ${f.team===d?"selected":""}>${esc(d)}</option>`).join("")}</select></label>`}
    <label class="tl">Due <select data-act="kbf" data-k="due"><option value="">Any time</option><option value="week" ${f.due==="week"?"selected":""}>Late or due this week</option><option value="none" ${f.due==="none"?"selected":""}>No due date</option></select></label>
    ${f.who||f.due||(f.team&&!ctx.dep)?`<button class="btn sm quiet" data-act="kbf-clear">Clear filters</button>`:""}<span class="grow"></span><span class="faint" style="font-size:12.5px">${canWrite?"Drag a card to another column to change its status. Click a card to open it.":"Click a card to open it."}</span></div><div class="kb" role="list">`;
-  for(const st of L("task_status")){const col=rows.filter(t=>(t.status||"Not Started")===st).sort(byUrgency);const lim=st==="Complete"&&!kbMore[bid+st]?6:999;
-    h+=`<section class="kcol" role="listitem" aria-label="${esc(st)}, ${col.length} cards"><header>${pill(st)}<span class="kn">${col.length}</span></header><div class="kcards" data-drop="${esc(st)}">${col.slice(0,lim).map(t=>kbCard(t,ctx.showCamp,!!ctx.dep)).join("")||`<span class="kempty">No cards</span>`}
+  for(const c of kbCols()){const st=c.set;const col=rows.filter(t=>colOf(t)===c).sort(byUrgency);const lim=st==="Complete"&&!kbMore[bid+st]?6:999;
+    h+=`<section class="kcol" role="listitem" aria-label="${esc(c.label)}, ${col.length} cards"><header><span class="pill ${cls(st)}">${esc(c.label)}</span><span class="kn">${col.length}</span></header><div class="kcards" data-drop="${esc(st)}" data-group="${esc(c.has.join("|"))}">${col.slice(0,lim).map(t=>kbCard(t,ctx.showCamp,!!ctx.dep)).join("")||`<span class="kempty">No cards</span>`}
      ${col.length>lim?`<button class="kadd" data-act="kb-more" data-k="${esc(bid+st)}">Show ${col.length-lim} more</button>`:""}</div>
      ${canWrite&&st!=="Complete"?`<button class="kadd" data-act="kb-add" data-st="${esc(st)}" data-id="${esc(bid)}" data-camp="${esc(ctx.camp&&ctx.camp!==NOCAMP?ctx.camp:"")}" data-dep="${esc(ctx.dep||"")}">+ Add a card</button>`:""}</section>`}
   return h+`</div>`}
@@ -1751,7 +1777,8 @@ let dragId="";
 document.addEventListener("dragstart",e=>{const c=e.target.closest&&e.target.closest(".kc");if(!c)return;dragId=c.dataset.id;c.classList.add("dragging");try{e.dataTransfer.setData("text/plain",dragId);e.dataTransfer.effectAllowed="move"}catch(x){}});
 document.addEventListener("dragend",e=>{dragId="";document.querySelectorAll(".kc.dragging,.kcards.over").forEach(x=>x.classList.remove("dragging","over"))});
 document.addEventListener("dragover",e=>{const z=e.target.closest&&e.target.closest(".kcards");if(!z||!dragId)return;e.preventDefault();document.querySelectorAll(".kcards.over").forEach(x=>x!==z&&x.classList.remove("over"));z.classList.add("over")});
-document.addEventListener("drop",e=>{const z=e.target.closest&&e.target.closest(".kcards");if(!z||!dragId)return;e.preventDefault();const id=dragId;dragId="";z.classList.remove("over");setTaskStatus(id,z.dataset.drop)});
+document.addEventListener("drop",e=>{const z=e.target.closest&&e.target.closest(".kcards");if(!z||!dragId)return;e.preventDefault();const id=dragId;dragId="";z.classList.remove("over");
+  if((z.dataset.group||"").split("|").includes((S.tasks[id]||{}).status))return;setTaskStatus(id,z.dataset.drop)});
 document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.id==="ck-new"){e.preventDefault();const b=document.querySelector("[data-act=ck-add]");if(b)b.click();return}
   if((e.key==="Enter"||e.key===" ")&&e.target.classList&&e.target.classList.contains("kc")){e.preventDefault();e.target.click()}});
 document.addEventListener("submit",e=>{const f=e.target;

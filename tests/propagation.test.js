@@ -352,7 +352,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await p.click('[data-act=add-camp]'); await p.fill('#n-cn', 'Spring launch'); await p.fill('#n-cp', 'Launch the spring range with creators and paid'); await p.fill('#n-cs', '2026-10-01'); await p.fill('#n-ce', '2026-11-15');
   await p.click('#fbox button[type=submit]'); await p.waitForTimeout(400);
   check('Campaigns', 'New campaign opens with what it is for', (await text('.cbox')).includes('Launch the spring range'));
-  check('Campaigns', 'Section tile now counts the campaign', (await text('[data-tab=tasks] .sv')) === '1 campaign');
+  check('Campaigns', 'Brand bar shows the path and counts the campaign', (await text('.bslim .crumb')).includes('Spring launch') && (await text('.mt[data-tab=tasks]')).replace(/\s+/g, ' ').trim() === 'Campaigns 1');
   await p.click('[data-act=camp][data-id=""]'); await p.waitForTimeout(150);
   await p.click('[data-act=camp][data-id=_none]'); await p.waitForTimeout(200);
   await p.click('.teams .team'); await p.waitForTimeout(200); await p.click('.kc'); await p.waitForTimeout(250);
@@ -378,7 +378,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
 
   // 32. Board: drag to change status, Blocked asks why, add a card, checklist and comments show on the card
   await go('brand-celf'); await p.click('button[data-tab=tasks]'); await p.waitForTimeout(150); await p.click('[data-act=camp][data-id=_none]'); await p.waitForTimeout(150); await p.click('.teams .team'); await p.waitForTimeout(200);
-  check('Board', 'One column per task status', (await p.$$('.kcol')).length === (await p.evaluate(() => JSON.parse(JSON.stringify(window.__SEED.config.lists.task_status)).length)));
+  check('Board', 'Four columns: To do, In progress, Blocked, Done', (await p.$$eval('.kcol header .pill', e => e.map(x => x.innerText))).join('|') === 'To do|In progress|Blocked|Done');
   const kcard = await p.$eval('.kcards:not([data-drop="Complete"]) .kc', e => e.dataset.id);
   await p.locator(`.kc[data-id="${kcard}"]`).dragTo(p.locator('.kcards[data-drop="In Progress"]')); await p.waitForTimeout(350);
   check('Board', 'Dragging a card to In Progress changes its status', !!(await p.$(`.kcards[data-drop="In Progress"] .kc[data-id="${kcard}"]`)));
