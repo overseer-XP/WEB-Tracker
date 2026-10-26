@@ -269,6 +269,11 @@ select.ps:disabled{cursor:default;background-image:none;padding-right:9px}
 .kadd{all:unset;box-sizing:border-box;cursor:pointer;margin:0 8px 8px;padding:6px 8px;border-radius:7px;color:var(--muted);font-size:13px;font-weight:600}.kadd:hover{background:var(--offBg);color:var(--ink)}.kadd:focus-visible{outline:2px solid var(--accent)}
 .kcards .kadd{margin:0}
 .cklist{display:flex;flex-direction:column;gap:4px}.ckrow{display:grid;grid-template-columns:20px minmax(0,1fr) auto auto;gap:8px;align-items:center;font-size:13.5px;padding:3px 0}.ckrow.done .ckt{text-decoration:line-through;color:var(--muted)}.ckrow input{width:16px;height:16px}
+.teams.trows{display:flex;flex-direction:column;gap:6px}
+.team.trow{display:grid;grid-template-columns:minmax(150px,1.3fr) 90px minmax(170px,1.2fr) minmax(0,1.5fr) auto;align-items:center;gap:14px;padding:11px 16px}
+.team.trow .tn{font-weight:700;font-size:15px}.team.trow .tc{font-size:13px;color:var(--muted);margin:0}.team.trow .tc b{font-size:18px;color:var(--ink)}
+.tprog{display:flex;align-items:center;gap:8px;font-size:12.5px;white-space:nowrap}.tprog .bar{flex:0 0 80px;width:80px}.team.trow .tstat{display:flex;gap:6px}.team.trow .go{margin:0}
+.cpur{margin:8px 0 10px;font-size:15px;line-height:1.5}
 .teams{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
 .team{all:unset;box-sizing:border-box;cursor:pointer;background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--tc,var(--line2));border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:9px;min-width:0;transition:box-shadow .15s,transform .15s}
 .team:hover{box-shadow:0 6px 18px rgb(0 0 0/.08);transform:translateY(-1px)}.team:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -473,7 +478,7 @@ table.grid td{vertical-align:middle}
   .bslim{top:-18px;margin:-18px -16px 14px;padding:8px 16px}.mtabs{margin-left:0;flex-wrap:nowrap;overflow-x:auto;width:100%}
   .secs{display:flex;overflow-x:auto;position:static;padding:4px 0 8px}.sec{flex:0 0 150px}
   .excs,.decs{grid-template-columns:1fr}.excd{grid-template-columns:1fr}
-  .cgrid{grid-template-columns:1fr}.camps{grid-template-columns:1fr}.gantt{--lw:46%}.gk{font-size:10px}.gk:not(:first-child):not(:last-child){display:none}.dep{grid-template-columns:1fr;gap:4px}
+  .cgrid{grid-template-columns:1fr}.trow{grid-template-columns:1fr auto!important;gap:6px 10px}.trow .tprog,.team.trow .tstat{grid-column:1/-1}.trow .go{display:none}.camps{grid-template-columns:1fr}.gantt{--lw:46%}.gk{font-size:10px}.gk:not(:first-child):not(:last-child){display:none}.dep{grid-template-columns:1fr;gap:4px}
   .accmd{grid-template-columns:1fr}.acclist{position:static;max-height:240px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -1269,26 +1274,24 @@ function campDetail(bid,cid,all){
   const r=campRoll(bid,cid);const tot=r.ts.length;
   let h=`<div class="cbox"><div class="ctop"><h2>${esc(c.name)}</h2>${c.status?pill(c.status):""}<span class="muted">${esc(whenText(c))}${c.owner?" · Owner "+esc(c.owner):""}</span><span class="grow"></span>
    ${canWrite&&cid!==NOCAMP?`<button class="btn" data-act="open" data-kind="camp" data-id="${esc(cid)}">Edit campaign</button>`:""}${canWrite?`<button class="btn pri" data-act="add-task" data-id="${esc(bid)}" data-camp="${esc(cid===NOCAMP?"":cid)}">Add task</button>`:""}</div>
-   <div class="cgrid"><div><h3>What it is for</h3><p>${c.purpose?esc(c.purpose):`<span class="faint">Not written yet.</span>${canWrite&&cid!==NOCAMP?` <button class="missing" data-act="open" data-kind="camp" data-id="${esc(cid)}">Add it</button>`:""}`}</p>${c.goal?`<h3>Success looks like</h3><p>${esc(c.goal)}</p>`:""}</div>
-    <div class="cglance"><h3>At a glance</h3><div class="cstat"><span class="bar wide"><i style="width:${tot?Math.round(r.done/tot*100):0}%"></i></span><span>${r.done} of ${tot} tasks done</span></div>
-     <div class="row" style="gap:6px;margin-top:8px">${r.blocked?`<span class="tag bad">${r.blocked} blocked</span>`:""}${r.late?`<span class="tag bad">${r.late} late</span>`:""}${r.deps?`<span class="tag warn">${r.deps} open dependenc${r.deps>1?"ies":"y"}</span>`:`<span class="tag ok">Nothing holding it up</span>`}</div>
-     <div class="cteams" style="margin-top:10px">${r.teams.map(([d,o,n])=>`<button class="tchip" style="--tc:${teamColor(d)}" data-act="dept" data-dep="${esc(d)}">${esc(d)} <b>${o}</b><span class="faint"> of ${n}</span></button>`).join("")}</div></div></div></div>
-  <h3 class="sech">Teams on this ${cid===NOCAMP?"work":"campaign"}</h3><p class="faint" style="margin:-4px 0 10px;font-size:13px">Open a team to see its board.</p>${teamCards(r.ts)||`<div class="tw"><div class="empty">No tasks yet. Use Add task above.</div></div>`}
+   <p class="cpur">${c.purpose?esc(c.purpose):`<span class="faint">What it is for is not written yet.</span>${canWrite&&cid!==NOCAMP?` <button class="missing" data-act="open" data-kind="camp" data-id="${esc(cid)}">Add it</button>`:""}`}${c.goal?` <span class="faint">Success: ${esc(c.goal)}</span>`:""}</p>
+   <div class="cstat"><span class="bar wide"><i style="width:${tot?Math.round(r.done/tot*100):0}%"></i></span><span>${r.done} of ${tot} tasks done</span>${campWarn(r)}</div></div>
+  <h3 class="sech">Teams <span class="count">${r.teams.length}</span> <span class="faint" style="text-transform:none;letter-spacing:0;font-weight:500">Open a team to see its board</span></h3>${teamCards(r.ts)||`<div class="tw"><div class="empty">No tasks yet. Use Add task above.</div></div>`}
   <h3 class="sech">Key dependencies</h3>${depsHtml(bid,cid)}
   <h3 class="sech">Timeline</h3>${campTimeline(c,r.ts)}`;
   return h}
 function toSection(){const m=$("#main"),n=$(".secs");if(!m)return;if(!n){m.scrollTop=0;return}if(m.scrollTop>n.offsetTop)m.scrollTop=n.offsetTop-10}
 function teamCards(all){
-  if(!all.length)return"";let h=`<div class="teams">`;
-  for(const d of DEPTS()){const ts=all.filter(t=>depOf(t)===d);const op=ts.filter(t=>t.status!=="Complete").sort(byUrgency);
-    const done=ts.length-op.length,bl=op.filter(t=>t.status==="Blocked").length,late=op.filter(t=>dueFlag(t.deadline,false)==="Overdue").length;
-    if(!ts.length)continue;
-    h+=`<button class="team ${bl?"t-bad":late?"t-late":""}" style="--tc:${teamColor(d)}" data-act="dept" data-dep="${esc(d)}"><span class="th"><span class="tn">${esc(d)}</span><span class="tc"><b>${op.length}</b> open</span></span>
-     <span class="tstat">${bl?`<span class="tag bad">${bl} blocked</span>`:""}${late?`<span class="tag bad">${late} late</span>`:""}${!bl&&!late?`<span class="tag ok">${op.length?"On track":"All done"}</span>`:""}<span class="faint">${done} of ${ts.length} done</span></span>
-     <span class="bar wide"><i style="width:${Math.round(done/ts.length*100)}%"></i></span>
-     <span class="tlist">${op.slice(0,3).map(t=>`<span class="tl"><span class="dot ${t.status==="Blocked"?"h-Blocked":urgency(t)===1?"h-Blocked":urgency(t)===2?"h-AtRisk":"h-OnTrack"}" aria-hidden="true"></span><span class="tt">${esc(t.title)}</span><span class="tw2">${t.status==="Blocked"?`<b class="hot">Blocked</b>`:dueHtml(t.deadline,false)||`<span class="faint">${esc(t.owner||"No owner")}</span>`}</span></span>`).join("")||`<span class="faint">Nothing open</span>`}</span>
-     <span class="go">Open ${esc(d)} board ›</span></button>`}
-  return h+`</div>`}
+  // one slim row per team, teams that need help first, so the list stays short however many teams join
+  if(!all.length)return"";
+  const rows=DEPTS().map(d=>{const ts=all.filter(t=>depOf(t)===d);const op=ts.filter(t=>t.status!=="Complete");
+    return{d,ts,op,done:ts.length-op.length,bl:op.filter(t=>t.status==="Blocked").length,late:op.filter(t=>dueFlag(t.deadline,false)==="Overdue").length}}).filter(x=>x.ts.length)
+    .sort((a,b)=>b.bl-a.bl||b.late-a.late||b.op.length-a.op.length);
+  return`<div class="teams trows" role="list">${rows.map(x=>`<button role="listitem" class="team trow ${x.bl?"t-bad":x.late?"t-late":""}" style="--tc:${teamColor(x.d)}" data-act="dept" data-dep="${esc(x.d)}">
+    <span class="tn">${esc(x.d)}</span><span class="tc"><b>${x.op.length}</b> open</span>
+    <span class="tprog"><span class="bar wide"><i style="width:${Math.round(x.done/x.ts.length*100)}%"></i></span><span class="faint">${x.done} of ${x.ts.length} done</span></span>
+    <span class="tstat">${x.bl?`<span class="tag bad">${x.bl} blocked</span>`:""}${x.late?`<span class="tag bad">${x.late} late</span>`:""}${!x.bl&&!x.late?`<span class="tag ok">${x.op.length?"On track":"All done"}</span>`:""}</span>
+    <span class="go">Open board ›</span></button>`).join("")}</div>`}
 
 /* ---------- task board, Trello style: one column per status, drag a card to change it ---------- */
 let kbFilter={who:"",team:"",due:""},kbMore={};

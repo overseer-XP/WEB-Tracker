@@ -361,7 +361,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await p.click('.crumb [data-act=camp][data-id=""]'); await p.waitForTimeout(150);
   await p.click(`[data-act=camp][data-id="${campOpt}"]`); await p.waitForTimeout(250);
   check('Campaigns', 'Moved task shows on the campaign timeline as a bar', !!(await p.$('.gantt .gr .gb')));
-  check('Campaigns', 'Campaign shows the team that owns the task', (await p.$$('.cbox .tchip')).length === 1);
+  check('Campaigns', 'Campaign lists the team that owns the task as one row', (await p.$$('.trows .team')).length === 1);
   await p.click('[data-act=dep-add]'); await p.fill('#n-dt', 'Client sign-off on the PR box'); await p.selectOption('#n-dk', 'Client sign-off'); await p.selectOption('#n-dw', 'Cat');
   await p.click('#fbox button[type=submit]'); await p.waitForTimeout(300);
   check('Campaigns', 'Added dependency shows as open', (await text('.deps')).includes('Client sign-off on the PR box'));
@@ -370,7 +370,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await p.click(`[data-act=camp][data-id="${campOpt}"]`); await p.waitForTimeout(200);
   await p.click('[data-act=dep-state]'); await p.waitForTimeout(250);
   check('Campaigns', 'Clearing a dependency moves it to cleared', (await p.$$('.dep.cleared')).length === 1);
-  await p.click('.cbox .tchip'); await p.waitForTimeout(200);
+  await p.click('.trows .team'); await p.waitForTimeout(200);
   check('Campaigns', 'Team chip opens that team board for this campaign only', (await text('.crumb')).includes('Spring launch') && (await p.$$('main .kc')).length === 1);
   await p.click('.crumb [data-act=camp]'); await p.waitForTimeout(150);
   check('Campaigns', 'Breadcrumb goes back to the campaign list', !!(await p.$('.camps')));
