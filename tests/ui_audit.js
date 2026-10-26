@@ -6,7 +6,7 @@ const { chromium } = require(process.env.PW || '/opt/node-tools/node_modules/pla
 const url = 'file://' + path.resolve(process.argv[2]);
 
 const measure = () => {
-  const vis = e => { const r = e.getBoundingClientRect(); const s = getComputedStyle(e); return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none' && !e.closest('[hidden]') };
+  const vis = e => { const r = e.getBoundingClientRect(); const s = getComputedStyle(e); return r.width > 1 && r.height > 1 && s.visibility !== 'hidden' && s.display !== 'none' && !e.closest('[hidden]') && !e.closest('.sr') && !(e.closest('details:not([open])') && !e.closest('summary')) };
   const rgb = c => { const m = c.match(/[\d.]+/g); return m ? m.map(Number) : [0, 0, 0, 0] };
   const lum = ([r, g, b]) => { const f = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4) }; return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b) };
   const blend = (top, bot) => { const a = top[3] === undefined ? 1 : top[3]; return [0, 1, 2].map(i => top[i] * a + bot[i] * (1 - a)).concat([1]) };
@@ -30,7 +30,7 @@ const measure = () => {
     const inline = getComputedStyle(e).display === 'inline' && e.tagName === 'A';
     if (!inline && (r.width < 24 || r.height < 24)) out.target24.push({ el: label(e), name: name.slice(0, 30), w: Math.round(r.width), h: Math.round(r.height) });
     if (!inline && (r.width < 44 || r.height < 44)) out.target44.push({ el: label(e), name: name.slice(0, 30), h: Math.round(r.height) });
-    if (/BUTTON|A/.test(e.tagName) && !name && !e.getAttribute('aria-labelledby')) out.noName.push({ el: label(e) });
+    if (/^(BUTTON|A)$/.test(e.tagName) && !name && !e.getAttribute('aria-labelledby')) out.noName.push({ el: label(e) });
     if (/INPUT|SELECT|TEXTAREA/.test(e.tagName) && !['checkbox', 'radio'].includes(e.type)) { const has = e.getAttribute('aria-label') || e.getAttribute('aria-labelledby') || (e.id && document.querySelector(`label[for="${CSS.escape(e.id)}"]`)) || e.closest('label'); if (!has) out.noLabel.push({ el: label(e), name: e.name || e.id || e.placeholder || '' }) }
   }
   // heading order

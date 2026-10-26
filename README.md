@@ -66,7 +66,7 @@ Build a preview of the real app on exported data, then run the checks. Nothing i
 python3 -I docs/feature_map/make_preview.py .live app/index.html .shots/preview.html          # lead
 python3 -I docs/feature_map/make_preview.py .live app/index.html .shots/member.html member    # member
 python3 -I docs/feature_map/make_preview.py .live app/index.html .shots/view.html view        # view only
-node tests/propagation.test.js .shots/preview.html   # every kind of update reaches every screen (118 checks)
+node tests/propagation.test.js .shots/preview.html   # every kind of update reaches every screen (124 checks)
 node tests/controls.js .shots/preview.html           # controls that only appear in a certain mode (53)
 node tests/audit.js .shots/preview.html              # every screen, every view, desktop and phone, every button
 node tests/ui_audit.js .shots/preview.html           # UI rules: contrast, text size, target size, labels, headings (light, dark, desktop, phone)

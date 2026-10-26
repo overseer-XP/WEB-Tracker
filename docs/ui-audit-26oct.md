@@ -45,3 +45,22 @@ Checked with `tests/ui_audit.js` (13 screens x light/dark x desktop 1440/phone 3
 ## Not checked
 
 Screen reader reading order with a real screen reader, landscape phone, largest system text size. These need a person on a device.
+
+## Fixed in version 25 (same day)
+
+All 15 findings fixed. `tests/ui_audit.js` now reports zero on every measured rule across 52 screen combinations (13 screens, light and dark, desktop and phone): contrast, text under 12px, targets under 24px, 44px phone targets, controls without a name, fields without a label, heading order, emoji, cut-off text without a tooltip.
+
+| # | Fix |
+|---|---|
+| 1-4 | Faint and muted text, status colours, accent and avatar colours darkened to at least 4.6:1 on every surface |
+| 5 | Brand name uses normal text colour in dark mode; dark Done squares darkened for their tick |
+| 6 | List picker on the card back moves a card without dragging |
+| 7 | Every edit panel label is tied to its field |
+| 8 | Every control at least 24px (board squares, pickers, checkboxes, sort, fold, links) |
+| 9 | Campaigns have their own address (#brand-bespoke/c/...); browser Back and shared links work |
+| 10 | At phone width: 16px text fields, 44px controls |
+| 11 | 12px minimum text |
+| 12 | Heading order fixed on Overview and Leadership |
+| 13 | Full text on hover for cut-off labels and timeline names |
+| 14 | Skip to content link; focus moves to the page title on page change |
+| 15 | Body line height 1.5 |

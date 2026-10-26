@@ -19,7 +19,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   const mainText = () => text('main');
   const railGroup = name => p.evaluate(name => { let g = ''; const out = {}; for (const el of document.querySelectorAll('.rail h3, .rail .blink')) { if (el.tagName === 'H3') g = el.innerText.trim(); else out[[...el.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join('').trim()] = g } return out[name] }, name);
   const tile = label => p.evaluate(l => { for (const t of document.querySelectorAll('.tile')) if (t.innerText.includes(l)) return +t.querySelector('b').innerText; return null }, label);
-  const planColumn = name => p.evaluate(n => { for (const w of document.querySelectorAll('.week')) for (const c of w.querySelectorAll('.chip .nm')) if (c.innerText === n) return w.querySelector('h4').innerText; return null }, name);
+  const planColumn = name => p.evaluate(n => { for (const w of document.querySelectorAll('.week')) for (const c of w.querySelectorAll('.chip .nm')) if (c.innerText === n) return w.querySelector('h3').innerText; return null }, name);
   const overviewRow = name => p.evaluate(n => { const tbs = document.querySelectorAll('main table'); const last = tbs[tbs.length - 1]; if (!last) return ''; for (const r of last.querySelectorAll('tbody tr')) if (r.querySelector('.bname') && r.querySelector('.bname').innerText === n) return r.innerText.replace(/\s+/g, ' '); return '' }, name);
   const openBrandEditor = async id => { await go('brand-' + id); await p.click('.bhead [data-act=open][data-kind=brand]'); await p.waitForTimeout(200) };
   const drawerSave = async () => { await p.click('[data-act=dsave]'); await p.waitForTimeout(350) };
@@ -438,6 +438,27 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   check('Leadership', 'Launch calendar shows the CELF campaign', (await text('.cal')).includes('Spring launch'));
   await p.click('.lc:has-text("Spring launch")'); await p.waitForTimeout(250);
   check('Leadership', 'Launch card opens the campaign', (await text('.cbox')).includes('Spring launch'));
+
+  // 34. Audit fixes: campaign has its own address, Back works, keyboard way to move a card, skip link
+  await go('brand-celf'); await p.click('button[data-tab=tasks]'); await p.waitForTimeout(150);
+  await p.click('.camp:has-text("Spring launch")'); await p.waitForTimeout(300);
+  const campUrl = await p.evaluate(() => location.hash);
+  check('Audit fixes', 'A campaign has its own address', /^#brand-celf\/c\//.test(campUrl), campUrl);
+  await p.goBack(); await p.waitForTimeout(300);
+  check('Audit fixes', 'Browser Back returns to the campaign list', (await p.evaluate(() => location.hash)) === '#brand-celf' && !!(await p.$('.camps')));
+  await p.goto(url + campUrl); await p.waitForTimeout(700);
+  check('Audit fixes', 'Opening the address goes straight to the campaign', (await text('.bslim .crumb')).includes('Spring launch'));
+  await go('brand-celf'); await p.click('button[data-tab=tasks]'); await p.waitForTimeout(150); await p.click('[data-act=camp][data-id=_none]'); await p.waitForTimeout(200);
+  const lcard = await p.$eval('.kcards .kc', e => e.dataset.id); await p.click(`.kc[data-id="${lcard}"]`); await p.waitForTimeout(250);
+  const target = await p.$eval('#d-list', e => [...e.options].find(o => !o.selected).value);
+  const tname = await p.$eval('#d-list', (e, v) => [...e.options].find(o => o.value === v).text, target);
+  await p.selectOption('#d-list', target); await drawerSave();
+  check('Audit fixes', 'List picker on the card back moves the card, no drag needed', !!(await p.$(`.kcol:has(.kname:text-is("${tname}")) .kc[data-id="${lcard}"]`)));
+  check('Audit fixes', 'Every edit panel label is tied to its field', await p.evaluate(() => { const ls = [...document.querySelectorAll('#drawer label')]; return true }) && (await p.click(`.kc[data-id="${lcard}"]`).then(() => p.waitForTimeout(200)).then(() => p.$$eval('#drawer .f > label', ls => ls.every(l => !l.nextElementSibling || !/INPUT|SELECT|TEXTAREA/.test(l.nextElementSibling.tagName) || l.htmlFor === l.nextElementSibling.id)))));
+  await p.click('#drawer [data-act=close]').catch(() => {});
+  await p.keyboard.press('Tab'); await p.waitForTimeout(50);
+  await go('overview'); await p.evaluate(() => document.body.focus()); await p.focus('.skip'); await p.keyboard.press('Enter'); await p.waitForTimeout(100);
+  check('Audit fixes', 'Skip link moves focus to the page title', await p.evaluate(() => document.activeElement && document.activeElement.tagName === 'H1'));
   check('Page', 'No script errors', errors.length === 0, errors.join(' | '));
   const failed = results.filter(r => !r.ok);
   for (const r of results) console.log(`${r.ok ? 'PASS' : 'FAIL'} | ${r.area} | ${r.what}${r.ok ? '' : ' | ' + r.detail}`);
