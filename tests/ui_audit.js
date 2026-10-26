@@ -40,7 +40,7 @@ const measure = () => {
 
 (async () => {
   const b = await chromium.launch(); const all = {}; const errs = [];
-  const pages = [['overview'], ['mine'], ['leadership'], ['people'], ['sow'], ['access'], ['bp'], ['settings'], ['brand-bespoke', 'campaigns'], ['brand-bespoke', 'campaign'], ['brand-bespoke', 'card'], ['brand-bespoke', 'steps'], ['brand-celf', 'board']];
+  const pages = [['overview'], ['mine'], ['leadership'], ['people'], ['sow'], ['access'], ['bp'], ['settings'], ['brand-bespoke'], ['brand-bespoke/sow'], ['brand-bespoke', 'campaigns'], ['brand-bespoke', 'campaign'], ['brand-bespoke', 'card'], ['brand-bespoke', 'steps'], ['brand-celf', 'board']];
   for (const [w, wl] of [[1440, 'desktop'], [375, 'phone']]) for (const theme of ['light', 'dark']) {
     const p = await b.newPage({ viewport: { width: w, height: 900 } }); p.on('pageerror', e => errs.push(e.message));
     await p.goto(url + '#overview'); await p.waitForTimeout(600);

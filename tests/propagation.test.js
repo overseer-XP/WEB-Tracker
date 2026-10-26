@@ -21,7 +21,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   const tile = label => p.evaluate(l => { for (const t of document.querySelectorAll('.tile')) if (t.innerText.includes(l)) return +t.querySelector('b').innerText; return null }, label);
   const planColumn = name => p.evaluate(n => { for (const w of document.querySelectorAll('.week')) for (const c of w.querySelectorAll('.chip .nm')) if (c.innerText === n) return w.querySelector('h3').innerText; return null }, name);
   const overviewRow = name => p.evaluate(n => { const tbs = document.querySelectorAll('main table'); const last = tbs[tbs.length - 1]; if (!last) return ''; for (const r of last.querySelectorAll('tbody tr')) if (r.querySelector('.bname') && r.querySelector('.bname').innerText === n) return r.innerText.replace(/\s+/g, ' '); return '' }, name);
-  const openBrandEditor = async id => { await go('brand-' + id); await p.click('.bhead [data-act=open][data-kind=brand]'); await p.waitForTimeout(200) };
+  const openBrandEditor = async id => { await go('brand-' + id); await p.click('.hero [data-act=open][data-kind=brand]'); await p.waitForTimeout(200) };
   const drawerSave = async () => { await p.click('[data-act=dsave]'); await p.waitForTimeout(350) };
   const view = async (k, v) => { const b = await p.$(`[data-act=${k}][data-v="${v}"]`); if (b) { await b.click(); await p.waitForTimeout(200) } };
   const setMe = async name => { await p.selectOption('#whoSel', name); await p.waitForTimeout(250) };
@@ -39,7 +39,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   check('Brand stage On Hold', 'SOW tracker tags it Brand on hold', (await mainText()).includes('MUMUKBrand on hold') || (await mainText()).includes('MUMUK Brand on hold'));
   await go('brand-mumuk');
   check('Brand stage On Hold', 'Brand page shows the on hold notice', (await mainText()).includes('is on hold'));
-  check('Brand stage On Hold', 'Brand page SOW tile says On hold', (await text('[data-tab=sow]')).includes('On hold'));
+  check('Brand stage On Hold', 'Brand page SOW tile says On hold', (await text('.tsow')).includes('On hold'));
   await setMe('Cyrus'); await go('mine');
   await view('minetab', 'onboarding');
   check('Brand stage On Hold', 'My tasks: its brand card is greyed as On hold and sorted last', await p.evaluate(() => { const cs = [...document.querySelectorAll('.bcard')]; const c = cs.find(x => x.querySelector('.bname').innerText === 'MUMUK'); return !!c && c.classList.contains('held') && cs.indexOf(c) >= cs.filter(x => !x.classList.contains('held')).length }));
@@ -88,12 +88,12 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   const past = new Date(); past.setDate(past.getDate() - 2); await p.fill('#d-deadline', past.toISOString().slice(0, 10)); await drawerSave();
   await go('overview');
   check('Task deadline', 'Brand health turns At Risk', (await overviewRow('Tiny Wins')).includes('At Risk'), (await overviewRow('Tiny Wins')).slice(0, 60));
-  await go('brand-tiny-wins'); await p.click('[data-act=dept][data-dep=""]').catch(() => {}); await p.waitForTimeout(150);
+  await go('brand-tiny-wins/tasks'); await p.waitForTimeout(150);
   check('Task deadline', 'Card shows a red due date', !!(await p.$('.kc .kbg.bad')));
 
   // 7. Step Done updates onboarding % (ORA, first open step)
   await go('brand-ora'); await p.click('button[data-tab=steps]'); await p.waitForTimeout(200);
-  const pct = async () => +(((await text('.bhead')).match(/Onboarding (\d+)%/) || [])[1] || -1);
+  const pct = async () => +(((await text('.mt[data-tab=steps]')).match(/Onboarding\s+(\d+)%/) || [])[1] || -1);
   const open = await p.$$eval('select[data-code]', els => els.filter(e => !['Done', 'N/A'].includes(e.value)).map(e => e.dataset.code));
   const pct0 = await pct();
   await p.selectOption(`select[data-code="${open[0]}"]`, 'Done'); await p.waitForTimeout(300);
@@ -104,11 +104,12 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
 
   // 8. Step owner + blocker reach My tasks and the brand header (ORA, next open step)
   await go('brand-ora'); await p.click('button[data-tab=steps]'); await p.waitForTimeout(150);
+  open[1] = (await p.$$eval('select[data-code]', els => els.filter(e => !['Done', 'N/A'].includes(e.value)).map(e => e.dataset.code)))[0];
   const stepName = await p.$eval(`select[data-code="${open[1]}"]`, e => e.closest('tr, .step, li, div').innerText.split('\n')[0].trim()).catch(() => '');
-  const blocked0 = +(((await text('.bhead')).match(/(\d+) steps? blocked/) || [])[1] || 0);
+  const blocked0 = await p.evaluate(() => [...document.querySelectorAll('.step .blk')].length);
   await p.click(`[data-act=open][data-kind=step][data-code="${open[1]}"]`); await p.waitForTimeout(200);
   await p.selectOption('#d-owner', 'Noopur'); await p.fill('#d-blk_text', 'Founder not replying'); await p.selectOption('#d-blk_person', 'Ben'); await drawerSave();
-  check('Step blocker', 'Brand header counts the blocked step', (await text('.bhead')).includes((blocked0 + 1) + ' step' + (blocked0 ? 's' : '') + ' blocked'), await text('.bhead'));
+  await go('brand-ora'); check('Step blocker', 'Brand health tile counts the blocked step', (await text('.bt.health')).includes((blocked0 + 1) + ' onboarding step' + (blocked0 ? 's' : '') + ' blocked'), await text('.bt.health'));
   await setMe('Noopur'); await go('mine');
   await view('minetab', 'onboarding');
   check('Step owner', 'My tasks shows the step as blocked on the ORA card', await p.evaluate(code => { const c = [...document.querySelectorAll('.bcard')].find(x => x.querySelector('.bname').innerText === 'ORA'); return !!c && [...c.querySelectorAll('.item.blocked')].some(i => i.innerText.includes(code)) && c.innerText.includes('1 blocked') }, open[1]));
@@ -199,10 +200,11 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
 
   // 19. Stage change starts the days-in-stage clock
   await openBrandEditor('celf'); await p.selectOption('#d-stage', 'Founder Workshops'); await drawerSave();
-  check('Stage age', 'Brand facts show days in stage', (await text('.facts')).includes('for 0 days'));
+  check('Stage age', 'Brand facts show days in stage', (await text('.hero')).includes('for 0 days'));
 
   // 20. Gate sign-off is recorded with the person and date
-  await setMe('Noopur'); await go('brand-bespoke'); await p.click('button[data-tab=steps]'); await p.click('[data-act=allphases]').catch(() => {}); await p.waitForTimeout(200);
+  await setMe('Noopur'); await go('brand-bespoke'); await p.click('button[data-tab=steps]'); await p.waitForTimeout(200);
+  for (const n of await p.$$('.pnode')) { if (await p.$('.step.isgate select[data-code]')) break; await n.click(); await p.waitForTimeout(150) }
   const gate = await p.$$eval('.step.isgate select[data-code]', els => { const e = els.find(x => x.offsetHeight); return e && e.dataset.code });
   await p.selectOption(`select[data-code="${gate}"]`, 'In Progress'); await p.waitForTimeout(200);
   await p.selectOption(`select[data-code="${gate}"]`, 'Done'); await p.waitForTimeout(300);
@@ -212,7 +214,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await go('brand-kndz'); await p.click('button[data-tab=updates]'); await p.waitForTimeout(150);
   await p.fill('#c-text', 'Founder sent the GF numbers, @Cat please check'); await p.click('#cform button[type=submit]'); await p.waitForTimeout(300);
   check('Comments', 'Comment shows on the brand Updates tab', (await mainText()).includes('Founder sent the GF numbers'));
-  check('Comments', 'Updates tile counts it', (await text('[data-tab=updates] .sv')) === '1');
+  check('Comments', 'Updates tile counts it', (await text('.mt[data-tab=updates] b')) === '1');
   await setMe('Cat'); await go('mine');
   check('Comments', 'Mention shows in Cat\'s My tasks', await p.evaluate(() => [...document.querySelectorAll('.item.men')].some(x => x.innerText.includes('KNDZ'))));
 
@@ -222,9 +224,9 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await p.click('#tform button[type=submit]'); await p.waitForTimeout(300);
   check('Templates', 'Template is listed', (await mainText()).includes('UGC kickoff'));
   await go('brand-ora'); await p.click('button[data-tab=tasks]'); await p.click('[data-act=dept][data-dep=""]').catch(() => {}); await p.waitForTimeout(150);
-  const before22 = +(await text('[data-tab=tasks]')).match(/(\d+) open/)[1];
+  const before22 = +(await text('.mt[data-tab=tasks] b'));
   await p.selectOption('select[data-act=use-tpl]', '0'); await p.waitForTimeout(150); await p.click('[data-act=mok]'); await p.waitForTimeout(500);
-  check('Templates', 'Using it adds 2 tasks to the brand', +(await text('[data-tab=tasks]')).match(/(\d+) open/)[1] === before22 + 2);
+  check('Templates', 'Using it adds 2 tasks to the brand', +(await text('.mt[data-tab=tasks] b')) === before22 + 2);
 
   // 23. People view: pick a person, filter by vertical
   await go('people'); const rows23 = (await p.$$('main tbody tr')).length;
@@ -362,7 +364,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   check('Campaigns', 'Campaign board has one list, for the team that owns the moved task, with the card in it', (await p.$$('.kb section.kcol')).length === 1 && (await p.$$('.kb .kc')).length === 1);
   check('Campaigns', 'No dependency box on the campaign page', !(await p.$('.deps')));
   await p.click('.crumb [data-act=camp]'); await p.waitForTimeout(150);
-  check('Campaigns', 'Breadcrumb goes back to the campaign list', !!(await p.$('.camps')));
+  check('Campaigns', 'Breadcrumb goes back to the campaign list', !!(await p.$('.clist')));
   await go('mine'); await go('brand-celf');
 
   // 32. Board: lists per team, add and rename a list, drag cards between lists, card back
@@ -420,17 +422,16 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   check('Leadership', 'Decision is posted on the brand Updates', (await mainText()).includes('Leadership agreed') && (await mainText()).includes('Yes, within budget'));
   for (const b of ['bespoke', 'seoul-tonic']) {
     await go('brand-' + b); await p.click('button[data-tab=steps]'); await p.waitForTimeout(150);
-    if (await p.$('[data-act=allphases]:has-text("Show all phases")')) await p.click('[data-act=allphases]');
-    for (const c of ['P4.12', 'P4.16', 'P5.01', 'P5.02']) { const sel = await p.$(`select[data-code="${c}"]`); if (sel && await sel.inputValue() !== 'Done') { await sel.selectOption('Done'); await p.waitForTimeout(150) } } }
+    for (const c of ['P4.12', 'P4.16', 'P5.01', 'P5.02']) { await p.click(`.pnode[data-p="${c.split('.')[0]}"]`); await p.waitForTimeout(120); const sel = await p.$(`select[data-code="${c}"]`); if (sel && await sel.inputValue() !== 'Done') { await sel.selectOption('Done'); await p.waitForTimeout(150) } } }
   await go('leadership');
   check('Leadership', 'A gate with every earlier step done waits for sign-off', (await text('.decs')).includes('Bespoke') && (await text('.decs')).includes('P6.01'));
   await p.click('.dec:has-text("Bespoke · P6.01") [data-act=gate-ok]'); await p.waitForTimeout(400);
   check('Leadership', 'Signed-off gate leaves the inbox', !(await text('.decs')).includes('Bespoke · P6.01'));
   await p.click('.dec:has-text("Seoul Tonic · P6.01") [data-act=gate-back]'); await p.fill('#n-note', 'Pricing page missing'); await p.click('#fbox button[type=submit]'); await p.waitForTimeout(400);
   check('Leadership', 'Sent-back gate leaves the inbox', !(await text('.decs')).includes('Seoul Tonic · P6.01'));
-  await go('brand-bespoke'); await p.click('button[data-tab=steps]'); await p.waitForTimeout(150);
+  await go('brand-bespoke'); await p.click('button[data-tab=steps]'); await p.waitForTimeout(150); await p.click('.pnode[data-p="P6"]'); await p.waitForTimeout(150);
   check('Leadership', 'Signed-off gate is Done with the leader named', (await p.$eval('select[data-code="P6.01"]', e => e.value)) === 'Done' && (await mainText()).includes('Signed off by Noopur'));
-  await p.click('[data-act=open][data-kind=step][data-code="P6.01"]').catch(() => {}); await go('brand-seoul-tonic'); await p.click('button[data-tab=steps]'); await p.waitForTimeout(150);
+  await p.click('[data-act=open][data-kind=step][data-code="P6.01"]').catch(() => {}); await go('brand-seoul-tonic'); await p.click('button[data-tab=steps]'); await p.waitForTimeout(150); await p.click('.pnode[data-p="P6"]'); await p.waitForTimeout(150);
   await p.click('[data-act=open][data-kind=step][data-code="P6.01"]'); await p.waitForTimeout(250);
   check('Leadership', 'Step owner sees why it was sent back', (await text('#drawer')).includes('Sent back by Noopur') && (await text('#drawer')).includes('Pricing page missing'));
   await p.click('#drawer [data-act=close]').catch(() => {});
@@ -441,11 +442,11 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
 
   // 34. Audit fixes: campaign has its own address, Back works, keyboard way to move a card, skip link
   await go('brand-celf'); await p.click('button[data-tab=tasks]'); await p.waitForTimeout(150);
-  await p.click('.camp:has-text("Spring launch")'); await p.waitForTimeout(300);
+  await p.click('.crow:has-text("Spring launch")'); await p.waitForTimeout(300);
   const campUrl = await p.evaluate(() => location.hash);
   check('Audit fixes', 'A campaign has its own address', /^#brand-celf\/c\//.test(campUrl), campUrl);
   await p.goBack(); await p.waitForTimeout(300);
-  check('Audit fixes', 'Browser Back returns to the campaign list', (await p.evaluate(() => location.hash)) === '#brand-celf' && !!(await p.$('.camps')));
+  check('Audit fixes', 'Browser Back returns to the campaign list', (await p.evaluate(() => location.hash)) === '#brand-celf/tasks' && !!(await p.$('.clist')));
   await p.goto(url + campUrl); await p.waitForTimeout(700);
   check('Audit fixes', 'Opening the address goes straight to the campaign', (await text('.bslim .crumb')).includes('Spring launch'));
   await go('brand-celf'); await p.click('button[data-tab=tasks]'); await p.waitForTimeout(150); await p.click('[data-act=camp][data-id=_none]'); await p.waitForTimeout(200);

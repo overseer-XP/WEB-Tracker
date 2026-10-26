@@ -16,7 +16,7 @@ const res = []; const check = (who, what, ok, d = '') => res.push([ok ? 'OK  ' :
   check('Member', 'No Settings in the menu', !(await p.$('.nav a[href="#settings"]')));
   await go(p, 'settings'); check('Member', 'Settings link opens the Overview instead', (await p.$eval('main h1', e => e.innerText)) === 'Overview');
   await go(p, 'brand-bespoke');
-  check('Member', 'No Client view or Edit details button', !(await p.$('a[href="#client-bespoke"]')) && !(await p.$('.bhead [data-kind=brand]')));
+  check('Member', 'No Client view or Edit details button', !(await p.$('a[href="#client-bespoke"]')) && !(await p.$('.hero [data-kind=brand]')));
   await go(p, 'client-bespoke'); check('Member', 'Client page link is not available', !(await p.$('.client')));
   await go(p, 'brand-bespoke'); await p.click('button[data-tab=tasks]'); await p.waitForTimeout(200);
   await p.selectOption('#whoSel', 'Cat'); await p.waitForTimeout(200);

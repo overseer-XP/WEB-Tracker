@@ -68,12 +68,10 @@ input,select,textarea{background-color:var(--panel);color:var(--ink)}
 .addbtn{border:1px dashed var(--line2);background:transparent;border-radius:6px;padding:6px;cursor:pointer;color:var(--muted)}
 .addbtn:hover{border-color:var(--accent);color:var(--accent)}
 /* health dot */
-.dot{width:9px;height:9px;border-radius:50%;flex:none;background:var(--off);display:inline-block}
+.dot{width:10px;height:10px;border-radius:50%;flex:none;background:var(--off);display:inline-block}
+.dot.h-Live,.dot.h-OnTrack{background:var(--ok)}
+.dot.h-AtRisk,.dot.h-Hasblockers,.dot.h-HasBlockers{background:var(--warn);border-radius:0;clip-path:polygon(50% 0,100% 100%,0 100%);width:11px;height:10px}
 .dot.h-Blocked{background:var(--bad);border-radius:2px}
-.dot.h-AtRisk{background:var(--dRisk)}
-.dot.h-OnTrack{background:var(--dTrack)}
-.dot.h-Live{background:var(--dLive)}
-.dot.h-Hasblockers,.dot.h-HasBlockers{background:transparent;box-shadow:inset 0 0 0 2.5px var(--bad)}
 .dot.h-OnHold{background:transparent;box-shadow:inset 0 0 0 2px var(--faint)}
 /* top */
 .mainwrap{display:flex;flex-direction:column;min-width:0;height:100%}
@@ -195,9 +193,8 @@ select.ps:disabled{cursor:default;background-image:none;padding-right:9px}
 .bslim .crumb{margin:0;font-size:14px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}.bslim .crumb b{font-weight:700}
 .mtabs{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}.mt{all:unset;cursor:pointer;font-size:12px;padding:4px 9px;border-radius:7px;border:1px solid var(--line);border-bottom:3px solid var(--line2);color:var(--muted);white-space:nowrap}.mt b{color:var(--ink);font-weight:700;margin-left:2px}
 .mt:hover{background:var(--offBg)}.mt.on{background:var(--accentSoft);border-color:var(--accent);color:var(--accent)}.mt:focus-visible{outline:2px solid var(--accent)}
-.mt-bad{border-bottom-color:var(--bad)}.mt-warn{border-bottom-color:var(--warn)}.mt-ok{border-bottom-color:var(--ok)}.mt-info{border-bottom-color:var(--info)}
 .cwarn{font-size:13px;font-weight:600}.cwarn.bad{color:var(--bad)}.cwarn.warn{color:var(--warn)}.cwarn.ok{color:var(--ok)}
-.bblock{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--bad);border-radius:10px;padding:8px 12px;margin:0 0 12px;box-shadow:var(--shadow);font-size:13px}
+.bblock{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin:0 0 12px;box-shadow:var(--shadow);font-size:13px}
 .bbk{all:unset;cursor:pointer;display:inline-flex;gap:6px;align-items:center;padding:3px 8px;border-radius:7px;background:var(--offBg)}.bbk:hover{background:var(--line)}.bbk:focus-visible{outline:2px solid var(--accent)}
 .sec{all:unset;box-sizing:border-box;cursor:pointer;background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--line2);border-radius:10px;padding:9px 12px 10px;display:flex;flex-direction:column;gap:1px;min-width:0;transition:box-shadow .15s,border-color .15s}
 .sec .sl{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -220,7 +217,7 @@ select.ps:disabled{cursor:default;background-image:none;padding-right:9px}
 .cteams{display:flex;flex-wrap:wrap;gap:5px}
 .tchip{all:unset;box-sizing:border-box;font-size:12px;border:1px solid var(--line);border-left:4px solid var(--tc);border-radius:6px;padding:2px 8px;background:var(--panel)}button.tchip{cursor:pointer}button.tchip:hover{border-color:var(--line2)}
 .camp .go,.team .go{margin-top:auto;font-size:12.5px;font-weight:700;color:var(--accent)}
-.cbox{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:12px;padding:16px 18px;margin-bottom:6px}
+.cbox{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:6px}
 .ctop{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.ctop h2{margin:0;font-size:20px}
 .cgrid{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:20px;margin-top:12px}.cgrid h3,.sech{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:0 0 6px}.cgrid p{margin:0 0 10px}
 .sech{margin:22px 0 10px;font-size:13px}
@@ -267,7 +264,7 @@ select.ps:disabled{cursor:default;background-image:none;padding-right:9px}
 .kempty{font-size:12px;color:var(--faint);padding:6px 4px}
 .kc{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:9px 10px;box-shadow:0 1px 2px rgb(0 0 0/.08);cursor:pointer;display:flex;flex-direction:column;gap:6px;transition:box-shadow .12s,border-color .12s}
 .kc:hover{border-color:var(--line2);box-shadow:0 4px 12px rgb(0 0 0/.12)}.kc:focus-visible{outline:2px solid var(--accent);outline-offset:1px}.kc.dragging{opacity:.45}
-.kc[draggable=true]{cursor:grab}.kc-bad{border-left:4px solid var(--bad)}
+.kc[draggable=true]{cursor:grab}.kc-bad{box-shadow:inset 0 0 0 1.5px var(--bad)}
 .kls{display:flex;gap:4px;flex-wrap:wrap}.klabel{font-size:12px;font-weight:700;padding:1px 7px;border-radius:4px;background:color-mix(in srgb,var(--tc) 20%,var(--panel));border-left:3px solid var(--tc);color:var(--ink);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .kcamp{--tc:var(--accent)}
 .kt{font-size:13.5px;font-weight:600;line-height:1.35}
@@ -495,6 +492,89 @@ table.grid td{vertical-align:middle}
   .accmd{grid-template-columns:1fr}.acclist{position:static;max-height:240px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* brand home: bento tiles; size follows importance */
+.bento{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px;margin-bottom:8px}
+.bt{all:unset;box-sizing:border-box;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px 22px;display:flex;flex-direction:column;gap:10px;min-width:0;box-shadow:var(--shadow)}
+button.bt{cursor:pointer;transition:box-shadow .15s,border-color .15s}button.bt:hover{border-color:var(--line2);box-shadow:0 6px 20px rgb(0 0 0/.08)}button.bt:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.bt.hero{grid-column:span 8}.bt.health{grid-column:span 4}.bt.tc{grid-column:span 8}.bt.tsow{grid-column:span 4}.bt.tob{grid-column:span 12}.bt.ts{grid-column:span 4}
+.bh1{margin:0;font-size:38px;line-height:1.1;letter-spacing:-.01em;color:var(--bink,var(--ink))}:root[data-theme="dark"] .bh1{color:var(--ink)}
+.intro{margin:0;font-size:17px;line-height:1.5;color:var(--ink);max-width:62ch}
+.people{display:flex;gap:28px;flex-wrap:wrap}.who2{display:flex;gap:10px;align-items:center}.who2>span:last-child{display:flex;flex-direction:column;font-size:15px}.who2 .faint{font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+.av.big{width:38px;height:38px;font-size:14px}
+.hact{gap:8px;margin-top:auto}
+.btl{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.btv{font-size:15px;font-weight:700}.btbig{font-size:40px;font-weight:700;line-height:1.05;letter-spacing:-.01em}
+.bth{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.bt .go{margin-top:auto;font-size:13px;font-weight:700;color:var(--accent)}
+.bt .bar.wide,.sowbar{width:100%;height:10px}.bt .bar.wide i,.sowbar i{height:10px}
+.why{margin:4px 0 0;padding-left:18px;font-size:14px}.why li{margin:2px 0}
+.nxt{margin:auto 0 0;display:flex;flex-direction:column;gap:2px;font-size:14px}
+.clamp3{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.clamp1{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.plist{display:flex;flex-direction:column;gap:4px;font-size:13.5px}.plist>span{display:flex;justify-content:space-between;gap:8px}
+/* status signals: a shape plus a word, never colour alone */
+.sig{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:13.5px;color:var(--ink)}
+.sig svg{width:16px;height:16px;flex:none;fill:currentColor}.sig svg .in{fill:none;stroke:var(--panel);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.sig svg .ring{fill:none;stroke:currentColor;stroke-width:2.4}
+.sig-good svg{color:var(--ok)}.sig-warn svg{color:var(--warn)}.sig-bad svg{color:var(--bad)}.sig-info svg{color:var(--info)}.sig-off svg{color:var(--faint)}
+.sig.big{font-size:24px;gap:10px;font-weight:700}.sig.big svg{width:30px;height:30px}
+.sig.sm svg{width:13px;height:13px}.mt .sig.sm{margin-right:4px;vertical-align:-2px}
+.bbk>svg{width:14px;height:14px;flex:none;fill:var(--warn)}.bbk>svg .in{fill:none;stroke:var(--panel);stroke-width:2}.bbk>svg:has(rect){fill:var(--bad)}
+/* campaign roadmap: shared month axis, one bar per campaign */
+.rmap{position:relative;display:flex;flex-direction:column;gap:6px}
+.rmh,.rmr{display:grid;grid-template-columns:minmax(120px,30%) minmax(0,1fr);gap:10px;align-items:center}
+.rmh{font-size:12px;color:var(--muted);min-height:18px}.rmh .rmt{position:relative;height:18px}
+.rmm{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap}
+.rmr{all:unset;box-sizing:border-box;display:grid;grid-template-columns:minmax(120px,30%) minmax(0,1fr);gap:10px;align-items:center;cursor:pointer;min-height:36px;border-radius:8px;padding:0 4px}
+.rmr:hover{background:var(--offBg)}.rmr:focus-visible{outline:2px solid var(--accent)}
+.rmn{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rmr .rmt{position:relative;height:14px;background:var(--panel2);border-radius:7px}
+.rmb{position:absolute;top:0;bottom:0;border-radius:7px;background:var(--info)}
+.rmb-good{background:var(--ok)}.rmb-warn{background:var(--warn)}.rmb-bad{background:var(--bad)}.rmb-off{background:var(--off)}
+.rmb.open{-webkit-mask-image:linear-gradient(90deg,#000 70%,transparent);mask-image:linear-gradient(90deg,#000 70%,transparent)}
+.rmover{position:absolute;top:0;bottom:18px;right:4px;left:calc(30% + 12px);pointer-events:none}
+.rmtoday{position:absolute;top:0;bottom:0;border-left:2px dashed var(--ink);opacity:.55}.rmtoday span{position:absolute;bottom:-18px;left:-16px;font-size:12px;font-weight:700;white-space:nowrap}
+.rmap{padding-bottom:18px}
+/* onboarding journey: one bar, a segment per phase */
+.jbar{display:flex;gap:6px}
+.jseg{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:6px;min-width:104px;padding:6px;border-radius:10px}
+.jseg:hover{background:var(--offBg)}.jseg:focus-visible{outline:2px solid var(--accent)}
+.jtrack{display:block;height:12px;border-radius:6px;background:var(--panel2);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden}.jtrack i{display:block;height:100%;background:var(--info)}
+.jseg.done .jtrack i{background:var(--ok)}.jseg.now .jtrack{box-shadow:inset 0 0 0 2px var(--accent)}
+.jl{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.jc{font-size:12px}
+/* SOW page */
+.sowtop{display:flex;align-items:center;gap:24px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px 22px;margin-bottom:14px;box-shadow:var(--shadow)}.sowtop>div{display:flex;flex-direction:column}
+.sowlanes{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.slane{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:4px;box-shadow:var(--shadow)}.slane h3{margin:0 0 4px;font-size:14px}
+.srow{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:1px;padding:6px 8px;border-radius:8px;min-height:44px}.srow:hover{background:var(--offBg)}.srow:focus-visible{outline:2px solid var(--accent)}.srow .faint{font-size:12.5px;padding-left:22px}
+/* phase track: horizontal on desktop, vertical on phone */
+.ptrack{display:flex;gap:0;margin:4px 0 16px;overflow-x:auto;padding:4px 2px}
+.pnode{all:unset;box-sizing:border-box;cursor:pointer;flex:1 1 0;min-width:120px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;position:relative;padding:6px 4px;border-radius:10px}
+.pnode::before{content:"";position:absolute;top:22px;left:-50%;right:50%;height:3px;background:var(--line2);z-index:0}.pnode:first-child::before{display:none}.pnode.done::before,.pnode.now::before{background:var(--ok)}
+.pdot{position:relative;z-index:1;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--panel);border:2px solid var(--line2);font-weight:700;font-size:13px}
+.pdot svg{width:16px;height:16px}
+.pnode.done .pdot{background:var(--ok);border-color:var(--ok);color:#fff}.pnode.now .pdot{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 4px var(--accentSoft)}
+.pname{font-size:13px;font-weight:600}.pcount{font-size:12px}
+.pnode.on{background:var(--accentSoft)}.pnode:hover{background:var(--offBg)}.pnode.on:hover{background:var(--accentSoft)}.pnode:focus-visible{outline:2px solid var(--accent)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:var(--shadow)}
+.phasep .step{border-radius:0}
+/* campaign rows */
+.clist{display:flex;flex-direction:column;gap:8px}
+.crow{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:150px minmax(0,1fr) auto auto 20px;gap:16px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 18px;box-shadow:var(--shadow);min-height:64px}
+.crow:hover{border-color:var(--line2);box-shadow:0 6px 18px rgb(0 0 0/.08)}.crow:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.cmain{display:flex;flex-direction:column;min-width:0}.cmain b{font-size:16px}.cmain .faint{font-size:13px}
+.cwhen{font-size:13px;white-space:nowrap}.cprog{display:flex;align-items:center;gap:8px}.cprog>span{display:flex;flex-direction:column;font-size:13px;line-height:1.2}.chev{font-size:22px;color:var(--muted)}
+.pring .rb{fill:none;stroke:var(--panel2);stroke-width:5}.pring .rf{fill:none;stroke:var(--ok);stroke-width:5;stroke-linecap:round}
+/* members on a card */
+.mems{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}.mem{display:inline-flex;align-items:center;gap:6px;background:var(--offBg);border-radius:16px;padding:2px 4px 2px 2px;font-size:13.5px}
+.memx{all:unset;cursor:pointer;width:24px;height:24px;display:grid;place-items:center;border-radius:50%;font-size:16px}.memx:hover{background:var(--line)}.memx:focus-visible{outline:2px solid var(--accent)}
+.bsh1{margin:0;font-size:inherit;display:inline}
+@media (max-width:1100px){.bt.hero,.bt.tc{grid-column:span 12}.bt.health,.bt.tsow{grid-column:span 6}.bt.ts{grid-column:span 4}}
+@media (max-width:900px){.bento{gap:12px}.bt.hero,.bt.health,.bt.tc,.bt.tsow,.bt.tob,.bt.ts{grid-column:span 12}.bh1{font-size:30px}.btbig{font-size:32px}
+  .jbar{flex-direction:column}.jseg{flex:none!important}
+  .ptrack{flex-direction:column;overflow:visible}.pnode{flex-direction:row;text-align:left;min-width:0;gap:10px;min-height:48px}.pnode::before{top:-50%;bottom:50%;left:21px;right:auto;width:3px;height:auto}.pcount{margin-left:auto}
+  .crow{grid-template-columns:minmax(0,1fr) auto;gap:6px 10px}.crow .cmain{grid-column:1/-1;order:-1}.crow .chev{display:none}
+  .rmh,.rmr{grid-template-columns:minmax(90px,34%) minmax(0,1fr)}.rmap .rmover{left:calc(34% + 12px)}.sowtop{flex-direction:column;align-items:stretch;gap:8px}
+  .memx{width:44px;height:44px}.rmr,.jseg{min-height:44px}}
 </style>
 
 <div class="app">
@@ -521,7 +601,7 @@ let db=null,U=null,uid=null,canEdit=false,canWrite=true,dl=null;
 let me="";               // the person this viewer picked
 let simple=null;          // null until we know the role
 let route={v:"",id:""};let campSel={bid:"",id:""};
-let brandTab="tasks",showAllPhases=false,drawerCtx=null;
+let brandTab="home",drawerCtx=null;
 const flt={accBrand:"",accStatus:"",taskStatus:"open",accGap:false};
 let accBrand="",sowView="board";
 const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
@@ -529,7 +609,7 @@ const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k
 let theme=ls.get("vt-theme")==="dark"?"dark":"light";
 const applyTheme=()=>{document.documentElement.setAttribute("data-theme",theme)};applyTheme();
 new MutationObserver(()=>{if(document.documentElement.getAttribute("data-theme")!==theme)applyTheme()}).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
-try{const t=ls.get("vt-tab");if(t)brandTab=t;const sv=ls.get("vt-simple");if(sv!==null)simple=sv==="1";me=ls.get("vt-me")||"";accBrand=ls.get("vt-accbrand")||"";sowView=ls.get("vt-sowview")||"board"}catch(e){}
+try{const sv=ls.get("vt-simple");if(sv!==null)simple=sv==="1";me=ls.get("vt-me")||"";accBrand=ls.get("vt-accbrand")||"";sowView=ls.get("vt-sowview")||"board"}catch(e){}
 
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s);
@@ -551,10 +631,11 @@ function dueFlag(date,done){if(done)return"";const n=dayDiff(date);if(n===null)r
 function dueText(date,flag){const n=dayDiff(date);if(n===null)return"";if(flag==="Overdue")return"Late by "+(-n)+(n===-1?" day":" days");if(n===0)return"Due today";if(n===1)return"Due tomorrow";return"Due "+fmtD(date,true)}
 function dueHtml(date,done){const f=dueFlag(date,done);if(!f)return date&&done?`<span class="due faint">${esc(fmtD(date))}</span>`:"";return`<span class="due ${key(f)}">${esc(dueText(date,f))}</span>`}
 function cls(v){
-  if(["Complete","Granted","Team confirmed","Signed","Done","Live","All Granted","On Time","On Track"].includes(v))return v==="On Track"?"s-info":"s-ok";
+  // Five meanings only: green finished or healthy, blue moving, amber needs a look, red stopped, grey not started or parked.
+  if(["Complete","Granted","Team confirmed","Signed","Done","Live","All Granted","On Time","On Track"].includes(v))return"s-ok";
   if(["Blocked","Overdue","Urgent"].includes(v))return"s-bad";
-  if(["At Risk","Has blockers","Due Soon","High","In Progress","Briefed","Requested","Asked founder","Founder actioned","Template Pending","Drafting","Internal Review","Final Review (Ben)","Founder Check-in","Revisions","Sent for Signature","Foundations","Tactics In","In QA"].includes(v))return"s-warn";
-  if(["Pending","Not Requested","Needed","Medium","Not Started","Not Set Up"].includes(v))return"s-info";
+  if(["At Risk","Has blockers","Due Soon","High","Asked founder","Founder actioned"].includes(v))return"s-warn";
+  if(["In Progress","Briefed","Requested","Drafting","Internal Review","Final Review (Ben)","Founder Check-in","Revisions","Sent for Signature","Foundations","Tactics In","In QA","Template Pending"].includes(v))return"s-info";
   return"s-off";
 }
 const pill=v=>v?`<span class="pill ${cls(v)}">${v==="Blocked"?"! ":""}${esc(v)}</span>`:"";
@@ -643,14 +724,14 @@ function addLog(c,id,patch,old,label){
 
 /* ---------- routing ---------- */
 function parseHash(){const h=location.hash.replace(/^#/,"");
-  if(h.startsWith("brand-")){const[bid,cid]=h.slice(6).split("/c/");route={v:"brand",id:bid,camp:cid?decodeURIComponent(cid):""};campSel={bid,id:route.camp};if(route.camp)brandTab="tasks"}
+  if(h.startsWith("brand-")){const[head,cid]=h.slice(6).split("/c/");const[bid,tab]=head.split("/");route={v:"brand",id:bid,camp:cid?decodeURIComponent(cid):""};campSel={bid,id:route.camp};brandTab=route.camp?"tasks":(tab||"home")}
   else if(h.startsWith("client-"))route={v:"client",id:h.slice(7)};
   else if(["mine","overview","access","sow","bp","settings","people"].includes(h))route={v:h,id:""};
   else route={v:"",id:""};
   $("#rail").classList.remove("open");closeDrawer();render();$("#main").scrollTop=0}
 window.addEventListener("hashchange",()=>{parseHash();const h=$("#main h1");if(h&&!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest("#drawer,#modal"))){h.tabIndex=-1;h.focus({preventScroll:true})}});
 const go=h=>{if(location.hash==="#"+h)parseHash();else location.hash=h};
-const campHash=(bid,cid)=>"brand-"+bid+(cid?"/c/"+encodeURIComponent(cid):"");
+const campHash=(bid,cid)=>"brand-"+bid+(cid?"/c/"+encodeURIComponent(cid):"/tasks");
 
 /* ---------- render ---------- */
 let pend=false;
@@ -843,18 +924,104 @@ function sowPlan(bs,R){
 function vBrand(id){
   const b=S.brands[id];if(!b)return`<h1>Brand not found</h1><p class="sub">It may have been removed. <a href="#overview">Back to the overview</a>.</p>`;
   const r=roll(id);const ed=canEdit&&canWrite;
-  const deep=brandTab==="tasks"&&campSel.bid===id&&campSel.id&&(campSel.id===NOCAMP||S.camps[campSel.id]);
-  if(deep)return(r.hold?`<div class="notice">${esc(b.name)} is on hold.</div>`:"")+brandBar(id,r)+tasksTab(id);
-  const miss=(f,l)=>ed?`<button class="missing" data-act="open" data-kind="brand" data-id="${esc(id)}">Add ${esc(l)}</button>`:`<span class="faint">Not set</span>`;
-  const fact=(l,v,f)=>`<div class="fact"><label>${esc(l)}</label><div class="v">${v||miss(f,l.toLowerCase())}</div></div>`;
-  let h=(r.hold?`<div class="notice">${esc(b.name)} is on hold${b.paused&&b.stage!=="On Hold"?" (marked paused)":""}. Its tasks, SOW and late items are left out of the Overview counts and the SOW signing plan.${ed?" Change the stage or untick Paused in Edit details to bring it back.":""}</div>`:"")+`<div class="bhead"><div><h1>${esc(b.name)} ${b.paused&&b.stage!=="On Hold"?`<span class="tag">On hold</span>`:""} ${b.restricted?`<span class="tag warn" title="Sensitive. Keep notes to links and facts.">Restricted</span>`:""}</h1>
-   <div class="row" style="gap:8px">${hdot(r.health)}<b>${esc(r.health)}</b><span class="muted">${r.open} open, ${r.blocked} blocked, ${r.overdue} late${r.stepBlocked?`, ${r.stepBlocked} step${r.stepBlocked>1?"s":""} blocked`:""}</span><span class="muted">Onboarding ${Math.round(r.pct*100)}%</span>${lastUpdated(id)?`<span class="muted">Updated ${esc(agoText(lastUpdated(id)))}</span>`:""}</div>${r.why.length?`<div class="blk clamp1" style="margin-top:4px" title="${esc(r.why.join("\n"))}">Blocked by: ${esc(r.why.map(w=>w.split(": ")[0]).join(" · "))}</div>`:""}</div>
-   <div class="row">${b.website?`<a class="btn" href="${esc(b.website)}" target="_blank" rel="noopener">Website</a>`:""}${canEdit?`<a class="btn" href="#client-${esc(id)}">Client view</a>`:""}${ed?`<button class="btn" data-act="open" data-kind="brand" data-id="${esc(id)}">Edit details</button>`:""}</div></div>
-   <div class="facts" style="grid-template-columns:repeat(4,minmax(0,1fr))">${fact("Stage",esc(b.stage)+(stageDays(b)!==null?` <span class="faint" style="font-weight:500">for ${stageDays(b)} days</span>`:""),"stage")}${fact("Brand lead",esc(b.lead),"lead")}${fact("Founder",esc(b.founder),"founder")}${fact("Sprint",esc(b.sprint_label),"sprint")}</div>
-   <div class="nextl"><b>Next step</b> <span class="clamp2" title="${esc(b.next_step||"")}">${b.next_step?esc(b.next_step):miss("next_step","next step")}</span></div>`;
-  h+=brandSections(id,r);
-  if(brandTab==="updates")h+=updatesTab(id);else if(brandTab==="steps")h+=stepsTab(id);else if(brandTab==="access")h+=accessTable(id);else if(brandTab==="sow")h+=sowCard(id);else if(brandTab==="bp")h+=bpCard(id);else h+=tasksTab(id);
+  const note=r.hold?`<div class="notice">${esc(b.name)} is on hold${b.paused&&b.stage!=="On Hold"?" (marked paused)":""}. Its tasks, SOW and late items are left out of the Overview counts and the SOW signing plan.${ed?" Change the stage or untick Paused in Edit details to bring it back.":""}</div>`:"";
+  if(!SECT[brandTab]||brandTab==="home")return note+brandHome(id,r);
+  let h=note+brandBar(id,r);
+  if(brandTab==="updates")h+=updatesTab(id);else if(brandTab==="steps")h+=stepsTrack(id);else if(brandTab==="access")h+=accessTable(id);else if(brandTab==="sow")h+=sowPage(id);else if(brandTab==="bp")h+=bpCard(id);else h+=tasksTab(id);
   return h}
+/* ---------- brand home: one tile per area; the biggest tiles carry what matters most ---------- */
+// Status uses four meanings only, always with a word and a shape: good (circle, tick), attention (triangle), problem (square), neutral (ring).
+const HEALTH={"Live":["good","In good shape"],"On Track":["good","In good shape"],"At Risk":["warn","At risk"],"Has blockers":["warn","Needs attention"],"Blocked":["bad","Blocked"],"On Hold":["off","On hold"]};
+const healthOf=h=>HEALTH[h]||["off",h||"Not set"];
+const SHAPE={good:`<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9"/><path class="in" d="M6 10.4l2.7 2.7L14 7.7"/></svg>`,
+  warn:`<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.6l9 16.2H1z"/><path class="in" d="M10 7.2v4.6M10 14.6v.4"/></svg>`,
+  bad:`<svg viewBox="0 0 20 20" aria-hidden="true"><rect x="1.5" y="1.5" width="17" height="17" rx="3"/><path class="in" d="M6.6 6.6l6.8 6.8M13.4 6.6l-6.8 6.8"/></svg>`,
+  info:`<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9"/><path class="in" d="M10 5.5V10l3 2"/></svg>`,
+  off:`<svg viewBox="0 0 20 20" aria-hidden="true"><circle class="ring" cx="10" cy="10" r="7.8"/></svg>`};
+const sig=(k,label,big)=>`<span class="sig sig-${k} ${big?"big":""}">${SHAPE[k]||SHAPE.off}<span>${esc(label)}</span></span>`;
+const brandHash=(bid,tab)=>"brand-"+bid+(tab&&tab!=="home"?"/"+tab:"");
+function sowPct(bid){let n=0,d=0;for(const c of boardCols().flatMap(g=>g.cols)){const v=boardCell(bid,c);if(!v||v==="N/A")continue;n++;d+=v==="Done"?1:v==="In progress"?.5:0}return n?d/n:0}
+function campState(c,r){const late=c.end&&parseD(c.end)<today()&&c.status!=="Done";if(r.blocked)return["bad",r.blocked+" blocked"];if(r.late||late)return["warn",late?"Past its end date":r.late+" late"];
+  if(c.status==="Done"||(r.ts.length&&!r.op.length))return["good","Done"];if(!r.ts.length)return["off","No tasks yet"];return["info","On track"]}
+const ring=(p,size)=>{const s=size||40,rr=s/2-4,c=2*Math.PI*rr;return`<svg class="pring" width="${s}" height="${s}" viewBox="0 0 ${s} ${s}" aria-hidden="true"><circle cx="${s/2}" cy="${s/2}" r="${rr}" class="rb"/><circle cx="${s/2}" cy="${s/2}" r="${rr}" class="rf" stroke-dasharray="${(c*p).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 ${s/2} ${s/2})"/></svg>`};
+/* campaigns on a shared calendar, one bar each */
+function campRoadmap(bid,big){const cs=campsOf(bid);if(!cs.length)return"";
+  const ds=cs.flatMap(c=>[c.start,c.end]).map(parseD).filter(Boolean);const t0=+today();
+  let lo=ds.length?Math.min(...ds,t0):t0-30*DAY,hi=ds.length?Math.max(...ds,t0):t0+30*DAY;lo-=5*DAY;hi+=10*DAY;
+  const pos=d=>Math.max(0,Math.min(100,(d-lo)/(hi-lo)*100));const months=[];const m=new Date(lo);m.setDate(1);m.setMonth(m.getMonth()+1);for(let d=new Date(m);+d<hi;d.setMonth(d.getMonth()+1))months.push(+d);
+  return`<div class="rmap ${big?"big":""}"><div class="rmh"><span></span><span class="rmt">${months.map(d=>`<span class="rmm" style="left:${pos(d)}%">${esc(new Date(d).toLocaleDateString("en-GB",{month:"short"}))}</span>`).join("")}</span></div>
+   ${cs.map(c=>{const r=campRoll(bid,c._id);const [k]=campState(c,r);const s=parseD(c.start)||lo,e=parseD(c.end);const left=pos(+s),right=e?pos(+e+DAY):100;
+     return`<button class="rmr" data-act="go-camp" data-id="${esc(c._id)}" title="${esc(c.name+": "+whenText(c))}"><span class="rmn">${esc(c.name)}</span><span class="rmt"><span class="rmb rmb-${k} ${e?"":"open"}" style="left:${left}%;width:${Math.max(2,right-left)}%"></span></span></button>`}).join("")}
+   <div class="rmover"><span class="rmtoday" style="left:${pos(t0)}%"><span>Today</span></span></div></div>`}
+function brandHome(id,r){
+  const b=S.brands[id];const ed=canEdit&&canWrite;const [hk,hl]=healthOf(r.health);
+  const ar=withId(S.access).filter(a=>a.brand===id&&a.status!=="Not Needed");const g=ar.filter(accGranted).length;const ch=ar.filter(needsChase).length;
+  const s=r.sowRow;const due=sowDue(s);const sp=isInternal(b)?null:Math.round(sowPct(id)*100);const bp=r.bp;
+  const locked=bp?L("bp_section").filter(x=>((S.bps[id].sections||{})[x]||"Not Started")==="Not Started"&&(bpAccess(id,x)||{}).state==="locked").length:0;
+  const reasons=[];if(r.blocked)reasons.push(`${r.blocked} task${r.blocked>1?"s":""} blocked`);if(r.overdue)reasons.push(`${r.overdue} task${r.overdue>1?"s":""} late`);
+  if(r.stepBlocked)reasons.push(`${r.stepBlocked} onboarding step${r.stepBlocked>1?"s":""} blocked`);if(!isInternal(b)&&due==="Overdue"&&r.sow!=="Signed")reasons.push("SOW past its target date");if(ch)reasons.push(`${ch} platform${ch>1?"s":""} to chase with the founder`);
+  const person=(role,name)=>`<div class="who2"><span class="av big">${esc(ini(name)||"?")}</span><span><span class="faint">${esc(role)}</span><b>${name?esc(name):`<span class="faint">Not set</span>`}</b></span></div>`;
+  const ps=phases();const cur=ps.find(p=>phaseOpen(id,p));
+  const cs=campsOf(id);const nc=Object.values(S.comments).filter(c=>c.brand===id&&c.kind!=="system").sort((a,b2)=>b2.at-a.at);
+  let h=`<div class="bento">
+  <section class="bt hero" aria-label="About ${esc(b.name)}"><div class="row" style="gap:8px">${pill(b.stage)}${stageDays(b)!==null?`<span class="faint">for ${stageDays(b)} days</span>`:""}${b.restricted?`<span class="tag warn">Restricted</span>`:""}</div>
+   <h1 class="bh1">${esc(b.name)}</h1>
+   <p class="intro">${b.intro?esc(b.intro):ed?`<button class="missing" data-act="open" data-kind="brand" data-id="${esc(id)}">Add a one-line intro: what the brand sells, and to whom</button>`:`<span class="faint">No intro yet.</span>`}</p>
+   <div class="people">${person("Founder",b.founder)}${person("Brand lead",b.lead)}</div>
+   <div class="row hact">${b.website?`<a class="btn sm" href="${esc(b.website)}" target="_blank" rel="noopener">Website</a>`:""}${canEdit?`<a class="btn sm" href="#client-${esc(id)}">Client view</a>`:""}${ed?`<button class="btn sm" data-act="open" data-kind="brand" data-id="${esc(id)}">Edit details</button>`:""}</div></section>
+  <section class="bt health" aria-label="Health"><span class="btl">Health</span>${sig(hk,hl,true)}
+   ${reasons.length?`<ul class="why">${reasons.slice(0,4).map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:`<p class="faint" style="margin:6px 0 0">Nothing blocked or late.</p>`}
+   ${b.next_step?`<p class="nxt"><span class="btl">Next step</span><span class="clamp3" title="${esc(b.next_step)}">${esc(b.next_step)}</span></p>`:""}</section>
+  <section class="bt tc" aria-label="Campaigns"><div class="bth"><span class="btl">Campaigns</span><span class="btv">${cs.length?cs.length:r.open+" open tasks"}</span><span class="grow"></span><button class="btn sm" data-act="tab" data-tab="tasks">${cs.length?"All campaigns ›":"Open the board ›"}</button></div>
+   ${cs.length?campRoadmap(id,false):`<p class="faint" style="margin:0">No campaigns yet. A campaign groups the work for one launch across teams.</p>`}</section>
+  ${sp===null?"":`<button class="bt tsow" data-act="tab" data-tab="sow"><span class="btl">SOW</span><span class="btbig">${sp}%</span><span class="bar wide"><i style="width:${sp}%"></i></span>
+   <span class="row" style="gap:6px">${pill(r.sow)}${r.hold?sig("off","On hold, target kept"):s.target_sign&&r.sow!=="Signed"?(due==="Overdue"?sig("bad","Target "+fmtD(s.target_sign)+" passed"):`<span class="faint">Target ${esc(fmtD(s.target_sign))}</span>`):""}</span><span class="go">Open SOW ›</span></button>`}
+  <section class="bt tob" aria-label="Onboarding"><div class="bth"><span class="btl">Onboarding</span><span class="btv">${Math.round(r.pct*100)}%</span><span class="faint">${cur?`Now: ${esc(cur.code+" "+cur.name)}`:"Every phase done"}</span><span class="grow"></span><button class="btn sm" data-act="tab" data-tab="steps">All steps ›</button></div>
+   ${journey(id,ps,cur)}</section>
+  <button class="bt ts" data-act="tab" data-tab="access"><span class="btl">Platform access</span><span class="btbig">${ar.length?`${g} of ${ar.length}`:"None"}</span>
+   <span class="plist">${ar.slice(0,4).map(a=>`<span>${accGranted(a)?sig("good",a.platform):needsChase(a)?sig("bad",a.platform):ACC_FOUNDER.includes(a.status)?sig("warn",a.platform):sig("off",a.platform)}<span class="faint">${esc(a.status)}</span></span>`).join("")||`<span class="faint">No platforms tracked</span>`}</span><span class="go">Open ›</span></button>
+  <button class="bt ts" data-act="tab" data-tab="bp"><span class="btl">Best Practices</span><span class="btbig">${bp?`${bp.done} of ${bp.total}`:"Not started"}</span>${bp?`<span class="bar wide"><i style="width:${Math.round(bp.progress*100)}%"></i></span>`:""}
+   <span class="faint">${bp?(locked?`${locked} section${locked>1?"s":""} waiting on access`:esc(bp.overall)):"Not tracked yet"}</span><span class="go">Open ›</span></button>
+  <button class="bt ts" data-act="tab" data-tab="updates"><span class="btl">Updates</span><span class="btbig">${nc.length||"None"}</span>
+   ${nc[0]?`<span class="clamp2"><b>${esc(nc[0].by||"Someone")}:</b> ${esc(nc[0].text)}</span>`:`<span class="faint">${lastUpdated(id)?"Last change "+esc(agoText(lastUpdated(id))):"No activity yet"}</span>`}<span class="go">Open ›</span></button>
+  </div>`;
+  return h}
+/* one bar for the whole journey: a segment per phase, sized by its step count */
+function journey(bid,ps,cur){return`<div class="jbar">${ps.map(p=>{const req=p.steps.filter(s=>!s.is_optional);const d=req.filter(s=>["Done","N/A"].includes(stepState(bid,s.code).status)).length;const pct=req.length?d/req.length:1;const done=!phaseOpen(bid,p);
+  return`<button class="jseg ${done?"done":p===cur?"now":""}" style="flex:${Math.max(1,req.length)}" data-act="phase-go" data-id="${esc(bid)}" data-p="${esc(p.code)}" title="${esc(p.code+" "+p.name+": "+d+" of "+req.length+" done")}"><span class="jtrack"><i style="width:${Math.round(pct*100)}%"></i></span><span class="jl"><b>${esc(p.code)}</b> ${esc(p.name)}</span><span class="faint jc">${done?"Done":d+" of "+req.length}</span></button>`}).join("")}</div>`}
+/* SOW for one brand: stage, the facts, and every board square for this brand in order */
+function sowPage(bid){const b=S.brands[bid];if(isInternal(b))return sowCard(bid);const p=Math.round(sowPct(bid)*100);
+  return`<div class="sowtop"><div><span class="btl">SOW progress</span><span class="btbig">${p}%</span></div><span class="bar wide sowbar"><i style="width:${p}%"></i></span></div>`+sowCard(bid)
+   +`<h2 class="sech">Every step towards a signed SOW</h2><div class="sowlanes">${boardCols().map((g,gi)=>`<section class="slane"><h3>${esc(g.name)}</h3>${g.cols.map((c,ci)=>{const v=boardCell(bid,c);const k=v==="Done"?"good":v==="In progress"?"info":v==="N/A"?"off":v?"warn":"off";
+     return`<button class="srow" data-act="board" data-b="${esc(bid)}" data-c="${gi}.${ci}">${sig(k,c.label)}<span class="faint">${esc(v||"No steps linked")}</span></button>`}).join("")}</section>`).join("")}</div>`}
+/* campaign list: shared calendar on top, then one quiet row per campaign */
+function campRows(bid,all){
+  const cs=campsOf(bid);const none=all.filter(t=>campOf(t)===NOCAMP);
+  const row=(id,name,sub,when,r,st)=>{const tot=r.ts.length;const p=tot?r.done/tot:0;
+    return`<button class="crow" data-act="camp" data-id="${esc(id)}" title="${esc(name)}: ${sub.replace(/<[^>]*>/g,"")}">${sig(st[0],st[1])}<span class="cmain"><b>${esc(name)}</b><span class="faint clamp1">${sub}</span></span><span class="cwhen faint">${esc(when)}</span><span class="cprog">${ring(p,36)}<span><b>${Math.round(p*100)}%</b><span class="faint">${r.done} of ${tot}</span></span></span><span class="chev" aria-hidden="true">›</span></button>`};
+  let h=cs.length?`<section class="panel"><div class="bth"><span class="btl">Campaign calendar</span></div>${campRoadmap(bid,true)}</section>`:"";
+  h+=`<div class="clist">${cs.map(c=>{const r=campRoll(bid,c._id);return row(c._id,c.name,c.purpose?esc(c.purpose):"What it is for is not written yet",whenText(c),r,campState(c,r))}).join("")}
+   ${none.length?row(NOCAMP,"Not in a campaign","Brand-wide and day-to-day work",none.filter(t=>t.status!=="Complete").length+" open",campRoll(bid,NOCAMP),campState({},campRoll(bid,NOCAMP))):""}</div>`;
+  if(!cs.length)h+=`<div class="panel empty">No campaigns yet. ${canWrite?`<button class="btn pri" data-act="add-camp" data-id="${esc(bid)}">Add the first campaign</button>`:""}</div>`;
+  return h}
+/* onboarding steps: a horizontal phase track, then the steps of the chosen phase */
+let phaseSel={bid:"",p:""};
+function stepsTrack(bid){
+  const ps=phases();if(!ps.length)return`<div class="tw"><div class="empty">No step list loaded. An admin can add steps in Settings.</div></div>`;
+  const cur=ps.find(p=>phaseOpen(bid,p))||ps[ps.length-1];const sel=(phaseSel.bid===bid&&ps.find(p=>p.code===phaseSel.p))||cur;
+  let h=`<div class="ptrack" role="tablist" aria-label="Onboarding phases">${ps.map((p,i)=>{const req=p.steps.filter(s=>!s.is_optional);const d=req.filter(s=>["Done","N/A"].includes(stepState(bid,s.code).status)).length;const done=!phaseOpen(bid,p);
+    return`<button role="tab" aria-selected="${p===sel}" class="pnode ${done?"done":p===cur?"now":""} ${p===sel?"on":""}" data-act="phase-go" data-id="${esc(bid)}" data-p="${esc(p.code)}"><span class="pdot">${done?ICON.check:esc(String(i+1))}</span><span class="pname">${esc(p.name)}</span><span class="faint pcount">${done?"Done":d+" of "+req.length}</span></button>`}).join("")}</div>`;
+  const req=sel.steps.filter(s=>!s.is_optional);const d=req.filter(s=>["Done","N/A"].includes(stepState(bid,s.code).status)).length;const complete=!phaseOpen(bid,sel);
+  h+=`<section class="panel phasep"><div class="bth"><span class="btl">${esc(sel.code)}</span><b style="font-size:17px">${esc(sel.name)}</b>${complete?sig("good","Done"):sel===cur?sig("info","Current phase"):""}<span class="faint">${d} of ${req.length} required done</span><span class="grow"></span>${canEdit&&canWrite&&!complete?`<button class="btn sm" data-act="phase-done" data-id="${esc(bid)}" data-phase="${esc(sel.code)}">Mark every step in ${esc(sel.code)} done</button>`:""}</div>
+   <p class="faint" style="margin:0 0 8px;font-size:13px">A gate step cannot be Done while earlier required steps are open. Optional steps never hold a phase back.</p>`;
+  for(const s of sel.steps){const st=stepState(bid,s.code);const v=st.status||"Not Started";
+    h+=`<div class="step ${s.is_gate?"isgate":""} ${v==="Done"?"done":""}"><span class="code">${esc(s.code)}</span>
+     <div class="nm"><span>${esc(s.name)}</span><span class="tags">${s.is_gate?`<span class="tag gate">Gate</span>`:""}${st.approved_by&&v==="Done"?`<span class="tag ok">Signed off by ${esc(st.approved_by)}, ${esc(fmtD(st.approved_at))}</span>`:""}${s.is_optional?`<span class="tag opt">Optional</span>`:""}${s.doc_label?`<span class="tag doc">Doc: ${esc(s.doc_label)}</span>`:""}</span>
+     ${st.blocker&&st.blocker.text?`<span class="blk">Blocked: ${esc(st.blocker.text)}${st.blocker.person?` (waiting on ${esc(st.blocker.person)})`:""}</span>`:""}${st.link?`<a href="${esc(st.link)}" target="_blank" rel="noopener" style="font-size:12.5px">Open ${esc(s.doc_label||"document")}</a>`:""}</div>
+     <div class="ctl">${st.owner?esc(st.owner):`<span class="faint">No owner</span>`}</div><div class="ctl">${dueHtml(st.deadline,v==="Done"||v==="N/A")||`<span class="faint">No date</span>`}</div>
+     <div class="ctl row" style="gap:6px;flex-wrap:nowrap">${statusSel("step",bid,v,L("checklist"),canWrite,`data-code="${esc(s.code)}"`)}<button class="btn sm quiet" data-act="open" data-kind="step" data-id="${esc(bid)}" data-code="${esc(s.code)}" aria-label="Edit ${esc(s.code)}">Edit</button></div></div>`}
+  return h+`</section>`}
+
 /* tasks grouped by team: overview cards first, one click opens a team */
 const DEPTS=()=>{const l=L("department");return l.length?l:["Other"]};
 const depOf=t=>t.department&&DEPTS().includes(t.department)?t.department:(DEPTS().includes("Other")?"Other":DEPTS()[DEPTS().length-1]);
@@ -868,28 +1035,9 @@ function tasksTab(bid){
   let h=`<div class="row" style="margin-bottom:12px"><span class="muted">${cs.length?`${cs.length} campaign${cs.length>1?"s":""}, ${open.length} open tasks. Open a campaign to see its board.`:`${open.length} open tasks. No campaigns yet, so every card is on one board.`}</span><span class="grow"></span>
    ${canWrite&&TEMPLATES().length?`<select data-act="use-tpl" data-id="${esc(bid)}" aria-label="Add tasks from a template" class="btn"><option value="">Add from template...</option>${TEMPLATES().map((t,i)=>`<option value="${i}">${esc(t.name)} (${t.tasks.length})</option>`).join("")}</select>`:""}
    ${canWrite?`<button class="btn" data-act="add-camp" data-id="${esc(bid)}">Add campaign</button><button class="btn pri" data-act="add-task" data-id="${esc(bid)}">Add task</button>`:""}</div>`;
-  return h+brandBlockers(bid)+(cs.length?campList(bid,all):listBoard(bid,"",all))}
+  return h+brandBlockers(bid)+(cs.length?campRows(bid,all):listBoard(bid,"",all))}
 
 function phaseOpen(bid,p){return p.steps.filter(s=>!s.is_optional).some(s=>!["Done","N/A"].includes(stepState(bid,s.code).status))}
-function stepsTab(bid){
-  const ps=phases();if(!ps.length)return`<div class="tw"><div class="empty">No step list loaded. An admin can add steps in Settings.</div></div>`;
-  const cur=ps.find(p=>phaseOpen(bid,p))||ps[ps.length-1];
-  let h=`<div class="row" style="margin-bottom:10px"><span class="muted">Current phase: <b>${esc(cur.code)} ${esc(cur.name)}</b>. A gate step cannot be Done while earlier required steps are open. Optional steps never hold a phase back.</span><span class="grow"></span><button class="btn sm" data-act="allphases">${showAllPhases?"Show current phase only":"Show all phases"}</button></div>`;
-  for(const p of ps){
-    const req=p.steps.filter(s=>!s.is_optional);const d=req.filter(s=>["Done","N/A"].includes(stepState(bid,s.code).status)).length;
-    const complete=!phaseOpen(bid,p);
-    if(simple&&complete&&p!==cur&&!showAllPhases)continue;
-    const open=p===cur||showAllPhases;
-    h+=`<details class="phase" ${open?"open":""}><summary><span class="pc">${esc(p.code)}</span>${esc(p.name)}${complete?` <span class="pill s-ok">Done</span>`:""}<span class="prog"><span class="bar"><i style="width:${req.length?Math.round(d/req.length*100):0}%"></i></span>${d} of ${req.length} required</span></summary>`;
-    if(canEdit&&canWrite&&!complete)h+=`<div style="padding:8px 14px;border-bottom:1px solid var(--line)"><button class="btn sm" data-act="phase-done" data-id="${esc(bid)}" data-phase="${esc(p.code)}">Mark every step in ${esc(p.code)} done</button></div>`;
-    for(const s of p.steps){const st=stepState(bid,s.code);const v=st.status||"Not Started";
-      h+=`<div class="step ${s.is_gate?"isgate":""} ${v==="Done"?"done":""}"><span class="code">${esc(s.code)}</span>
-       <div class="nm"><span>${esc(s.name)}</span><span class="tags">${s.is_gate?`<span class="tag gate">Gate</span>`:""}${st.approved_by&&v==="Done"?`<span class="tag ok">Signed off by ${esc(st.approved_by)}, ${esc(fmtD(st.approved_at))}</span>`:""}${s.is_optional?`<span class="tag opt">Optional</span>`:""}${s.doc_label?`<span class="tag doc">Doc: ${esc(s.doc_label)}</span>`:""}${!simple&&s.default_owner?`<span class="tag">${esc(s.default_owner)}</span>`:""}${s.hook==="monday"?`<span class="tag" title="Monday.com sync is planned for later">Monday.com link later</span>`:""}</span>
-       ${st.blocker&&st.blocker.text?`<span class="blk">Blocked: ${esc(st.blocker.text)}${st.blocker.person?` (waiting on ${esc(st.blocker.person)})`:""}</span>`:""}${st.link?`<a href="${esc(st.link)}" target="_blank" rel="noopener" style="font-size:12.5px">Open ${esc(s.doc_label||"document")}</a>`:""}</div>
-       <div class="ctl">${st.owner?esc(st.owner):`<span class="faint">No owner</span>`}</div><div class="ctl">${dueHtml(st.deadline,v==="Done"||v==="N/A")||`<span class="faint">No date</span>`}</div>
-       <div class="ctl row" style="gap:6px;flex-wrap:nowrap">${statusSel("step",bid,v,L("checklist"),canWrite,`data-code="${esc(s.code)}"`)}<button class="btn sm quiet" data-act="open" data-kind="step" data-id="${esc(bid)}" data-code="${esc(s.code)}" aria-label="Edit ${esc(s.code)}">Edit</button></div></div>`}
-    h+=`</details>`}
-  return h}
 function accessTable(bid){
   const waiting=withId(S.access).filter(a=>a.brand===bid&&ACC_FOUNDER.includes(a.status)).length;
   return`<div class="row" style="margin-bottom:10px">${canWrite?`<button class="btn pri" data-act="add-access" data-id="${esc(bid)}">Add platform</button>`:""}${waiting?`<button class="btn" data-act="fm-open" data-id="${esc(bid)}">Message for founder (${waiting} missing)</button>`:""}<span class="muted">Any Blocked row turns the brand Blocked. Use Not Needed to leave a platform out.</span></div>`+accFull(bid)}
@@ -1204,41 +1352,27 @@ function brandTiles(id,r){
     ["bp","Best Practices",bp?`${bp.done} of ${bp.total}`:"Not started",bp?(locked?`${locked} waiting on access`:bp.overall):"Not tracked yet",bp?(bp.overall==="Blocked"?"bad":bp.overall==="Complete"?"ok":locked?"warn":"info"):"off"],
     ["updates","Updates",nc?String(nc):"None",lastUpdated(id)?"Last change "+agoText(lastUpdated(id)):"No activity yet","off"]];
   return tiles}
-function brandSections(id,r){const b=S.brands[id]||{};const tiles=brandTiles(id,r);
-  return`<nav class="secs" role="tablist" aria-label="Sections for ${esc(b.name||"this brand")}">${tiles.map(([k,l,v,sub,st])=>`<button role="tab" aria-selected="${brandTab===k}" class="sec sec-${st} ${brandTab===k?"on":""}" data-act="tab" data-tab="${k}" title="${esc(l+": "+v+(sub?", "+sub:""))}"><span class="sl">${esc(l)}</span><span class="sv">${esc(v)}</span><span class="ss" title="${esc(sub)}">${esc(sub)}</span></button>`).join("")}</nav>`}
-
 /* ---------- campaigns: a brand's work grouped by what it is for ---------- */
 
 const NOCAMP="_none";
 const campsOf=bid=>withId(S.camps).filter(c=>c.brand===bid).sort((a,b)=>String(a.start||"9").localeCompare(String(b.start||"9"))||String(a.name).localeCompare(b.name));
 const campOf=t=>t.campaign&&S.camps[t.campaign]&&S.camps[t.campaign].brand===t.brand?t.campaign:NOCAMP;
 const campName=id=>id===NOCAMP?"Not in a campaign":(S.camps[id]||{}).name||"Campaign";
-const teamColor=d=>`var(--g${Math.max(0,DEPTS().indexOf(d))%6})`;
-const SHORT={tasks:"",steps:"Onboarding",access:"Access",sow:"SOW",bp:"BP",updates:"Updates"};
-function brandBar(id,r){const b=S.brands[id];const cid=campSel.bid===id?campSel.id:"";
-  const crumbs=[`<button class="linkb" data-act="camp" data-id="">Campaigns</button>`];
-  if(cid&&(cid===NOCAMP||S.camps[cid]))crumbs.push(`<b>${esc(campName(cid))}</b>`);
-  return`<div class="bslim"><div class="bsl"><button class="bsname" data-act="camp" data-id="">${esc(b.name)}</button>${hdot(r.health)}<span class="bsh">${esc(r.health)}</span><nav class="crumb" aria-label="You are here"><span class="faint">›</span> ${crumbs.join(` <span class="faint">›</span> `)}</nav></div>
-   <nav class="mtabs" aria-label="Sections">${brandTiles(id,r).map(([k,l,v,sub,st])=>`<button class="mt mt-${st} ${k==="tasks"?"on":""}" data-act="tab" data-tab="${k}" title="${esc(l+": "+v+(sub?", "+sub:""))}">${esc(SHORT[k]||l)} <b>${esc(k==="tasks"?String(campsOf(id).length||r.open):v)}</b></button>`).join("")}</nav></div>`}
+const teamColor=d=>"var(--line2)"; // teams are named, not coloured: colour is kept for status
+const SECT={home:"Overview",tasks:"Campaigns",steps:"Onboarding",access:"Platform access",sow:"SOW",bp:"Best Practices",updates:"Updates"};
+const SHORT={tasks:"Campaigns",steps:"Onboarding",access:"Access",sow:"SOW",bp:"BP",updates:"Updates"};
+function brandBar(id,r){const b=S.brands[id];const cid=campSel.bid===id?campSel.id:"";const deep=brandTab==="tasks"&&cid&&(cid===NOCAMP||S.camps[cid]);
+  const sec=brandTab==="tasks"&&!campsOf(id).length?"Tasks":SECT[brandTab];const [hk,hl]=healthOf(r.health);
+  const crumbs=[`<button class="linkb" data-act="tab" data-tab="home">Overview</button>`,deep?`<button class="linkb" data-act="camp" data-id="">${esc(sec)}</button>`:`<b>${esc(sec)}</b>`].concat(deep?[`<b>${esc(campName(cid))}</b>`]:[]);
+  return`<div class="bslim"><div class="bsl"><h1 class="bsh1"><button class="bsname" data-act="tab" data-tab="home">${esc(b.name)}</button></h1>${sig(hk,hl)}<nav class="crumb" aria-label="You are here"><span class="faint">›</span> ${crumbs.join(` <span class="faint">›</span> `)}</nav></div>
+   <nav class="mtabs" aria-label="Sections"><button class="mt" data-act="tab" data-tab="home">Overview</button>${brandTiles(id,r).map(([k,l,v,sub,st])=>`<button class="mt ${k===brandTab?"on":""}" ${k===brandTab?`aria-current="page"`:""} data-act="tab" data-tab="${k}" title="${esc(l+": "+v+(sub?", "+sub:""))}">${st==="bad"||st==="warn"?`<span class="sig sm sig-${st}">${SHAPE[st]}</span>`:""}${esc(k==="tasks"&&!campsOf(id).length?"Tasks":SHORT[k]||l)} <b>${esc(k==="tasks"?String(campsOf(id).length||r.open):v)}</b></button>`).join("")}</nav></div>`}
 function campRoll(bid,cid){const ts=withId(S.tasks).filter(t=>t.brand===bid&&t.title&&campOf(t)===cid);const op=ts.filter(t=>t.status!=="Complete");
   return{ts,op,done:ts.length-op.length,blocked:op.filter(t=>t.status==="Blocked").length,late:op.filter(t=>dueFlag(t.deadline,false)==="Overdue").length,
     teams:DEPTS().map(d=>[d,op.filter(t=>depOf(t)===d).length,ts.filter(t=>depOf(t)===d).length]).filter(x=>x[2]),deps:((S.camps[cid]||{}).deps||[]).filter(d=>d.state!=="Cleared").length}}
 function whenText(c){const s=parseD(c.start),e=parseD(c.end);if(!s&&!e)return"No dates yet";const span=(s?fmtD(c.start):"?")+" to "+(e?fmtD(c.end):"?");if(!e)return span;
   const d=Math.round((e-today())/DAY);return span+" · "+(d>1?d+" days to go":d===1?"1 day to go":d===0?"ends today":"ended "+(-d)+" day"+(d===-1?"":"s")+" ago")}
-function campCard(bid,c){const r=campRoll(bid,c._id);const tot=r.ts.length;
-  return`<button class="camp" data-act="camp" data-id="${esc(c._id)}"><span class="ch"><span class="cn">${esc(c.name)}</span>${c.status?pill(c.status):""}</span>
-   <span class="cp">${c.purpose?esc(c.purpose):`<span class="faint">What it is for is not written yet</span>`}</span>
-   <span class="cd">${esc(whenText(c))}${c.owner?" · "+esc(c.owner):""}</span>
-   <span class="cstat"><span class="bar wide"><i style="width:${tot?Math.round(r.done/tot*100):0}%"></i></span><span class="faint">${r.done} of ${tot} done</span></span>
-   ${campWarn(r)}</button>`}
 function campWarn(r){const parts=[r.blocked?r.blocked+" blocked":"",r.late?r.late+" late":"",r.deps?`${r.deps} open dependenc${r.deps>1?"ies":"y"}`:""].filter(Boolean);
   return parts.length?`<span class="cwarn ${r.blocked||r.late?"bad":"warn"}">${esc(parts.join(" · "))}</span>`:`<span class="cwarn ok">On track</span>`}
-function campList(bid,all){
-  const cs=campsOf(bid);const none=all.filter(t=>campOf(t)===NOCAMP);const nOpen=none.filter(t=>t.status!=="Complete").length;
-  let h=`<div class="camps">${cs.map(c=>campCard(bid,c)).join("")}`;
-  if(none.length)h+=`<button class="camp nocamp" data-act="camp" data-id="${NOCAMP}"><span class="ch"><span class="cn">Not in a campaign</span></span><span class="cp">Brand-wide and day-to-day work. Move a task into a campaign from its edit panel.</span><span class="cd">${nOpen} open of ${none.length}</span>${campWarn(campRoll(bid,NOCAMP))}</button>`;
-  if(!cs.length)h+=`<div class="camp empty-camp"><b>No campaigns yet</b><span class="muted">A campaign groups the work for one launch or push across teams, with its dates and what it depends on.</span>${canWrite?`<button class="btn pri" data-act="add-camp" data-id="${esc(bid)}">Add the first campaign</button>`:""}</div>`;
-  return h+`</div>`}
 /* timeline: one bar per task from start to due, grouped by team, with today and the campaign end marked */
 function campTimeline(c,ts){
   const ds=[c.start,c.end].concat(ts.flatMap(t=>[t.start,t.deadline])).map(parseD).filter(Boolean);
@@ -1259,8 +1393,8 @@ function campTimeline(c,ts){
   return`<div class="glegend"><span><i class="g-plan"></i>Planned</span><span><i class="g-prog"></i>In progress</span><span><i class="g-late"></i>Late</span><span><i class="g-bad"></i>Blocked</span><span><i class="g-done"></i>Done</span></div>`+h+undatedList(undated)}
 function undatedList(ts){if(!ts.length)return"";return`<details class="undated"><summary>${ts.length} task${ts.length>1?"s have":" has"} no dates yet, so ${ts.length>1?"they are":"it is"} not on the timeline</summary>${ts.map(t=>`<button class="gr2" data-act="open" data-kind="task" data-id="${esc(t._id)}"><b>${esc(t.title)}</b><span class="faint">${esc(depOf(t))} · ${esc(t.owner||"No owner")} · ${esc(t.status)}</span></button>`).join("")}</details>`}
 function brandBlockers(bid){const out=[];
-  for(const a of withId(S.access).filter(a=>a.brand===bid&&(ACC_FOUNDER.includes(a.status)||a.status==="Blocked")))out.push(`<button class="bbk" data-act="open" data-kind="access" data-id="${esc(a._id)}"><span class="tag">Platform access</span>${esc(a.platform)}: ${esc(a.status)}</button>`);
-  const s=S.sow[bid];if(s&&!isInternal(S.brands[bid]||{})&&s.stage!=="Signed")out.push(`<button class="bbk" data-act="tab" data-tab="sow"><span class="tag">SOW</span>Not signed (${esc(s.stage||"Not Started")}${s.target_sign?", target "+esc(fmtD(s.target_sign)):""})</button>`);
+  for(const a of withId(S.access).filter(a=>a.brand===bid&&(ACC_FOUNDER.includes(a.status)||a.status==="Blocked")))out.push(`<button class="bbk" data-act="open" data-kind="access" data-id="${esc(a._id)}">${a.status==="Blocked"?SHAPE.bad:SHAPE.warn}<span class="tag">Platform access</span>${esc(a.platform)}: ${esc(a.status)}</button>`);
+  const s=S.sow[bid];if(s&&!isInternal(S.brands[bid]||{})&&s.stage!=="Signed")out.push(`<button class="bbk" data-act="tab" data-tab="sow">${SHAPE.warn}<span class="tag">SOW</span>Not signed (${esc(s.stage||"Not Started")}${s.target_sign?", target "+esc(fmtD(s.target_sign)):""})</button>`);
   return out.length?`<div class="bblock"><b>Holding up the whole brand</b>${out.join("")}</div>`:""}
 function campDetail(bid,cid,all){
   const cs=campsOf(bid);const c=cid===NOCAMP?{_id:NOCAMP,name:"Not in a campaign",purpose:"Brand-wide and day-to-day work that is not part of a campaign. Move a task into a campaign from its edit panel."}:Object.assign({_id:cid},S.camps[cid]);
@@ -1269,8 +1403,8 @@ function campDetail(bid,cid,all){
    ${canWrite&&cid!==NOCAMP?`<button class="btn" data-act="open" data-kind="camp" data-id="${esc(cid)}">Edit campaign</button>`:""}${canWrite?`<button class="btn pri" data-act="add-task" data-id="${esc(bid)}" data-camp="${esc(cid===NOCAMP?"":cid)}">Add task</button>`:""}</div>
    <p class="cpur">${c.purpose?esc(c.purpose):`<span class="faint">What it is for is not written yet.</span>${canWrite&&cid!==NOCAMP?` <button class="missing" data-act="open" data-kind="camp" data-id="${esc(cid)}">Add it</button>`:""}`}${c.goal?` <span class="faint">Success: ${esc(c.goal)}</span>`:""}</p>
    <div class="cstat"><span class="bar wide"><i style="width:${tot?Math.round(r.done/tot*100):0}%"></i></span><span>${r.done} of ${tot} tasks done</span>${campWarn(r)}</div></div>
-  <h3 class="sech">Board</h3>${listBoard(bid,cid,r.ts)}
-  <h3 class="sech">Timeline</h3>${campTimeline(c,r.ts)}`;
+  <h3 class="sech">Timeline</h3>${campTimeline(c,r.ts)}
+  <h3 class="sech">Board</h3>${listBoard(bid,cid,r.ts)}`;
   return h}
 function toSection(){const m=$("#main"),n=$(".secs");if(!m)return;if(!n){m.scrollTop=0;return}if(m.scrollTop>n.offsetTop)m.scrollTop=n.offsetTop-10}
 
@@ -1508,11 +1642,11 @@ function openDrawer(kind,id,extra,refresh){
   if(!refresh||!drawerCtx||drawerCtx.kind!==kind||drawerCtx.id!==id)drawerDirty={};
   drawerCtx={kind,id,extra};let title="",body="",foot="",ro=!canWrite;
   if(kind==="task"){const t=S.tasks[id];if(!t){closeDrawer();return}ro=!canChangeTask(t);title=t.title||"New task";
-    body=field("Task",inp("title",t.title),1)+field("Brand",`<select name="brand" id="d-brand">${brandList().map(b=>`<option value="${esc(b.id)}" ${b.id===t.brand?"selected":""}>${esc(b.name)}</option>`).join("")}</select>`)+field("Owner",sel("owner",activePeople(),t.owner))+field("Team",sel("department",DEPTS(),depOf(t),false))+(()=>{const cid=campOf(t)===NOCAMP?"":campOf(t);const bl=boardLists(t.brand,cid,withId(S.tasks).filter(x=>x.brand===t.brand&&x.title&&campOf(x)===campOf(t)));const cur=listOf(Object.assign({_id:id},t),bl);
+    body=field("Task",inp("title",t.title),1)+field("Brand",`<select name="brand" id="d-brand">${brandList().map(b=>`<option value="${esc(b.id)}" ${b.id===t.brand?"selected":""}>${esc(b.name)}</option>`).join("")}</select>`)+field("Owner",sel("owner",activePeople(),t.owner))+field("Members",memEditor(t),1,"People working on this card with the owner")+field("Team",sel("department",DEPTS(),depOf(t),false))+(()=>{const cid=campOf(t)===NOCAMP?"":campOf(t);const bl=boardLists(t.brand,cid,withId(S.tasks).filter(x=>x.brand===t.brand&&x.title&&campOf(x)===campOf(t)));const cur=listOf(Object.assign({_id:id},t),bl);
       return bl.length?field("List",`<select name="list" id="d-list">${bl.map(l=>`<option value="${esc(l.id)}" ${cur&&l.id===cur.id?"selected":""}>${esc(l.name)}</option>`).join("")}</select>`,0,"Same as dragging the card to another list"):""})()
      +(campsOf(t.brand).length||t.campaign?field("Campaign",`<select name="campaign" id="d-campaign"><option value="">Not in a campaign</option>${campsOf(t.brand).map(c=>`<option value="${esc(c._id)}" ${c._id===t.campaign?"selected":""}>${esc(c.name)}</option>`).join("")}</select>`):"")
      +field("Vertical",sel("vertical",VERTS(),t.vertical||""),0,t.vertical?"":(vertOf(t)?"Guessed from the name: "+vertOf(t)+". Pick one to confirm":"Optional"))+field("Status",sel("status",L("task_status"),t.status,false))+field("Priority",sel("priority",L("priority"),t.priority))+field("Deadline",inp("deadline",t.deadline,"date"))
-     +(simple?"":field("Start date",inp("start",t.start,"date"))+field("Support team",inp("support",(t.support||[]).join(", ")),1,"Names separated by commas"))
+     +(simple?"":field("Start date",inp("start",t.start,"date")))
      +field("Description and next step",area("notes",t.notes),1)+(simple?"":field("Brief link",inp("brief_link",t.brief_link,"url"))+field("Creative link",inp("creative_link",t.creative_link,"url")))
      +(t.status==="Blocked"?field("Blocked because",inp("blk_text",t.blocker&&t.blocker.text),1)+field("Waiting on",sel("blk_person",activePeople(),t.blocker&&t.blocker.person)):"")
      +(simple?"":`<p class="faint w" style="font-size:12px;grid-column:1/-1">${esc(t.source||"")}</p>`)+taskBack(id,t);
@@ -1559,12 +1693,16 @@ function openDrawer(kind,id,extra,refresh){
 }
 let drawerDirty={};
 function closeDrawer(){drawerCtx=null;drawerDirty={};$("#drawer").hidden=true;$("#scrim").hidden=true}
+/* members: tag or untag people on a card; saves straight away */
+function memEditor(t){const sup=t.support||[];const ed=canChangeTask(t);
+  return`<div class="mems">${sup.map((p,i)=>`<span class="mem"><span class="av sup" aria-hidden="true">${esc(ini(p))}</span>${esc(p)}${ed?`<button type="button" class="memx" data-act="mem-del" data-i="${i}" aria-label="Remove ${esc(p)}">×</button>`:""}</span>`).join("")||`<span class="faint">No one tagged yet</span>`}</div>`
+   +(ed?`<select id="mem-add" data-act="mem-add"><option value="">Tag a member...</option>${activePeople().filter(p=>p!==t.owner&&!sup.includes(p)).map(p=>`<option value="${esc(p)}">${esc(p)}</option>`).join("")}</select>`:"")}
 const splitNames=v=>String(v||"").split(",").map(s=>s.trim()).filter(Boolean);
 async function drawerSave(){
   const{kind,id,extra}=drawerCtx;const fd={};for(const el of $("#dform").elements)if(el.name)fd[el.name]=el.value.trim();
   const diff=(cur,next)=>{const p={};for(const k of Object.keys(next)){if(JSON.stringify(cur[k]??"")!==JSON.stringify(next[k]??""))p[k]=next[k]}return p};
   if(kind==="task"){const t=S.tasks[id];const next={title:fd.title,brand:fd.brand,department:fd.department,campaign:fd.brand===t.brand?(fd.campaign??t.campaign??""):"",vertical:fd.vertical||"",owner:fd.owner,status:fd.status,priority:fd.priority,deadline:fd.deadline,notes:fd.notes};
-    if(!simple)Object.assign(next,{start:fd.start,support:splitNames(fd.support),brief_link:fd.brief_link,creative_link:fd.creative_link});
+    if(!simple)Object.assign(next,{start:fd.start,brief_link:fd.brief_link,creative_link:fd.creative_link});
     if(!next.title){toast("Give the task a name.");return}
     if(next.status==="Blocked"){const text=fd.blk_text!==undefined?fd.blk_text:(t.blocker&&t.blocker.text);const person=fd.blk_person!==undefined?fd.blk_person:(t.blocker&&t.blocker.person);
       if(!text||!person){if(t.status!=="Blocked"){closeDrawer();askBlocker(r=>save("tasks",id,Object.assign(diff(t,next),{status:"Blocked",blocker:r}),t.title));return}toast("A blocker needs one line and a person.");return}
@@ -1631,15 +1769,15 @@ document.addEventListener("click",e=>{
   if(act==="menu")$("#rail").classList.toggle("open");
   else if(act==="simple"){simple=a.dataset.v==="1";ls.set("vt-simple",simple?"1":"0");render()}
   else if(act==="theme"){theme=a.dataset.v==="dark"?"dark":"light";ls.set("vt-theme",theme);applyTheme();renderTop()}
-  else if(act==="tab"){const leave=route.camp&&(a.dataset.tab!=="tasks"||brandTab==="tasks");brandTab=a.dataset.tab;ls.set("vt-tab",brandTab);if(leave)go(campHash(route.id,""));else render()}
+  else if(act==="tab"){go(brandHash(route.id,a.dataset.tab))}
+  else if(act==="phase-go"){phaseSel={bid:a.dataset.id,p:a.dataset.p};if(route.v==="brand"&&brandTab==="steps")render();else go(brandHash(a.dataset.id,"steps"))}
   else if(act==="skip"){const h=$("#main h1")||$("#main");h.tabIndex=-1;h.focus()}
   else if(act==="goto-item"){const{kind,id,code}=a.dataset;
     if(kind==="task"){const t=S.tasks[id];if(!t)return;brandTab="tasks";if(t.status==="Complete")kbFilter.done=true;focusItem={sel:`.kc[data-id="${CSS.escape(id)}"]`};go(campHash(t.brand,campsOf(t.brand).length?campOf(t):""))}
     else if(kind==="access"){accBrand=(S.access[id]||{}).brand||accBrand;go("access");setTimeout(()=>openDrawer("access",id),60);return}
-    else{brandTab="steps";showAllPhases=true;focusItem={sel:`select[data-code="${CSS.escape(code)}"]`,up:".step"};go("brand-"+id)}
-    ls.set("vt-tab",brandTab)}
+    else{phaseSel={bid:id,p:(S.steps[code]||{}).phase||""};focusItem={sel:`select[data-code="${CSS.escape(code)}"]`,up:".step"};go(brandHash(id,"steps"))}}
   else if(act==="sort"){const k=a.dataset.k;ovSort=ovSort.k===k?{k,dir:-ovSort.dir}:{k,dir:1};render()}
-  else if(act==="att-go"){brandTab=a.dataset.tab||"tasks";ls.set("vt-tab",brandTab);go("brand-"+a.dataset.id)}
+  else if(act==="att-go"){go(brandHash(a.dataset.id,a.dataset.tab||"tasks"))}
   else if(act==="person-pick"){peopleSel=peopleSel===a.dataset.name?"":a.dataset.name;render()}
   else if(act==="mvert"){mineVert=a.dataset.v;render()}
   else if(act==="mlayout"){mineLayout=a.dataset.v;ls.set("vt-mlayout",mineLayout);render()}
@@ -1647,7 +1785,7 @@ document.addEventListener("click",e=>{
   else if(act==="mfold"){if(a.dataset.v==="open")mineFold.clear();else{const all=myItems();const list=mineTab==="onboarding"?all.filter(i=>!isLiveBrand(i.brand)):mineTab==="live"?all.filter(i=>isLiveBrand(i.brand)):all;const grp=mineGroup[mineTab]||(mineTab==="live"?"due":"brand");for(const g of mineGroups(list,grp))mineFold.add(mineTab+"|"+grp+"|"+g.key)}render()}
   else if(act==="men-go"&&a.dataset.task&&S.tasks[a.dataset.task]){const tk=S.tasks[a.dataset.task];brandTab="tasks";go(campHash(tk.brand,campsOf(tk.brand).length?campOf(tk):""));setTimeout(()=>openDrawer("task",a.dataset.task),60)}
   else if(act==="men-go"&&a.dataset.acc){accBrand=(S.access[a.dataset.acc]||{}).brand||accBrand;go("access");setTimeout(()=>openDrawer("access",a.dataset.acc),60)}
-  else if(act==="men-go"){brandTab="updates";ls.set("vt-tab",brandTab);go("brand-"+a.dataset.id)}
+  else if(act==="men-go"){go(brandHash(a.dataset.id,"updates"))}
   else if(act==="guide-off"){ls.set("vt-guide-"+a.dataset.k,"1");render()}
   else if(act==="client-dl"){const m=clientModel(a.dataset.id);offer((m.name||"brand").replace(/[^A-Za-z0-9]+/g,"_")+"_onboarding_status_"+isoToday()+".html",clientDoc(m))}
   else if(act==="del-comment"){const id=a.dataset.id;confirmBox("Delete this comment?","Delete",()=>remove("comments",id,"Comment"))}
@@ -1674,7 +1812,7 @@ document.addEventListener("click",e=>{
   else if(act==="sowview"){sowView=a.dataset.v;ls.set("vt-sowview",sowView);render()}
   else if(act==="accgap"){flt.accGap=a.dataset.v==="1";render()}
   else if(act==="board")openDrawer("board",a.dataset.b,a.dataset.c);
-  else if(act==="nav-steps"){brandTab="steps";ls.set("vt-tab",brandTab);closeDrawer();go("brand-"+a.dataset.id)}
+  else if(act==="nav-steps"){closeDrawer();go(brandHash(a.dataset.id,"steps"))}
   else if(act==="acc-new"){const bid=a.dataset.b,pl=a.dataset.p;create("access",null,{brand:bid,platform:pl,access_level:"TBC",needed_for:"",owner:"",brand_contact:(S.brands[bid]||{}).founder||"",requested_date:"",deadline:"",status:"Needed",blocker:"",notes:""},bname(bid)+" "+pl).then(id=>{if(id)openDrawer("access",id)})}
   else if(act==="camp"){go(campHash(route.id,a.dataset.id));setTimeout(toSection,30)}
   else if(act==="lead-jump"){const el=document.getElementById(a.dataset.to);if(el)el.scrollIntoView({behavior:"smooth",block:"start"})}
@@ -1717,7 +1855,6 @@ document.addEventListener("click",e=>{
     create("comments",null,{brand:tk.brand,task:id,text,by:me,at:Date.now(),mentions:mentionsIn(text)},"Comment on "+tk.title).then(r=>{if(r&&$("#task-c"))$("#task-c").value=""})}
   else if(act==="add-camp"){const bid=a.dataset.id;formBox("New campaign",`<div class="f"><label for="n-cn">Campaign name</label><input id="n-cn" name="name" required placeholder="For example: Spring launch"></div><div class="f"><label for="n-cp">What it is for</label><textarea id="n-cp" name="purpose" placeholder="One or two lines: the product, the goal, the audience"></textarea></div><div class="row" style="gap:10px"><div class="f" style="flex:1"><label for="n-cs">Start</label><input id="n-cs" name="start" type="date"></div><div class="f" style="flex:1"><label for="n-ce">Launch or end</label><input id="n-ce" name="end" type="date"></div></div><div class="f"><label for="n-co">Owner</label><select id="n-co" name="owner">${opts(activePeople(),me)}</select></div>`,"Add campaign",
     v=>{if(!v.name){toast("Give the campaign a name.");return false}create("camps",null,{brand:bid,name:v.name,purpose:v.purpose,goal:"",start:v.start,end:v.end,owner:v.owner,status:L("campaign_status")[0]||"",deps:[]},v.name).then(id=>{if(id){go(campHash(bid,id));render()}})})}
-  else if(act==="allphases"){showAllPhases=!showAllPhases;render()}
   else if(act==="settab"){setTab=a.dataset.tab;render()}
   else if(act==="close")closeDrawer();
   else if(act==="mclose")$("#modal").hidden=true;
@@ -1734,6 +1871,7 @@ document.addEventListener("click",e=>{
       create("brands",id,{name:v.name,founder:"",website:"",stage:v.stage,lead:"",next_step:"",sprint_label:"",order:brandList().length+1,paused:false,restricted:false},v.name);
       db.doc("brand_steps/"+id).set({brand:id,s:{}}).catch(()=>{});if(v.stage!=="Internal")db.doc("sow/"+id).set({brand:id,owner:"",support:[],stage:"Not Started",start_date:"",draft_due:"",target_sign:"",blocker:"",next_step:"",sow_link:"",gf_link:"",gf_updated:false,gf_status:"",batch:""}).catch(()=>{});
       go("brand-"+id)})}
+  else if(act==="mem-del"){const id=drawerCtx&&drawerCtx.id;const tk=S.tasks[id];if(!tk)return;const sup=(tk.support||[]).slice();const[p]=sup.splice(+a.dataset.i,1);if(!p)return;save("tasks",id,{support:sup},tk.title+" members");taskNote(tk,id,"Removed "+p)}
   else if(act==="phase-done"){const bid=a.dataset.id,pc=a.dataset.phase;const p=phases().find(x=>x.code===pc);const first=p.steps[0];
     const earlier=stepsSorted().filter(x=>x.order<first.order&&!x.is_optional&&!["Done","N/A"].includes(stepState(bid,x.code).status));
     if(earlier.length){toast(`Finish the ${earlier.length} open step${earlier.length>1?"s":""} in earlier phases first.`);return}
@@ -1749,6 +1887,7 @@ document.addEventListener("change",e=>{
   if(e.target.form&&e.target.form.id==="dform"&&e.target.name)drawerDirty[e.target.name]=e.target.value;
   const t=e.target;const act=t.dataset&&t.dataset.act;if(!act)return;
   if(act==="kbf"){kbFilter[t.dataset.k]=t.value;render();return}
+  if(act==="mem-add"&&t.value){const id=drawerCtx&&drawerCtx.id;const tk=S.tasks[id];const p=t.value;t.value="";if(!tk||(tk.support||[]).includes(p))return;save("tasks",id,{support:(tk.support||[]).concat([p])},tk.title+" members");taskNote(tk,id,"Added "+p);return}
   if(act==="kbdone"){kbFilter.done=t.checked;render();return}
   if(act==="review-day"){const v=+t.value;if(S.config.leadership)save("config","leadership",{review_day:v},"Review day");else create("config","leadership",{review_day:v},"Review day");return}
   if(act==="ck"){const id=drawerCtx&&drawerCtx.id;const tk=S.tasks[id];if(!tk)return;const cl=(tk.checklist||[]).map(x=>Object.assign({},x));const x=cl[+t.dataset.i];if(!x)return;x.done=t.checked;save("tasks",id,{checklist:cl},tk.title+" checklist");return}
