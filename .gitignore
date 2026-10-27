@@ -6,3 +6,4 @@ exports/
 .shots/
 docs/feature_map/*.xlsx
 web/dist/
+.backup/
