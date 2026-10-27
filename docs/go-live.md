@@ -4,6 +4,17 @@ Decisions so far: Supabase region South Asia (Mumbai), kept by the product owner
 
 How it fits together: `app/index.html` is the same app file used on claude.ai. `web/shim.js` answers its database calls from Supabase and adds the sign-in screen. `web/build.mjs` joins them into `web/dist` on every Vercel deploy. So a UI change reaches claude.ai and the website from one file.
 
+## Status on 27 Oct (done by Claude through the Supabase API)
+
+| Step | State |
+| --- | --- |
+| 1. Tables | Done. `docs` and `members` created, 6 access rules, live updates on. Your own `members` row is still to add (1.5) |
+| 2. Sign-in settings | Not done: the Supabase token cannot change Authentication settings. Do it by hand, including Email OTP Length **6** (it is 8 now) |
+| 3. Public values | Done. Project URL `https://qxnmcggavnnzumwkamkk.supabase.co`; publishable key read, not written anywhere |
+| 4. Vercel | Blocked: the Vercel token was refused ("invalid token") |
+| 5. Data | Done straight from the live claude.ai tracker, no backup file needed. 405 records in 11 collections, every one checked equal to the source. Comments and escalations were empty. Private profiles not copied (each person gets a new one on first sign-in) |
+| Checks on the real database | Not signed in: blocked. Signed in but not on the list: 0 rows. Lead: 405 rows. View: 405 rows, 0 writes. Test rows rolled back |
+
 ## Step 1. Supabase: create the tables (2 minutes)
 
 1. supabase.com, open project **Valerie Ecosystem**.
@@ -16,7 +27,7 @@ How it fits together: `app/index.html` is the same app file used on claude.ai. `
 
 ## Step 2. Supabase: sign-in settings (5 minutes)
 
-1. Left bar: **Authentication** > **Sign In / Providers** > **Email**: Email on. "Allow new users to sign up": **on** (who gets in is decided by the `members` table, not by sign-up). Save.
+1. Left bar: **Authentication** > **Sign In / Providers** > **Email**: Email on. Email OTP Length: **6**. "Allow new users to sign up": **on** (who gets in is decided by the `members` table, not by sign-up). Save.
 2. **Authentication** > **Emails** (Email Templates). Open **Magic Link**, replace the body with the text below, Save. Do the same for **Confirm signup**.
 
 ```
