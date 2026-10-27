@@ -497,7 +497,7 @@ table.grid td{vertical-align:middle}
 .bento{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px;margin-bottom:8px}
 .bt{all:unset;box-sizing:border-box;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px 22px;display:flex;flex-direction:column;gap:10px;min-width:0;box-shadow:var(--shadow)}
 button.bt{cursor:pointer;transition:box-shadow .15s,border-color .15s}button.bt:hover{border-color:var(--line2);box-shadow:0 6px 20px rgb(0 0 0/.08)}button.bt:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.bt.hero{grid-column:span 8}.bt.health{grid-column:span 4}.bt.tc{grid-column:span 8}.bt.tsow{grid-column:span 4}.bt.tob{grid-column:span 12}.bt.ts{grid-column:span 4}
+.bt.hero{grid-column:span 8}.bt.health{grid-column:span 4}.bt.tc{grid-column:span 12}.bt.troad{grid-column:span 12}.bt.ts{grid-column:span 4}
 .bh1{margin:0;font-size:38px;line-height:1.1;letter-spacing:-.01em;color:var(--bink,var(--ink))}:root[data-theme="dark"] .bh1{color:var(--ink)}
 .intro{margin:0;font-size:17px;line-height:1.5;color:var(--ink);max-width:62ch}
 .people{display:flex;gap:28px;flex-wrap:wrap}.who2{display:flex;gap:10px;align-items:center}.who2>span:last-child{display:flex;flex-direction:column;font-size:15px}.who2 .faint{font-size:12px;text-transform:uppercase;letter-spacing:.05em}
@@ -519,21 +519,33 @@ button.bt{cursor:pointer;transition:box-shadow .15s,border-color .15s}button.bt:
 .sig.big{font-size:24px;gap:10px;font-weight:700}.sig.big svg{width:30px;height:30px}
 .sig.sm svg{width:13px;height:13px}.mt .sig.sm{margin-right:4px;vertical-align:-2px}
 .bbk>svg{width:14px;height:14px;flex:none;fill:var(--warn)}.bbk>svg .in{fill:none;stroke:var(--panel);stroke-width:2}.bbk>svg:has(rect){fill:var(--bad)}
-/* campaign roadmap: shared month axis, one bar per campaign */
-.rmap{position:relative;display:flex;flex-direction:column;gap:6px}
-.rmh,.rmr{display:grid;grid-template-columns:minmax(120px,30%) minmax(0,1fr);gap:10px;align-items:center}
-.rmh{font-size:12px;color:var(--muted);min-height:18px}.rmh .rmt{position:relative;height:18px}
-.rmm{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap}
-.rmr{all:unset;box-sizing:border-box;display:grid;grid-template-columns:minmax(120px,30%) minmax(0,1fr);gap:10px;align-items:center;cursor:pointer;min-height:36px;border-radius:8px;padding:0 4px}
-.rmr:hover{background:var(--offBg)}.rmr:focus-visible{outline:2px solid var(--accent)}
-.rmn{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.rmr .rmt{position:relative;height:14px;background:var(--panel2);border-radius:7px}
-.rmb{position:absolute;top:0;bottom:0;border-radius:7px;background:var(--info)}
-.rmb-good{background:var(--ok)}.rmb-warn{background:var(--warn)}.rmb-bad{background:var(--bad)}.rmb-off{background:var(--off)}
-.rmb.open{-webkit-mask-image:linear-gradient(90deg,#000 70%,transparent);mask-image:linear-gradient(90deg,#000 70%,transparent)}
-.rmover{position:absolute;top:0;bottom:18px;right:4px;left:calc(30% + 12px);pointer-events:none}
-.rmtoday{position:absolute;top:0;bottom:0;border-left:2px dashed var(--ink);opacity:.55}.rmtoday span{position:absolute;bottom:-18px;left:-16px;font-size:12px;font-weight:700;white-space:nowrap}
-.rmap{padding-bottom:18px}
+/* campaign roadmap: shared month axis, one row per campaign */
+.rmap{--nw:230px;--mw:200px;display:flex;flex-direction:column;gap:2px}
+.rmh,.rmr{display:grid;grid-template-columns:var(--nw) minmax(0,1fr) var(--mw);gap:14px;align-items:center;padding:0 6px}
+.rmh{font-size:12px;color:var(--muted);min-height:22px}.rmh .rmt{position:relative;height:20px}
+.rmm{position:absolute;top:2px;padding-left:4px;white-space:nowrap;font-weight:600}
+.mS{display:none}.rmtl{position:absolute;top:2px;transform:translateX(-50%);font-weight:700;color:var(--ink);background:var(--panel);padding:0 4px;border-radius:4px;white-space:nowrap}
+.rmbody{position:relative;display:flex;flex-direction:column;gap:2px}
+.rmgrid{position:absolute;top:0;bottom:0;left:calc(6px + var(--nw) + 14px);right:calc(6px + var(--mw) + 14px);pointer-events:none}
+.rmw{position:absolute;top:0;bottom:0;border-left:1px solid var(--line)}.rmw.mo{border-left:1px solid var(--line2)}
+.rmtoday{position:absolute;top:-22px;bottom:0;border-left:2px solid var(--ink);opacity:.7}
+.rmr{all:unset;box-sizing:border-box;display:grid;grid-template-columns:var(--nw) minmax(0,1fr) var(--mw);gap:14px;align-items:center;padding:6px;cursor:pointer;min-height:52px;border-radius:10px;position:relative}
+.rmr:hover{background:color-mix(in srgb,var(--offBg) 70%,transparent)}.rmr:focus-visible{outline:2px solid var(--accent)}
+.rmn{display:flex;flex-direction:column;min-width:0}.rmn b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rmn .faint{font-size:12px}
+.rmr .rmt{position:relative;height:22px}
+.rmb{position:absolute;top:2px;height:18px;border-radius:9px;overflow:hidden;--c:var(--info);background:color-mix(in srgb,var(--c) 26%,var(--panel));box-shadow:inset 0 0 0 1.5px var(--c)}
+.rmb i{display:block;height:100%;background:var(--c)}
+.rmb-good{--c:var(--ok)}.rmb-warn{--c:var(--warn)}.rmb-bad{--c:var(--bad)}.rmb-off{--c:var(--off)}
+.rmb.open{border-top-right-radius:0;border-bottom-right-radius:0;box-shadow:inset 1.5px 0 0 var(--c),inset 0 1.5px 0 var(--c),inset 0 -1.5px 0 var(--c);-webkit-mask-image:linear-gradient(90deg,#000 80%,transparent);mask-image:linear-gradient(90deg,#000 80%,transparent)}
+.rmd{position:absolute;top:-1px;width:3px;height:24px;margin-left:-1.5px;border-radius:2px;background:var(--ink);opacity:.55}.rmd.bad{background:var(--bad);opacity:1;width:4px}
+.rmeta{display:flex;flex-direction:column;gap:1px;font-size:12px;min-width:0}.rmeta .sig{font-size:13px}
+.rmkey{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted);margin:8px 6px 0}.rmkey i{display:inline-block;vertical-align:middle;margin-right:5px}
+.rmkey .k1{width:22px;height:10px;border-radius:5px;background:color-mix(in srgb,var(--info) 26%,var(--panel));box-shadow:inset 0 0 0 1.5px var(--info)}.rmkey .k2{width:22px;height:10px;border-radius:5px;background:var(--info)}
+.rmkey .k3{width:3px;height:12px;background:var(--ink);opacity:.55}.rmkey .k4{width:4px;height:12px;background:var(--bad)}.rmkey .k5{width:2px;height:12px;background:var(--ink)}
+/* road to SOW */
+.road{display:grid;grid-template-columns:auto minmax(0,1fr);gap:28px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px 24px;margin-bottom:8px;box-shadow:var(--shadow)}
+.rdl{display:flex;flex-direction:column}.rdm{display:flex;flex-direction:column;gap:14px}
+.rdf{display:flex;flex-wrap:wrap;gap:12px 32px}.rdf>span{display:flex;flex-direction:column;gap:3px;font-size:14px}
 /* onboarding journey: one bar, a segment per phase */
 .jbar{display:flex;gap:6px}
 .jseg{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:6px;min-width:104px;padding:6px;border-radius:10px}
@@ -541,11 +553,6 @@ button.bt{cursor:pointer;transition:box-shadow .15s,border-color .15s}button.bt:
 .jtrack{display:block;height:12px;border-radius:6px;background:var(--panel2);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden}.jtrack i{display:block;height:100%;background:var(--info)}
 .jseg.done .jtrack i{background:var(--ok)}.jseg.now .jtrack{box-shadow:inset 0 0 0 2px var(--accent)}
 .jl{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.jc{font-size:12px}
-/* SOW page */
-.sowtop{display:flex;align-items:center;gap:24px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px 22px;margin-bottom:14px;box-shadow:var(--shadow)}.sowtop>div{display:flex;flex-direction:column}
-.sowlanes{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
-.slane{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:4px;box-shadow:var(--shadow)}.slane h3{margin:0 0 4px;font-size:14px}
-.srow{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:1px;padding:6px 8px;border-radius:8px;min-height:44px}.srow:hover{background:var(--offBg)}.srow:focus-visible{outline:2px solid var(--accent)}.srow .faint{font-size:12.5px;padding-left:22px}
 /* phase track: horizontal on desktop, vertical on phone */
 .ptrack{display:flex;gap:0;margin:4px 0 16px;overflow-x:auto;padding:4px 2px}
 .pnode{all:unset;box-sizing:border-box;cursor:pointer;flex:1 1 0;min-width:120px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;position:relative;padding:6px 4px;border-radius:10px}
@@ -568,12 +575,12 @@ button.bt{cursor:pointer;transition:box-shadow .15s,border-color .15s}button.bt:
 .mems{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}.mem{display:inline-flex;align-items:center;gap:6px;background:var(--offBg);border-radius:16px;padding:2px 4px 2px 2px;font-size:13.5px}
 .memx{all:unset;cursor:pointer;width:24px;height:24px;display:grid;place-items:center;border-radius:50%;font-size:16px}.memx:hover{background:var(--line)}.memx:focus-visible{outline:2px solid var(--accent)}
 .bsh1{margin:0;font-size:inherit;display:inline}
-@media (max-width:1100px){.bt.hero,.bt.tc{grid-column:span 12}.bt.health,.bt.tsow{grid-column:span 6}.bt.ts{grid-column:span 4}}
-@media (max-width:900px){.bento{gap:12px}.bt.hero,.bt.health,.bt.tc,.bt.tsow,.bt.tob,.bt.ts{grid-column:span 12}.bh1{font-size:30px}.btbig{font-size:32px}
+@media (max-width:1100px){.bt.hero,.bt.health{grid-column:span 12}.bt.ts{grid-column:span 4}.rmap{--nw:180px;--mw:160px}}
+@media (max-width:900px){.bento{gap:12px}.bt.hero,.bt.health,.bt.tc,.bt.troad,.bt.ts{grid-column:span 12}.bh1{font-size:30px}.btbig{font-size:32px}
   .jbar{flex-direction:column}.jseg{flex:none!important}
   .ptrack{flex-direction:column;overflow:visible}.pnode{flex-direction:row;text-align:left;min-width:0;gap:10px;min-height:48px}.pnode::before{top:-50%;bottom:50%;left:21px;right:auto;width:3px;height:auto}.pcount{margin-left:auto}
   .crow{grid-template-columns:minmax(0,1fr) auto;gap:6px 10px}.crow .cmain{grid-column:1/-1;order:-1}.crow .chev{display:none}
-  .rmh,.rmr{grid-template-columns:minmax(90px,34%) minmax(0,1fr)}.rmap .rmover{left:calc(34% + 12px)}.sowtop{flex-direction:column;align-items:stretch;gap:8px}
+  .rmap{--nw:100px;--mw:0px}.rmtl,.mL{display:none}.mS{display:inline}.rmh,.rmr{gap:8px}.rmeta{display:none}.rmkey{gap:8px 12px}.road{grid-template-columns:1fr;gap:12px}
   .memx{width:44px;height:44px}.rmr,.jseg,.intro .missing{min-height:46px}}
 </style>
 
@@ -724,7 +731,7 @@ function addLog(c,id,patch,old,label){
 
 /* ---------- routing ---------- */
 function parseHash(){const h=location.hash.replace(/^#/,"");
-  if(h.startsWith("brand-")){const[head,cid]=h.slice(6).split("/c/");const[bid,tab]=head.split("/");route={v:"brand",id:bid,camp:cid?decodeURIComponent(cid):""};campSel={bid,id:route.camp};brandTab=route.camp?"tasks":(tab||"home")}
+  if(h.startsWith("brand-")){const[head,cid]=h.slice(6).split("/c/");const[bid,tab]=head.split("/");route={v:"brand",id:bid,camp:cid?decodeURIComponent(cid):""};campSel={bid,id:route.camp};brandTab=route.camp?"tasks":tab==="steps"?"sow":(tab||"home")}
   else if(h.startsWith("client-"))route={v:"client",id:h.slice(7)};
   else if(["mine","overview","access","sow","bp","settings","people"].includes(h))route={v:h,id:""};
   else route={v:"",id:""};
@@ -927,7 +934,7 @@ function vBrand(id){
   const note=r.hold?`<div class="notice">${esc(b.name)} is on hold${b.paused&&b.stage!=="On Hold"?" (marked paused)":""}. Its tasks, SOW and late items are left out of the Overview counts and the SOW signing plan.${ed?" Change the stage or untick Paused in Edit details to bring it back.":""}</div>`:"";
   if(!SECT[brandTab]||brandTab==="home")return note+brandHome(id,r);
   let h=note+brandBar(id,r);
-  if(brandTab==="updates")h+=updatesTab(id);else if(brandTab==="steps")h+=stepsTrack(id);else if(brandTab==="access")h+=accessTable(id);else if(brandTab==="sow")h+=sowPage(id);else if(brandTab==="bp")h+=bpCard(id);else h+=tasksTab(id);
+  if(brandTab==="updates")h+=updatesTab(id);else if(brandTab==="sow")h+=roadPage(id);else if(brandTab==="access")h+=accessTable(id);else if(brandTab==="bp")h+=bpCard(id);else h+=tasksTab(id);
   return h}
 /* ---------- brand home: one tile per area; the biggest tiles carry what matters most ---------- */
 // Status uses four meanings only, always with a word and a shape: good (circle, tick), attention (triangle), problem (square), neutral (ring).
@@ -940,23 +947,31 @@ const SHAPE={good:`<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" c
   off:`<svg viewBox="0 0 20 20" aria-hidden="true"><circle class="ring" cx="10" cy="10" r="7.8"/></svg>`};
 const sig=(k,label,big)=>`<span class="sig sig-${k} ${big?"big":""}">${SHAPE[k]||SHAPE.off}<span>${esc(label)}</span></span>`;
 const brandHash=(bid,tab)=>"brand-"+bid+(tab&&tab!=="home"?"/"+tab:"");
-function sowPct(bid){let n=0,d=0;for(const c of boardCols().flatMap(g=>g.cols)){const v=boardCell(bid,c);if(!v||v==="N/A")continue;n++;d+=v==="Done"?1:v==="In progress"?.5:0}return n?d/n:0}
 function campState(c,r){const late=c.end&&parseD(c.end)<today()&&c.status!=="Done";if(r.blocked)return["bad",r.blocked+" blocked"];if(r.late||late)return["warn",late?"Past its end date":r.late+" late"];
   if(c.status==="Done"||(r.ts.length&&!r.op.length))return["good","Done"];if(!r.ts.length)return["off","No tasks yet"];return["info","On track"]}
 const ring=(p,size)=>{const s=size||40,rr=s/2-4,c=2*Math.PI*rr;return`<svg class="pring" width="${s}" height="${s}" viewBox="0 0 ${s} ${s}" aria-hidden="true"><circle cx="${s/2}" cy="${s/2}" r="${rr}" class="rb"/><circle cx="${s/2}" cy="${s/2}" r="${rr}" class="rf" stroke-dasharray="${(c*p).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 ${s/2} ${s/2})"/></svg>`};
-/* campaigns on a shared calendar, one bar each */
-function campRoadmap(bid,big){const cs=campsOf(bid);if(!cs.length)return"";
-  const ds=cs.flatMap(c=>[c.start,c.end]).map(parseD).filter(Boolean);const t0=+today();
-  let lo=ds.length?Math.min(...ds,t0):t0-30*DAY,hi=ds.length?Math.max(...ds,t0):t0+30*DAY;lo-=5*DAY;hi+=10*DAY;
-  const pos=d=>Math.max(0,Math.min(100,(d-lo)/(hi-lo)*100));const months=[];const m=new Date(lo);m.setDate(1);m.setMonth(m.getMonth()+1);for(let d=new Date(m);+d<hi;d.setMonth(d.getMonth()+1))months.push(+d);
-  return`<div class="rmap ${big?"big":""}"><div class="rmh"><span></span><span class="rmt">${months.map(d=>`<span class="rmm" style="left:${pos(d)}%">${esc(new Date(d).toLocaleDateString("en-GB",{month:"short"}))}</span>`).join("")}</span></div>
-   ${cs.map(c=>{const r=campRoll(bid,c._id);const [k]=campState(c,r);const s=parseD(c.start)||lo,e=parseD(c.end);const left=pos(+s),right=e?pos(+e+DAY):100;
-     return`<button class="rmr" data-act="go-camp" data-id="${esc(c._id)}" title="${esc(c.name+": "+whenText(c))}"><span class="rmn">${esc(c.name)}</span><span class="rmt"><span class="rmb rmb-${k} ${e?"":"open"}" style="left:${left}%;width:${Math.max(2,right-left)}%"></span></span></button>`}).join("")}
-   <div class="rmover"><span class="rmtoday" style="left:${pos(t0)}%"><span>Today</span></span></div></div>`}
+/* campaigns on a shared calendar: one row each with its dates, how much is done, task due dates and how it is going */
+function campRoadmap(bid,big){const cs=campsOf(bid);if(!cs.length)return"";const t0=+today();
+  const rows=cs.map(c=>{const r=campRoll(bid,c._id);return{c,r,st:campState(c,r),s:parseD(c.start),e:parseD(c.end),dues:r.op.map(t=>({d:parseD(t.deadline),t})).filter(x=>x.d)}});
+  const ds=rows.flatMap(x=>[x.s,x.e].concat(x.dues.map(d=>d.d))).filter(Boolean).map(Number);
+  let lo=Math.min(...ds,t0),hi=Math.max(...ds,t0+21*DAY);lo-=4*DAY;hi+=7*DAY;
+  const pos=d=>Math.max(0,Math.min(100,(d-lo)/(hi-lo)*100));const day=d=>new Date(d).toLocaleDateString("en-GB",{day:"numeric",month:"short"});
+  const months=[],weeks=[];const m=new Date(lo);m.setDate(1);m.setMonth(m.getMonth()+1);for(let d=new Date(m);+d<hi;d.setMonth(d.getMonth()+1))months.push(+d);
+  const w=new Date(lo);w.setDate(w.getDate()+((8-w.getDay())%7));for(let d=+w;d<hi;d+=7*DAY)weeks.push(d);
+  const meta=(x)=>{const tot=x.r.ts.length;const left=x.e?Math.round((x.e-t0)/DAY):null;
+    return`<span class="rmeta">${sig(x.st[0],x.st[1])}<span class="faint">${left===null?"No end date":left>1?left+" days left":left===1?"1 day left":left===0?"Ends today":"Ended "+(-left)+"d ago"} · ${x.r.done}/${tot} done</span></span>`};
+  return`<div class="rmap ${big?"big":""}">
+   <div class="rmh"><span></span><span class="rmt">${months.map(d=>`<span class="rmm" style="left:${pos(d)}%"><span class="mL">${esc(new Date(d).toLocaleDateString("en-GB",{month:"long"}))}</span><span class="mS">${esc(new Date(d).toLocaleDateString("en-GB",{month:"short"}))}</span></span>`).join("")}<span class="rmtl" style="left:${pos(t0)}%">Today</span></span><span></span></div>
+   <div class="rmbody"><div class="rmgrid" aria-hidden="true">${weeks.map(d=>`<span class="rmw" style="left:${pos(d)}%"></span>`).join("")}${months.map(d=>`<span class="rmw mo" style="left:${pos(d)}%"></span>`).join("")}<span class="rmtoday" style="left:${pos(t0)}%"></span></div>
+   ${rows.map(x=>{const {c,r}=x;const tot=r.ts.length;const pc=tot?r.done/tot:0;const left=pos(+(x.s||lo)),right=x.e?pos(+x.e+DAY):100;
+     const tip=`${c.name}: ${x.s?day(x.s):"no start"} to ${x.e?day(x.e):"no end date"}. ${r.done} of ${tot} tasks done${r.blocked?", "+r.blocked+" blocked":""}${r.late?", "+r.late+" late":""}.`;
+     return`<button class="rmr" data-act="go-camp" data-id="${esc(c._id)}" title="${esc(tip)}"><span class="rmn"><b>${esc(c.name)}</b><span class="faint">${x.s?esc(day(x.s)):"?"} → ${x.e?esc(day(x.e)):"no end date"}</span></span>
+      <span class="rmt"><span class="rmb rmb-${x.st[0]} ${x.e?"":"open"}" style="left:${left}%;width:${Math.max(2,right-left)}%"><i style="width:${Math.round(pc*100)}%"></i></span>${x.dues.map(d=>{const bad=d.t.status==="Blocked"||dueFlag(d.t.deadline,false)==="Overdue";return`<span class="rmd ${bad?"bad":""}" style="left:${pos(+d.d)}%"></span>`}).join("")}</span>${meta(x)}</button>`}).join("")}</div>
+   <div class="rmkey"><span><i class="k1"></i>Campaign dates</span><span><i class="k2"></i>Share of tasks done</span><span><i class="k3"></i>Task due</span><span><i class="k4"></i>Task late or blocked</span><span><i class="k5"></i>Today</span></div></div>`}
 function brandHome(id,r){
   const b=S.brands[id];const ed=canEdit&&canWrite;const [hk,hl]=healthOf(r.health);
   const ar=withId(S.access).filter(a=>a.brand===id&&a.status!=="Not Needed");const g=ar.filter(accGranted).length;const ch=ar.filter(needsChase).length;
-  const s=r.sowRow;const due=sowDue(s);const sp=isInternal(b)?null:Math.round(sowPct(id)*100);const bp=r.bp;
+  const s=r.sowRow;const due=sowDue(s);const bp=r.bp;
   const locked=bp?L("bp_section").filter(x=>((S.bps[id].sections||{})[x]||"Not Started")==="Not Started"&&(bpAccess(id,x)||{}).state==="locked").length:0;
   const reasons=[];if(r.blocked)reasons.push(`${r.blocked} task${r.blocked>1?"s":""} blocked`);if(r.overdue)reasons.push(`${r.overdue} task${r.overdue>1?"s":""} late`);
   if(r.stepBlocked)reasons.push(`${r.stepBlocked} onboarding step${r.stepBlocked>1?"s":""} blocked`);if(!isInternal(b)&&due==="Overdue"&&r.sow!=="Signed")reasons.push("SOW past its target date");if(ch)reasons.push(`${ch} platform${ch>1?"s":""} to chase with the founder`);
@@ -974,9 +989,10 @@ function brandHome(id,r){
    ${b.next_step?`<p class="nxt"><span class="btl">Next step</span><span class="clamp3" title="${esc(b.next_step)}">${esc(b.next_step)}</span></p>`:""}</section>
   <section class="bt tc" aria-label="Campaigns"><div class="bth"><span class="btl">Campaigns</span><span class="btv">${cs.length?cs.length:r.open+" open tasks"}</span><span class="grow"></span><button class="btn sm" data-act="tab" data-tab="tasks">${cs.length?"All campaigns ›":"Open the board ›"}</button></div>
    ${cs.length?campRoadmap(id,false):`<p class="faint" style="margin:0">No campaigns yet. A campaign groups the work for one launch across teams.</p>`}</section>
-  ${sp===null?"":`<button class="bt tsow" data-act="tab" data-tab="sow"><span class="btl">SOW</span><span class="btbig">${sp}%</span><span class="bar wide"><i style="width:${sp}%"></i></span>
-   <span class="row" style="gap:6px">${pill(r.sow)}${r.hold?sig("off","On hold, target kept"):s.target_sign&&r.sow!=="Signed"?(due==="Overdue"?sig("bad","Target "+fmtD(s.target_sign)+" passed"):`<span class="faint">Target ${esc(fmtD(s.target_sign))}</span>`):""}</span><span class="go">Open SOW ›</span></button>`}
-  <section class="bt tob" aria-label="Onboarding"><div class="bth"><span class="btl">Onboarding</span><span class="btv">${Math.round(r.pct*100)}%</span><span class="faint">${cur?`Now: ${esc(cur.code+" "+cur.name)}`:"Every phase done"}</span><span class="grow"></span><button class="btn sm" data-act="tab" data-tab="steps">All steps ›</button></div>
+  <section class="bt troad" aria-label="${isInternal(b)?"Onboarding":"Road to a signed SOW"}"><div class="bth"><span class="btl">${isInternal(b)?"Onboarding":"Road to a signed SOW"}</span><span class="btv">${Math.round(r.pct*100)}%</span>
+   ${isInternal(b)?"":`<span class="faint">SOW document</span>${pill(r.sow)}${r.hold?sig("off","On hold, target kept"):s.target_sign&&r.sow!=="Signed"?(due==="Overdue"?sig("bad","Target "+fmtD(s.target_sign)+" passed"):`<span class="faint">Target ${esc(fmtD(s.target_sign))}</span>`):""}`}
+   <span class="grow"></span><button class="btn sm" data-act="tab" data-tab="sow">Open ›</button></div>
+   <p class="faint" style="margin:0">${cur?`Now in <b style="color:var(--ink)">${esc(cur.code+" "+cur.name)}</b>. `:"Every phase done. "}${isInternal(b)?"":"Each phase below is a step towards the signed SOW."}</p>
    ${journey(id,ps,cur)}</section>
   <button class="bt ts" data-act="tab" data-tab="access"><span class="btl">Platform access</span><span class="btbig">${ar.length?`${g} of ${ar.length}`:"None"}</span>
    <span class="plist">${ar.slice(0,4).map(a=>`<span>${accGranted(a)?sig("good",a.platform):needsChase(a)?sig("bad",a.platform):ACC_FOUNDER.includes(a.status)?sig("warn",a.platform):sig("off",a.platform)}<span class="faint">${esc(a.status)}</span></span>`).join("")||`<span class="faint">No platforms tracked</span>`}</span><span class="go">Open ›</span></button>
@@ -989,11 +1005,15 @@ function brandHome(id,r){
 /* one bar for the whole journey: a segment per phase, sized by its step count */
 function journey(bid,ps,cur){return`<div class="jbar">${ps.map(p=>{const req=p.steps.filter(s=>!s.is_optional);const d=req.filter(s=>["Done","N/A"].includes(stepState(bid,s.code).status)).length;const pct=req.length?d/req.length:1;const done=!phaseOpen(bid,p);
   return`<button class="jseg ${done?"done":p===cur?"now":""}" style="flex:${Math.max(1,req.length)}" data-act="phase-go" data-id="${esc(bid)}" data-p="${esc(p.code)}" title="${esc(p.code+" "+p.name+": "+d+" of "+req.length+" done")}"><span class="jtrack"><i style="width:${Math.round(pct*100)}%"></i></span><span class="jl"><b>${esc(p.code)}</b> ${esc(p.name)}</span><span class="faint jc">${done?"Done":d+" of "+req.length}</span></button>`}).join("")}</div>`}
-/* SOW for one brand: stage, the facts, and every board square for this brand in order */
-function sowPage(bid){const b=S.brands[bid];if(isInternal(b))return sowCard(bid);const p=Math.round(sowPct(bid)*100);
-  return`<div class="sowtop"><div><span class="btl">SOW progress</span><span class="btbig">${p}%</span></div><span class="bar wide sowbar"><i style="width:${p}%"></i></span></div>`+sowCard(bid)
-   +`<h2 class="sech">Every step towards a signed SOW</h2><div class="sowlanes">${boardCols().map((g,gi)=>`<section class="slane"><h3>${esc(g.name)}</h3>${g.cols.map((c,ci)=>{const v=boardCell(bid,c);const k=v==="Done"?"good":v==="In progress"?"info":v==="N/A"?"off":v?"warn":"off";
-     return`<button class="srow" data-act="board" data-b="${esc(bid)}" data-c="${gi}.${ci}">${sig(k,c.label)}<span class="faint">${esc(v||"No steps linked")}</span></button>`}).join("")}</section>`).join("")}</div>`}
+/* Road to SOW: onboarding steps are the work, the SOW document is the outcome. One page for both. */
+function roadPage(bid){const b=S.brands[bid];const r=roll(bid);const sw=S.sow[bid]||{};const due=sowDue(sw);const ps=phases();const cur=ps.find(p=>phaseOpen(bid,p));
+  const req=ps.flatMap(p=>p.steps.filter(x=>!x.is_optional));const done=req.filter(x=>["Done","N/A"].includes(stepState(bid,x.code).status)).length;const p=Math.round(r.pct*100);
+  const top=`<section class="road"><div class="rdl"><span class="btl">${isInternal(b)?"Onboarding":"Road to a signed SOW"}</span><span class="btbig">${p}%</span><span class="faint">${done} of ${req.length} required steps done</span></div>
+   <div class="rdm"><span class="bar wide sowbar"><i style="width:${p}%"></i></span>
+    <div class="rdf"><span><span class="btl">Now</span><b>${cur?esc(cur.code+" "+cur.name):"Every phase done"}</b></span>
+    ${isInternal(b)?"":`<span><span class="btl">SOW document</span>${pill(r.sow)}</span><span><span class="btl">Target sign</span>${r.hold?sig("off","On hold, target kept"):sw.target_sign?(due==="Overdue"&&r.sow!=="Signed"?sig("bad",fmtD(sw.target_sign)+" passed"):`<b>${esc(fmtD(sw.target_sign))}</b>`):`<span class="faint">Not set</span>`}</span><span><span class="btl">SOW owner</span><b>${sw.owner?esc(sw.owner):`<span class="faint">Not set</span>`}</b></span>`}
+    ${r.stepBlocked?`<span><span class="btl">Blocked</span>${sig("bad",r.stepBlocked+" step"+(r.stepBlocked>1?"s":""))}</span>`:""}</div></div></section>`;
+  return top+`<h2 class="sech">1. The steps, phase by phase</h2>`+stepsTrack(bid)+(isInternal(b)?"":`<h2 class="sech">2. The SOW document</h2><div class="panel">${sowCard(bid)}</div>`)}
 /* campaign list: shared calendar on top, then one quiet row per campaign */
 function campRows(bid,all){
   const cs=campsOf(bid);const none=all.filter(t=>campOf(t)===NOCAMP);
@@ -1346,9 +1366,7 @@ function brandTiles(id,r){
   const nc=Object.values(S.comments).filter(c=>c.brand===id&&c.kind!=="system").length;
   const tiles=[
     ["tasks",cs.length?"Campaigns":"Tasks",cs.length?`${cs.length} campaign${cs.length>1?"s":""}`:`${r.open} open`,(cs.length?[`${r.open} open`]:[]).concat(r.blocked?[r.blocked+" blocked"]:[],r.overdue?[r.overdue+" late"]:[]).join(" · ")||(cs.length?"":"Nothing blocked or late"),r.blocked?"bad":r.overdue?"warn":"ok"],
-    ["steps","Onboarding",Math.round(r.pct*100)+"%",cur?`Now: ${cur.code} ${cur.name}`:"Every phase done",r.stepBlocked?"bad":cur?"info":"ok"],
-    ["access","Platform access",ar.length?`${g} of ${ar.length}`:"None yet",ch?`${ch} founder chase${ch>1?"s":""} due`:wf?`${wf} with the founder`:ar.length?(g===ar.length?"All granted":"In progress"):"No platforms tracked",r.acc.summary==="Blocked"||ch?"bad":wf?"warn":ar.length&&g===ar.length?"ok":"off"],
-    ["sow","SOW",isInternal(b)?"N/A":r.sow,isInternal(b)?"Internal work":r.hold?"On hold, target kept":r.sow==="Signed"?"Signed":s.target_sign?`Target ${fmtD(s.target_sign)}${due==="Overdue"?", overdue":""}`:"No target date",isInternal(b)||r.hold?"off":r.sow==="Blocked"||due==="Overdue"?"bad":r.sow==="Signed"?"ok":due==="Due Soon"?"warn":"info"],
+    ["sow",isInternal(b)?"Onboarding":"Road to SOW",Math.round(r.pct*100)+"%",isInternal(b)?(cur?`Now: ${cur.code} ${cur.name}`:"Every phase done"):r.hold?"On hold, target kept":`SOW ${r.sow}${r.sow!=="Signed"&&s.target_sign?`, target ${fmtD(s.target_sign)}${due==="Overdue"?" passed":""}`:""}`,r.stepBlocked||(!isInternal(b)&&!r.hold&&(r.sow==="Blocked"||due==="Overdue"))?"bad":isInternal(b)||r.hold?(cur?"info":"ok"):r.sow==="Signed"?"ok":due==="Due Soon"?"warn":"info"],
     ["bp","Best Practices",bp?`${bp.done} of ${bp.total}`:"Not started",bp?(locked?`${locked} waiting on access`:bp.overall):"Not tracked yet",bp?(bp.overall==="Blocked"?"bad":bp.overall==="Complete"?"ok":locked?"warn":"info"):"off"],
     ["updates","Updates",nc?String(nc):"None",lastUpdated(id)?"Last change "+agoText(lastUpdated(id)):"No activity yet","off"]];
   return tiles}
@@ -1359,13 +1377,13 @@ const campsOf=bid=>withId(S.camps).filter(c=>c.brand===bid).sort((a,b)=>String(a
 const campOf=t=>t.campaign&&S.camps[t.campaign]&&S.camps[t.campaign].brand===t.brand?t.campaign:NOCAMP;
 const campName=id=>id===NOCAMP?"Not in a campaign":(S.camps[id]||{}).name||"Campaign";
 const teamColor=d=>"var(--line2)"; // teams are named, not coloured: colour is kept for status
-const SECT={home:"Overview",tasks:"Campaigns",steps:"Onboarding",access:"Platform access",sow:"SOW",bp:"Best Practices",updates:"Updates"};
-const SHORT={tasks:"Campaigns",steps:"Onboarding",access:"Access",sow:"SOW",bp:"BP",updates:"Updates"};
+const SECT={home:"Overview",tasks:"Campaigns",access:"Platform access",sow:"Road to SOW",bp:"Best Practices",updates:"Updates"};
+const SHORT={tasks:"Campaigns",access:"Access",sow:"Road to SOW",bp:"BP",updates:"Updates"};
 function brandBar(id,r){const b=S.brands[id];const cid=campSel.bid===id?campSel.id:"";const deep=brandTab==="tasks"&&cid&&(cid===NOCAMP||S.camps[cid]);
-  const sec=brandTab==="tasks"&&!campsOf(id).length?"Tasks":SECT[brandTab];const [hk,hl]=healthOf(r.health);
+  const sec=brandTab==="tasks"&&!campsOf(id).length?"Tasks":brandTab==="sow"&&isInternal(b)?"Onboarding":SECT[brandTab];const [hk,hl]=healthOf(r.health);
   const crumbs=[`<button class="linkb" data-act="tab" data-tab="home">Overview</button>`,deep?`<button class="linkb" data-act="camp" data-id="">${esc(sec)}</button>`:`<b>${esc(sec)}</b>`].concat(deep?[`<b>${esc(campName(cid))}</b>`]:[]);
   return`<div class="bslim"><div class="bsl"><h1 class="bsh1"><button class="bsname" data-act="tab" data-tab="home">${esc(b.name)}</button></h1>${sig(hk,hl)}<nav class="crumb" aria-label="You are here"><span class="faint">›</span> ${crumbs.join(` <span class="faint">›</span> `)}</nav></div>
-   <nav class="mtabs" aria-label="Sections"><button class="mt" data-act="tab" data-tab="home">Overview</button>${brandTiles(id,r).map(([k,l,v,sub,st])=>`<button class="mt ${k===brandTab?"on":""}" ${k===brandTab?`aria-current="page"`:""} data-act="tab" data-tab="${k}" title="${esc(l+": "+v+(sub?", "+sub:""))}">${st==="bad"||st==="warn"?`<span class="sig sm sig-${st}">${SHAPE[st]}</span>`:""}${esc(k==="tasks"&&!campsOf(id).length?"Tasks":SHORT[k]||l)} <b>${esc(k==="tasks"?String(campsOf(id).length||r.open):v)}</b></button>`).join("")}</nav></div>`}
+   <nav class="mtabs" aria-label="Sections"><button class="mt" data-act="tab" data-tab="home">Overview</button>${brandTiles(id,r).map(([k,l,v,sub,st])=>`<button class="mt ${k===brandTab?"on":""}" ${k===brandTab?`aria-current="page"`:""} data-act="tab" data-tab="${k}" title="${esc(l+": "+v+(sub?", "+sub:""))}">${st==="bad"||st==="warn"?`<span class="sig sm sig-${st}">${SHAPE[st]}</span>`:""}${esc(k==="tasks"&&!campsOf(id).length?"Tasks":k==="sow"?l:SHORT[k]||l)} <b>${esc(k==="tasks"?String(campsOf(id).length||r.open):v)}</b></button>`).join("")}</nav></div>`}
 function campRoll(bid,cid){const ts=withId(S.tasks).filter(t=>t.brand===bid&&t.title&&campOf(t)===cid);const op=ts.filter(t=>t.status!=="Complete");
   return{ts,op,done:ts.length-op.length,blocked:op.filter(t=>t.status==="Blocked").length,late:op.filter(t=>dueFlag(t.deadline,false)==="Overdue").length,
     teams:DEPTS().map(d=>[d,op.filter(t=>depOf(t)===d).length,ts.filter(t=>depOf(t)===d).length]).filter(x=>x[2]),deps:((S.camps[cid]||{}).deps||[]).filter(d=>d.state!=="Cleared").length}}
@@ -1770,7 +1788,7 @@ document.addEventListener("click",e=>{
   else if(act==="simple"){simple=a.dataset.v==="1";ls.set("vt-simple",simple?"1":"0");render()}
   else if(act==="theme"){theme=a.dataset.v==="dark"?"dark":"light";ls.set("vt-theme",theme);applyTheme();renderTop()}
   else if(act==="tab"){go(brandHash(route.id,a.dataset.tab))}
-  else if(act==="phase-go"){phaseSel={bid:a.dataset.id,p:a.dataset.p};if(route.v==="brand"&&brandTab==="steps")render();else go(brandHash(a.dataset.id,"steps"))}
+  else if(act==="phase-go"){phaseSel={bid:a.dataset.id,p:a.dataset.p};if(route.v==="brand"&&brandTab==="sow")render();else go(brandHash(a.dataset.id,"sow"))}
   else if(act==="skip"){const h=$("#main h1")||$("#main");h.tabIndex=-1;h.focus()}
   else if(act==="goto-item"){const{kind,id,code}=a.dataset;
     if(kind==="task"){const t=S.tasks[id];if(!t)return;brandTab="tasks";if(t.status==="Complete")kbFilter.done=true;focusItem={sel:`.kc[data-id="${CSS.escape(id)}"]`};go(campHash(t.brand,campsOf(t.brand).length?campOf(t):""))}

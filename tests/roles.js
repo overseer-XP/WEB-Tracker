@@ -31,7 +31,7 @@ const res = []; const check = (who, what, ok, d = '') => res.push([ok ? 'OK  ' :
 
   // View only: writes are refused by the database
   p = await open(process.argv[3], 'overview');
-  await go(p, 'brand-ora'); await p.click('button[data-tab=steps]'); await p.waitForTimeout(150);
+  await go(p, 'brand-ora'); await p.click('button[data-tab=sow]'); await p.waitForTimeout(150);
   const code = await p.$$eval('select[data-code]', els => { const e = els.find(x => x.checkVisibility() && x.value !== 'Done'); return e && e.dataset.code });
   await p.selectOption(`select[data-code="${code}"]`, 'Done'); await p.waitForTimeout(500);
   check('View only', 'A refused change is rolled back', await p.$eval(`select[data-code="${code}"]`, e => e.value) !== 'Done');

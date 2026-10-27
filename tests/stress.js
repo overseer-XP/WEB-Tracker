@@ -19,7 +19,7 @@ const LOAD_LIMIT = 3000; // first load includes reading the 1.4 MB test file
   for (const h of ['overview', 'mine', 'people', 'sow', 'access', 'bp', 'settings', brands[0], brands[brands.length - 1]]) await time('Open #' + h, () => nav(h));
   await nav('sow'); await p.click('[data-act=sowview][data-v=list]').catch(() => {}); await time('SOW list view', () => nav('sow'));
   await p.click('[data-act=sowview][data-v=board]').catch(() => {});
-  await nav(brands[0]); await p.click('button[data-tab=steps]');
+  await nav(brands[0]); await p.click('button[data-tab=sow]');
   await time('Change a step status (all screens redraw)', async () => { const code = await p.$$eval('select[data-code]', els => els.find(e => e.checkVisibility() && e.value !== 'In Progress').dataset.code); await p.selectOption(`select[data-code="${code}"]`, 'In Progress') });
   await nav('mine');
   await time('Change a task status from My tasks', async () => { const s = await p.$('main select[data-kind=task]'); if (s) await s.selectOption('In Progress') });

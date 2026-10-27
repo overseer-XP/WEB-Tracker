@@ -39,7 +39,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   check('Brand stage On Hold', 'SOW tracker tags it Brand on hold', (await mainText()).includes('MUMUKBrand on hold') || (await mainText()).includes('MUMUK Brand on hold'));
   await go('brand-mumuk');
   check('Brand stage On Hold', 'Brand page shows the on hold notice', (await mainText()).includes('is on hold'));
-  check('Brand stage On Hold', 'Brand page SOW tile says On hold', (await text('.tsow')).includes('On hold'));
+  check('Brand stage On Hold', 'Brand page SOW tile says On hold', (await text('.troad')).includes('On hold'));
   await setMe('Cyrus'); await go('mine');
   await view('minetab', 'onboarding');
   check('Brand stage On Hold', 'My tasks: its brand card is greyed as On hold and sorted last', await p.evaluate(() => { const cs = [...document.querySelectorAll('.bcard')]; const c = cs.find(x => x.querySelector('.bname').innerText === 'MUMUK'); return !!c && c.classList.contains('held') && cs.indexOf(c) >= cs.filter(x => !x.classList.contains('held')).length }));
@@ -92,8 +92,8 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   check('Task deadline', 'Card shows a red due date', !!(await p.$('.kc .kbg.bad')));
 
   // 7. Step Done updates onboarding % (ORA, first open step)
-  await go('brand-ora'); await p.click('button[data-tab=steps]'); await p.waitForTimeout(200);
-  const pct = async () => +(((await text('.mt[data-tab=steps]')).match(/Onboarding\s+(\d+)%/) || [])[1] || -1);
+  await go('brand-ora'); await p.click('button[data-tab=sow]'); await p.waitForTimeout(200);
+  const pct = async () => +(((await text('.mt[data-tab=sow]')).match(/(\d+)%/) || [])[1] || -1);
   const open = await p.$$eval('select[data-code]', els => els.filter(e => !['Done', 'N/A'].includes(e.value)).map(e => e.dataset.code));
   const pct0 = await pct();
   await p.selectOption(`select[data-code="${open[0]}"]`, 'Done'); await p.waitForTimeout(300);
@@ -103,7 +103,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   check('Step done', 'Overview onboarding column goes up', (await overviewRow('ORA')).includes(pct1 + '%'));
 
   // 8. Step owner + blocker reach My tasks and the brand header (ORA, next open step)
-  await go('brand-ora'); await p.click('button[data-tab=steps]'); await p.waitForTimeout(150);
+  await go('brand-ora'); await p.click('button[data-tab=sow]'); await p.waitForTimeout(150);
   open[1] = (await p.$$eval('select[data-code]', els => els.filter(e => !['Done', 'N/A'].includes(e.value)).map(e => e.dataset.code)))[0];
   const stepName = await p.$eval(`select[data-code="${open[1]}"]`, e => e.closest('tr, .step, li, div').innerText.split('\n')[0].trim()).catch(() => '');
   const blocked0 = await p.evaluate(() => [...document.querySelectorAll('.step .blk')].length);
@@ -203,7 +203,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   check('Stage age', 'Brand facts show days in stage', (await text('.hero')).includes('for 0 days'));
 
   // 20. Gate sign-off is recorded with the person and date
-  await setMe('Noopur'); await go('brand-bespoke'); await p.click('button[data-tab=steps]'); await p.waitForTimeout(200);
+  await setMe('Noopur'); await go('brand-bespoke'); await p.click('button[data-tab=sow]'); await p.waitForTimeout(200);
   for (const n of await p.$$('.pnode')) { if (await p.$('.step.isgate select[data-code]')) break; await n.click(); await p.waitForTimeout(150) }
   const gate = await p.$$eval('.step.isgate select[data-code]', els => { const e = els.find(x => x.offsetHeight); return e && e.dataset.code });
   await p.selectOption(`select[data-code="${gate}"]`, 'In Progress'); await p.waitForTimeout(200);
@@ -421,7 +421,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await go('brand-celf'); await p.click('button[data-tab=updates]'); await p.waitForTimeout(200);
   check('Leadership', 'Decision is posted on the brand Updates', (await mainText()).includes('Leadership agreed') && (await mainText()).includes('Yes, within budget'));
   for (const b of ['bespoke', 'seoul-tonic']) {
-    await go('brand-' + b); await p.click('button[data-tab=steps]'); await p.waitForTimeout(150);
+    await go('brand-' + b); await p.click('button[data-tab=sow]'); await p.waitForTimeout(150);
     for (const c of ['P4.12', 'P4.16', 'P5.01', 'P5.02']) { await p.click(`.pnode[data-p="${c.split('.')[0]}"]`); await p.waitForTimeout(120); const sel = await p.$(`select[data-code="${c}"]`); if (sel && await sel.inputValue() !== 'Done') { await sel.selectOption('Done'); await p.waitForTimeout(150) } } }
   await go('leadership');
   check('Leadership', 'A gate with every earlier step done waits for sign-off', (await text('.decs')).includes('Bespoke') && (await text('.decs')).includes('P6.01'));
@@ -429,9 +429,9 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   check('Leadership', 'Signed-off gate leaves the inbox', !(await text('.decs')).includes('Bespoke · P6.01'));
   await p.click('.dec:has-text("Seoul Tonic · P6.01") [data-act=gate-back]'); await p.fill('#n-note', 'Pricing page missing'); await p.click('#fbox button[type=submit]'); await p.waitForTimeout(400);
   check('Leadership', 'Sent-back gate leaves the inbox', !(await text('.decs')).includes('Seoul Tonic · P6.01'));
-  await go('brand-bespoke'); await p.click('button[data-tab=steps]'); await p.waitForTimeout(150); await p.click('.pnode[data-p="P6"]'); await p.waitForTimeout(150);
+  await go('brand-bespoke'); await p.click('button[data-tab=sow]'); await p.waitForTimeout(150); await p.click('.pnode[data-p="P6"]'); await p.waitForTimeout(150);
   check('Leadership', 'Signed-off gate is Done with the leader named', (await p.$eval('select[data-code="P6.01"]', e => e.value)) === 'Done' && (await mainText()).includes('Signed off by Noopur'));
-  await p.click('[data-act=open][data-kind=step][data-code="P6.01"]').catch(() => {}); await go('brand-seoul-tonic'); await p.click('button[data-tab=steps]'); await p.waitForTimeout(150); await p.click('.pnode[data-p="P6"]'); await p.waitForTimeout(150);
+  await p.click('[data-act=open][data-kind=step][data-code="P6.01"]').catch(() => {}); await go('brand-seoul-tonic'); await p.click('button[data-tab=sow]'); await p.waitForTimeout(150); await p.click('.pnode[data-p="P6"]'); await p.waitForTimeout(150);
   await p.click('[data-act=open][data-kind=step][data-code="P6.01"]'); await p.waitForTimeout(250);
   check('Leadership', 'Step owner sees why it was sent back', (await text('#drawer')).includes('Sent back by Noopur') && (await text('#drawer')).includes('Pricing page missing'));
   await p.click('#drawer [data-act=close]').catch(() => {});

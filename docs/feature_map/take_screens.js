@@ -74,7 +74,7 @@ const shots = [];
   await snap('S10', 'Task editor (side panel)', 'F34', [['#drawer', 'F34']]);
   await p.click('[data-act=close]'); await p.waitForTimeout(200);
   // S11 onboarding steps
-  await go('brand-kndz'); await click('button[data-tab=steps]'); await scrollTo('.secs');
+  await go('brand-kndz'); await click('button[data-tab=sow]'); await scrollTo('.secs');
   await snap('S11', 'Onboarding steps: current phase, gates, optional steps', 'F35, F36, F37',
     [['.phase summary', 'F35'], ['.step.isgate', 'F36'], ['[data-act=phase-done]', 'F37']]);
   // S12 gate refused
@@ -100,7 +100,7 @@ const shots = [];
   await go('bp');
   await snap('S19', 'Best Practices grid: dots with letters', 'F52, F53', [['.legend', 'F52'], ['main table', 'F52'], ['[data-act=bp-add]', 'F53']]);
   // one real edit so the change log has something to show (preview only, nothing is saved)
-  await go('brand-kndz'); await click('button[data-tab=steps]');
+  await go('brand-kndz'); await click('button[data-tab=sow]');
   for (const s of (await p.$$('select[data-code]')).slice(0, 40)) { if (!['Done', 'N/A'].includes(await s.inputValue())) { await s.selectOption('Done'); await p.waitForTimeout(250); break; } }
   // Settings
   await go('settings');

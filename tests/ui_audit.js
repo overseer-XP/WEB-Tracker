@@ -51,7 +51,7 @@ const measure = () => {
       if (sub) { await p.click('button[data-tab=tasks]').catch(() => {}); await p.waitForTimeout(150) }
       if (sub === 'campaign' || sub === 'card') { await p.click('[data-act=camp][data-id=bespoke-plumpicity-launch]').catch(() => {}); await p.waitForTimeout(250) }
       if (sub === 'card') { await p.click('.kc').catch(() => {}); await p.waitForTimeout(250) }
-      if (sub === 'steps') { await p.click('[data-act=camp][data-id=""]').catch(() => {}); await p.click('button[data-tab=steps]').catch(() => {}); await p.waitForTimeout(200) }
+      if (sub === 'steps') { await p.click('[data-act=camp][data-id=""]').catch(() => {}); await p.click('button[data-tab=sow]').catch(() => {}); await p.waitForTimeout(200) }
       const key = `${wl}/${theme}/${h}${sub ? '/' + sub : ''}`; all[key] = await p.evaluate(measure);
       await p.evaluate(() => { document.getElementById('modal').hidden = true }); const c = await p.$('#drawer:not([hidden]) [data-act=close]'); if (c) await c.click();
       if (sub) { await p.click('[data-act=camp][data-id=""]').catch(() => {}); await p.click('button[data-tab=tasks]').catch(() => {}) }
