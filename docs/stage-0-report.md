@@ -218,7 +218,7 @@ Every carried value records the old step code so it can be traced and reversed.
 | Q9 | People: confirm aliases (Ash / Ash G / Ash Ghorab = Ashraf? Noops = Noopur? Sharan = Sharna? Cat and Catherine two people?). Which names are external (no login)? Email, department and role for each app user | Builds `people` and `users` |
 | Q10 | Who is Brand Lead for each brand, or leave blank? | Overview Owner column |
 | Q11 | Internal brands: SOW shows N/A (app) or No SOW Row (Excel)? Can internal brands be Live? | Health rule |
-| Q12 | Onboarding %: Excel rule (optional steps count) or app rule (untouched optional steps left out)? | Numbers will differ |
+| Q12 | Onboarding %: Excel rule (optional steps count) or app rule (untouched optional steps left out)? | Numbers will differ . **Answered 27 Oct:** one Road to SOW number everywhere, required steps only (rule R29) |
 | Q13 | Add Wipes Well and PopCornaa as Qualification brands? | Not in COE |
 | Q14 | Lona Beauty: set paused = yes? Foulplay paused? | Brand flags |
 | Q15 | Correct Foulplay SOW link? | P9 |

@@ -669,7 +669,10 @@ function bpRoll(bid){const d=S.bps[bid];if(!d)return null;const secs=L("bp_secti
 function accessRoll(bid){const rows=Object.values(S.access).filter(a=>a.brand===bid&&a.status!=="Not Needed");const g=rows.filter(accGranted).length;
   let s="Not Set Up";if(rows.length)s=rows.some(a=>a.status==="Blocked")?"Blocked":g===rows.length?"All Granted":"In Progress";return{summary:s,text:rows.length?g+" / "+rows.length:""}}
 const sowDue=s=>!s||s.stage==="Signed"?"":dueFlag(s.target_sign||s.draft_due,false);
-function onboarding(bid){const st=stepsSorted();let na=0,done=0;for(const s of st){const v=stepState(bid,s.code).status;if(v==="N/A")na++;else if(v==="Done")done++}const tot=st.length-na;return tot?done/tot:0}
+/* Road to SOW: the one progress number for a brand, used on every screen and in the export.
+   Required steps only (optional steps never hold a brand back); Done or N/A counts as done, so 100% means every phase is done. */
+function journeyCount(bid){let total=0,done=0;for(const s of stepsSorted()){if(s.is_optional)continue;total++;if(["Done","N/A"].includes(stepState(bid,s.code).status))done++}return{done,total}}
+function onboarding(bid){const c=journeyCount(bid);return c.total?c.done/c.total:0}
 function roll(bid){return memo("roll:"+bid,()=>rollNow(bid))}
 function tasksOf(bid){return memo("tasksBy",()=>{const m={};for(const t of Object.values(S.tasks))if(t.title)(m[t.brand]=m[t.brand]||[]).push(t);return m})[bid]||[]}
 function rollNow(bid){
@@ -837,7 +840,7 @@ function vMine(){
   if(grp==="none")return h+`<div class="flat">${sorted.map(it=>itemHtml(it,itemCls(it))).join("")}</div>`;
   const groups=mineGroups(sorted,grp);
   for(const g of groups){const nb=g.items.filter(i=>i.blocked).length,nl=g.items.filter(i=>i.flag==="Overdue").length;const fk=mineTab+"|"+grp+"|"+g.key;const folded=mineFold.has(fk);
-    const brandHead=grp==="brand"?(()=>{const b=S.brands[g.key]||{};const pct=Math.round(onboarding(g.key)*100);return`${holdOf(g.key)?`<span class="pill s-off">On hold</span>`:`<span class="pill s-info">${esc(b.stage||"")}</span>`}${isLiveBrand(g.key)?"":`<span class="bprog" title="Onboarding ${pct}% done"><span class="bar"><i style="width:${pct}%"></i></span>${pct}%</span>`}`})():"";
+    const brandHead=grp==="brand"?(()=>{const b=S.brands[g.key]||{};const pct=Math.round(onboarding(g.key)*100);return`${holdOf(g.key)?`<span class="pill s-off">On hold</span>`:`<span class="pill s-info">${esc(b.stage||"")}</span>`}${isLiveBrand(g.key)?"":`<span class="bprog" title="Road to SOW: ${pct}% of required steps done"><span class="bar"><i style="width:${pct}%"></i></span>${pct}%</span>`}`})():"";
     h+=`<section class="bcard ${grp==="brand"&&holdOf(g.key)?"held":""}"><header><button class="fold" data-act="mfold1" data-k="${esc(fk)}" aria-expanded="${!folded}" aria-label="${folded?"Open":"Fold"} ${esc(g.label)}">${folded?"▸":"▾"}</button>${grp==="brand"?`<a class="bname" href="#brand-${esc(g.key)}">${esc(g.label)}</a>`:`<b class="gl">${esc(g.label)}</b>`}${brandHead}<span class="grow"></span>
       ${nb?`<span class="tag bad">${nb} blocked</span>`:""}${nl?`<span class="tag bad">${nl} late</span>`:""}<span class="faint" style="font-size:12.5px">${g.items.length} open</span></header>
       ${folded?"":g.items.map(it=>itemHtml(it,itemCls(it),grp==="brand")).join("")}</section>`}
@@ -900,7 +903,7 @@ function vOverview(){
   const hy=hygiene();if(hy.length&&(canEdit||isLeader(me)))h+=`<div class="hyg"><b>Missing information</b>${hy.map(([l,c,to])=>`<a href="#${to}">${c} ${esc(l.toLowerCase())}</a>`).join("")}</div>`;
   h+=`<h2>Pipeline</h2><p class="hint2">Where every brand is, from first call to live. Days show how long a brand has been in its stage, once a stage change is recorded.</p>`+pipeline(bs,R);
   h+=`<h2>SOW signing plan</h2>`+sowPlan(bs,R);
-  const cols=[["name","Brand"],["stage","Stage"],["health","Health"]].concat(simple?[]:[["open","Open",1],["blocked","Blocked",1],["late","Late",1],["acc","Platform access"],["sow","SOW"],["target","Target sign"],["bp","BPs"],["pct","Onboarding"],["upd","Updated"]]).concat([["next","Next step"],["lead","Owner"]]);
+  const cols=[["name","Brand"],["stage","Stage"],["health","Health"]].concat(simple?[]:[["open","Open",1],["blocked","Blocked",1],["late","Late",1],["acc","Platform access"],["sow","SOW"],["target","Target sign"],["bp","BPs"],["pct","Road to SOW"],["upd","Updated"]]).concat([["next","Next step"],["lead","Owner"]]);
   const hv={"Blocked":0,"At Risk":1,"Has blockers":2,"On Track":3,"Live":4,"On Hold":5};
   const val=(b,k)=>{const r=R[b.id];return k==="name"?b.name:k==="stage"?STAGE_ORDER().indexOf(b.stage):k==="health"?hv[r.health]??9:k==="open"?r.open:k==="blocked"?r.blocked:k==="late"?r.overdue:k==="acc"?r.acc.text:k==="sow"?r.sow:k==="target"?(r.sowRow.target_sign||"9999"):k==="bp"?(r.bp?r.bp.progress:-1):k==="pct"?r.pct:k==="upd"?-(lastUpdated(b.id)||0):k==="next"?(b.next_step||""):k==="lead"?(b.lead||"~"):""};
   const rows=bs.slice();if(ovSort.k)rows.sort((x,y)=>{const a=val(x,ovSort.k),c=val(y,ovSort.k);return(a<c?-1:a>c?1:0)*ovSort.dir});
@@ -1007,8 +1010,8 @@ function journey(bid,ps,cur){return`<div class="jbar">${ps.map(p=>{const req=p.s
   return`<button class="jseg ${done?"done":p===cur?"now":""}" style="flex:${Math.max(1,req.length)}" data-act="phase-go" data-id="${esc(bid)}" data-p="${esc(p.code)}" title="${esc(p.code+" "+p.name+": "+d+" of "+req.length+" done")}"><span class="jtrack"><i style="width:${Math.round(pct*100)}%"></i></span><span class="jl"><b>${esc(p.code)}</b> ${esc(p.name)}</span><span class="faint jc">${done?"Done":d+" of "+req.length}</span></button>`}).join("")}</div>`}
 /* Road to SOW: onboarding steps are the work, the SOW document is the outcome. One page for both. */
 function roadPage(bid){const b=S.brands[bid];const r=roll(bid);const sw=S.sow[bid]||{};const due=sowDue(sw);const ps=phases();const cur=ps.find(p=>phaseOpen(bid,p));
-  const req=ps.flatMap(p=>p.steps.filter(x=>!x.is_optional));const done=req.filter(x=>["Done","N/A"].includes(stepState(bid,x.code).status)).length;const p=Math.round(r.pct*100);
-  const top=`<section class="road"><div class="rdl"><span class="btl">${isInternal(b)?"Onboarding":"Road to a signed SOW"}</span><span class="btbig">${p}%</span><span class="faint">${done} of ${req.length} required steps done</span></div>
+  const jc=journeyCount(bid);const p=Math.round(r.pct*100);
+  const top=`<section class="road"><div class="rdl"><span class="btl">${isInternal(b)?"Onboarding":"Road to a signed SOW"}</span><span class="btbig">${p}%</span><span class="faint">${jc.done} of ${jc.total} required steps done</span></div>
    <div class="rdm"><span class="bar wide sowbar"><i style="width:${p}%"></i></span>
     <div class="rdf"><span><span class="btl">Now</span><b>${cur?esc(cur.code+" "+cur.name):"Every phase done"}</b></span>
     ${isInternal(b)?"":`<span><span class="btl">SOW document</span>${pill(r.sow)}</span><span><span class="btl">Target sign</span>${r.hold?sig("off","On hold, target kept"):sw.target_sign?(due==="Overdue"&&r.sow!=="Signed"?sig("bad",fmtD(sw.target_sign)+" passed"):`<b>${esc(fmtD(sw.target_sign))}</b>`):`<span class="faint">Not set</span>`}</span><span><span class="btl">SOW owner</span><b>${sw.owner?esc(sw.owner):`<span class="faint">Not set</span>`}</b></span>`}
@@ -1249,7 +1252,7 @@ function clientModel(bid){const b=S.brands[bid]||{};const s=S.sow[bid]||{};const
 function clientHtml(m,standalone){
   const rows=m.groups.map(g=>`<div class="cg"><span class="cdot c-${key(g.state)}" aria-hidden="true"></span><span class="cn">${esc(g.name)}</span><span class="cs">${esc(g.state)}${g.total?` · ${g.done} of ${g.total}`:""}</span></div>`).join("");
   return`<div class="client"><p class="ceyebrow">Onboarding status · ${esc(fmtD(m.date,true))}</p><h1>${esc(m.name)}</h1>
-   <div class="cstats"><div><b>${m.pct}%</b><span>onboarding complete</span></div><div><b>${esc(m.stage||"")}</b><span>current stage</span></div><div><b>${m.signed?"Signed":m.target?esc(fmtD(m.target,true)):"To be agreed"}</b><span>${m.signed?"scope of work":"target SOW signing"}</span></div></div>
+   <div class="cstats"><div><b>${m.pct}%</b><span>of the way to a signed SOW</span></div><div><b>${esc(m.stage||"")}</b><span>current stage</span></div><div><b>${m.signed?"Signed":m.target?esc(fmtD(m.target,true)):"To be agreed"}</b><span>${m.signed?"scope of work":"target SOW signing"}</span></div></div>
    <h2>Progress by stage</h2><div class="cgroups">${rows}</div>
    ${m.need.length?`<h2>What we still need from you</h2><ul class="cneed">${m.need.map(p=>`<li>Access to ${esc(p)}</li>`).join("")}</ul>`:`<h2>What we still need from you</h2><p>Nothing right now. Thank you.</p>`}</div>`}
 function clientDoc(m){return`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(m.name)} onboarding status</title><style>
@@ -1598,7 +1601,7 @@ function sowBoard(){
   const ncol=groups.reduce((n,g)=>n+g.cols.length,0);
   let h=`<p class="sub">The whole onboarding journey on one screen, brand by brand. Each square rolls up one or more onboarding steps. Click a square to see and change those steps.</p>
   <div class="legend">${["Done","In progress","Not done","N/A"].map(v=>`<span><span class="bdl ${BOARD_CLS[v]}">${BOARD_MARK[v]||""}</span>${esc(v)}</span>`).join("")}</div>`+guide("sow")+`
-  <div class="tw"><table class="grid board"><thead><tr><th class="stick" rowspan="2">Brand</th><th rowspan="2">SOW stage</th><th rowspan="2" class="num">Done</th>${groups.map((g,i)=>`<th colspan="${g.cols.length}" class="gh g${i%6}">${esc(g.name)}</th>`).join("")}${simple?"":`<th rowspan="2">Blocker</th>`}<th rowspan="2">Docs</th></tr>
+  <div class="tw"><table class="grid board"><thead><tr><th class="stick" rowspan="2">Brand</th><th rowspan="2">SOW stage</th><th rowspan="2" class="num" title="Road to SOW: share of required steps done">Road to SOW</th>${groups.map((g,i)=>`<th colspan="${g.cols.length}" class="gh g${i%6}">${esc(g.name)}</th>`).join("")}${simple?"":`<th rowspan="2">Blocker</th>`}<th rowspan="2">Docs</th></tr>
   <tr>${groups.map((g,i)=>g.cols.map(c=>`<th class="pc g${i%6}"><span>${esc(c.label)}</span></th>`).join("")).join("")}</tr></thead><tbody>`;
   for(const{b,pct}of rows){const s=S.sow[b.id]||{};const hold=onHold(b);
     h+=`<tr class="${hold?"held":""}"><td class="stick"><a class="bname" href="#brand-${esc(b.id)}">${esc(b.name)}</a></td><td>${hold?`<span class="pill s-off">On hold</span>`:pill(s.stage||"Not Started")}</td><td class="num"><b>${pct}%</b></td>`;
@@ -1971,7 +1974,7 @@ async function exportXlsx(){
   let X;try{X=await loadXlsx()}catch(e){toast("Could not load the Excel library. Try again.");return}
   const wb=X.utils.book_new();const add=(name,rows)=>X.utils.book_append_sheet(wb,X.utils.aoa_to_sheet(rows),name.replace(/[\\\/?*\[\]:]/g,"").slice(0,31));
   const bs=brandList();
-  add("Brand Tracker",[["Brand","Founder","Website","Stage","Brand Lead","Open Tasks","Blocked Tasks","Overdue Tasks","Platform Access","Access Granted","SOW Stage","SOW Owner","SOW Target Sign","BPs","BP Progress","Onboarding %","Health","Next Step"]]
+  add("Brand Tracker",[["Brand","Founder","Website","Stage","Brand Lead","Open Tasks","Blocked Tasks","Overdue Tasks","Platform Access","Access Granted","SOW Stage","SOW Owner","SOW Target Sign","BPs","BP Progress","Road to SOW %","Health","Next Step"]]
     .concat(bs.map(b=>{const r=roll(b.id);return[b.name,b.founder,b.website,b.stage,b.lead,r.open,r.blocked,r.overdue,r.acc.summary,r.acc.text,r.sow,r.sowRow.owner||"",r.sowRow.target_sign||"",r.bp?r.bp.overall:"",r.bp?Math.round(r.bp.progress*100)/100:"",Math.round(r.pct*100)/100,r.health,b.next_step]})));
   for(const b of bs){const ts=withId(S.tasks).filter(t=>t.brand===b.id);add(b.name,[["Task / Deliverable","Campaign","Owner","Support Team","Status","Priority","Start Date","Deadline","Due Flag","Notes / Next Step","Brief Link","Creative Link"]]
     .concat(ts.map(t=>[t.title,campOf(t)===NOCAMP?"":campName(campOf(t)),t.owner,(t.support||[]).join(", "),t.status,t.priority,t.start,t.deadline,dueFlag(t.deadline,t.status==="Complete"),t.notes,t.brief_link,t.creative_link])))}
@@ -1979,7 +1982,7 @@ async function exportXlsx(){
   add("Platform Access",[["Brand","Platform","Team","Status","Access Type","How Given","Team Logins","Next Step","Next Step Who","Next Step By","Last Chased","Needed For","Valerie Owner","Brand Contact","Asked Founder On","Deadline","Blocker","Notes"]].concat(withId(S.access).map(a=>{const ns=a.next_step||{};return[bname(a.brand),a.platform,accTeamOf(a),a.status,a.access_level,a.access_via||"",(a.seats||[]).map(x=>x.p+" ("+x.s+")").join(", "),ns.text||"",ns.who||"",ns.due||"",ACC_FOUNDER.includes(a.status)?lastContact(a):"",a.needed_for,a.owner,a.brand_contact,a.requested_date,a.deadline,a.blocker,a.notes]})));
   add("SOW Tracker",[["Brand","SOW Owner","Support Team","SOW Stage","Start Date","Draft Due","Target Sign Date","Due Flag","Blocker / Dependency","Next Step","SOW Link","GF Link","Updated GF?","Batch","GF Status"]].concat(bs.filter(b=>S.sow[b.id]).map(b=>{const s=S.sow[b.id];return[b.name,s.owner,(s.support||[]).join(", "),s.stage,s.start_date,s.draft_due,s.target_sign,sowDue(s),s.blocker,s.next_step,s.sow_link,s.gf_link,s.gf_updated?"yes":"",s.batch,s.gf_status||""]})));
   const secs=L("bp_section");add("BP Tracker",[["Brand","BP Owner","Due Date","Due Flag"].concat(secs,["Progress","Overall","Blocker","BP Doc Link","Notes"])].concat(bs.filter(b=>S.bps[b.id]).map(b=>{const d=S.bps[b.id],r=bpRoll(b.id);return[b.name,d.owner,d.due_date,r.due].concat(secs.map(x=>(d.sections||{})[x]||""),[Math.round(r.progress*100)/100,r.overall,d.blocker,d.doc_link,d.notes])})));
-  const st=stepsSorted();add("Onboarding Steps",[["Phase","Code","Step"].concat(bs.map(b=>b.name))].concat([["","","% Complete"].concat(bs.map(b=>Math.round(onboarding(b.id)*100)/100))],st.map(s=>[s.phase+" "+s.phase_name,s.code,s.name].concat(bs.map(b=>stepState(b.id,s.code).status||"")))));
+  const st=stepsSorted();add("Onboarding Steps",[["Phase","Code","Step"].concat(bs.map(b=>b.name))].concat([["","","Road to SOW %"].concat(bs.map(b=>Math.round(onboarding(b.id)*100)/100))],st.map(s=>[s.phase+" "+s.phase_name,s.code,s.name].concat(bs.map(b=>stepState(b.id,s.code).status||"")))));
   add("Completed Archive",[["Brand","Task / Deliverable","Owner","Support Team","Start Date","Deadline","Notes"]].concat(withId(S.tasks).filter(t=>!t.brand).map(t=>["",t.title,t.owner,(t.support||[]).join(", "),t.start,t.deadline,t.notes])));
   const lk=["task_status","priority","stage","platform","access_level","access_status","sow_stage","checklist","bp_section","bp_status"];const heads=["Task Status","Priority","Stage","Team","Platform","Access Level","Access Status","SOW Stage","Checklist","BP Section","BP Status"];
   const cols=[L("task_status"),L("priority"),L("stage"),activePeople()].concat(lk.slice(3).map(L));const n=Math.max(...cols.map(c=>c.length));const rows=[heads];for(let i=0;i<n;i++)rows.push(cols.map(c=>c[i]||""));add("Lists",rows);
