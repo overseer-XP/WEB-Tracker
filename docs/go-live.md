@@ -4,6 +4,20 @@ Decisions so far: Supabase region South Asia (Mumbai), kept by the product owner
 
 How it fits together: `app/index.html` is the same app file used on claude.ai. `web/shim.js` answers its database calls from Supabase and adds the sign-in screen. `web/build.mjs` joins them into `web/dist` on every Vercel deploy. So a UI change reaches claude.ai and the website from one file.
 
+## Status on 27 Oct (done by Claude through the Supabase and Vercel APIs, plus the lead by hand)
+
+Test address: **https://valerie-tracker.vercel.app**
+
+| Step | State |
+| --- | --- |
+| 1. Tables | Done. `docs` and `members` created, 6 access rules, live updates on. Lead `members` row added |
+| 2. Sign-in settings | Done. Email OTP Length 6. Magic Link and Confirm signup emails send the code, no link. Site URL `https://valerie-tracker.vercel.app`. Outlook SMTP still to add (2.4) |
+| 3. Public values | Done. Project URL `https://qxnmcggavnnzumwkamkk.supabase.co`; publishable key stored only in Vercel |
+| 4. Vercel | Done. Project `valerie-tracker` linked to WEB-Tracker, build settings and both values set. Branch `claude/dazzling-bohr-3h53is` deployed to production: Ready, build log "Built web/dist for https://qxnmcggavnnzumwkamkk.supabase.co" |
+| 5. Data | Done straight from the live claude.ai tracker, no backup file needed (skip 5.1 and 5.2). 405 records in 11 collections, every one checked equal to the source. Comments and escalations were empty. Private profiles not copied (each person gets a new one on first sign-in) |
+| Checks on the real database | Not signed in: blocked. Signed in but not on the list: 0 rows. Lead: 405 rows. View: 405 rows, 0 writes. Test rows rolled back |
+| Still to do | Lead signs in on the test address and checks brands, tasks, campaigns, Road to SOW (5.3). Add team members (5.4). Outlook SMTP (2.4). Company accounts (Step 6) |
+
 ## Step 1. Supabase: create the tables (2 minutes)
 
 1. supabase.com, open project **Valerie Ecosystem**.
@@ -16,7 +30,7 @@ How it fits together: `app/index.html` is the same app file used on claude.ai. `
 
 ## Step 2. Supabase: sign-in settings (5 minutes)
 
-1. Left bar: **Authentication** > **Sign In / Providers** > **Email**: Email on. "Allow new users to sign up": **on** (who gets in is decided by the `members` table, not by sign-up). Save.
+1. Left bar: **Authentication** > **Sign In / Providers** > **Email**: Email on. Email OTP Length: **6**. "Allow new users to sign up": **on** (who gets in is decided by the `members` table, not by sign-up). Save.
 2. **Authentication** > **Emails** (Email Templates). Open **Magic Link**, replace the body with the text below, Save. Do the same for **Confirm signup**.
 
 ```
