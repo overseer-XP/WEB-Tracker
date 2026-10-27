@@ -12,6 +12,26 @@ Interim build (release 0). It runs as a claude.ai page with its own shared datab
 | `docs/migration-report.md` | Row counts and every changed, merged or dropped row |
 | `docs/build-log.md` | What was done and why |
 
+## Website version (Supabase + Vercel)
+
+| Path | What |
+| --- | --- |
+| `supabase/schema.sql` | Tables and access rules. Paste into Supabase SQL Editor and Run. Safe to run again |
+| `web/shim.js` | Sign-in screen (emailed 6-digit code) and the Supabase connection the app file talks to |
+| `web/build.mjs` | Joins `app/index.html` and the shim into `web/dist`. Vercel runs it on every deploy |
+| `web/import.js` | `/import.html`: leads copy a JSON backup from the claude.ai tracker into Supabase, with counts checked |
+| `vercel.json` | Build command, output folder, safety headers |
+| `docs/go-live.md` | Click-by-click steps |
+
+Tests for the website build:
+
+```
+psql ... -f tests/db/supabase_stub.sql -f supabase/schema.sql -f tests/db/rls_test.sql   # 20 database access checks
+python3 -I tests/web/make_web_preview.py .live .shots/web-lead.html lead                 # also member, view
+node tests/propagation.test.js .shots/web-lead.html                                      # same 124 checks, on the website build
+node tests/web/web_test.js .live                                                         # 16 website-only checks
+```
+
 ## Rebuild the data
 
 ```

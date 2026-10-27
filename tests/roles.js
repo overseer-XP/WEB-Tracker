@@ -33,10 +33,17 @@ const res = []; const check = (who, what, ok, d = '') => res.push([ok ? 'OK  ' :
   p = await open(process.argv[3], 'overview');
   await go(p, 'brand-ora'); await p.click('button[data-tab=sow]'); await p.waitForTimeout(150);
   const code = await p.$$eval('select[data-code]', els => { const e = els.find(x => x.checkVisibility() && x.value !== 'Done'); return e && e.dataset.code });
+  // The website knows the role at sign-in and locks controls from the start; claude.ai finds out on the first refused write.
+  if (await p.$eval(`select[data-code="${code}"]`, e => e.disabled)) {
+    check('View only', 'Controls are locked from the start', true);
+    check('View only', 'Page says they can view but not change', (await p.$eval('body', e => e.innerText)).includes('view this tracker but not change it'));
+    check('View only', 'Nothing can be changed', await p.$$eval('main select[data-code]', els => els.every(e => e.disabled)));
+  } else {
   await p.selectOption(`select[data-code="${code}"]`, 'Done'); await p.waitForTimeout(500);
   check('View only', 'A refused change is rolled back', await p.$eval(`select[data-code="${code}"]`, e => e.value) !== 'Done');
   check('View only', 'Page says they can view but not change', (await p.$eval('body', e => e.innerText)).includes('view this tracker but not change it'));
   check('View only', 'Controls lock after the first refusal', await p.$eval(`select[data-code="${code}"]`, e => e.disabled));
+  }
   check('View only', 'No script errors', p.errs.length === 0, p.errs.join(' | '));
   await p.close();
 
