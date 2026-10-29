@@ -18,9 +18,9 @@ const shim = `<script>${read("web/shim.js")}</script>`;
 const page = (title, body) => `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>${title}</title>${lib}${cfg}${shim}</head><body>${body}</body></html>`;
 const out = path.join(root, "web", "dist");
 fs.rmSync(out, { recursive: true, force: true }); fs.mkdirSync(out, { recursive: true });
-fs.writeFileSync(path.join(out, "index.html"), page("Valerie COE Tracker", read("app/index.html")));
-fs.writeFileSync(path.join(out, "import.html"), page("Import data · Valerie COE Tracker",
-  `<style>body{font-family:system-ui,sans-serif;color:#22292C;max-width:760px;margin:40px auto;padding:0 16px}table{border-collapse:collapse;margin:12px 0}td,th{border:1px solid #DDE3E1;padding:6px 10px;text-align:left}button{font:inherit;font-weight:600;min-height:44px;padding:10px 16px;border-radius:10px;border:0;background:#396C7D;color:#fff;cursor:pointer}.bad{color:#9F4E48}.warn{color:#856325}</style>
+fs.writeFileSync(path.join(out, "index.html"), page("VALFLO", read("app/index.html")));
+fs.writeFileSync(path.join(out, "import.html"), page("Import data · VALFLO",
+  `<style>body{font-family:system-ui,sans-serif;color:#22292C;max-width:760px;margin:40px auto;padding:0 16px}table{border-collapse:collapse;margin:12px 0}td,th{border:1px solid #DDE3E1;padding:6px 10px;text-align:left}button{font:inherit;font-weight:600;min-height:44px;padding:10px 16px;border-radius:10px;border:0;background:#0A0A70;color:#fff;cursor:pointer}.bad{color:#9F4E48}.warn{color:#856325}</style>
   <main id="main"><h1>Copy the claude.ai tracker into the website</h1><p>In the claude.ai tracker open Settings, then Export, then JSON backup. Pick that file here. Records with the same id are replaced; nothing is deleted.</p>
   <p id="pick" hidden><label>Backup file <input type="file" id="file" accept=".json,application/json"></label></p><div id="out"></div></main><script>${read("web/import.js")}</script>`));
 fs.writeFileSync(path.join(out, "robots.txt"), "User-agent: *\nDisallow: /\n");

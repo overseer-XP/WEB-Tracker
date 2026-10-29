@@ -1,4 +1,4 @@
-/* Website layer for the Valerie COE Tracker.
+/* Website layer for VALFLO, the Valerie brand tracker.
    The app (app/index.html) talks to a small database interface: collection(), doc(), get, set, update, delete, onSnapshot.
    On claude.ai that interface comes from the page. Here it is answered by Supabase, so the same app file runs in both places.
    Sign-in: the person types their work email, gets a 6-digit code by email, and types it in. */
@@ -16,8 +16,8 @@
   #gate label{display:block;font-size:13px;font-weight:600;margin:0 0 6px}
   #gate input{box-sizing:border-box;width:100%;font:inherit;font-size:16px;padding:11px 12px;border:1px solid #B9C3C0;border-radius:10px;margin-bottom:14px;background:#fff;color:#22292C}
   #gate input.code{letter-spacing:.3em;font-size:22px;text-align:center}
-  #gate button{font:inherit;font-weight:600;font-size:15px;min-height:44px;padding:10px 16px;border-radius:10px;border:0;background:#396C7D;color:#fff;cursor:pointer;width:100%}
-  #gate button.link{background:none;color:#396C7D;width:auto;padding:8px 0;margin-top:8px}
+  #gate button{font:inherit;font-weight:600;font-size:15px;min-height:44px;padding:10px 16px;border-radius:10px;border:0;background:#0A0A70;color:#fff;cursor:pointer;width:100%}
+  #gate button.link{background:none;color:#0A0A70;width:auto;padding:8px 0;margin-top:8px}
   #gate .err{color:#9F4E48;font-size:14px;margin:-6px 0 12px;min-height:1em}
   #signout{position:fixed;left:12px;bottom:12px;z-index:50;font:600 12px system-ui,sans-serif;background:#fff;border:1px solid #DDE3E1;border-radius:8px;padding:6px 10px;min-height:32px;cursor:pointer;color:#59646A}
   @media (max-width:900px){#signout{display:none}}`;
@@ -26,7 +26,7 @@
   function gate(html) { let g = document.getElementById("gate"); if (!g) { g = document.createElement("div"); g.id = "gate"; document.body.appendChild(g) } g.innerHTML = `<div class="box">${html}</div>`; return g }
   function hideGate() { const g = document.getElementById("gate"); if (g) g.remove() }
   function askEmail(msg) {
-    const g = gate(`<h1>Valerie COE Tracker</h1><p>Sign in with your work email. We will email you a 6-digit code.</p>
+    const g = gate(`<h1>VALFLO</h1><p>Valerie brand tracker. Sign in with your work email. We will email you a 6-digit code.</p>
       <form id="g-f"><label for="g-e">Work email</label><input id="g-e" type="email" autocomplete="email" required><div class="err" id="g-err">${esc(msg || "")}</div><button type="submit">Email me a code</button></form>`);
     const f = g.querySelector("#g-f"); g.querySelector("#g-e").focus();
     f.onsubmit = async e => {

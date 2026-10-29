@@ -1,24 +1,26 @@
-<title>Valerie COE Tracker</title>
+<title>VALFLO</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* Calm palette: misty sage-grey ground, soft teal accent, pastel status fills. Layout: left rail, top bar with search and Simple / Full, work area, edit drawer */
 :root{color-scheme:light;--shadow:0 1px 2px rgb(30 50 60/.07),0 4px 12px rgb(30 50 60/.07);
   --bg:#F3F6F5; --panel:#FFFFFF; --panel2:#EDF2F0; --ink:#2A3337; --muted:#59646A; --faint:#5E666A; --line:#E1E8E5; --line2:#D0D9D5;
-  --rail:#EAF0ED; --railHover:#DEE7E3; --accent:#396C7D; --accentInk:#FFFFFF; --accentSoft:#DFECEF;
+  --rail:#0B0C33; --railHover:#1A1C52; --accent:#0A0A70; --accentInk:#FFFFFF; --accentSoft:#E4E4F3;
   --ok:#3A7454; --okBg:#E2F0E7; --warn:#856325; --warnBg:#F7EDD8; --bad:#9F4E48; --badBg:#F6E2DF;
   --info:#486887; --infoBg:#E3EBF3; --off:#59646A; --offBg:#ECF0EE;
   --fDone:#A9D0B6; --fProg:#CFC2E8; --fNot:#F4E2DF; --fNA:#E7ECEA;
   --dLive:#6EAD86; --dRisk:#D6A44C; --dTrack:#86ABCF;
   --g0:#8DB89B; --g1:#8FB0CF; --g2:#B5A4D5; --g3:#D6A98B; --g4:#93C1AF; --g5:#C7B88A;
-  --f-ui:"Onest",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  --f-code:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --f-ui:Corbel,"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+  --f-head:"DM Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --f-code:"DM Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --navy:#0A0A70; --amber:#EA9F44;
   --r:10px;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#161B1D; --panel:#1E2427; --panel2:#252C30; --ink:#E1E7E8; --muted:#A2AEB2; --faint:#97A0A3; --line:#2E373B; --line2:#3A4448;
-  --rail:#1A2023; --railHover:#253034; --accent:#86B9CA; --accentInk:#10181B; --accentSoft:#22353B;
+  --rail:#08091F; --railHover:#171A45; --accent:#86D9FF; --accentInk:#08091F; --accentSoft:#1B2447;
   --ok:#8CC6A1; --okBg:#1E3227; --warn:#E0BF7E; --warnBg:#38301F; --bad:#E3A09A; --badBg:#3D2624;
   --info:#9DBAD8; --infoBg:#212F3B; --off:#ADB8BC; --offBg:#293033;
   --fDone:#3C6B50; --fProg:#64578A; --fNot:#48302E; --fNA:#2C3437;
@@ -26,7 +28,7 @@
   --g0:#5E8A6D; --g1:#5F80A0; --g2:#7F70A3; --g3:#A37B5F; --g4:#5F9483; --g5:#978A5F; color-scheme:dark; --shadow:0 1px 2px rgb(0 0 0/.45),0 3px 10px rgb(0 0 0/.25)}}
 :root[data-theme="dark"]{
   --bg:#161B1D; --panel:#1E2427; --panel2:#252C30; --ink:#E1E7E8; --muted:#A2AEB2; --faint:#97A0A3; --line:#2E373B; --line2:#3A4448;
-  --rail:#1A2023; --railHover:#253034; --accent:#86B9CA; --accentInk:#10181B; --accentSoft:#22353B;
+  --rail:#08091F; --railHover:#171A45; --accent:#86D9FF; --accentInk:#08091F; --accentSoft:#1B2447;
   --ok:#8CC6A1; --okBg:#1E3227; --warn:#E0BF7E; --warnBg:#38301F; --bad:#E3A09A; --badBg:#3D2624;
   --info:#9DBAD8; --infoBg:#212F3B; --off:#ADB8BC; --offBg:#293033;
   --fDone:#3C6B50; --fProg:#64578A; --fNot:#48302E; --fNA:#2C3437;
@@ -35,7 +37,8 @@
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{height:100%}
-body{background:var(--bg);color:var(--ink);font:14px/1.5 var(--f-ui);font-variant-numeric:tabular-nums}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--f-ui);font-variant-numeric:tabular-nums}
+h1,h2,h3,h4,.btl,.sech,.bh1,.btbig{font-family:var(--f-head);font-weight:500;letter-spacing:-.01em}
 a{color:var(--accent)}
 button,input,select,textarea{font:inherit;color:inherit}
 a.bname,.hyg a{display:inline-block;min-height:24px;line-height:24px}
@@ -53,20 +56,29 @@ input,select,textarea{background-color:var(--panel);color:var(--ink)}
 .app{display:grid;grid-template-columns:252px minmax(0,1fr);grid-template-rows:minmax(0,1fr);height:100%;overflow:hidden}
 .app>*{min-height:0}
 /* rail */
-.rail{background:var(--rail);border-right:1px solid var(--line);overflow-y:auto;padding:18px 12px 24px;display:flex;flex-direction:column;gap:14px}
-.mark{padding:0 8px;font-weight:700;font-size:16px;letter-spacing:-.01em}
-.mark small{display:block;font-weight:500;font-size:12px;color:var(--muted)}
+.rail{background:linear-gradient(180deg,#0B0C33 0%,#0D0F45 55%,#121466 100%);color:#E6E8F5;border-right:1px solid #1C1F55;overflow-y:auto;padding:18px 12px 20px;display:flex;flex-direction:column;gap:12px;
+  --ok:#86D9A6;--warn:#F2C26B;--bad:#F4A39B;--faint:#A5A9CF;--off:#A5A9CF;--muted:#B7BAD9;--ink:#E6E8F5;scrollbar-color:#2A2E6E transparent}
+:root[data-theme="dark"] .rail{background:linear-gradient(180deg,#07081C 0%,#0A0C30 60%,#0E1050 100%)}
+.mark{display:grid;grid-template-columns:30px 1fr;grid-template-rows:auto auto;column-gap:10px;align-items:center;padding:2px 8px 10px;color:#fff;text-decoration:none;border-bottom:1px solid #20245E}
+.mark .logo{grid-row:1/3;width:30px;height:auto;fill:var(--amber)}
+.mark .mk{font-family:var(--f-head);font-weight:500;font-size:19px;letter-spacing:.08em;line-height:1.1}
+.mark small{font-size:12px;color:#B7BAD9;line-height:1.2}
+.rsec{font-family:var(--f-head);font-size:12px;font-weight:500;color:#A5A9CF;text-transform:uppercase;letter-spacing:.08em;margin:10px 9px 4px}
 .nav{display:flex;flex-direction:column;gap:2px}
-.nav a,.blink{display:flex;align-items:center;gap:9px;padding:6px 9px;border-radius:6px;color:var(--ink);text-decoration:none}
-.nav a:hover,.blink:hover{background:var(--railHover)}
-.nav a.on,.blink.on{background:var(--accentSoft);color:var(--accent);font-weight:600}
-.nav .n{margin-left:auto;font-size:12px;color:var(--muted)}
-.rail h3{font-size:12px;font-weight:600;color:var(--faint);text-transform:uppercase;letter-spacing:.06em;margin:8px 9px 2px}
-.blink{font-size:13px}
-.blink .n{margin-left:auto;font-size:12px;color:var(--muted)}
-.blink .tag{margin-left:4px}
-.addbtn{border:1px dashed var(--line2);background:transparent;border-radius:6px;padding:6px;cursor:pointer;color:var(--muted)}
-.addbtn:hover{border-color:var(--accent);color:var(--accent)}
+.nav a,.blink,.rsub a{display:flex;align-items:center;gap:9px;padding:6px 9px;border-radius:8px;color:#D9DCF0;text-decoration:none;min-height:32px}
+.nav a:hover,.blink:hover,.rsub a:hover{background:rgb(255 255 255/.07);color:#fff}
+.nav a.on,.blink.on,.rsub a.on{background:rgb(255 255 255/.13);color:#fff;font-weight:600;box-shadow:inset 3px 0 0 var(--amber)}
+.nav a:focus-visible,.blink:focus-visible,.rsub a:focus-visible,.rgh button:focus-visible,.mark:focus-visible{outline:2px solid #86D9FF;outline-offset:1px}
+.ni{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
+.nav .n,.blink .n,.rgh .n{margin-left:auto;font-size:12px;color:#B7BAD9}
+.rgh{margin:4px 0 0}.rgh button{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:6px;width:100%;padding:5px 9px;border-radius:8px;cursor:pointer;font-family:var(--f-head);font-size:12px;font-weight:500;color:#C9CCE6;text-transform:uppercase;letter-spacing:.06em;min-height:30px}
+.rgh button:hover{background:rgb(255 255 255/.07);color:#fff}
+.chev{width:12px;height:12px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;transition:transform .15s}.rgh button[aria-expanded=true] .chev{transform:rotate(90deg)}
+.blink{font-size:13.5px;margin-left:8px}
+.blink .tag{margin-left:4px;background:rgb(255 255 255/.12);color:#E6E8F5}
+.rsub{display:flex;flex-direction:column;gap:1px;margin:2px 0 6px 26px;padding-left:8px;border-left:1px solid #2A2E6E}.rsub a{font-size:13px;min-height:30px;padding:4px 9px}
+.addbtn{margin-top:auto;border:1px solid #3A3F86;background:rgb(255 255 255/.04);border-radius:10px;padding:9px;cursor:pointer;color:#E6E8F5;font-family:var(--f-head);font-size:12.5px;text-transform:uppercase;letter-spacing:.06em}
+.addbtn:hover{border-color:var(--amber);color:#fff;background:rgb(234 159 68/.12)}
 /* health dot */
 .dot{width:10px;height:10px;border-radius:50%;flex:none;background:var(--off);display:inline-block}
 .dot.h-Live,.dot.h-OnTrack{background:var(--ok)}
@@ -482,7 +494,7 @@ table.grid td{vertical-align:middle}
   .cols2,.drawer .body{grid-template-columns:1fr}
   .logrow{grid-template-columns:1fr}
   input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px}
-  .nav a,.blink,.btn,.seg button,select,input:not([type=checkbox]):not([type=radio]):not([type=hidden]),.chipbtn,.mt,.kadd,.kname,.linkb,.sortb,.fold,.bpd,.bd,select.ps,.pb,.bsname,.menu,.addbtn,.chip,.bbk,.hyg a,a.bname,.tabs button{min-height:44px}
+  .nav a,.blink,.rsub a,.rgh button,.btn,.seg button,select,input:not([type=checkbox]):not([type=radio]):not([type=hidden]),.chipbtn,.mt,.kadd,.kname,.linkb,.sortb,.fold,.bpd,.bd,select.ps,.pb,.bsname,.menu,.addbtn,.chip,.bbk,.hyg a,a.bname,.tabs button{min-height:44px}
   input[type=checkbox],input[type=radio]{width:44px;height:44px}.chip,.bbk,.hyg a,a.bname{display:inline-flex;align-items:center}
   .bpd,.fold,.bd,.btn,a.bname,.sortb,.seg button,.chipbtn,.mt,.linkb{min-width:44px;justify-content:center}.nav a,.blink{display:flex;align-items:center}
   .bslim{top:-18px;margin:-18px -16px 14px;padding:8px 16px}.mtabs{margin-left:0;flex-wrap:nowrap;overflow-x:auto;width:100%}
@@ -589,7 +601,7 @@ button.bt{cursor:pointer;transition:box-shadow .15s,border-color .15s}button.bt:
   <aside class="rail" id="rail" aria-label="Navigation"></aside>
   <div class="mainwrap">
     <div class="topbar" id="topbar"></div>
-    <main id="main"><h1>Valerie COE Tracker</h1><p class="sub">Loading brands, tasks and steps.</p></main>
+    <main id="main"><h1>VALFLO</h1><p class="sub">Loading brands, tasks and steps.</p></main>
   </div>
 </div>
 <div class="scrim" id="scrim" hidden></div>
@@ -763,20 +775,31 @@ function myItemsNow(){
   for(const[bid,d]of Object.entries(S.bsteps)){for(const[code,st]of Object.entries(d.s||{})){if(!isPerson(st.owner,me)||st.status==="Done"||st.status==="N/A")continue;const s=S.steps[code];if(!s)continue;
     const f=dueFlag(st.deadline,false);out.push({kind:"step",id:bid,code,brand:bid,title:s.name,status:st.status||"Not Started",due:st.deadline,flag:f,blocked:!!(st.blocker&&st.blocker.text),blocker:st.blocker,role:"Step owner"})}}
   return out}
+/* left menu: Valerie navy, VALFLO name, sections, brand stages that open and close, the open brand's sections nested under it */
+const LOGO=`<svg class="logo" viewBox="0 0 124 94.3" aria-hidden="true"><path d="M61.63,27.67l12.83,12.83h28.64c-1.12-.5-2.22-1.03-3.31-1.58-15.87-7.98-28.92-20.83-37.14-36.85-.3-.58-.59-1.17-.88-1.76l-.15-.32-.15.32c-.29.59-.58,1.18-.88,1.76-8.21,16.02-21.27,28.87-37.14,36.85-1.09.55-2.19,1.07-3.31,1.58h28.64l12.83-12.83Z"/><path d="M123.26,47.15h-41.1c-8.03,5.16-15.03,11.9-20.53,19.92-5.34-7.77-12.09-14.35-19.81-19.45-.24-.16-.48-.32-.72-.47H0l8.54,2.42c23.18,6.56,42.45,22.72,52.94,44.41l.15.32.15-.32c10.49-21.69,29.76-37.85,52.94-44.41l8.54-2.42h0Z"/></svg>`;
+const NI={mine:'<path d="M3 4h10M3 8h10M3 12h6"/>',leadership:'<path d="M2 13l3-8 3 5 3-6 3 9z"/>',overview:'<rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/>',
+  people:'<circle cx="6" cy="5.5" r="2.5"/><path d="M1.5 14c.6-3 2.4-4.5 4.5-4.5S9.9 11 10.5 14M11 3.2a2.4 2.4 0 010 4.6M12.5 9.8c1.2.6 1.8 2 2 4.2"/>',sow:'<path d="M4 1.8h6l3 3V14H4zM10 1.8V5h3M6 8h5M6 10.5h5"/>',
+  access:'<rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/>',bp:'<path d="M8 1.8l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.6l-3.8 2 .7-4.3-3.1-3 4.3-.6z"/>',settings:'<circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4"/>'};
+const nicon=k=>`<svg class="ni" viewBox="0 0 16 16" aria-hidden="true">${NI[k]||""}</svg>`;
+const CHEV=`<svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5L10.5 8 6 12.5"/></svg>`;
+let railShut=new Set();try{railShut=new Set(JSON.parse(ls.get("vt-railshut")||"[]"))}catch(e){}
 function renderRail(){
   const mine=myItems().length;
-  const nav=[["mine","My tasks",mine||""],["overview","Overview",""],["people","People",""],["sow","SOW tracker",""],["access","Platform access",""],["bp","Best Practices",""]];
-  if(isLeader(me))nav.splice(1,0,["leadership","Leadership",leaderCount()||""]);
-  if(canEdit)nav.push(["settings","Settings",""]);
-  let h=`<div class="mark">Valerie COE<small>Brand onboarding tracker</small></div><nav class="nav">`;
-  for(const[k,l,n]of nav)h+=`<a href="#${k}" class="${route.v===k?"on":""}">${esc(l)}<span class="n">${n}</span></a>`;
-  h+=`</nav><div>`;
+  const work=[["mine","My tasks",mine||""]];if(isLeader(me))work.push(["leadership","Leadership",leaderCount()||""]);
+  const across=[["overview","Overview",""],["people","People",""],["sow","SOW tracker",""],["access","Platform access",""],["bp","Best Practices",""]];
+  const item=([k,l,n])=>`<a href="#${k}" class="${route.v===k?"on":""}" ${route.v===k?`aria-current="page"`:""}>${nicon(k)}<span class="nl">${esc(l)}</span><span class="n">${n}</span></a>`;
+  let h=`<a class="mark" href="#overview" aria-label="VALFLO home">${LOGO}<span class="mk">VALFLO</span><small>by Valerie</small></a>
+   <nav class="nav" aria-label="Main"><div class="rsec">My work</div>${work.map(item).join("")}<div class="rsec">Across brands</div>${across.map(item).join("")}${canEdit?item(["settings","Settings",""]):""}</nav><div class="rbrands"><div class="rsec">Brands</div>`;
   const groups={};for(const b of brandList())(groups[b.stage||"Qualification"]=groups[b.stage||"Qualification"]||[]).push(b);
-  for(const st of STAGE_ORDER()){if(!groups[st])continue;h+=`<h3>${esc(st)}</h3>`;
-    for(const b of groups[st]){const r=roll(b.id);
-      h+=`<a class="blink ${route.v==="brand"&&route.id===b.id?"on":""}" href="#brand-${esc(b.id)}" title="${esc(r.health)}">${hdot(r.health)}<span class="sr">${esc(r.health)}</span>${esc(b.name)}${b.paused?` <span class="tag">Paused</span>`:""}<span class="n">${r.open||""}</span></a>`}}
+  for(const st of STAGE_ORDER()){if(!groups[st])continue;const cur=route.v==="brand"&&groups[st].some(b=>b.id===route.id);const open=cur||!railShut.has(st);
+    h+=`<h3 class="rgh"><button data-act="rgrp" data-k="${esc(st)}" aria-expanded="${open}">${CHEV}<span class="rgl">${esc(st)}</span><span class="n">${groups[st].length}</span></button></h3>`;
+    if(!open)continue;
+    for(const b of groups[st]){const r=roll(b.id);const on=route.v==="brand"&&route.id===b.id;
+      h+=`<a class="blink ${on?"on":""}" href="#brand-${esc(b.id)}" title="${esc(r.health)}">${hdot(r.health)}<span class="sr">${esc(r.health)}</span>${esc(b.name)}${b.paused?` <span class="tag">Paused</span>`:""}<span class="n">${r.open||""}</span></a>`;
+      if(on){const t=brandTab;const sub=[["home","Overview"],["tasks",campsOf(b.id).length?"Campaigns":"Tasks"],["sow",isInternal(b)?"Onboarding":"Road to SOW"],["access","Platform access"],["bp","Best Practices"],["updates","Updates"]];
+        h+=`<div class="rsub">${sub.map(([k,l])=>`<a href="#${brandHash(b.id,k)}" class="${t===k?"on":""}" ${t===k?`aria-current="page"`:""}>${esc(l)}</a>`).join("")}</div>`}}}
   h+=`</div>`;
-  if(canEdit&&canWrite)h+=`<button class="addbtn" data-act="add-brand">Add brand</button>`;
+  if(canEdit&&canWrite)h+=`<button class="addbtn" data-act="add-brand"><span aria-hidden="true">+</span> Add brand</button>`;
   $("#rail").innerHTML=h;
 }
 // Leadership view is a role: leads tick Leadership for a person in Settings > People.
@@ -796,7 +819,7 @@ function renderMain(){
   const tb=route.v==="brand"&&S.brands[route.id];const hex=v=>/^#[0-9a-f]{6}$/i.test(v||"");const th=tb&&tb.theme_on&&hex(tb.tint)?tb:null;
   m.classList.toggle("themed",!!th);if(th){m.style.setProperty("--btint",th.tint);m.style.setProperty("--bink",hex(th.color)?th.color:"var(--ink)")}else{m.style.removeProperty("--btint");m.style.removeProperty("--bink")}
   if(!db){return}
-  if(!ready.brands||!ready.config){m.innerHTML=`<h1>Valerie COE Tracker</h1><p class="sub">Loading brands, tasks and steps.</p>`;return}
+  if(!ready.brands||!ready.config){m.innerHTML=`<h1>VALFLO</h1><p class="sub">Loading brands, tasks and steps.</p>`;return}
   if(!Object.keys(S.brands).length){m.innerHTML=`<h1>No brands yet</h1><p class="sub">${canEdit?"Use Add brand in the left menu to add the first one.":"Ask a lead to add brands."}</p>`;return}
   let v=route.v;if(!v)v=isLeader(me)?"leadership":canEdit?"overview":"mine";if(v==="leadership"&&!isLeader(me))v="overview";
   if(v==="settings"&&!canEdit)v="overview";
@@ -1792,6 +1815,7 @@ document.addEventListener("click",e=>{
   else if(act==="theme"){theme=a.dataset.v==="dark"?"dark":"light";ls.set("vt-theme",theme);applyTheme();renderTop()}
   else if(act==="tab"){go(brandHash(route.id,a.dataset.tab))}
   else if(act==="phase-go"){phaseSel={bid:a.dataset.id,p:a.dataset.p};if(route.v==="brand"&&brandTab==="sow")render();else go(brandHash(a.dataset.id,"sow"))}
+  else if(act==="rgrp"){const k=a.dataset.k;if(railShut.has(k))railShut.delete(k);else railShut.add(k);ls.set("vt-railshut",JSON.stringify([...railShut]));renderRail();const n=$(`#rail [data-act=rgrp][data-k="${CSS.escape(k)}"]`);if(n)n.focus()}
   else if(act==="skip"){const h=$("#main h1")||$("#main");h.tabIndex=-1;h.focus()}
   else if(act==="goto-item"){const{kind,id,code}=a.dataset;
     if(kind==="task"){const t=S.tasks[id];if(!t)return;brandTab="tasks";if(t.status==="Complete")kbFilter.done=true;focusItem={sel:`.kc[data-id="${CSS.escape(id)}"]`};go(campHash(t.brand,campsOf(t.brand).length?campOf(t):""))}
@@ -1987,7 +2011,7 @@ async function exportXlsx(){
   const lk=["task_status","priority","stage","platform","access_level","access_status","sow_stage","checklist","bp_section","bp_status"];const heads=["Task Status","Priority","Stage","Team","Platform","Access Level","Access Status","SOW Stage","Checklist","BP Section","BP Status"];
   const cols=[L("task_status"),L("priority"),L("stage"),activePeople()].concat(lk.slice(3).map(L));const n=Math.max(...cols.map(c=>c.length));const rows=[heads];for(let i=0;i<n;i++)rows.push(cols.map(c=>c[i]||""));add("Lists",rows);
   const out=X.write(wb,{bookType:"xlsx",type:"array"});
-  await offer("Valerie_COE_Tracker_"+isoToday()+".xlsx",new Blob([out]))}
+  await offer("VALFLO_"+isoToday()+".xlsx",new Blob([out]))}
 async function exportJson(){const dump={exported_at:new Date().toISOString()};for(const[k,c]of Object.entries(COLL))dump[c]=S[k];await offer("Valerie_COE_backup_"+isoToday()+".json",JSON.stringify(dump,null,1))}
 
 /* ---------- boot ---------- */
