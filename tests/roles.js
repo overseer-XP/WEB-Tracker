@@ -18,7 +18,7 @@ const res = []; const check = (who, what, ok, d = '') => res.push([ok ? 'OK  ' :
   await go(p, 'brand-bespoke');
   check('Member', 'No Client view or Edit details button', !(await p.$('a[href="#client-bespoke"]')) && !(await p.$('.hero [data-kind=brand]')));
   await go(p, 'client-bespoke'); check('Member', 'Client page link is not available', !(await p.$('.client')));
-  await go(p, 'brand-bespoke'); await p.click('button[data-tab=tasks]'); await p.waitForTimeout(200);
+  await go(p, 'brand-bespoke'); await p.click('.rsub [data-tab=tasks]'); await p.waitForTimeout(200);
   await p.selectOption('#whoSel', 'Cat'); await p.waitForTimeout(200);
   const own = await p.$$eval('main .kc', cs => { const c = cs.find(x => x.querySelector('.av[title="Cat (owner)"]')); return c ? c.getAttribute('draggable') : null });
   if (own !== null) check('Member', 'Can move their own card', own === 'true');
@@ -31,7 +31,7 @@ const res = []; const check = (who, what, ok, d = '') => res.push([ok ? 'OK  ' :
 
   // View only: writes are refused by the database
   p = await open(process.argv[3], 'overview');
-  await go(p, 'brand-ora'); await p.click('button[data-tab=sow]'); await p.waitForTimeout(150);
+  await go(p, 'brand-ora'); await p.click('.rsub [data-tab=sow]'); await p.waitForTimeout(150);
   const code = await p.$$eval('select[data-code]', els => { const e = els.find(x => x.checkVisibility() && x.value !== 'Done'); return e && e.dataset.code });
   // The website knows the role at sign-in and locks controls from the start; claude.ai finds out on the first refused write.
   if (await p.$eval(`select[data-code="${code}"]`, e => e.disabled)) {

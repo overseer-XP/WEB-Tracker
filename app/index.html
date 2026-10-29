@@ -36,7 +36,7 @@
   --g0:#5E8A6D; --g1:#5F80A0; --g2:#7F70A3; --g3:#A37B5F; --g4:#5F9483; --g5:#978A5F; color-scheme:dark; --shadow:none}
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
-html,body{height:100%}
+html,body{height:100%;margin:0}
 body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--f-ui);font-variant-numeric:tabular-nums}
 h1,h2,h3,h4,.sech,.bh1,.btbig{font-family:var(--f-head);font-weight:600;letter-spacing:-.015em}
 a{color:var(--accent)}
@@ -56,7 +56,7 @@ input,select,textarea{background-color:var(--panel);color:var(--ink)}
 .app{display:grid;grid-template-columns:252px minmax(0,1fr);grid-template-rows:minmax(0,1fr);height:100%;overflow:hidden}
 .app>*{min-height:0}
 /* rail */
-.rail{background-color:#0E1129;background-image:radial-gradient(rgb(255 255 255/.07) 1px,transparent 1.2px);background-size:16px 16px;color:#E6E8F2;border-right:1px solid #1B1F3B;overflow-y:auto;padding:22px 14px 20px;display:flex;flex-direction:column;gap:6px;
+.rail{position:relative;background-color:#0E1129;background-image:radial-gradient(rgb(255 255 255/.07) 1px,transparent 1.2px);background-size:16px 16px;color:#E6E8F2;border-right:1px solid #1B1F3B;overflow-y:auto;padding:22px 14px 20px;display:flex;flex-direction:column;gap:6px;
   --ok:#86D9A6;--warn:#F2C26B;--bad:#F4A39B;--faint:#9DA2C4;--off:#9DA2C4;--muted:#A9AECB;--ink:#E6E8F2;scrollbar-width:thin;scrollbar-color:#2C3157 transparent}
 :root[data-theme="dark"] .rail{background-color:#0A0C1F}
 .mark{display:flex;align-items:center;gap:12px;padding:2px 10px 18px;color:#fff;text-decoration:none}
@@ -75,7 +75,8 @@ input,select,textarea{background-color:var(--panel);color:var(--ink)}
 .rgh .n{margin-left:auto}
 .chev{width:14px;height:14px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6;transition:transform .15s;opacity:.8;order:3;margin-left:6px}
 .rgh button[aria-expanded=true] .chev{transform:rotate(-90deg)}.rgh button[aria-expanded=false] .chev{transform:rotate(90deg)}
-.blink{font-size:14px;margin-left:14px}
+.blink{font-size:14px;margin-left:14px}.blink .chev{margin-left:4px;width:12px;height:12px;opacity:.6}.blink[aria-expanded=true] .chev{transform:rotate(-90deg)}.blink[aria-expanded=false] .chev{transform:rotate(90deg)}
+.rsub .n{margin-left:auto;font-size:12px;color:#A9AECB;white-space:nowrap}.rsub a.on .n{color:#E6E8F2}.rsub .sig.sm{margin-right:-4px}.rsub .nl{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .blink .tag{margin-left:4px;background:rgb(255 255 255/.10);color:#E6E8F2}
 .rsub{display:flex;flex-direction:column;gap:1px;margin:2px 0 8px 30px;padding-left:10px;border-left:1px solid #2C3157}.rsub a{font-size:13.5px;min-height:34px;padding:6px 10px}
 .addbtn{margin-top:auto;border:1px solid #2F3561;background:rgb(255 255 255/.04);border-radius:12px;padding:11px;cursor:pointer;color:#E6E8F2;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.08em}
@@ -88,9 +89,8 @@ input,select,textarea{background-color:var(--panel);color:var(--ink)}
 .dot.h-OnHold{background:transparent;box-shadow:inset 0 0 0 2px var(--faint)}
 /* top */
 .mainwrap{display:flex;flex-direction:column;min-width:0;height:100%}
-.topbar{display:flex;flex-direction:column;border-bottom:1px solid var(--line);background:var(--panel)}
-.tstrip{display:flex;align-items:center;gap:10px;padding:6px 28px 6px 20px;background:var(--panel2);min-height:44px}
-.tctl{display:flex;align-items:center;gap:12px;padding:10px 28px;flex-wrap:wrap}.tctl .search{margin-right:auto}.rtog.ph{display:none}
+.topbar{display:flex;align-items:center;gap:12px;padding:8px 24px 8px 16px;border-bottom:1px solid var(--line);background:var(--panel);min-height:58px}
+.topbar .search{flex:0 1 240px;min-width:140px;margin-left:auto}.topbar>.seg,.topbar>.who,.topbar>.tag,.topbar>.rtog,.topbar>.btn{flex:none;white-space:nowrap}.vcrumb a,.vcrumb .linkb{flex-shrink:4}.vcrumb b{flex-shrink:1}
 .seg{display:inline-flex;border:1px solid var(--line2);border-radius:7px;overflow:hidden}
 .seg button{border:0;background:transparent;padding:5px 12px;cursor:pointer;color:var(--muted);font-weight:500}
 .seg button.on{background:var(--accentSoft);color:var(--accent);font-weight:600}
@@ -201,8 +201,8 @@ select.ps:disabled{cursor:default;background-image:none;padding-right:9px}
 .due.Overdue{color:var(--bad);font-weight:600}.due.DueSoon{color:var(--warn);font-weight:600}
 /* team cards */
 .secs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin:14px 0 16px;padding:8px 0}
-.bslim{position:sticky;top:-24px;z-index:6;margin:-24px -28px 16px;padding:10px 28px;background:var(--panel);border-bottom:1px solid var(--line);box-shadow:var(--shadow);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.bsl{display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap}.bsname{all:unset;cursor:pointer;font-size:19px;font-weight:700;color:var(--bink,var(--ink))}.bsname:hover{text-decoration:underline}:root[data-theme="dark"] .bsname{color:var(--ink)}.bsh{font-size:13px;font-weight:600}
+.bslim{margin:0 0 18px;display:flex;flex-direction:column;gap:4px}.bslim .bsh1{margin:0;font-size:28px;font-weight:600;letter-spacing:-.015em}
+.bsl{display:flex;align-items:center;gap:10px;min-width:0;flex-wrap:wrap}.bsname{all:unset;cursor:pointer;font-size:15px;font-weight:500;color:var(--bink,var(--ink))}.bsname:hover{text-decoration:underline}:root[data-theme="dark"] .bsname{color:var(--ink)}.bsh{font-size:13px;font-weight:600}
 .bslim .crumb{margin:0;font-size:14px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}.bslim .crumb b{font-weight:700}
 .mtabs{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}.mt{all:unset;cursor:pointer;font-size:12px;padding:4px 9px;border-radius:7px;border:1px solid var(--line);border-bottom:3px solid var(--line2);color:var(--muted);white-space:nowrap}.mt b{color:var(--ink);font-weight:700;margin-left:2px}
 .mt:hover{background:var(--offBg)}.mt.on{background:var(--accentSoft);border-color:var(--accent);color:var(--accent)}.mt:focus-visible{outline:2px solid var(--accent)}
@@ -448,7 +448,7 @@ table.grid tr.held td{opacity:.62}
 .acd{display:inline-flex;align-items:center;justify-content:center;width:30px;height:26px;border-radius:6px;font-size:12px;font-weight:700;border:1px solid transparent;cursor:pointer;font-family:inherit}
 .acd:hover,.bd:hover{outline:2px solid var(--ink);outline-offset:1px}
 .acd-empty{background:transparent;border:1px dashed var(--line2);color:var(--faint)}
-.bd{display:inline-block;width:34px;height:24px;border-radius:5px;border:0;cursor:pointer;padding:0}
+.bd{display:inline-flex;align-items:center;justify-content:center;min-width:46px;height:26px;border-radius:6px;border:0;cursor:pointer;padding:0 6px;font:600 12px/1 var(--f-ui);color:var(--ink);white-space:nowrap}.bd-na{color:var(--muted)!important}.bd:not(.bd-done):not(.bd-prog):not(.bd-not):not(.bd-na){background:var(--panel2);color:var(--muted)}
 .bdl{display:inline-block;width:18px;height:12px;border-radius:3px}
 .bd-done{background:var(--fDone)}.bd-prog{background:var(--fProg)}.bd-not{background:var(--fNot);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--bad) 22%,transparent)}.bd-na{background:var(--fNA)}
 table.board th.gh{text-align:center;font-size:12px;letter-spacing:.04em;text-transform:uppercase;border-bottom:3px solid var(--g)}
@@ -486,7 +486,7 @@ table.grid td{vertical-align:middle}
   .app{grid-template-columns:1fr}
   .rail{position:fixed;inset:0 25% 0 0;z-index:35;transform:translateX(-102%);transition:transform .2s;padding-top:calc(18px + env(safe-area-inset-top,0px))}
   .rail.open{transform:none}
-  .tctl{padding:10px 16px}
+  
   main{padding:18px 16px 60px}
   .tiles,.facts{grid-template-columns:repeat(2,minmax(0,1fr))}
   .step{grid-template-columns:44px minmax(0,1fr);}
@@ -614,7 +614,7 @@ button.bt:hover,.crow:hover{box-shadow:none;background:var(--panel2)}
 .vcrumb a,.vcrumb .linkb{color:var(--muted);text-decoration:none;font-weight:400}.vcrumb a:hover,.vcrumb .linkb:hover{color:var(--ink);text-decoration:none}
 .vcrumb b{color:var(--ink);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.vcrumb .sep{color:var(--faint)}
 .app.railoff{grid-template-columns:0 minmax(0,1fr)}.app.railoff .rail{visibility:hidden;padding:0;border:0}
-@media (max-width:900px){.tstrip{display:none}.rtog.ph{display:grid}.app.railoff .rail{visibility:visible}}
+@media (max-width:900px){.vcrumb{display:none}.topbar{flex-wrap:wrap;padding:10px 16px}.topbar .search{flex:1 1 200px;margin-left:0}.app.railoff .rail{visibility:visible}}
 </style>
 
 <div class="app">
@@ -803,9 +803,10 @@ const NI={mine:'<path d="M3 4h10M3 8h10M3 12h6"/>',leadership:'<path d="M2 13l3-
   access:'<rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/>',bp:'<path d="M8 1.8l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.6l-3.8 2 .7-4.3-3.1-3 4.3-.6z"/>',settings:'<circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4"/>'};
 const nicon=k=>`<svg class="ni" viewBox="0 0 16 16" aria-hidden="true">${NI[k]||""}</svg>`;
 const CHEV=`<svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5L10.5 8 6 12.5"/></svg>`;
-let railOff=ls.get("vt-railoff")==="1";
+let railOff=ls.get("vt-railoff")==="1";let railBrand=null,railSeen="";
 let railShut=new Set();try{railShut=new Set(JSON.parse(ls.get("vt-railshut")||"[]"))}catch(e){}
 function renderRail(){
+  if(route.v==="brand"&&route.id!==railSeen){railBrand=route.id;railSeen=route.id}if(route.v!=="brand")railSeen="";
   const mine=myItems().length;
   const work=[["mine","My tasks",mine||""]];if(isLeader(me))work.push(["leadership","Leadership",leaderCount()||""]);
   const across=[["overview","Overview",""],["people","People",""],["sow","SOW tracker",""],["access","Platform access",""],["bp","Best Practices",""]];
@@ -816,10 +817,12 @@ function renderRail(){
   for(const st of STAGE_ORDER()){if(!groups[st])continue;const cur=route.v==="brand"&&groups[st].some(b=>b.id===route.id);const open=!railShut.has(st);
     h+=`<h3 class="rgh"><button data-act="rgrp" data-k="${esc(st)}" aria-expanded="${open}"><span class="rgl">${esc(st)}</span><span class="n">${groups[st].length}</span>${CHEV}</button></h3>`;
     if(!open)continue;
-    for(const b of groups[st]){const r=roll(b.id);const on=route.v==="brand"&&route.id===b.id;
-      h+=`<a class="blink ${on?"on":""}" href="#brand-${esc(b.id)}" title="${esc(r.health)}">${hdot(r.health)}<span class="sr">${esc(r.health)}</span>${esc(b.name)}${b.paused?` <span class="tag">Paused</span>`:""}<span class="n">${r.open||""}</span></a>`;
-      if(on){const t=brandTab;const sub=[["home","Overview"],["tasks",campsOf(b.id).length?"Campaigns":"Tasks"],["sow",isInternal(b)?"Onboarding":"Road to SOW"],["access","Platform access"],["bp","Best Practices"],["updates","Updates"]];
-        h+=`<div class="rsub">${sub.map(([k,l])=>`<a href="#${brandHash(b.id,k)}" class="${t===k?"on":""}" ${t===k?`aria-current="page"`:""}>${esc(l)}</a>`).join("")}</div>`}}}
+    for(const b of groups[st]){const r=roll(b.id);const on=route.v==="brand"&&route.id===b.id;const ex=railBrand===b.id;
+      h+=`<a class="blink ${on?"on":""} ${ex?"ex":""}" href="#brand-${esc(b.id)}" data-act="blink" data-id="${esc(b.id)}" aria-expanded="${ex}" title="${esc(r.health)}">${hdot(r.health)}<span class="sr">${esc(r.health)}</span>${esc(b.name)}${b.paused?` <span class="tag">Paused</span>`:""}<span class="n">${r.open||""}</span>${CHEV}</a>`;
+      if(ex){const t=on?brandTab:"";const tiles=Object.fromEntries(brandTiles(b.id,r).map(x=>[x[0],x]));
+        const sub=[["home","Overview",""]].concat(["tasks","sow","access","bp","updates"].map(k=>{const x=tiles[k]||[k,SECT[k],"","","off"];const l=k==="tasks"?(campsOf(b.id).length?"Campaigns":"Tasks"):k==="sow"&&isInternal(b)?"Onboarding":SECT[k];
+          const v=k==="tasks"?String(campsOf(b.id).length||r.open):x[2]==="None"||x[2]==="None yet"||x[2]==="N/A"?"":x[2];return[k,l,v,x[4],x[3]]}));
+        h+=`<div class="rsub">${sub.map(([k,l,v,st,why])=>`<a href="#${brandHash(b.id,k)}" data-tab="${k}" class="${t===k?"on":""}" ${t===k?`aria-current="page"`:""} ${why?`title="${esc(l+": "+v+(why?", "+why:""))}"`:""}>${st==="bad"||st==="warn"?`<span class="sig sm sig-${st}">${SHAPE[st]}</span>`:""}<span class="nl">${esc(l)}</span>${v?`<span class="n">${esc(v)}</span>`:""}</a>`).join("")}</div>`}}}
   h+=`</div>`;
   if(canEdit&&canWrite)h+=`<button class="addbtn" data-act="add-brand"><span aria-hidden="true">+</span> Add brand</button>`;
   $("#rail").innerHTML=h;
@@ -828,25 +831,24 @@ function renderRail(){
 const isLeader=name=>!!name&&people().some(p=>p.name===name&&p.leadership);
 const TOPNAME={mine:"My tasks",leadership:"Leadership",overview:"Overview",people:"People",sow:"SOW tracker",access:"Platform access",bp:"Best Practices",settings:"Settings"};
 function crumbsOf(){
-  if(route.v==="brand"&&S.brands[route.id]){const b=S.brands[route.id];const id=route.id;const out=[{l:"Brands",href:"#overview"},{l:b.name,href:"#"+brandHash(id,"home")}];
+  if(route.v==="brand"&&S.brands[route.id]){const b=S.brands[route.id];const id=route.id;const out=[{l:b.name,href:"#"+brandHash(id,"home")}];
     if(brandTab!=="home"){const cid=campSel.bid===id?campSel.id:"";const deep=brandTab==="tasks"&&cid&&(cid===NOCAMP||S.camps[cid]);
       const sec=brandTab==="tasks"&&!campsOf(id).length?"Tasks":brandTab==="sow"&&isInternal(b)?"Onboarding":SECT[brandTab]||"";
       out.push(deep?{l:sec,act:`data-act="camp" data-id=""`}:{l:sec,href:"#"+brandHash(id,brandTab)});if(deep)out.push({l:campName(cid)})}
     return out}
-  if(route.v==="client"&&S.brands[route.id])return[{l:"Brands",href:"#overview"},{l:S.brands[route.id].name,href:"#brand-"+route.id},{l:"Client view"}];
+  if(route.v==="client"&&S.brands[route.id])return[{l:S.brands[route.id].name,href:"#brand-"+route.id},{l:"Client view"}];
   return[{l:TOPNAME[route.v]||"Overview",href:"#"+(route.v||"overview")}]}
 function renderTop(){
   if(document.activeElement&&document.activeElement.id==="q")return; // keep the search box while someone types
   const ppl=activePeople();
   document.querySelector(".app").classList.toggle("railoff",railOff);
-  const cr=crumbsOf();const up=cr.length>1?cr[cr.length-2]:null;
+  const cr=crumbsOf();const up=cr.length>1?cr[cr.length-2]:route.v==="brand"?{l:"Overview",href:"#overview"}:null;
   const tog=c=>`<button class="rtog ${c}" data-act="menu" aria-label="${railOff?"Show menu":"Hide menu"}" title="${railOff?"Show menu":"Hide menu"}"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="3.5" width="15" height="13" rx="2.5"/><path d="M7.5 3.5v13"/></svg></button>`;
-  $("#topbar").innerHTML=`<div class="tstrip">${tog("")}<nav class="crumb vcrumb" aria-label="You are here" title="${esc(cr.map(c=>c.l).join(" › "))}">${up?`<a class="vx" href="${up.href||"#"}" ${up.act||""} aria-label="Back to ${esc(up.l)}">×</a>`:""}${cr.map((c,i)=>i===cr.length-1?`<b>${esc(c.l)}</b>`:c.act?`<button class="linkb" ${c.act}>${esc(c.l)}</button>`:`<a href="${c.href}">${esc(c.l)}</a>`).join(`<span class="sep" aria-hidden="true">›</span>`)}</nav></div>
-   <div class="tctl">${tog("ph")}<div class="search"><label for="q" class="sr">Search brands, tasks, people and steps</label><input id="q" type="search" placeholder="Search brands, tasks, people" autocomplete="off" value="${esc(searchQ)}"><div id="sres" class="sres" hidden></div></div>
+  $("#topbar").innerHTML=`${tog("")}<nav class="crumb vcrumb" aria-label="You are here" title="${esc(cr.map(c=>c.l).join(" › "))}">${up?`<a class="vx" href="${up.href||"#"}" ${up.act||""} aria-label="Back to ${esc(up.l)}">×</a>`:""}${cr.map((c,i)=>i===cr.length-1?`<b>${esc(c.l)}</b>`:c.act?`<button class="linkb" ${c.act}>${esc(c.l)}</button>`:`<a href="${c.href}">${esc(c.l)}</a>`).join(`<span class="sep" aria-hidden="true">›</span>`)}</nav><div class="search"><label for="q" class="sr">Search brands, tasks, people and steps</label><input id="q" type="search" placeholder="Search brands, tasks, people" autocomplete="off" value="${esc(searchQ)}"><div id="sres" class="sres" hidden></div></div>
    <div class="seg" role="group" aria-label="Detail"><button data-act="simple" data-v="1" class="${simple?"on":""}" title="Fewer columns and fields">Simple</button><button data-act="simple" data-v="0" class="${simple?"":"on"}" title="Every column and field">Full</button></div>
    <label class="who" for="whoSel">You are <select id="whoSel" data-act="who"><option value="">Pick your name</option>${ppl.map(p=>`<option ${p===me?"selected":""}>${esc(p)}</option>`).join("")}</select></label>
    <div class="seg" role="group" aria-label="Colours"><button data-act="theme" data-v="light" class="${theme==="light"?"on":""}">Light</button><button data-act="theme" data-v="dark" class="${theme==="dark"?"on":""}">Dark</button></div>
-   <span class="tag">${canEdit?"Lead / admin":canWrite?"Member":"View only"}</span></div>`;
+   <span class="tag">${canEdit?"Lead / admin":canWrite?"Member":"View only"}</span>${window.__signOut?`<button class="btn sm" data-act="signout">Sign out</button>`:""}`;
 }
 function renderMain(){
   const m=$("#main");
@@ -1151,16 +1153,17 @@ function vBp(){
   if(bpFilter==="open")rows=rows.filter(b=>R[b.id].overall!=="Complete");if(bpFilter==="blocked")rows=rows.filter(b=>R[b.id].overall==="Blocked");
   const ord={Blocked:0,"In QA":1,"In Progress":2,"Not Started":3,Complete:4};
   rows.sort(bpSort==="name"?(a,b)=>a.name.localeCompare(b.name):bpSort==="due"?(a,b)=>String(S.bps[a.id].due_date||"9999").localeCompare(String(S.bps[b.id].due_date||"9999")):(a,b)=>(ord[R[a.id].overall]??5)-(ord[R[b.id].overall]??5)||R[a.id].progress-R[b.id].progress);
-  h+=`<div class="tw"><table class="grid bpg"><colgroup><col class="cb"><col class="cp"><col class="co">${secs.map(()=>`<col class="cs">`).join("")}${simple?"":`<col class="cw"><col class="cd">`}<col class="ce"></colgroup><thead>
-   <tr><th class="stick" rowspan="2">Brand</th><th rowspan="2">Progress</th><th rowspan="2">Overall</th>${groups.map((g,i)=>`<th colspan="${g.sections.length}" class="gh g${i%6}">${esc(g.name)}</th>`).join("")}${simple?"":`<th rowspan="2">Owner</th><th rowspan="2">Due</th>`}<th rowspan="2"><span class="sr">Edit</span></th></tr>
+  h+=`<div class="tw"><table class="grid bpg"><colgroup><col class="cb"><col class="cp"><col class="co">${secs.map(()=>`<col class="cs">`).join("")}${simple?"":`<col class="cw"><col class="cd">`}<col class="ce"><col class="cl"></colgroup><thead>
+   <tr><th class="stick" rowspan="2">Brand</th><th rowspan="2">Progress</th><th rowspan="2">Overall</th>${groups.map((g,i)=>`<th colspan="${g.sections.length}" class="gh g${i%6}">${esc(g.name)}</th>`).join("")}${simple?"":`<th rowspan="2">Owner</th><th rowspan="2">Due</th>`}<th rowspan="2"><span class="sr">Edit</span></th><th rowspan="2">Link</th></tr>
    <tr>${groups.map((g,i)=>g.sections.map(x=>`<th class="pc g${i%6}" title="${esc(x)}"><span>${esc(x)}</span></th>`).join("")).join("")}</tr></thead><tbody>`;
   for(const b of rows){const d=S.bps[b.id];const r=R[b.id];
     h+=`<tr class="${onHold(b)?"held":""}"><td class="stick"><a class="bname" href="#brand-${esc(b.id)}">${esc(b.name)}</a></td><td class="nowrap"><span class="bar"><i style="width:${Math.round(r.progress*100)}%"></i></span> <span class="faint">${r.done}/${r.total}</span></td><td>${pill(r.overall)}</td>${secs.map(x=>{const v=(d.sections||{})[x]||"Not Started";
       const ax=v==="Not Started"?bpAccess(b.id,x):null;const lk=ax&&ax.state==="locked";const rd=ax&&ax.state==="ready";
       return`<td class="gc"><button class="bpd bp-${lk?"Locked":key(v)}${rd?" bp-Ready":""}" data-act="bpdot" data-id="${esc(b.id)}" data-sec="${esc(x)}" title="${esc(x+": "+v+(lk?"\nWaiting on access: "+ax.missing.join(", "):rd?"\nAccess is in place. Ready to start":""))}" aria-label="${esc(b.name+", "+x+": "+v+(lk?", waiting on access":rd?", ready to start":""))}" ${canWrite?"":"disabled"}>${lk?LOCK:esc(BPMARK[v]??"")}</button></td>`}).join("")}
       ${simple?"":`<td class="nowrap">${esc(d.owner)||`<span class="faint">Not set</span>`}</td><td class="nowrap">${dueHtml(d.due_date,r.progress===1)||`<span class="faint">No date</span>`}</td>`}
-      <td><button class="btn sm quiet" data-act="open" data-kind="bp" data-id="${esc(b.id)}">Edit</button></td></tr>`}
-  if(!rows.length)h+=`<tr><td colspan="${secs.length+6}"><div class="empty">No brands match this filter.</div></td></tr>`;
+      <td><button class="btn sm quiet" data-act="open" data-kind="bp" data-id="${esc(b.id)}">Edit</button></td>
+      <td class="nowrap">${d.doc_link?`<a class="btn sm quiet" href="${esc(d.doc_link)}" target="_blank" rel="noopener" title="${esc(d.doc_link)}">Open</a>`:""}${canWrite?`<button class="btn sm quiet" data-act="bp-link" data-id="${esc(b.id)}" aria-label="${esc((d.doc_link?"Change":"Add")+" the Best Practices link for "+b.name)}">${d.doc_link?"Change":"Add link"}</button>`:d.doc_link?"":`<span class="faint">None</span>`}</td></tr>`}
+  if(!rows.length)h+=`<tr><td colspan="${secs.length+7}"><div class="empty">No brands match this filter.</div></td></tr>`;
   return h+`</tbody></table></div>`}
 function bpCard(bid){
   const d=S.bps[bid];if(!d)return`<div class="tw"><div class="empty">Best Practices not started for this brand. ${canWrite?`<button class="btn sm" data-act="add-bp" data-id="${esc(bid)}">Start tracking</button>`:""}</div></div>`;
@@ -1329,7 +1332,7 @@ const GUIDES={
   overview:["Start with Needs attention: these are the brands to act on today.","Tiles compare with last week once the tracker has a week of history.","Pipeline shows where every brand is. Click a name to open it."],
   mine:["Brand onboarding: one card per brand you work on. Onboarded brands: live work by urgency.","Click a task name to jump to it on its brand page. Change status right here.","Mentions from comments show at the top for 14 days."],
   people:["Owns is the number of open tasks a person owns. The bar compares people.","Click a row to see their tasks. No owner lists work nobody has picked up.","Filter by team or vertical to see one part of the business."],
-  sow:["Each square rolls up a few onboarding steps. ✓ done, • in progress, empty not started.","Click a square to tick its steps. Signed comes from the SOW stage."]};
+  sow:["Each square rolls up a few onboarding steps and says where they are: Done, Doing, To do or N/A.","Click a square to tick its steps. Signed comes from the SOW stage."]};
 function guide(k){if(!GUIDES[k]||ls.get("vt-guide-"+k))return"";return`<div class="guide"><div><b>How to use this page</b><ul>${GUIDES[k].map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div><button class="btn sm quiet" data-act="guide-off" data-k="${k}">Got it</button></div>`}
 
 
@@ -1440,9 +1443,8 @@ const campName=id=>id===NOCAMP?"Not in a campaign":(S.camps[id]||{}).name||"Camp
 const teamColor=d=>"var(--line2)"; // teams are named, not coloured: colour is kept for status
 const SECT={home:"Overview",tasks:"Campaigns",access:"Platform access",sow:"Road to SOW",bp:"Best Practices",updates:"Updates"};
 const SHORT={tasks:"Campaigns",access:"Access",sow:"Road to SOW",bp:"BP",updates:"Updates"};
-function brandBar(id,r){const b=S.brands[id];const [hk,hl]=healthOf(r.health);
-  return`<div class="bslim"><div class="bsl"><h1 class="bsh1"><button class="bsname" data-act="tab" data-tab="home">${esc(b.name)}</button></h1>${sig(hk,hl)}</div>
-   <nav class="mtabs" aria-label="Sections"><button class="mt" data-act="tab" data-tab="home">Overview</button>${brandTiles(id,r).map(([k,l,v,sub,st])=>`<button class="mt ${k===brandTab?"on":""}" ${k===brandTab?`aria-current="page"`:""} data-act="tab" data-tab="${k}" title="${esc(l+": "+v+(sub?", "+sub:""))}">${st==="bad"||st==="warn"?`<span class="sig sm sig-${st}">${SHAPE[st]}</span>`:""}${esc(k==="tasks"&&!campsOf(id).length?"Tasks":k==="sow"?l:SHORT[k]||l)} <b>${esc(k==="tasks"?String(campsOf(id).length||r.open):v)}</b></button>`).join("")}</nav></div>`}
+function brandBar(id,r){const b=S.brands[id];const [hk,hl]=healthOf(r.health);const sec=brandTab==="tasks"&&!campsOf(id).length?"Tasks":brandTab==="sow"&&isInternal(b)?"Onboarding":SECT[brandTab];
+  return`<div class="bslim"><h1 class="bsh1">${esc(sec)}</h1><div class="bsl"><button class="bsname" data-act="tab" data-tab="home">${esc(b.name)}</button>${sig(hk,hl)}</div></div>`}
 function campRoll(bid,cid){const ts=withId(S.tasks).filter(t=>t.brand===bid&&t.title&&campOf(t)===cid);const op=ts.filter(t=>t.status!=="Complete");
   return{ts,op,done:ts.length-op.length,blocked:op.filter(t=>t.status==="Blocked").length,late:op.filter(t=>dueFlag(t.deadline,false)==="Overdue").length,
     teams:DEPTS().map(d=>[d,op.filter(t=>depOf(t)===d).length,ts.filter(t=>depOf(t)===d).length]).filter(x=>x[2]),deps:((S.camps[cid]||{}).deps||[]).filter(d=>d.state!=="Cleared").length}}
@@ -1641,6 +1643,7 @@ function accessGrid(){
 function boardCols(){const cfg=S.config.sow_board;
   if(cfg&&Array.isArray(cfg.groups)&&cfg.groups.length)return cfg.groups;
   return phases().map(p=>({name:p.code+" "+p.name,cols:p.steps.map(s=>({label:s.name,steps:[s.code]}))}))}
+const BOARD_WORD={"Done":"Done","In progress":"Doing","Not done":"To do","N/A":"N/A"};
 function boardCell(bid,col){
   if(col.sow_stage){const st=(S.sow[bid]||{}).stage||"";if((col.sow_stage.done||[]).includes(st))return"Done";if((col.sow_stage.progress||[]).includes(st))return"In progress";return"Not done"}
   const vals=(col.steps||[]).filter(c=>S.steps[c]).map(c=>stepState(bid,c).status||"Not Started");
@@ -1662,7 +1665,7 @@ function sowBoard(){
   for(const{b,pct}of rows){const s=S.sow[b.id]||{};const hold=onHold(b);
     h+=`<tr class="${hold?"held":""}"><td class="stick"><a class="bname" href="#brand-${esc(b.id)}">${esc(b.name)}</a></td><td>${hold?`<span class="pill s-off">On hold</span>`:pill(s.stage||"Not Started")}</td><td class="num"><b>${pct}%</b></td>`;
     groups.forEach((g,gi)=>g.cols.forEach((c,ci)=>{const v=boardCell(b.id,c);
-      h+=`<td class="gc"><button class="bd ${BOARD_CLS[v]}" data-act="board" data-b="${esc(b.id)}" data-c="${gi}.${ci}" title="${esc(c.label+": "+(v||"No steps linked"))}">${BOARD_MARK[v]||""}<span class="sr">${esc(c.label+" "+v)}</span></button></td>`}));
+      h+=`<td class="gc"><button class="bd ${BOARD_CLS[v]}" data-act="board" data-b="${esc(b.id)}" data-c="${gi}.${ci}" title="${esc(c.label+": "+(v||"No steps linked"))}">${esc(BOARD_WORD[v]||"")}<span class="sr">${esc(c.label+" "+v)}</span></button></td>`}));
     h+=`${simple?"":`<td class="muted bblk"><div class="clamp2" title="${esc(s.blocker||"")}">${esc(s.blocker||"")}</div></td>`}<td style="white-space:nowrap">${s.gf_link?`<a href="${esc(s.gf_link)}" target="_blank" rel="noopener">GF</a> `:""}${s.sow_link?`<a href="${esc(s.sow_link)}" target="_blank" rel="noopener">SOW</a>`:""}${!s.gf_link&&!s.sow_link?`<span class="faint">None</span>`:""}</td></tr>`}
   if(!rows.length)h+=`<tr><td colspan="${ncol+5}"><div class="empty">No brands yet.</div></td></tr>`;
   return h+`</tbody></table></div>`}
@@ -1842,6 +1845,8 @@ document.addEventListener("click",e=>{
   if(a.tagName==="SELECT"||a.tagName==="INPUT")return;
   if(act==="nav"){if(e.target.closest("a,select,button"))return;go(a.dataset.to);return}
   if(act==="open"){if(e.target.closest("select")||(e.target.closest("a")&&e.target.closest("a")!==a&&e.target.closest("a").getAttribute("href")!=="#"))return;e.preventDefault();openDrawer(a.dataset.kind,a.dataset.id,a.dataset.code);return}
+  // A brand in the left menu: open it, or on its own page open and close its sections.
+  if(act==="blink"){const id=a.dataset.id;if(route.v==="brand"&&route.id===id){e.preventDefault();railBrand=railBrand===id?"":id;renderRail();const n=$(`#rail [data-act=blink][data-id="${CSS.escape(id)}"]`);if(n)n.focus()}else railBrand=id;return}
   e.preventDefault();
   if(act==="menu"){if(matchMedia("(max-width:900px)").matches)$("#rail").classList.toggle("open");else{railOff=!railOff;ls.set("vt-railoff",railOff?"1":"0");renderTop()}}
   else if(act==="simple"){simple=a.dataset.v==="1";ls.set("vt-simple",simple?"1":"0");render()}
@@ -1849,6 +1854,10 @@ document.addEventListener("click",e=>{
   else if(act==="tab"){go(brandHash(route.id,a.dataset.tab))}
   else if(act==="phase-go"){phaseSel={bid:a.dataset.id,p:a.dataset.p};if(route.v==="brand"&&brandTab==="sow")render();else go(brandHash(a.dataset.id,"sow"))}
   else if(act==="rgrp"){const k=a.dataset.k;if(railShut.has(k))railShut.delete(k);else railShut.add(k);ls.set("vt-railshut",JSON.stringify([...railShut]));renderRail();const n=$(`#rail [data-act=rgrp][data-k="${CSS.escape(k)}"]`);if(n)n.focus()}
+  else if(act==="bp-link"){const id=a.dataset.id;const d=S.bps[id];if(!d)return;
+    formBox("Best Practices link · "+bname(id),`<div class="f"><label for="n-bl">Paste the link to this brand's Best Practices document</label><input id="n-bl" name="link" type="url" placeholder="https://..." value="${esc(d.doc_link||"")}"></div><p class="faint" style="margin:0 0 10px;font-size:13px">Links only. Leave it empty to remove the link.</p>`,"Save link",v=>{
+      if(v.link&&!/^https?:\/\/\S+$/i.test(v.link)){toast("Paste a full link that starts with https://");return false}save("bps",id,{doc_link:v.link},"Best Practices link")})}
+  else if(act==="signout"){if(window.__signOut)window.__signOut()}
   else if(act==="skip"){const h=$("#main h1")||$("#main");h.tabIndex=-1;h.focus()}
   else if(act==="goto-item"){const{kind,id,code}=a.dataset;
     if(kind==="task"){const t=S.tasks[id];if(!t)return;brandTab="tasks";if(t.status==="Complete")kbFilter.done=true;focusItem={sel:`.kc[data-id="${CSS.escape(id)}"]`};go(campHash(t.brand,campsOf(t.brand).length?campOf(t):""))}

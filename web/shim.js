@@ -18,9 +18,7 @@
   #gate input.code{letter-spacing:.3em;font-size:22px;text-align:center}
   #gate button{font:inherit;font-weight:600;font-size:15px;min-height:44px;padding:10px 16px;border-radius:10px;border:0;background:#0A0A70;color:#fff;cursor:pointer;width:100%}
   #gate button.link{background:none;color:#0A0A70;width:auto;padding:8px 0;margin-top:8px}
-  #gate .err{color:#9F4E48;font-size:14px;margin:-6px 0 12px;min-height:1em}
-  #signout{position:fixed;left:12px;bottom:12px;z-index:50;font:600 12px system-ui,sans-serif;background:#fff;border:1px solid #DDE3E1;border-radius:8px;padding:6px 10px;min-height:32px;cursor:pointer;color:#59646A}
-  @media (max-width:900px){#signout{display:none}}`;
+  #gate .err{color:#9F4E48;font-size:14px;margin:-6px 0 12px;min-height:1em}`;
   const st = document.createElement("style"); st.textContent = css; document.head.appendChild(st);
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   function gate(html) { let g = document.getElementById("gate"); if (!g) { g = document.createElement("div"); g.id = "gate"; document.body.appendChild(g) } g.innerHTML = `<div class="box">${html}</div>`; return g }
@@ -56,8 +54,8 @@
       g.querySelector("#g-out").onclick = async () => { await sb.auth.signOut(); askEmail() }; return
     }
     member = data; hideGate();
-    const so = document.createElement("button"); so.id = "signout"; so.textContent = "Sign out"; so.title = "Signed in as " + s.user.email;
-    so.onclick = async () => { await sb.auth.signOut(); location.reload() }; document.body.appendChild(so);
+    // The app shows a Sign out button at the top right when this is set.
+    window.__signOut = async () => { await sb.auth.signOut(); location.reload() };
     markReady()
   }
   async function start() {

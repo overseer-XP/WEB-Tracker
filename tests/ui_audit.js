@@ -48,13 +48,13 @@ const measure = () => {
     if (await p.$('#whoSel')) await p.selectOption('#whoSel', 'Sairaj').catch(() => {});
     for (const [h, sub] of pages) {
       await p.evaluate(h => { location.hash = h }, h); await p.waitForTimeout(250);
-      if (sub) { await p.click('button[data-tab=tasks]').catch(() => {}); await p.waitForTimeout(150) }
+      if (sub) { await p.click('.rsub [data-tab=tasks]').catch(() => {}); await p.waitForTimeout(150) }
       if (sub === 'campaign' || sub === 'card') { await p.click('[data-act=camp][data-id=bespoke-plumpicity-launch]').catch(() => {}); await p.waitForTimeout(250) }
       if (sub === 'card') { await p.click('.kc').catch(() => {}); await p.waitForTimeout(250) }
-      if (sub === 'steps') { await p.click('[data-act=camp][data-id=""]').catch(() => {}); await p.click('button[data-tab=sow]').catch(() => {}); await p.waitForTimeout(200) }
+      if (sub === 'steps') { await p.click('[data-act=camp][data-id=""]').catch(() => {}); await p.click('.rsub [data-tab=sow]').catch(() => {}); await p.waitForTimeout(200) }
       const key = `${wl}/${theme}/${h}${sub ? '/' + sub : ''}`; all[key] = await p.evaluate(measure);
       await p.evaluate(() => { document.getElementById('modal').hidden = true }); const c = await p.$('#drawer:not([hidden]) [data-act=close]'); if (c) await c.click();
-      if (sub) { await p.click('[data-act=camp][data-id=""]').catch(() => {}); await p.click('button[data-tab=tasks]').catch(() => {}) }
+      if (sub) { await p.click('[data-act=camp][data-id=""]').catch(() => {}); await p.click('.rsub [data-tab=tasks]').catch(() => {}) }
     }
     await p.close();
   }

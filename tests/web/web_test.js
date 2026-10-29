@@ -20,7 +20,7 @@ const build = (role, out) => execFileSync('python3', ['-I', path.join(root, 'tes
   await p.fill('#g-c', '123 456'); await p.click('#gate button[type=submit]'); await p.waitForTimeout(900);
   check('The right code signs in and the tracker loads', !(await p.$('#gate')) && (await p.$eval('main', e => e.innerText)).length > 50);
   check('Lead gets Lead / admin rights', (await p.$eval('body', e => e.innerText)).includes('Lead / admin'));
-  check('Sign out button is there', !!(await p.$('#signout')));
+  check('Sign out is at the top right', !!(await p.$('.topbar [data-act=signout]')));
   // 2. Live update from someone else
   await p.evaluate(() => { location.hash = 'brand-bespoke' }); await p.waitForTimeout(400);
   await p.evaluate(() => window.__sb.rpc('doc_merge', { p_coll: 'brands', p_id: 'bespoke', p_patch: { next_step: 'Changed by someone else just now' } }));
@@ -28,6 +28,8 @@ const build = (role, out) => execFileSync('python3', ['-I', path.join(root, 'tes
   check('A change made elsewhere appears without reloading', (await p.$eval('main', e => e.innerText)).includes('Changed by someone else just now'));
   await p.evaluate(() => window.__sb.from('docs').delete().eq('coll', 'comments').eq('id', Object.keys(window.__FAKE.docs.comments || { x: 1 })[0]));
   check('No script errors while signing in and syncing', errs.length === 0, errs.join(' | '));
+  await p.click('.topbar [data-act=signout]'); await p.waitForTimeout(700);
+  check('Sign out returns to the sign-in screen', !!(await p.$('#gate #g-e')));
   await p.close();
   // 3. Signed in but not on the team list
   p = await b.newPage(); await p.goto('file://' + so + '#overview'); await p.waitForTimeout(300);
