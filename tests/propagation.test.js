@@ -242,12 +242,16 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   check('My tasks', 'Vertical filter narrows the list', (await p.$$('main .item:not(.men)')).length < n24);
   await p.selectOption('#m-vert', '');
 
-  // 25. Client view shows no internal data
+  // 25. Founder view shows no internal data
   await go('client-bespoke');
   const internal = await p.evaluate(() => Object.values(window.__SEED.tasks).filter(t => t.brand === 'bespoke').map(t => t.title).filter(Boolean));
   const ct = await mainText();
-  check('Client view', 'No task names appear on the client page', !internal.some(t => t.length > 8 && ct.includes(t)));
-  check('Client view', 'Download button is there', !!(await p.$('[data-act=client-dl]')));
+  check('Founder view', 'No task names appear on the founder page', !internal.some(t => t.length > 8 && ct.includes(t)));
+  check('Founder view', 'Download button is there', !!(await p.$('[data-act=client-dl]')));
+  const nextStep = await p.evaluate(() => (window.__SEED.brands.bespoke || {}).next_step || '');
+  const stepNames = await p.evaluate(() => Object.values(window.__SEED.steps).map(s => s.name).filter(n => n.length > 26));
+  check('Founder view', 'Shows the founder stages with one marked current', (await p.$$('.fv .fvst')).length >= 7 && (await p.$$('.fv .fvst.fvcur')).length <= 1);
+  check('Founder view', 'No internal notes or step names on the founder page', !(nextStep && ct.includes(nextStep.slice(0, 40))) && !stepNames.some(n => ct.includes(n)));
 
   // 26. Leadership is an access: only people ticked in Settings get the Leadership page
   await setMe('Noopur'); await go('overview');

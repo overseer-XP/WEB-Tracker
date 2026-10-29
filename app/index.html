@@ -615,6 +615,7 @@ button.bt:hover,.crow:hover{box-shadow:none;background:var(--panel2)}
 .vcrumb b{color:var(--ink);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.vcrumb .sep{color:var(--faint)}
 .app.railoff{grid-template-columns:0 minmax(0,1fr)}.app.railoff .rail{visibility:hidden;padding:0;border:0}
 @media (max-width:900px){.vcrumb{display:none}.topbar{flex-wrap:wrap;padding:10px 16px}.topbar .search{flex:1 1 200px;margin-left:0}.app.railoff .rail{visibility:visible}}
+.logday{font-size:13px;margin:14px 0 4px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.logday:first-child{margin-top:0}
 </style>
 
 <div class="app">
@@ -769,7 +770,7 @@ function addLog(c,id,patch,old,label){
 function parseHash(){const h=location.hash.replace(/^#/,"");
   if(h.startsWith("brand-")){const[head,cid]=h.slice(6).split("/c/");const[bid,tab]=head.split("/");route={v:"brand",id:bid,camp:cid?decodeURIComponent(cid):""};campSel={bid,id:route.camp};brandTab=route.camp?"tasks":tab==="steps"?"sow":(tab||"home")}
   else if(h.startsWith("client-"))route={v:"client",id:h.slice(7)};
-  else if(["mine","overview","access","sow","bp","settings","people"].includes(h))route={v:h,id:""};
+  else if(["mine","overview","access","sow","bp","settings","people","changes"].includes(h))route={v:h,id:""};
   else route={v:"",id:""};
   $("#rail").classList.remove("open");closeDrawer();render();$("#main").scrollTop=0}
 window.addEventListener("hashchange",()=>{parseHash();const h=$("#main h1");if(h&&!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest("#drawer,#modal"))){h.tabIndex=-1;h.focus({preventScroll:true})}});
@@ -800,7 +801,7 @@ function myItemsNow(){
 const LOGO=`<svg class="logo" viewBox="0 0 124 94.3" aria-hidden="true"><path d="M61.63,27.67l12.83,12.83h28.64c-1.12-.5-2.22-1.03-3.31-1.58-15.87-7.98-28.92-20.83-37.14-36.85-.3-.58-.59-1.17-.88-1.76l-.15-.32-.15.32c-.29.59-.58,1.18-.88,1.76-8.21,16.02-21.27,28.87-37.14,36.85-1.09.55-2.19,1.07-3.31,1.58h28.64l12.83-12.83Z"/><path d="M123.26,47.15h-41.1c-8.03,5.16-15.03,11.9-20.53,19.92-5.34-7.77-12.09-14.35-19.81-19.45-.24-.16-.48-.32-.72-.47H0l8.54,2.42c23.18,6.56,42.45,22.72,52.94,44.41l.15.32.15-.32c10.49-21.69,29.76-37.85,52.94-44.41l8.54-2.42h0Z"/></svg>`;
 const NI={mine:'<path d="M3 4h10M3 8h10M3 12h6"/>',leadership:'<path d="M2 13l3-8 3 5 3-6 3 9z"/>',overview:'<rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/>',
   people:'<circle cx="6" cy="5.5" r="2.5"/><path d="M1.5 14c.6-3 2.4-4.5 4.5-4.5S9.9 11 10.5 14M11 3.2a2.4 2.4 0 010 4.6M12.5 9.8c1.2.6 1.8 2 2 4.2"/>',sow:'<path d="M4 1.8h6l3 3V14H4zM10 1.8V5h3M6 8h5M6 10.5h5"/>',
-  access:'<rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/>',bp:'<path d="M8 1.8l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.6l-3.8 2 .7-4.3-3.1-3 4.3-.6z"/>',settings:'<circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4"/>'};
+  access:'<rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/>',bp:'<path d="M8 1.8l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.6l-3.8 2 .7-4.3-3.1-3 4.3-.6z"/>',changes:'<path d="M8 3.5V8l3 1.8"/><circle cx="8" cy="8" r="6"/>',settings:'<circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4"/>'};
 const nicon=k=>`<svg class="ni" viewBox="0 0 16 16" aria-hidden="true">${NI[k]||""}</svg>`;
 const CHEV=`<svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5L10.5 8 6 12.5"/></svg>`;
 let railOff=ls.get("vt-railoff")==="1";let railBrand=null,railSeen="";
@@ -812,7 +813,7 @@ function renderRail(){
   const across=[["overview","Overview",""],["people","People",""],["sow","SOW tracker",""],["access","Platform access",""],["bp","Best Practices",""]];
   const item=([k,l,n])=>`<a href="#${k}" class="${route.v===k?"on":""}" ${route.v===k?`aria-current="page"`:""}>${nicon(k)}<span class="nl">${esc(l)}</span><span class="n">${n}</span></a>`;
   let h=`<a class="mark" href="#overview" aria-label="VALFLO home">${LOGO}<span class="mk">VALFLO</span></a>
-   <nav class="nav" aria-label="Main"><div class="rsec">My work</div>${work.map(item).join("")}<div class="rsec">Across brands</div>${across.map(item).join("")}${canEdit?item(["settings","Settings",""]):""}</nav><div class="rbrands"><div class="rsec">Brands</div>`;
+   <nav class="nav" aria-label="Main"><div class="rsec">My work</div>${work.map(item).join("")}<div class="rsec">Across brands</div>${across.map(item).join("")}${canSeeLog()?item(["changes","Change log",""]):""}${canEdit?item(["settings","Settings",""]):""}</nav><div class="rbrands"><div class="rsec">Brands</div>`;
   const groups={};for(const b of brandList())(groups[b.stage||"Qualification"]=groups[b.stage||"Qualification"]||[]).push(b);
   for(const st of STAGE_ORDER()){if(!groups[st])continue;const cur=route.v==="brand"&&groups[st].some(b=>b.id===route.id);const open=!railShut.has(st);
     h+=`<h3 class="rgh"><button data-act="rgrp" data-k="${esc(st)}" aria-expanded="${open}"><span class="rgl">${esc(st)}</span><span class="n">${groups[st].length}</span>${CHEV}</button></h3>`;
@@ -829,14 +830,14 @@ function renderRail(){
 }
 // Leadership view is a role: leads tick Leadership for a person in Settings > People.
 const isLeader=name=>!!name&&people().some(p=>p.name===name&&p.leadership);
-const TOPNAME={mine:"My tasks",leadership:"Leadership",overview:"Overview",people:"People",sow:"SOW tracker",access:"Platform access",bp:"Best Practices",settings:"Settings"};
+const TOPNAME={changes:"Change log",mine:"My tasks",leadership:"Leadership",overview:"Overview",people:"People",sow:"SOW tracker",access:"Platform access",bp:"Best Practices",settings:"Settings"};
 function crumbsOf(){
   if(route.v==="brand"&&S.brands[route.id]){const b=S.brands[route.id];const id=route.id;const out=[{l:b.name,href:"#"+brandHash(id,"home")}];
     if(brandTab!=="home"){const cid=campSel.bid===id?campSel.id:"";const deep=brandTab==="tasks"&&cid&&(cid===NOCAMP||S.camps[cid]);
       const sec=brandTab==="tasks"&&!campsOf(id).length?"Tasks":brandTab==="sow"&&isInternal(b)?"Onboarding":SECT[brandTab]||"";
       out.push(deep?{l:sec,act:`data-act="camp" data-id=""`}:{l:sec,href:"#"+brandHash(id,brandTab)});if(deep)out.push({l:campName(cid)})}
     return out}
-  if(route.v==="client"&&S.brands[route.id])return[{l:S.brands[route.id].name,href:"#brand-"+route.id},{l:"Client view"}];
+  if(route.v==="client"&&S.brands[route.id])return[{l:S.brands[route.id].name,href:"#brand-"+route.id},{l:"Founder view"}];
   return[{l:TOPNAME[route.v]||"Overview",href:"#"+(route.v||"overview")}]}
 function renderTop(){
   if(document.activeElement&&document.activeElement.id==="q")return; // keep the search box while someone types
@@ -862,7 +863,7 @@ function renderMain(){
   if(v==="settings"&&!canEdit)v="overview";
   const ro=canWrite?"":`<div class="notice info">You can view this tracker but not change it. Ask a lead for edit access.</div>`;
   if(focusItem&&v==="brand")setTimeout(()=>{const f=focusItem;focusItem=null;let el=document.querySelector("#main "+f.sel);if(!el)return;if(f.up)el=el.closest(f.up)||el;const mm=$("#main"),r=el.getBoundingClientRect(),mr=mm.getBoundingClientRect();mm.scrollTop+=r.top-mr.top-mm.clientHeight/2+r.height/2;el.classList.add("flash");setTimeout(()=>el.classList.remove("flash"),2600)},40);
-  m.innerHTML=ro+(v==="leadership"?vLeadership():v==="brand"?vBrand(route.id):v==="mine"?vMine():v==="sow"?vSow():v==="access"?vAccess():v==="bp"?vBp():v==="settings"?vSettings():v==="people"?vPeople():v==="client"?(canEdit?vClient(route.id):vOverview()):vOverview());
+  m.innerHTML=ro+(v==="leadership"?vLeadership():v==="brand"?vBrand(route.id):v==="mine"?vMine():v==="sow"?vSow():v==="access"?vAccess():v==="bp"?vBp():v==="settings"?vSettings():v==="changes"?vChanges():v==="people"?vPeople():v==="client"?(canEdit?vClient(route.id):vOverview()):vOverview());
 }
 function canChangeTask(t){if(!canWrite)return false;if(canEdit)return true;return isPerson(t.owner,me)||(t.support||[]).some(x=>isPerson(x,me))}
 function statusSel(kind,id,val,list,enabled,extra){return`<select class="ps ${cls(val)}" data-act="status" data-kind="${kind}" data-id="${esc(id)}" ${extra||""} ${enabled?"":"disabled"} aria-label="Status">${opts(list,val,false)}</select>`}
@@ -1046,7 +1047,7 @@ function brandHome(id,r){
    <h1 class="bh1">${esc(b.name)}</h1>
    <p class="intro">${b.intro?esc(b.intro):ed?`<button class="missing" data-act="open" data-kind="brand" data-id="${esc(id)}">Add a one-line intro: what the brand sells, and to whom</button>`:`<span class="faint">No intro yet.</span>`}</p>
    <div class="people">${person("Founder",b.founder)}${person("Brand lead",b.lead)}</div>
-   <div class="row hact">${b.website?`<a class="btn sm" href="${esc(b.website)}" target="_blank" rel="noopener">Website</a>`:""}${canEdit?`<a class="btn sm" href="#client-${esc(id)}">Client view</a>`:""}${ed?`<button class="btn sm" data-act="open" data-kind="brand" data-id="${esc(id)}">Edit details</button>`:""}</div></section>
+   <div class="row hact">${b.website?`<a class="btn sm" href="${esc(b.website)}" target="_blank" rel="noopener">Website</a>`:""}${canEdit?`<a class="btn sm" href="#client-${esc(id)}">Founder view</a>`:""}${ed?`<button class="btn sm" data-act="open" data-kind="brand" data-id="${esc(id)}">Edit details</button>`:""}</div></section>
   <section class="bt health" aria-label="Health"><span class="btl">Health</span>${sig(hk,hl,true)}
    ${reasons.length?`<ul class="why">${reasons.slice(0,4).map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:`<p class="faint" style="margin:6px 0 0">Nothing blocked or late.</p>`}
    ${b.next_step?`<p class="nxt"><span class="btl">Next step</span><span class="clamp3" title="${esc(b.next_step)}">${esc(b.next_step)}</span></p>`:""}</section>
@@ -1305,27 +1306,52 @@ const TEMPLATES=()=>((S.config.templates&&S.config.templates.list)||[]);
 function parseTemplateLines(text){return text.split("\n").map(l=>l.trim()).filter(Boolean).map(l=>{const[title,dep,days]=l.split("|").map(x=>(x||"").trim());return{title,department:DEPTS().includes(dep)?dep:"",days:+days||0}}).filter(x=>x.title)}
 
 /* ---------- client status page: one brand, no internal notes ---------- */
-function clientModel(bid){const b=S.brands[bid]||{};const s=S.sow[bid]||{};const groups=boardCols();
-  const g=groups.map(gr=>{const vals=gr.cols.map(c=>boardCell(bid,c)).filter(v=>v&&v!=="N/A");const done=vals.filter(v=>v==="Done").length;
-    return{name:gr.name,state:!vals.length?"Not started":done===vals.length?"Done":vals.some(v=>v!=="Not done")?"In progress":"Not started",done,total:vals.length}});
-  const need=withId(S.access).filter(a=>a.brand===bid&&accOpen(a)).map(a=>a.platform);
-  return{name:b.name,stage:onHold(b)?"On hold":b.stage,pct:Math.round(onboarding(bid)*100),groups:g,target:s.target_sign||"",signed:s.stage==="Signed",need,date:isoToday()}}
-function clientHtml(m,standalone){
-  const rows=m.groups.map(g=>`<div class="cg"><span class="cdot c-${key(g.state)}" aria-hidden="true"></span><span class="cn">${esc(g.name)}</span><span class="cs">${esc(g.state)}${g.total?` · ${g.done} of ${g.total}`:""}</span></div>`).join("");
-  return`<div class="client"><p class="ceyebrow">Onboarding status · ${esc(fmtD(m.date,true))}</p><h1>${esc(m.name)}</h1>
-   <div class="cstats"><div><b>${m.pct}%</b><span>of the way to a signed SOW</span></div><div><b>${esc(m.stage||"")}</b><span>current stage</span></div><div><b>${m.signed?"Signed":m.target?esc(fmtD(m.target,true)):"To be agreed"}</b><span>${m.signed?"scope of work":"target SOW signing"}</span></div></div>
-   <h2>Progress by stage</h2><div class="cgroups">${rows}</div>
-   ${m.need.length?`<h2>What we still need from you</h2><ul class="cneed">${m.need.map(p=>`<li>Access to ${esc(p)}</li>`).join("")}</ul>`:`<h2>What we still need from you</h2><p>Nothing right now. Thank you.</p>`}</div>`}
-function clientDoc(m){return`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(m.name)} onboarding status</title><style>
-body{margin:0;background:#F3F6F5;color:#2A3337;font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}.client{max-width:720px;margin:0 auto;padding:40px 20px}
-.ceyebrow{color:#66747A;font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin:0}h1{font-size:30px;margin:4px 0 20px}h2{font-size:17px;margin:28px 0 10px}
-.cstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}.cstats div{background:#fff;border:1px solid #E1E8E5;border-radius:10px;padding:14px}.cstats b{display:block;font-size:22px}.cstats span{color:#66747A;font-size:13px}
-.cgroups{background:#fff;border:1px solid #E1E8E5;border-radius:10px}.cg{display:flex;gap:10px;align-items:center;padding:11px 14px;border-bottom:1px solid #E1E8E5}.cg:last-child{border-bottom:0}.cn{flex:1;font-weight:600}.cs{color:#66747A;font-size:13.5px}
-.cdot{width:12px;height:12px;border-radius:50%;background:#E7ECEA}.c-Done{background:#6EAD86}.c-Inprogress{background:#B5A4D5}.cneed{padding-left:20px}
-</style></head><body>${clientHtml(m,true)}<p style="text-align:center;color:#94A0A5;font-size:12px;padding-bottom:30px">Prepared by Valerie on ${esc(fmtD(m.date,true))}</p></body></html>`}
-function vClient(bid){const b=S.brands[bid];if(!b)return`<h1>Brand not found</h1>`;
-  return`<div class="row" style="margin-bottom:14px"><a class="btn" href="#brand-${esc(bid)}">‹ Back to ${esc(b.name)}</a><span class="grow"></span><button class="btn pri" data-act="client-dl" data-id="${esc(bid)}">Download for the client</button></div>
-   <div class="notice info">This is what the client sees: stage, progress by stage, the SOW date and the access we still need. No tasks, notes, people or other brands. Download it and send the file; never send the tracker link, which shows every brand.</div>`+clientHtml(clientModel(bid))}
+/* ---------- Founder view: the founder's journey in the founder-facing stages (config/founder_view), nothing internal ---------- */
+function founderStages(){const c=S.config.founder_view;if(c&&Array.isArray(c.stages)&&c.stages.length)return c.stages;
+  return phases().map(p=>({name:p.name,desc:"",steps:p.steps.map(x=>x.code)}))}
+function founderModel(bid){const b=S.brands[bid]||{};const s=S.sow[bid]||{};
+  const st=founderStages().map(g=>{const codes=(g.steps||[]).filter(c=>S.steps[c]&&!S.steps[c].is_optional);const v=codes.map(c=>stepState(bid,c).status||"Not Started");const live=v.filter(x=>x!=="N/A");
+    const done=live.filter(x=>x==="Done").length;const state=!live.length?(codes.length?"Done":"Not started"):done===live.length?"Done":live.some(x=>x==="Done"||x==="In Progress")?"In progress":"Not started";
+    return{name:g.name,desc:g.desc||"",state,done,total:live.length}});
+  let cur=st.findIndex(x=>x.state!=="Done");if(cur<0)cur=st.length-1;
+  const need=withId(S.access).filter(a=>a.brand===bid&&ACC_FOUNDER.includes(a.status)).map(a=>a.platform).filter(Boolean);
+  return{name:b.name,hold:onHold(b),stages:st,cur,doneCount:st.filter(x=>x.state==="Done").length,target:s.target_sign||"",signed:s.stage==="Signed",need:[...new Set(need)],date:isoToday()}}
+const fvLogo=()=>LOGO.replace('class="logo"','class="fvlogo"');
+const FV_CSS=`.fv{--fvink:#141414;--fvmuted:#5B5B5B;--fvtan:#DCC28F;--fvtan2:#F1E5C9;--fvcream:#FAF8F4;--fvnavy:#0A0A70;background:var(--fvcream);color:var(--fvink);border-radius:20px;padding:32px 32px 28px;max-width:1120px;font-family:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+.fv .fvtop{display:flex;align-items:center;gap:14px;margin-bottom:6px}.fv .fvlogo{width:30px;height:auto;fill:#EA9F44}.fv .fvey{font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--fvmuted)}
+.fv h1{font-size:34px;line-height:1.1;margin:6px 0 4px;font-weight:700;letter-spacing:-.01em;color:var(--fvink)}.fv .fvdate{color:var(--fvmuted);font-size:14px;margin:0 0 22px}
+.fv .fvnow{background:#fff;border-radius:16px;padding:20px 22px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:18px;align-items:center;margin-bottom:22px}
+.fv .fvnum{width:64px;height:64px;border-radius:50%;background:var(--fvnavy);color:#fff;display:grid;place-items:center;font-size:26px;font-weight:700}
+.fv .fvnow b{display:block;font-size:20px}.fv .fvnow div>span{color:var(--fvmuted)}.fv .fvpct{text-align:right}.fv .fvpct b{font-size:26px}
+.fv .fvbar{height:8px;border-radius:4px;background:var(--fvtan2);margin-top:8px;overflow:hidden}.fv .fvbar i{display:block;height:100%;background:var(--fvnavy)}
+.fv .fvtrack{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:10px;list-style:none;margin:0 0 22px;padding:0}
+.fv .fvst{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
+.fv .fvst .fvtag{font-size:12px;font-weight:700;padding:4px 10px;border-radius:7px;background:var(--fvtan);border:1px solid #B89A5E;color:var(--fvink)}
+.fv .fvst .circ{width:100%;aspect-ratio:1;max-width:150px;border-radius:50%;border:1.5px solid var(--fvink);display:grid;place-items:center;padding:12px;font-size:13.5px;font-weight:500;line-height:1.25;background:#fff;overflow-wrap:anywhere}
+.fv .fvst .fvcard{width:100%;min-height:118px;border-radius:14px;background:var(--fvtan2);border:1px solid #CDB27A;padding:12px 10px;font-size:13px;line-height:1.4;display:flex;flex-direction:column;justify-content:center;gap:8px}
+.fv .fvnm{display:none}.fv .fvst .state{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.fv .fvst.fvdone .circ{background:var(--fvtan);border-color:#9C7F45}.fv .fvst.fvdone .state{color:#2F6B43}
+.fv .fvst.fvcur .circ{background:var(--fvnavy);color:#fff;border-color:var(--fvnavy);box-shadow:0 0 0 5px rgb(10 10 112/.15)}.fv .fvst.fvcur .fvcard{background:#fff;border-color:var(--fvnavy)}.fv .fvst.fvcur .state{color:var(--fvnavy)}
+.fv .fvst.fvnext .state{color:var(--fvmuted)}
+.fv .fvgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}.fv .fvbox{background:#fff;border-radius:16px;padding:18px 20px}.fv .fvbox h2{font-size:15px;margin:0 0 8px;letter-spacing:.02em}
+.fv .fvbox ul{margin:0;padding-left:18px}.fv .fvbox p{margin:0;color:var(--fvmuted)}.fv .fvbig{font-size:22px;font-weight:700;color:var(--fvink)!important}
+@media (max-width:900px){.fv{padding:22px 16px}.fv .fvtrack{grid-template-columns:1fr}.fv .fvst{display:grid;grid-template-columns:76px minmax(0,1fr);text-align:left;align-items:center;column-gap:12px;row-gap:6px}
+ .fv .fvst .fvtag{grid-column:1;justify-self:start}.fv .fvst .circ{grid-column:1;grid-row:2;width:72px;font-size:0;padding:0}.fv .fvst .circ::after{content:attr(data-n);font-size:20px;font-weight:700}
+ .fv .fvst .fvcard{grid-column:2;grid-row:1/3;min-height:0}.fv .fvst .fvnm{display:block;font-size:14.5px}.fv .fvnow{grid-template-columns:auto 1fr}.fv .fvpct{grid-column:1/-1;text-align:left}}`;
+function founderHtml(m){const n=m.stages.length;const cur=m.stages[m.cur]||{};const pct=n?Math.round(m.doneCount/n*100):0;
+  return`<div class="fv"><div class="fvtop">${fvLogo()}<span class="fvey">Valerie onboarding process</span></div><h1>${esc(m.name)}</h1><p class="fvdate">Updated ${esc(fmtD(m.date,true))}</p>
+   <div class="fvnow"><span class="fvnum">${m.cur+1}</span><div><b>${m.hold?"Paused for now":esc(cur.name||"")}</b><span>${m.hold?"Your onboarding is paused. We will be in touch about next steps.":esc(cur.desc||"")}</span></div>
+    <div class="fvpct"><b>${m.doneCount} of ${n}</b><span> stages complete</span><div class="fvbar" aria-hidden="true"><i style="width:${pct}%"></i></div></div></div>
+   <ol class="fvtrack" style="--n:${n}" aria-label="Onboarding stages">${m.stages.map((x,i)=>{const cl=x.state==="Done"?"fvdone":i===m.cur?"fvcur":"fvnext";const word=x.state==="Done"?"Complete":i===m.cur?"In progress":"Up next";
+     return`<li class="fvst ${cl}" aria-current="${i===m.cur?"step":"false"}"><span class="fvtag">Stage ${i+1}</span><span class="circ" data-n="${i+1}">${esc(x.name)}</span><span class="fvcard"><b class="fvnm">${esc(x.name)}</b><span>${esc(x.desc)}</span><span class="state">${word}</span></span></li>`}).join("")}</ol>
+   <div class="fvgrid"><div class="fvbox"><h2>What we need from you</h2>${m.need.length?`<ul>${m.need.map(p=>`<li>Access to ${esc(p)}</li>`).join("")}</ul>`:`<p>Nothing right now. Thank you.</p>`}</div>
+    <div class="fvbox"><h2>${m.signed?"Scope of work":"Target SOW signing"}</h2><p class="fvbig">${m.signed?"Signed":m.target?esc(fmtD(m.target,true)):"To be agreed"}</p></div>
+    <div class="fvbox"><h2>Coming up next</h2><p>${m.cur+1<n?esc(m.stages[m.cur+1].name):"Growth delivery with your pod"}</p></div></div></div>`}
+function founderDoc(m){return`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(m.name)} · Valerie onboarding</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap"><style>body{margin:0;background:#FAF8F4;padding:24px}${FV_CSS}.fv{margin:0 auto}</style></head><body>${founderHtml(m)}<p style="text-align:center;color:#8A8A8A;font:12px system-ui,sans-serif;padding:16px 0 24px">Prepared by Valerie on ${esc(fmtD(m.date,true))}</p></body></html>`}
+function vClient(bid){const b=S.brands[bid];if(!b)return`<h1 class="sr">Founder view</h1><p>Brand not found</p>`;
+  return`<h1 class="sr">Founder view: ${esc(b.name)}</h1><div class="row" style="margin-bottom:14px"><a class="btn" href="#brand-${esc(bid)}">‹ Back to ${esc(b.name)}</a><span class="grow"></span><button class="btn pri" data-act="client-dl" data-id="${esc(bid)}">Download for the founder</button></div>
+   <div class="notice info">This is what the founder sees: their stage in Valerie's 8-stage onboarding, what we need from them and the SOW date. No tasks, notes, people or other brands. Download it and send the file; never send the tracker link, which shows every brand.</div><style>${FV_CSS}</style>`+founderHtml(founderModel(bid))}
 
 /* ---------- first-visit guides ---------- */
 const GUIDES={
@@ -1683,8 +1709,23 @@ const BPMARK={"Not Started":"","Foundations":"F","Tactics In":"T","In QA":"Q","C
 
 /* ---------- Settings ---------- */
 let setTab="people";
+/* change log: who changed what. Only brand leads, operations and leadership (screen rule; the website build enforces roles in the database) */
+const canSeeLog=()=>canEdit||isLeader(me);
+let logQ="";
+function vChanges(){
+  if(!canSeeLog())return`<h1>Change log</h1><div class="tw"><div class="empty">Only brand leads, operations and leadership can see the change log.</div></div>`;
+  const all=[];for(const d of Object.values(S.log))for(const e of d.entries||[])all.push(Object.assign({person:d.person},e));all.sort((a,b)=>b.at-a.at);
+  const q=logQ.trim().toLowerCase();const rows=q?all.filter(e=>[e.person,e.label,e.what,e.field,e.old,e.new].join(" ").toLowerCase().includes(q)):all;
+  const day=t=>new Date(t).toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"});
+  let h=`<h1>Change log</h1><p class="sub">Every change made in the tracker over the last 30 days: who, what, the old value and the new one.</p>
+   <div class="toolbar"><label class="tl" for="log-q">Find</label><input id="log-q" type="search" data-act="log-q" placeholder="Brand, person, field or value" value="${esc(logQ)}" style="max-width:340px"><span class="muted">${rows.length} change${rows.length===1?"":"s"}</span></div>`;
+  if(!rows.length)return h+`<div class="tw"><div class="empty">${all.length?"No changes match.":"No changes yet. Every edit made in the tracker is listed here."}</div></div>`;
+  let last="";h+=`<div class="card">`;
+  for(const e of rows.slice(0,400)){const d=day(e.at);if(d!==last){h+=`<h3 class="logday">${esc(d)}</h3>`;last=d}
+    h+=`<div class="logrow"><span class="faint">${esc(new Date(e.at).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}))}</span><span>${esc(e.person||"Someone")}</span><span>${esc(e.label||e.what)}: <b>${esc(e.field)}</b> ${esc(e.old)} → ${esc(e.new)}</span></div>`}
+  return h+`</div>`}
 function vSettings(){
-  const tabs=[["people","People"],["lists","Lists"],["steps","Step list"],["templates","Task templates"],["access","Access setup"],["nobrand","Needs a brand"],["log","Change log"],["export","Export and backup"]];
+  const tabs=[["people","People"],["lists","Lists"],["steps","Step list"],["templates","Task templates"],["access","Access setup"],["nobrand","Needs a brand"],["export","Export and backup"]];
   let h=`<h1>Settings</h1><p class="sub">For leads and admins. Changes here apply to everyone.</p><div class="tabs">${tabs.map(([k,l])=>`<button class="${setTab===k?"on":""}" data-act="settab" data-tab="${k}">${esc(l)}</button>`).join("")}</div>`;
   if(setTab==="people"){const ps=people();
     h+=`<div class="row" style="margin-bottom:10px"><button class="btn pri" data-act="add-person">Add person</button><span class="muted">Unconfirmed names came from the Excel. Mark each as team, external or group. Aliases let one person match other spellings.</span></div>
@@ -1707,8 +1748,6 @@ function vSettings(){
     h+=`<p class="muted">A template is a set of tasks you add to a brand in one go, for example a UGC kickoff. One task per line: name | team | days from today until due. Team and days are optional.</p>`;
     h+=ts.length?`<div class="tw"><table><thead><tr><th>Template</th><th>Vertical</th><th>Tasks</th><th></th></tr></thead><tbody>${ts.map((t,i)=>`<tr><td><b>${esc(t.name)}</b></td><td>${esc(t.vertical||"")}</td><td class="muted">${t.tasks.map(x=>esc(x.title)).join(", ")}</td><td><button class="btn sm danger" data-act="tpl-del" data-i="${i}">Delete</button></td></tr>`).join("")}</tbody></table></div>`:`<div class="tw"><div class="empty">No templates yet. Add the first one below.</div></div>`;
     h+=`<form id="tform" class="card" style="margin-top:14px;max-width:640px"><h3 style="margin-top:0">New template</h3><div class="f"><label for="t-name">Name</label><input id="t-name" name="name" required placeholder="UGC kickoff"></div><div class="f"><label for="t-vert">Vertical</label><select id="t-vert" name="vertical">${opts(VERTS(),"")}</select></div><div class="f"><label for="t-lines">Tasks</label><textarea id="t-lines" name="lines" rows="6" required placeholder="Shortlist creators | Creator Partnerships | 5&#10;Send brief to creators | Creator Partnerships | 7"></textarea></div><button class="btn pri" type="submit">Save template</button></form>`}
-  else if(setTab==="log"){const all=[];for(const d of Object.values(S.log))for(const e of d.entries||[])all.push(Object.assign({person:d.person},e));all.sort((a,b)=>b.at-a.at);
-    h+=all.length?`<div class="card">${all.slice(0,300).map(e=>`<div class="logrow"><span class="faint">${esc(new Date(e.at).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}))}</span><span>${esc(e.person||"Someone")}</span><span>${esc(e.label||e.what)}: <b>${esc(e.field)}</b> ${esc(e.old)} → ${esc(e.new)}</span></div>`).join("")}</div>`:`<div class="tw"><div class="empty">No changes yet. Every edit made in the tracker is listed here.</div></div>`}
   else{h+=`<div class="cols2"><div class="card"><h3 style="margin-top:0">Excel export</h3><p class="muted">Same sheets as the COE tracker: Brand Tracker, one tab per brand, Platform Access, SOW Tracker, BP Tracker, Onboarding Steps, Completed Archive and Lists.</p><button class="btn pri" data-act="export-xlsx">Download Excel</button></div>
     <div class="card"><h3 style="margin-top:0">Full backup</h3><p class="muted">Every record as one JSON file. Keep it with the weekly export. Restore from backup comes in a later stage.</p><button class="btn" data-act="export-json">Download backup</button></div></div>`}
   return h}
@@ -1874,7 +1913,7 @@ document.addEventListener("click",e=>{
   else if(act==="men-go"&&a.dataset.acc){accBrand=(S.access[a.dataset.acc]||{}).brand||accBrand;go("access");setTimeout(()=>openDrawer("access",a.dataset.acc),60)}
   else if(act==="men-go"){go(brandHash(a.dataset.id,"updates"))}
   else if(act==="guide-off"){ls.set("vt-guide-"+a.dataset.k,"1");render()}
-  else if(act==="client-dl"){const m=clientModel(a.dataset.id);offer((m.name||"brand").replace(/[^A-Za-z0-9]+/g,"_")+"_onboarding_status_"+isoToday()+".html",clientDoc(m))}
+  else if(act==="client-dl"){const m=founderModel(a.dataset.id);offer((m.name||"brand").replace(/[^A-Za-z0-9]+/g,"_")+"_founder_view_"+isoToday()+".html",founderDoc(m))}
   else if(act==="del-comment"){const id=a.dataset.id;confirmBox("Delete this comment?","Delete",()=>remove("comments",id,"Comment"))}
   else if(act==="tpl-del"){const i=+a.dataset.i;confirmBox("Delete this template?","Delete",()=>{const list=TEMPLATES().filter((_,j)=>j!==i);saveTemplates(list)})}
   else if(act==="search-go"){const r=searchResults(searchQ)[+a.dataset.i];searchQ="";$("#q").value="";renderSearch();if(!r)return;
@@ -2023,7 +2062,9 @@ document.addEventListener("submit",e=>{const f=e.target;
     const body={teams,bp_map,help,chase_days:Math.max(1,+el.chase_days.value||2)};if(S.config.access_setup)save("config","access_setup",body,"Access setup");else create("config","access_setup",body,"Access setup")}
   if(f.id==="tform"){e.preventDefault();const name=f.elements.name.value.trim(),tasks=parseTemplateLines(f.elements.lines.value);
     if(!name||!tasks.length){toast("Give the template a name and at least one task.");return}saveTemplates(TEMPLATES().concat([{name,vertical:f.elements.vertical.value,tasks}]))}});
-document.addEventListener("input",e=>{if(e.target.form&&e.target.form.id==="dform"&&e.target.name)drawerDirty[e.target.name]=e.target.value;if(e.target.id==="q"){searchQ=e.target.value;renderSearch()}if(e.target.id==="acc-find"){const q=e.target.value.trim().toLowerCase();document.querySelectorAll(".accb").forEach(b=>b.hidden=!!q&&!b.dataset.n.includes(q))}});
+let logT=0;
+document.addEventListener("input",e=>{if(e.target.id==="log-q"){logQ=e.target.value;clearTimeout(logT);logT=setTimeout(()=>{const m=$("#main");if(route.v!=="changes"||!m)return;m.innerHTML=vChanges();const n=$("#log-q");if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length)}},200);return}
+if(e.target.form&&e.target.form.id==="dform"&&e.target.name)drawerDirty[e.target.name]=e.target.value;if(e.target.id==="q"){searchQ=e.target.value;renderSearch()}if(e.target.id==="acc-find"){const q=e.target.value.trim().toLowerCase();document.querySelectorAll(".accb").forEach(b=>b.hidden=!!q&&!b.dataset.n.includes(q))}});
 document.addEventListener("focusout",e=>{if(e.target.id==="q")setTimeout(()=>{if(!$(".search")||!$(".search").contains(document.activeElement)){const b=$("#sres");if(b)b.hidden=true;renderTop()}},150)});
 document.addEventListener("keydown",e=>{if(e.key==="/"&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||"")){const q=$("#q");if(q){e.preventDefault();q.focus()}}
   if(e.target.id==="q"&&e.key==="Enter"){const first=$("#sres .sr-row");if(first)first.click()}
@@ -2070,7 +2111,7 @@ parseHash();
     if(k==="config"&&!me&&U){U.me().then(v=>{if(!me&&v&&v.name){const first=v.name.split(" ")[0].toLowerCase();const hit=activePeople().find(p=>p.toLowerCase()===first);if(hit){me=hit;render()}}}).catch(()=>{})}
     scheduleRender()},err=>{if(err&&err.code!=="revoked")toast("Live updates paused. Reload the page.")});
   for(const[k,c]of Object.entries(COLL))sub(k,c);
-  db.collection("log").orderBy("date","desc").limit(30).onSnapshot(snap=>{const o={};snap.docs.forEach(d=>{if(d.exists)o[d.id]=d.data()});S.log=o;if(route.v==="settings")render()},()=>{});
+  db.collection("log").orderBy("date","desc").limit(30).onSnapshot(snap=>{const o={};snap.docs.forEach(d=>{if(d.exists)o[d.id]=d.data()});S.log=o;if(route.v==="changes")render()},()=>{});
 })();
 })();
 </script>

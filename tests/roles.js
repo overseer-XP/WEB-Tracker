@@ -14,10 +14,11 @@ const res = []; const check = (who, what, ok, d = '') => res.push([ok ? 'OK  ' :
   let p = await open(process.argv[2], 'mine');
   check('Member', 'Starts on My tasks', await p.evaluate(() => location.hash) === '#mine' || (await p.$eval('main h1', e => e.innerText)) === 'My tasks');
   check('Member', 'No Settings in the menu', !(await p.$('.nav a[href="#settings"]')));
+  check('Member', 'No Change log in the menu, and the page refuses', !(await p.$('.nav a[href="#changes"]')) && await (async () => { await go(p, 'changes'); return (await p.$eval('main', e => e.innerText)).includes('Only brand leads') })());
   await go(p, 'settings'); check('Member', 'Settings link opens the Overview instead', (await p.$eval('main h1', e => e.innerText)) === 'Overview');
   await go(p, 'brand-bespoke');
-  check('Member', 'No Client view or Edit details button', !(await p.$('a[href="#client-bespoke"]')) && !(await p.$('.hero [data-kind=brand]')));
-  await go(p, 'client-bespoke'); check('Member', 'Client page link is not available', !(await p.$('.client')));
+  check('Member', 'No Founder view or Edit details button', !(await p.$('a[href="#client-bespoke"]')) && !(await p.$('.hero [data-kind=brand]')));
+  await go(p, 'client-bespoke'); check('Member', 'Founder view is not available', !(await p.$('.fv')));
   await go(p, 'brand-bespoke'); await p.click('.rsub [data-tab=tasks]'); await p.waitForTimeout(200);
   await p.selectOption('#whoSel', 'Cat'); await p.waitForTimeout(200);
   const own = await p.$$eval('main .kc', cs => { const c = cs.find(x => x.querySelector('.av[title="Cat (owner)"]')); return c ? c.getAttribute('draggable') : null });
