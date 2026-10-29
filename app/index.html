@@ -550,11 +550,10 @@ button.bt{cursor:pointer;transition:box-shadow .15s,border-color .15s}button.bt:
 .rmb i{display:block;height:100%;background:var(--c)}
 .rmb-good{--c:var(--ok)}.rmb-warn{--c:var(--warn)}.rmb-bad{--c:var(--bad)}.rmb-off{--c:var(--off)}
 .rmb.open{border-top-right-radius:0;border-bottom-right-radius:0;box-shadow:inset 1.5px 0 0 var(--c),inset 0 1.5px 0 var(--c),inset 0 -1.5px 0 var(--c);-webkit-mask-image:linear-gradient(90deg,#000 80%,transparent);mask-image:linear-gradient(90deg,#000 80%,transparent)}
-.rmd{position:absolute;top:-1px;width:3px;height:24px;margin-left:-1.5px;border-radius:2px;background:var(--ink);opacity:.55}.rmd.bad{background:var(--bad);opacity:1;width:4px}
 .rmeta{display:flex;flex-direction:column;gap:1px;font-size:12px;min-width:0}.rmeta .sig{font-size:13px}
 .rmkey{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted);margin:8px 6px 0}.rmkey i{display:inline-block;vertical-align:middle;margin-right:5px}
 .rmkey .k1{width:22px;height:10px;border-radius:5px;background:color-mix(in srgb,var(--info) 26%,var(--panel));box-shadow:inset 0 0 0 1.5px var(--info)}.rmkey .k2{width:22px;height:10px;border-radius:5px;background:var(--info)}
-.rmkey .k3{width:3px;height:12px;background:var(--ink);opacity:.55}.rmkey .k4{width:4px;height:12px;background:var(--bad)}.rmkey .k5{width:2px;height:12px;background:var(--ink)}
+.rmkey .k5{width:2px;height:12px;background:var(--ink)}
 /* road to SOW */
 .road{display:grid;grid-template-columns:auto minmax(0,1fr);gap:28px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px 24px;margin-bottom:8px;box-shadow:var(--shadow)}
 .rdl{display:flex;flex-direction:column}.rdm{display:flex;flex-direction:column;gap:14px}
@@ -616,6 +615,11 @@ button.bt:hover,.crow:hover{box-shadow:none;background:var(--panel2)}
 .app.railoff{grid-template-columns:0 minmax(0,1fr)}.app.railoff .rail{visibility:hidden;padding:0;border:0}
 @media (max-width:900px){.vcrumb{display:none}.topbar{flex-wrap:wrap;padding:10px 16px}.topbar .search{flex:1 1 200px;margin-left:0}.app.railoff .rail{visibility:visible}}
 .logday{font-size:13px;margin:14px 0 4px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.logday:first-child{margin-top:0}
+.tlbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 10px}
+.gteam2{background:var(--panel2)}.gteam2 .gl b{display:flex;align-items:center;gap:6px}.gteam2 .chev{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.8;transition:transform .15s}.gteam2[aria-expanded=true] .chev{transform:rotate(90deg)}
+.gteam2 .lt{color:var(--warn)}.gteam2 .bk{color:var(--bad)}
+.gsum{position:absolute;top:50%;height:16px;margin-top:-8px;border-radius:8px;overflow:hidden;--c:var(--info);background:color-mix(in srgb,var(--c) 26%,var(--panel));box-shadow:inset 0 0 0 1.5px var(--c)}.gsum i{display:block;height:100%;background:var(--c)}.gsum.rmb-good{--c:var(--ok)}.gsum.rmb-warn{--c:var(--warn)}.gsum.rmb-bad{--c:var(--bad)}
+.gsub .gl{padding-left:30px}
 </style>
 
 <div class="app">
@@ -1014,10 +1018,10 @@ const brandHash=(bid,tab)=>"brand-"+bid+(tab&&tab!=="home"?"/"+tab:"");
 function campState(c,r){const late=c.end&&parseD(c.end)<today()&&c.status!=="Done";if(r.blocked)return["bad",r.blocked+" blocked"];if(r.late||late)return["warn",late?"Past its end date":r.late+" late"];
   if(c.status==="Done"||(r.ts.length&&!r.op.length))return["good","Done"];if(!r.ts.length)return["off","No tasks yet"];return["info","On track"]}
 const ring=(p,size)=>{const s=size||40,rr=s/2-4,c=2*Math.PI*rr;return`<svg class="pring" width="${s}" height="${s}" viewBox="0 0 ${s} ${s}" aria-hidden="true"><circle cx="${s/2}" cy="${s/2}" r="${rr}" class="rb"/><circle cx="${s/2}" cy="${s/2}" r="${rr}" class="rf" stroke-dasharray="${(c*p).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 ${s/2} ${s/2})"/></svg>`};
-/* campaigns on a shared calendar: one row each with its dates, how much is done, task due dates and how it is going */
+/* campaigns on a shared calendar: the base timeline only, one row each with its dates, how much is done and how it is going */
 function campRoadmap(bid,big){const cs=campsOf(bid);if(!cs.length)return"";const t0=+today();
-  const rows=cs.map(c=>{const r=campRoll(bid,c._id);return{c,r,st:campState(c,r),s:parseD(c.start),e:parseD(c.end),dues:r.op.map(t=>({d:parseD(t.deadline),t})).filter(x=>x.d)}});
-  const ds=rows.flatMap(x=>[x.s,x.e].concat(x.dues.map(d=>d.d))).filter(Boolean).map(Number);
+  const rows=cs.map(c=>{const r=campRoll(bid,c._id);return{c,r,st:campState(c,r),s:parseD(c.start),e:parseD(c.end)}});
+  const ds=rows.flatMap(x=>[x.s,x.e]).filter(Boolean).map(Number);
   let lo=Math.min(...ds,t0),hi=Math.max(...ds,t0+21*DAY);lo-=4*DAY;hi+=7*DAY;
   const pos=d=>Math.max(0,Math.min(100,(d-lo)/(hi-lo)*100));const day=d=>new Date(d).toLocaleDateString("en-GB",{day:"numeric",month:"short"});
   const months=[],weeks=[];const m=new Date(lo);m.setDate(1);m.setMonth(m.getMonth()+1);for(let d=new Date(m);+d<hi;d.setMonth(d.getMonth()+1))months.push(+d);
@@ -1030,8 +1034,8 @@ function campRoadmap(bid,big){const cs=campsOf(bid);if(!cs.length)return"";const
    ${rows.map(x=>{const {c,r}=x;const tot=r.ts.length;const pc=tot?r.done/tot:0;const left=pos(+(x.s||lo)),right=x.e?pos(+x.e+DAY):100;
      const tip=`${c.name}: ${x.s?day(x.s):"no start"} to ${x.e?day(x.e):"no end date"}. ${r.done} of ${tot} tasks done${r.blocked?", "+r.blocked+" blocked":""}${r.late?", "+r.late+" late":""}.`;
      return`<button class="rmr" data-act="go-camp" data-id="${esc(c._id)}" title="${esc(tip)}"><span class="rmn"><b>${esc(c.name)}</b><span class="faint">${x.s?esc(day(x.s)):"?"} → ${x.e?esc(day(x.e)):"no end date"}</span></span>
-      <span class="rmt"><span class="rmb rmb-${x.st[0]} ${x.e?"":"open"}" style="left:${left}%;width:${Math.max(2,right-left)}%"><i style="width:${Math.round(pc*100)}%"></i></span>${x.dues.map(d=>{const bad=d.t.status==="Blocked"||dueFlag(d.t.deadline,false)==="Overdue";return`<span class="rmd ${bad?"bad":""}" style="left:${pos(+d.d)}%"></span>`}).join("")}</span>${meta(x)}</button>`}).join("")}</div>
-   <div class="rmkey"><span><i class="k1"></i>Campaign dates</span><span><i class="k2"></i>Share of tasks done</span><span><i class="k3"></i>Task due</span><span><i class="k4"></i>Task late or blocked</span><span><i class="k5"></i>Today</span></div></div>`}
+      <span class="rmt"><span class="rmb rmb-${x.st[0]} ${x.e?"":"open"}" style="left:${left}%;width:${Math.max(2,right-left)}%"><i style="width:${Math.round(pc*100)}%"></i></span></span>${meta(x)}</button>`}).join("")}</div>
+   <div class="rmkey"><span><i class="k1"></i>Campaign dates</span><span><i class="k2"></i>Share of tasks done</span><span>Click a campaign for its full timeline</span><span><i class="k5"></i>Today</span></div></div>`}
 function brandHome(id,r){
   const b=S.brands[id];const ed=canEdit&&canWrite;const [hk,hl]=healthOf(r.health);
   const ar=withId(S.access).filter(a=>a.brand===id&&a.status!=="Not Needed");const g=ar.filter(accGranted).length;const ch=ar.filter(needsChase).length;
@@ -1479,23 +1483,35 @@ function whenText(c){const s=parseD(c.start),e=parseD(c.end);if(!s&&!e)return"No
 function campWarn(r){const parts=[r.blocked?r.blocked+" blocked":"",r.late?r.late+" late":"",r.deps?`${r.deps} open dependenc${r.deps>1?"ies":"y"}`:""].filter(Boolean);
   return parts.length?`<span class="cwarn ${r.blocked||r.late?"bad":"warn"}">${esc(parts.join(" · "))}</span>`:`<span class="cwarn ok">On track</span>`}
 /* timeline: one bar per task from start to due, grouped by team, with today and the campaign end marked */
+let tlOpen=new Set(),tlWin="all";
 function campTimeline(c,ts){
-  const ds=[c.start,c.end].concat(ts.flatMap(t=>[t.start,t.deadline])).map(parseD).filter(Boolean);
-  const dated=ts.filter(t=>parseD(t.start)||parseD(t.deadline)),undated=ts.filter(t=>!parseD(t.start)&&!parseD(t.deadline));
-  if(!ds.length)return`<div class="tw"><div class="empty">No dates yet. Add a start and end to the campaign, and start and due dates to its tasks, to see the timeline.</div></div>`+undatedList(undated);
-  let lo=Math.min(...ds),hi=Math.max(...ds);const t0=+today();if(t0<lo&&lo-t0<21*DAY)lo=t0;if(t0>hi&&t0-hi<21*DAY)hi=t0;lo-=2*DAY;hi+=3*DAY;
-  const pos=d=>Math.max(0,Math.min(100,(d-lo)/(hi-lo)*100));const span=(hi-lo)/DAY;const step=span>150?28:span>70?14:7;
-  const ticks=[];const first=new Date(lo);first.setDate(first.getDate()+((8-first.getDay())%7));for(let d=+first;d<hi;d+=step*DAY)ticks.push(d);
+  const dated=ts.filter(t=>parseD(t.start)||parseD(t.deadline)),undated=ts.filter(t=>!parseD(t.start)&&!parseD(t.deadline));const t0=+today();
+  let lo,hi;if(tlWin==="2w"){lo=t0-3*DAY;hi=t0+14*DAY}else{const ds=[c.start,c.end].concat(ts.flatMap(t=>[t.start,t.deadline])).map(parseD).filter(Boolean);
+    if(!ds.length)return`<div class="tw"><div class="empty">No dates yet. Add a start and end to the campaign, and start and due dates to its tasks, to see the timeline.</div></div>`+undatedList(undated);
+    lo=Math.min(...ds);hi=Math.max(...ds);if(t0<lo&&lo-t0<21*DAY)lo=t0;if(t0>hi&&t0-hi<21*DAY)hi=t0;lo-=2*DAY;hi+=3*DAY}
+  const pos=d=>Math.max(0,Math.min(100,(d-lo)/(hi-lo)*100));const span=(hi-lo)/DAY;const step=span>150?28:span>70?14:span>25?7:2;
+  const ticks=[];const first=new Date(lo);if(step>=7)first.setDate(first.getDate()+((8-first.getDay())%7));for(let d=+first;d<hi;d+=step*DAY)ticks.push(d);
   const mark=(d,cl,l)=>d>=lo&&d<=hi?`<span class="gm ${cl}" style="--x:${pos(d)}%"><span>${esc(l)}</span></span>`:"";
-  let h=`<div class="gantt"><div class="grow2 ghead"><span class="gl">Task</span><span class="gt">${ticks.map(d=>`<span class="gk" style="left:${pos(d)}%">${esc(new Date(d).toLocaleDateString("en-GB",{day:"numeric",month:"short"}))}</span>`).join("")}</span></div>`;
-  for(const d of DEPTS()){const rows=dated.filter(t=>depOf(t)===d).sort((a,b)=>String(a.start||a.deadline).localeCompare(String(b.start||b.deadline)));if(!rows.length)continue;
-    h+=`<div class="gteam" style="--tc:${teamColor(d)}">${esc(d)}</div>`;
-    for(const t of rows){let s=parseD(t.start),e=parseD(t.deadline);if(s&&e&&e<s)[s,e]=[e,s];const done=t.status==="Complete",late=dueFlag(t.deadline,done)==="Overdue";
-      const st=done?"g-done":t.status==="Blocked"?"g-bad":late?"g-late":t.status==="In Progress"?"g-prog":"g-plan";
-      const bar=s&&e?`<span class="gb ${st}" style="left:${pos(+s)}%;width:${Math.max(1.2,pos(+e+DAY)-pos(+s))}%"></span>`:`<span class="gd ${st}" style="left:${pos(+(e||s))}%" title="${e?"Due":"Starts"} ${esc(fmtD(t.deadline||t.start))}"></span>`;
-      h+=`<button class="grow2 gr" data-act="open" data-kind="task" data-id="${esc(t._id)}" title="${esc(t.title)}"><span class="gl"><b>${esc(t.title)}</b><span class="faint">${esc(t.owner||"No owner")} · ${esc(t.status)}${t.deadline?" · due "+esc(fmtD(t.deadline)):""}</span></span><span class="gt">${bar}</span></button>`}}
+  const ends=t=>{let s=parseD(t.start),e=parseD(t.deadline);if(s&&e&&e<s)[s,e]=[e,s];return[s||e,e||s]};
+  const inWin=t=>{const[s,e]=ends(t);return tlWin!=="2w"||(+e>=lo&&+s<=hi)};
+  const stCls=t=>{const done=t.status==="Complete";return done?"g-done":t.status==="Blocked"?"g-bad":dueFlag(t.deadline,done)==="Overdue"?"g-late":t.status==="In Progress"?"g-prog":"g-plan"};
+  const key=c._id+"|";
+  let h=`<div class="tlbar"><div class="seg" role="group" aria-label="Show"><button data-act="tlwin" data-v="all" class="${tlWin==="all"?"on":""}">Whole campaign</button><button data-act="tlwin" data-v="2w" class="${tlWin==="2w"?"on":""}">Next 2 weeks</button></div>
+    <button class="btn sm" data-act="tlall" data-k="${esc(key)}">${DEPTS().some(d=>tlOpen.has(key+d))?"Fold all teams":"Open all teams"}</button><span class="muted">One bar per team. Open a team to see its tasks.</span></div>
+   <div class="gantt"><div class="grow2 ghead"><span class="gl">Team</span><span class="gt">${ticks.map(d=>`<span class="gk" style="left:${pos(d)}%">${esc(new Date(d).toLocaleDateString("en-GB",{day:"numeric",month:"short"}))}</span>`).join("")}</span></div>`;
+  let any=false;
+  for(const d of DEPTS()){const all=dated.filter(t=>depOf(t)===d);const rows=all.filter(inWin).sort((a,b)=>String(a.start||a.deadline).localeCompare(String(b.start||b.deadline)));if(!rows.length)continue;any=true;
+    const sp=rows.map(ends);const s0=Math.min(...sp.map(x=>+x[0])),e0=Math.max(...sp.map(x=>+x[1]));const op=rows.filter(t=>t.status!=="Complete");
+    const late=op.filter(t=>dueFlag(t.deadline,false)==="Overdue").length,blk=op.filter(t=>t.status==="Blocked").length,dn=rows.length-op.length;const open=tlOpen.has(key+d);
+    const k=blk?"bad":late?"warn":op.length?"info":"good";
+    h+=`<button class="grow2 gr gteam2" data-act="tlteam" data-k="${esc(key+d)}" aria-expanded="${open}"><span class="gl"><b>${CHEV}${esc(d)}</b><span class="faint">${rows.length} task${rows.length>1?"s":""} · ${dn} done${late?` · <b class="lt">${late} late</b>`:""}${blk?` · <b class="bk">${blk} blocked</b>`:""}</span></span>
+      <span class="gt"><span class="gsum rmb-${k}" style="left:${pos(s0)}%;width:${Math.max(1.2,pos(e0+DAY)-pos(s0))}%"><i style="width:${Math.round(dn/rows.length*100)}%"></i></span></span></button>`;
+    if(open)for(const t of rows){const[s,e]=ends(t);const st=stCls(t);
+      const bar=parseD(t.start)&&parseD(t.deadline)?`<span class="gb ${st}" style="left:${pos(+s)}%;width:${Math.max(1.2,pos(+e+DAY)-pos(+s))}%"></span>`:`<span class="gd ${st}" style="left:${pos(+(e||s))}%" title="${t.deadline?"Due":"Starts"} ${esc(fmtD(t.deadline||t.start))}"></span>`;
+      h+=`<button class="grow2 gr gsub" data-act="open" data-kind="task" data-id="${esc(t._id)}" title="${esc(t.title)}"><span class="gl"><b>${esc(t.title)}</b><span class="faint">${esc(t.owner||"No owner")} · ${esc(t.status)}${t.deadline?" · due "+esc(fmtD(t.deadline)):""}</span></span><span class="gt">${bar}</span></button>`}}
+  if(!any)h+=`<div class="empty" style="padding:18px">Nothing is scheduled in the next 2 weeks.</div>`;
   h+=`<div class="gover">${mark(+parseD(c.end),"gend",c._id===NOCAMP?"":"End")}${mark(t0,"gtoday","Today")}</div></div>`;
-  return`<div class="glegend"><span><i class="g-plan"></i>Planned</span><span><i class="g-prog"></i>In progress</span><span><i class="g-late"></i>Late</span><span><i class="g-bad"></i>Blocked</span><span><i class="g-done"></i>Done</span></div>`+h+undatedList(undated)}
+  return`<div class="glegend"><span><i class="g-plan"></i>Planned</span><span><i class="g-prog"></i>In progress</span><span><i class="g-late"></i>Late</span><span><i class="g-bad"></i>Blocked</span><span><i class="g-done"></i>Done</span><span>Team bar: from its first task to its last, filled by share done</span></div>`+h+undatedList(undated)}
 function undatedList(ts){if(!ts.length)return"";return`<details class="undated"><summary>${ts.length} task${ts.length>1?"s have":" has"} no dates yet, so ${ts.length>1?"they are":"it is"} not on the timeline</summary>${ts.map(t=>`<button class="gr2" data-act="open" data-kind="task" data-id="${esc(t._id)}"><b>${esc(t.title)}</b><span class="faint">${esc(depOf(t))} · ${esc(t.owner||"No owner")} · ${esc(t.status)}</span></button>`).join("")}</details>`}
 function brandBlockers(bid){const out=[];
   for(const a of withId(S.access).filter(a=>a.brand===bid&&(ACC_FOUNDER.includes(a.status)||a.status==="Blocked")))out.push(`<button class="bbk" data-act="open" data-kind="access" data-id="${esc(a._id)}">${a.status==="Blocked"?SHAPE.bad:SHAPE.warn}<span class="tag">Platform access</span>${esc(a.platform)}: ${esc(a.status)}</button>`);
@@ -1897,6 +1913,9 @@ document.addEventListener("click",e=>{
     formBox("Best Practices link · "+bname(id),`<div class="f"><label for="n-bl">Paste the link to this brand's Best Practices document</label><input id="n-bl" name="link" type="url" placeholder="https://..." value="${esc(d.doc_link||"")}"></div><p class="faint" style="margin:0 0 10px;font-size:13px">Links only. Leave it empty to remove the link.</p>`,"Save link",v=>{
       if(v.link&&!/^https?:\/\/\S+$/i.test(v.link)){toast("Paste a full link that starts with https://");return false}save("bps",id,{doc_link:v.link},"Best Practices link")})}
   else if(act==="signout"){if(window.__signOut)window.__signOut()}
+  else if(act==="tlteam"){const k=a.dataset.k;if(tlOpen.has(k))tlOpen.delete(k);else tlOpen.add(k);render()}
+  else if(act==="tlall"){const k=a.dataset.k;const ks=DEPTS().map(d=>k+d);if(ks.some(x=>tlOpen.has(x)))ks.forEach(x=>tlOpen.delete(x));else ks.forEach(x=>tlOpen.add(x));render()}
+  else if(act==="tlwin"){tlWin=a.dataset.v==="2w"?"2w":"all";render()}
   else if(act==="skip"){const h=$("#main h1")||$("#main");h.tabIndex=-1;h.focus()}
   else if(act==="goto-item"){const{kind,id,code}=a.dataset;
     if(kind==="task"){const t=S.tasks[id];if(!t)return;brandTab="tasks";if(t.status==="Complete")kbFilter.done=true;focusItem={sel:`.kc[data-id="${CSS.escape(id)}"]`};go(campHash(t.brand,campsOf(t.brand).length?campOf(t):""))}

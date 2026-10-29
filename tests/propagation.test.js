@@ -364,7 +364,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await p.selectOption('#d-campaign', campOpt); await p.fill('#d-start', '2026-10-05'); await p.fill('#d-deadline', '2026-10-20'); await drawerSave();
   await p.click('.crumb [data-act=camp][data-id=""]'); await p.waitForTimeout(150);
   await p.click(`[data-act=camp][data-id="${campOpt}"]`); await p.waitForTimeout(250);
-  check('Campaigns', 'Moved task shows on the campaign timeline as a bar', !!(await p.$('.gantt .gr .gb')));
+  check('Campaigns', 'Moved task shows on the campaign timeline: a team bar, and its own bar once the team is opened', !!(await p.$('.gantt .gteam2 .gsum')) && await (async () => { await p.click('.gteam2'); await p.waitForTimeout(200); const ok = !!(await p.$('.gantt .gsub .gb')); await p.click('.gteam2'); await p.waitForTimeout(150); return ok })());
   check('Campaigns', 'Campaign board has one list, for the team that owns the moved task, with the card in it', (await p.$$('.kb section.kcol')).length === 1 && (await p.$$('.kb .kc')).length === 1);
   check('Campaigns', 'No dependency box on the campaign page', !(await p.$('.deps')));
   await p.click('.crumb [data-act=camp]'); await p.waitForTimeout(150);
