@@ -31,7 +31,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   const active0 = await tile('active brands');
   await openBrandEditor('mumuk'); await p.selectOption('#d-stage', 'On Hold'); await drawerSave();
   await go('overview');
-  check('Brand stage On Hold', 'Left menu moves it under On Hold', (await railGroup('MUMUK')) === 'ON HOLD', await railGroup('MUMUK'));
+  check('Brand stage On Hold', 'Left menu moves it under On Hold', (await railGroup('MUMUK') || '').toUpperCase() === 'ON HOLD', await railGroup('MUMUK'));
   check('Brand stage On Hold', 'Overview health says On Hold', (await overviewRow('MUMUK')).includes('On Hold'));
   check('Brand stage On Hold', 'Active brands tile drops by 1', (await tile('active brands')) === active0 - 1, `${active0} to ${await tile('active brands')}`);
   check('Brand stage On Hold', 'SOW signing plan shows it under On hold, not a week', (await planColumn('MUMUK')) === 'On hold', await planColumn('MUMUK'));
@@ -352,7 +352,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await p.click('[data-act=add-camp]'); await p.fill('#n-cn', 'Spring launch'); await p.fill('#n-cp', 'Launch the spring range with creators and paid'); await p.fill('#n-cs', '2026-10-01'); await p.fill('#n-ce', '2026-11-15');
   await p.click('#fbox button[type=submit]'); await p.waitForTimeout(400);
   check('Campaigns', 'New campaign opens with what it is for', (await text('.cbox')).includes('Launch the spring range'));
-  check('Campaigns', 'Brand bar shows the path and counts the campaign', (await text('.bslim .crumb')).includes('Spring launch') && (await text('.mt[data-tab=tasks]')).replace(/\s+/g, ' ').trim() === 'Campaigns 1');
+  check('Campaigns', 'Brand bar shows the path and counts the campaign', (await text('.vcrumb')).includes('Spring launch') && (await text('.mt[data-tab=tasks]')).replace(/\s+/g, ' ').trim() === 'Campaigns 1');
   await p.click('[data-act=camp][data-id=""]'); await p.waitForTimeout(150);
   await p.click('[data-act=camp][data-id=_none]'); await p.waitForTimeout(200);
   await p.click('.kc'); await p.waitForTimeout(250);
@@ -448,7 +448,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await p.goBack(); await p.waitForTimeout(300);
   check('Audit fixes', 'Browser Back returns to the campaign list', (await p.evaluate(() => location.hash)) === '#brand-celf/tasks' && !!(await p.$('.clist')));
   await p.goto(url + campUrl); await p.waitForTimeout(700);
-  check('Audit fixes', 'Opening the address goes straight to the campaign', (await text('.bslim .crumb')).includes('Spring launch'));
+  check('Audit fixes', 'Opening the address goes straight to the campaign', (await text('.vcrumb')).includes('Spring launch'));
   await go('brand-celf'); await p.click('button[data-tab=tasks]'); await p.waitForTimeout(150); await p.click('[data-act=camp][data-id=_none]'); await p.waitForTimeout(200);
   const lcard = await p.$eval('.kcards .kc', e => e.dataset.id); await p.click(`.kc[data-id="${lcard}"]`); await p.waitForTimeout(250);
   const target = await p.$eval('#d-list', e => [...e.options].find(o => !o.selected).value);

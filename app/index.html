@@ -1,19 +1,19 @@
 <title>VALFLO</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* Calm palette: misty sage-grey ground, soft teal accent, pastel status fills. Layout: left rail, top bar with search and Simple / Full, work area, edit drawer */
-:root{color-scheme:light;--shadow:0 1px 2px rgb(30 50 60/.07),0 4px 12px rgb(30 50 60/.07);
-  --bg:#F3F6F5; --panel:#FFFFFF; --panel2:#EDF2F0; --ink:#2A3337; --muted:#59646A; --faint:#5E666A; --line:#E1E8E5; --line2:#D0D9D5;
+:root{color-scheme:light;--shadow:none;
+  --bg:#F1F3F8; --panel:#FFFFFF; --panel2:#EEF1F6; --ink:#2A3337; --muted:#59646A; --faint:#5E666A; --line:#E1E8E5; --line2:#D0D9D5;
   --rail:#0B0C33; --railHover:#1A1C52; --accent:#0A0A70; --accentInk:#FFFFFF; --accentSoft:#E4E4F3;
   --ok:#3A7454; --okBg:#E2F0E7; --warn:#856325; --warnBg:#F7EDD8; --bad:#9F4E48; --badBg:#F6E2DF;
   --info:#486887; --infoBg:#E3EBF3; --off:#59646A; --offBg:#ECF0EE;
   --fDone:#A9D0B6; --fProg:#CFC2E8; --fNot:#F4E2DF; --fNA:#E7ECEA;
   --dLive:#6EAD86; --dRisk:#D6A44C; --dTrack:#86ABCF;
   --g0:#8DB89B; --g1:#8FB0CF; --g2:#B5A4D5; --g3:#D6A98B; --g4:#93C1AF; --g5:#C7B88A;
-  --f-ui:Corbel,"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
-  --f-head:"DM Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --f-ui:"DM Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-head:"DM Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --f-code:"DM Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
   --navy:#0A0A70; --amber:#EA9F44;
   --r:10px;
@@ -25,7 +25,7 @@
   --info:#9DBAD8; --infoBg:#212F3B; --off:#ADB8BC; --offBg:#293033;
   --fDone:#3C6B50; --fProg:#64578A; --fNot:#48302E; --fNA:#2C3437;
   --dLive:#7BBE95; --dRisk:#D9AE5E; --dTrack:#8FB3D6;
-  --g0:#5E8A6D; --g1:#5F80A0; --g2:#7F70A3; --g3:#A37B5F; --g4:#5F9483; --g5:#978A5F; color-scheme:dark; --shadow:0 1px 2px rgb(0 0 0/.45),0 3px 10px rgb(0 0 0/.25)}}
+  --g0:#5E8A6D; --g1:#5F80A0; --g2:#7F70A3; --g3:#A37B5F; --g4:#5F9483; --g5:#978A5F; color-scheme:dark; --shadow:none}}
 :root[data-theme="dark"]{
   --bg:#161B1D; --panel:#1E2427; --panel2:#252C30; --ink:#E1E7E8; --muted:#A2AEB2; --faint:#97A0A3; --line:#2E373B; --line2:#3A4448;
   --rail:#08091F; --railHover:#171A45; --accent:#86D9FF; --accentInk:#08091F; --accentSoft:#1B2447;
@@ -33,12 +33,12 @@
   --info:#9DBAD8; --infoBg:#212F3B; --off:#ADB8BC; --offBg:#293033;
   --fDone:#3C6B50; --fProg:#64578A; --fNot:#48302E; --fNA:#2C3437;
   --dLive:#7BBE95; --dRisk:#D9AE5E; --dTrack:#8FB3D6;
-  --g0:#5E8A6D; --g1:#5F80A0; --g2:#7F70A3; --g3:#A37B5F; --g4:#5F9483; --g5:#978A5F; color-scheme:dark; --shadow:0 1px 2px rgb(0 0 0/.45),0 3px 10px rgb(0 0 0/.25)}
+  --g0:#5E8A6D; --g1:#5F80A0; --g2:#7F70A3; --g3:#A37B5F; --g4:#5F9483; --g5:#978A5F; color-scheme:dark; --shadow:none}
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{height:100%}
 body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--f-ui);font-variant-numeric:tabular-nums}
-h1,h2,h3,h4,.btl,.sech,.bh1,.btbig{font-family:var(--f-head);font-weight:500;letter-spacing:-.01em}
+h1,h2,h3,h4,.sech,.bh1,.btbig{font-family:var(--f-head);font-weight:600;letter-spacing:-.015em}
 a{color:var(--accent)}
 button,input,select,textarea{font:inherit;color:inherit}
 a.bname,.hyg a{display:inline-block;min-height:24px;line-height:24px}
@@ -56,29 +56,30 @@ input,select,textarea{background-color:var(--panel);color:var(--ink)}
 .app{display:grid;grid-template-columns:252px minmax(0,1fr);grid-template-rows:minmax(0,1fr);height:100%;overflow:hidden}
 .app>*{min-height:0}
 /* rail */
-.rail{background:linear-gradient(180deg,#0B0C33 0%,#0D0F45 55%,#121466 100%);color:#E6E8F5;border-right:1px solid #1C1F55;overflow-y:auto;padding:18px 12px 20px;display:flex;flex-direction:column;gap:12px;
-  --ok:#86D9A6;--warn:#F2C26B;--bad:#F4A39B;--faint:#A5A9CF;--off:#A5A9CF;--muted:#B7BAD9;--ink:#E6E8F5;scrollbar-color:#2A2E6E transparent}
-:root[data-theme="dark"] .rail{background:linear-gradient(180deg,#07081C 0%,#0A0C30 60%,#0E1050 100%)}
-.mark{display:grid;grid-template-columns:30px 1fr;grid-template-rows:auto auto;column-gap:10px;align-items:center;padding:2px 8px 10px;color:#fff;text-decoration:none;border-bottom:1px solid #20245E}
-.mark .logo{grid-row:1/3;width:30px;height:auto;fill:var(--amber)}
-.mark .mk{font-family:var(--f-head);font-weight:500;font-size:19px;letter-spacing:.08em;line-height:1.1}
-.mark small{font-size:12px;color:#B7BAD9;line-height:1.2}
-.rsec{font-family:var(--f-head);font-size:12px;font-weight:500;color:#A5A9CF;text-transform:uppercase;letter-spacing:.08em;margin:10px 9px 4px}
+.rail{background-color:#0E1129;background-image:radial-gradient(rgb(255 255 255/.07) 1px,transparent 1.2px);background-size:16px 16px;color:#E6E8F2;border-right:1px solid #1B1F3B;overflow-y:auto;padding:22px 14px 20px;display:flex;flex-direction:column;gap:6px;
+  --ok:#86D9A6;--warn:#F2C26B;--bad:#F4A39B;--faint:#9DA2C4;--off:#9DA2C4;--muted:#A9AECB;--ink:#E6E8F2;scrollbar-width:thin;scrollbar-color:#2C3157 transparent}
+:root[data-theme="dark"] .rail{background-color:#0A0C1F}
+.mark{display:flex;align-items:center;gap:12px;padding:2px 10px 18px;color:#fff;text-decoration:none}
+.mark .logo{width:30px;height:auto;fill:var(--amber);flex:none}
+.mark .mk{font-family:var(--f-head);font-weight:600;font-size:22px;letter-spacing:.02em;line-height:1}
+.mark small{display:none}
+.rsec{font-size:12px;font-weight:500;color:#9DA2C4;text-transform:uppercase;letter-spacing:.12em;margin:16px 12px 6px}
 .nav{display:flex;flex-direction:column;gap:2px}
-.nav a,.blink,.rsub a{display:flex;align-items:center;gap:9px;padding:6px 9px;border-radius:8px;color:#D9DCF0;text-decoration:none;min-height:32px}
-.nav a:hover,.blink:hover,.rsub a:hover{background:rgb(255 255 255/.07);color:#fff}
-.nav a.on,.blink.on,.rsub a.on{background:rgb(255 255 255/.13);color:#fff;font-weight:600;box-shadow:inset 3px 0 0 var(--amber)}
+.nav a,.blink,.rsub a{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:10px;color:#C9CDE2;text-decoration:none;min-height:38px;font-size:14.5px;border:1px solid transparent}
+.nav a:hover,.blink:hover,.rsub a:hover,.rgh button:hover{background:rgb(255 255 255/.05);color:#fff}
+.nav a.on,.blink.on,.rsub a.on{background:rgb(255 255 255/.10);border-color:rgb(255 255 255/.14);color:#fff;font-weight:500}
 .nav a:focus-visible,.blink:focus-visible,.rsub a:focus-visible,.rgh button:focus-visible,.mark:focus-visible{outline:2px solid #86D9FF;outline-offset:1px}
-.ni{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
-.nav .n,.blink .n,.rgh .n{margin-left:auto;font-size:12px;color:#B7BAD9}
-.rgh{margin:4px 0 0}.rgh button{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:6px;width:100%;padding:5px 9px;border-radius:8px;cursor:pointer;font-family:var(--f-head);font-size:12px;font-weight:500;color:#C9CCE6;text-transform:uppercase;letter-spacing:.06em;min-height:30px}
-.rgh button:hover{background:rgb(255 255 255/.07);color:#fff}
-.chev{width:12px;height:12px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;transition:transform .15s}.rgh button[aria-expanded=true] .chev{transform:rotate(90deg)}
-.blink{font-size:13.5px;margin-left:8px}
-.blink .tag{margin-left:4px;background:rgb(255 255 255/.12);color:#E6E8F5}
-.rsub{display:flex;flex-direction:column;gap:1px;margin:2px 0 6px 26px;padding-left:8px;border-left:1px solid #2A2E6E}.rsub a{font-size:13px;min-height:30px;padding:4px 9px}
-.addbtn{margin-top:auto;border:1px solid #3A3F86;background:rgb(255 255 255/.04);border-radius:10px;padding:9px;cursor:pointer;color:#E6E8F5;font-family:var(--f-head);font-size:12.5px;text-transform:uppercase;letter-spacing:.06em}
-.addbtn:hover{border-color:var(--amber);color:#fff;background:rgb(234 159 68/.12)}
+.ni{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;opacity:.8}
+.nav .n,.blink .n,.rgh .n{margin-left:auto;font-size:12.5px;color:#A9AECB}
+.rgh{margin:2px 0 0}.rgh button{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;border-radius:10px;cursor:pointer;font-size:14.5px;font-weight:500;color:#E6E8F2;min-height:38px}
+.rgh .n{margin-left:auto}
+.chev{width:14px;height:14px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6;transition:transform .15s;opacity:.8;order:3;margin-left:6px}
+.rgh button[aria-expanded=true] .chev{transform:rotate(-90deg)}.rgh button[aria-expanded=false] .chev{transform:rotate(90deg)}
+.blink{font-size:14px;margin-left:14px}
+.blink .tag{margin-left:4px;background:rgb(255 255 255/.10);color:#E6E8F2}
+.rsub{display:flex;flex-direction:column;gap:1px;margin:2px 0 8px 30px;padding-left:10px;border-left:1px solid #2C3157}.rsub a{font-size:13.5px;min-height:34px;padding:6px 10px}
+.addbtn{margin-top:auto;border:1px solid #2F3561;background:rgb(255 255 255/.04);border-radius:12px;padding:11px;cursor:pointer;color:#E6E8F2;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.08em}
+.addbtn:hover{background:rgb(255 255 255/.08);color:#fff}
 /* health dot */
 .dot{width:10px;height:10px;border-radius:50%;flex:none;background:var(--off);display:inline-block}
 .dot.h-Live,.dot.h-OnTrack{background:var(--ok)}
@@ -87,9 +88,9 @@ input,select,textarea{background-color:var(--panel);color:var(--ink)}
 .dot.h-OnHold{background:transparent;box-shadow:inset 0 0 0 2px var(--faint)}
 /* top */
 .mainwrap{display:flex;flex-direction:column;min-width:0;height:100%}
-.topbar{display:flex;align-items:center;gap:12px;padding:10px 28px;border-bottom:1px solid var(--line);background:var(--panel);flex-wrap:wrap}
-.topbar .menu{display:none}
-.topbar .grow{flex:1}
+.topbar{display:flex;flex-direction:column;border-bottom:1px solid var(--line);background:var(--panel)}
+.tstrip{display:flex;align-items:center;gap:10px;padding:6px 28px 6px 20px;background:var(--panel2);min-height:44px}
+.tctl{display:flex;align-items:center;gap:12px;padding:10px 28px;flex-wrap:wrap}.tctl .search{margin-right:auto}.rtog.ph{display:none}
 .seg{display:inline-flex;border:1px solid var(--line2);border-radius:7px;overflow:hidden}
 .seg button{border:0;background:transparent;padding:5px 12px;cursor:pointer;color:var(--muted);font-weight:500}
 .seg button.on{background:var(--accentSoft);color:var(--accent);font-weight:600}
@@ -485,7 +486,7 @@ table.grid td{vertical-align:middle}
   .app{grid-template-columns:1fr}
   .rail{position:fixed;inset:0 25% 0 0;z-index:35;transform:translateX(-102%);transition:transform .2s;padding-top:calc(18px + env(safe-area-inset-top,0px))}
   .rail.open{transform:none}
-  .topbar{padding:10px 16px}.topbar .menu{display:inline-block}
+  .tctl{padding:10px 16px}
   main{padding:18px 16px 60px}
   .tiles,.facts{grid-template-columns:repeat(2,minmax(0,1fr))}
   .step{grid-template-columns:44px minmax(0,1fr);}
@@ -594,6 +595,26 @@ button.bt{cursor:pointer;transition:box-shadow .15s,border-color .15s}button.bt:
   .crow{grid-template-columns:minmax(0,1fr) auto;gap:6px 10px}.crow .cmain{grid-column:1/-1;order:-1}.crow .chev{display:none}
   .rmap{--nw:100px;--mw:0px}.rmtl,.mL{display:none}.mS{display:inline}.rmh,.rmr{gap:8px}.rmeta{display:none}.rmkey{gap:8px 12px}.road{grid-template-columns:1fr;gap:12px}
   .memx{width:44px;height:44px}.rmr,.jseg,.intro .missing{min-height:46px}}
+
+/* seamless sections: cards are told apart by fill, not by lines or shadows */
+:is(.bt,.panel,.road,.crow,.cbox,.tile,.card,.item,.team,.camp,.sec,.facts,.gantt,.undated,.acclist,.bcard,.bpc,.next,.tw,.exc,.slane,.kcol,.bblock){border-color:transparent!important;box-shadow:none!important}
+:is(.bt,.road,.cbox,.panel){border-radius:20px}
+.bt.hero,.bt.troad{background:var(--panel2)}
+button.bt:hover,.crow:hover{box-shadow:none;background:var(--panel2)}
+.bt.hero:hover,.bt.troad:hover{background:var(--panel2)}
+.btl{font-weight:500;letter-spacing:.04em}
+/* top strip: where you are, with x to go up one level and a button to hide the menu */
+.rtog{all:unset;box-sizing:border-box;width:36px;height:36px;display:grid;place-items:center;border-radius:8px;cursor:pointer;color:var(--muted)}
+.rtog:hover{background:var(--panel2);color:var(--ink)}.rtog:focus-visible{outline:2px solid var(--accent)}
+.rtog svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.5}
+.vcrumb{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);min-width:0;flex:1 1 auto;overflow:hidden;white-space:nowrap}.vcrumb>*{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}.vcrumb .vx,.vcrumb .sep{flex:none}
+
+.vcrumb .vx{display:grid;place-items:center;width:28px;height:28px;border-radius:6px;color:var(--muted);text-decoration:none;font-size:18px;line-height:1;padding-right:2px;border-right:1px solid var(--line2);border-radius:0;margin-right:4px}
+.vcrumb .vx:hover{color:var(--ink)}
+.vcrumb a,.vcrumb .linkb{color:var(--muted);text-decoration:none;font-weight:400}.vcrumb a:hover,.vcrumb .linkb:hover{color:var(--ink);text-decoration:none}
+.vcrumb b{color:var(--ink);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.vcrumb .sep{color:var(--faint)}
+.app.railoff{grid-template-columns:0 minmax(0,1fr)}.app.railoff .rail{visibility:hidden;padding:0;border:0}
+@media (max-width:900px){.tstrip{display:none}.rtog.ph{display:grid}.app.railoff .rail{visibility:visible}}
 </style>
 
 <div class="app">
@@ -782,17 +803,18 @@ const NI={mine:'<path d="M3 4h10M3 8h10M3 12h6"/>',leadership:'<path d="M2 13l3-
   access:'<rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/>',bp:'<path d="M8 1.8l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.6l-3.8 2 .7-4.3-3.1-3 4.3-.6z"/>',settings:'<circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4"/>'};
 const nicon=k=>`<svg class="ni" viewBox="0 0 16 16" aria-hidden="true">${NI[k]||""}</svg>`;
 const CHEV=`<svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5L10.5 8 6 12.5"/></svg>`;
+let railOff=ls.get("vt-railoff")==="1";
 let railShut=new Set();try{railShut=new Set(JSON.parse(ls.get("vt-railshut")||"[]"))}catch(e){}
 function renderRail(){
   const mine=myItems().length;
   const work=[["mine","My tasks",mine||""]];if(isLeader(me))work.push(["leadership","Leadership",leaderCount()||""]);
   const across=[["overview","Overview",""],["people","People",""],["sow","SOW tracker",""],["access","Platform access",""],["bp","Best Practices",""]];
   const item=([k,l,n])=>`<a href="#${k}" class="${route.v===k?"on":""}" ${route.v===k?`aria-current="page"`:""}>${nicon(k)}<span class="nl">${esc(l)}</span><span class="n">${n}</span></a>`;
-  let h=`<a class="mark" href="#overview" aria-label="VALFLO home">${LOGO}<span class="mk">VALFLO</span><small>by Valerie</small></a>
+  let h=`<a class="mark" href="#overview" aria-label="VALFLO home">${LOGO}<span class="mk">VALFLO</span></a>
    <nav class="nav" aria-label="Main"><div class="rsec">My work</div>${work.map(item).join("")}<div class="rsec">Across brands</div>${across.map(item).join("")}${canEdit?item(["settings","Settings",""]):""}</nav><div class="rbrands"><div class="rsec">Brands</div>`;
   const groups={};for(const b of brandList())(groups[b.stage||"Qualification"]=groups[b.stage||"Qualification"]||[]).push(b);
-  for(const st of STAGE_ORDER()){if(!groups[st])continue;const cur=route.v==="brand"&&groups[st].some(b=>b.id===route.id);const open=cur||!railShut.has(st);
-    h+=`<h3 class="rgh"><button data-act="rgrp" data-k="${esc(st)}" aria-expanded="${open}">${CHEV}<span class="rgl">${esc(st)}</span><span class="n">${groups[st].length}</span></button></h3>`;
+  for(const st of STAGE_ORDER()){if(!groups[st])continue;const cur=route.v==="brand"&&groups[st].some(b=>b.id===route.id);const open=!railShut.has(st);
+    h+=`<h3 class="rgh"><button data-act="rgrp" data-k="${esc(st)}" aria-expanded="${open}"><span class="rgl">${esc(st)}</span><span class="n">${groups[st].length}</span>${CHEV}</button></h3>`;
     if(!open)continue;
     for(const b of groups[st]){const r=roll(b.id);const on=route.v==="brand"&&route.id===b.id;
       h+=`<a class="blink ${on?"on":""}" href="#brand-${esc(b.id)}" title="${esc(r.health)}">${hdot(r.health)}<span class="sr">${esc(r.health)}</span>${esc(b.name)}${b.paused?` <span class="tag">Paused</span>`:""}<span class="n">${r.open||""}</span></a>`;
@@ -804,14 +826,27 @@ function renderRail(){
 }
 // Leadership view is a role: leads tick Leadership for a person in Settings > People.
 const isLeader=name=>!!name&&people().some(p=>p.name===name&&p.leadership);
+const TOPNAME={mine:"My tasks",leadership:"Leadership",overview:"Overview",people:"People",sow:"SOW tracker",access:"Platform access",bp:"Best Practices",settings:"Settings"};
+function crumbsOf(){
+  if(route.v==="brand"&&S.brands[route.id]){const b=S.brands[route.id];const id=route.id;const out=[{l:"Brands",href:"#overview"},{l:b.name,href:"#"+brandHash(id,"home")}];
+    if(brandTab!=="home"){const cid=campSel.bid===id?campSel.id:"";const deep=brandTab==="tasks"&&cid&&(cid===NOCAMP||S.camps[cid]);
+      const sec=brandTab==="tasks"&&!campsOf(id).length?"Tasks":brandTab==="sow"&&isInternal(b)?"Onboarding":SECT[brandTab]||"";
+      out.push(deep?{l:sec,act:`data-act="camp" data-id=""`}:{l:sec,href:"#"+brandHash(id,brandTab)});if(deep)out.push({l:campName(cid)})}
+    return out}
+  if(route.v==="client"&&S.brands[route.id])return[{l:"Brands",href:"#overview"},{l:S.brands[route.id].name,href:"#brand-"+route.id},{l:"Client view"}];
+  return[{l:TOPNAME[route.v]||"Overview",href:"#"+(route.v||"overview")}]}
 function renderTop(){
   if(document.activeElement&&document.activeElement.id==="q")return; // keep the search box while someone types
   const ppl=activePeople();
-  $("#topbar").innerHTML=`<button class="btn sm menu" data-act="menu" aria-label="Open menu">Menu</button><div class="search"><label for="q" class="sr">Search brands, tasks, people and steps</label><input id="q" type="search" placeholder="Search brands, tasks, people" autocomplete="off" value="${esc(searchQ)}"><div id="sres" class="sres" hidden></div></div><span class="grow"></span>
+  document.querySelector(".app").classList.toggle("railoff",railOff);
+  const cr=crumbsOf();const up=cr.length>1?cr[cr.length-2]:null;
+  const tog=c=>`<button class="rtog ${c}" data-act="menu" aria-label="${railOff?"Show menu":"Hide menu"}" title="${railOff?"Show menu":"Hide menu"}"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="3.5" width="15" height="13" rx="2.5"/><path d="M7.5 3.5v13"/></svg></button>`;
+  $("#topbar").innerHTML=`<div class="tstrip">${tog("")}<nav class="crumb vcrumb" aria-label="You are here" title="${esc(cr.map(c=>c.l).join(" › "))}">${up?`<a class="vx" href="${up.href||"#"}" ${up.act||""} aria-label="Back to ${esc(up.l)}">×</a>`:""}${cr.map((c,i)=>i===cr.length-1?`<b>${esc(c.l)}</b>`:c.act?`<button class="linkb" ${c.act}>${esc(c.l)}</button>`:`<a href="${c.href}">${esc(c.l)}</a>`).join(`<span class="sep" aria-hidden="true">›</span>`)}</nav></div>
+   <div class="tctl">${tog("ph")}<div class="search"><label for="q" class="sr">Search brands, tasks, people and steps</label><input id="q" type="search" placeholder="Search brands, tasks, people" autocomplete="off" value="${esc(searchQ)}"><div id="sres" class="sres" hidden></div></div>
    <div class="seg" role="group" aria-label="Detail"><button data-act="simple" data-v="1" class="${simple?"on":""}" title="Fewer columns and fields">Simple</button><button data-act="simple" data-v="0" class="${simple?"":"on"}" title="Every column and field">Full</button></div>
    <label class="who" for="whoSel">You are <select id="whoSel" data-act="who"><option value="">Pick your name</option>${ppl.map(p=>`<option ${p===me?"selected":""}>${esc(p)}</option>`).join("")}</select></label>
    <div class="seg" role="group" aria-label="Colours"><button data-act="theme" data-v="light" class="${theme==="light"?"on":""}">Light</button><button data-act="theme" data-v="dark" class="${theme==="dark"?"on":""}">Dark</button></div>
-   <span class="tag">${canEdit?"Lead / admin":canWrite?"Member":"View only"}</span>`;
+   <span class="tag">${canEdit?"Lead / admin":canWrite?"Member":"View only"}</span></div>`;
 }
 function renderMain(){
   const m=$("#main");
@@ -1405,10 +1440,8 @@ const campName=id=>id===NOCAMP?"Not in a campaign":(S.camps[id]||{}).name||"Camp
 const teamColor=d=>"var(--line2)"; // teams are named, not coloured: colour is kept for status
 const SECT={home:"Overview",tasks:"Campaigns",access:"Platform access",sow:"Road to SOW",bp:"Best Practices",updates:"Updates"};
 const SHORT={tasks:"Campaigns",access:"Access",sow:"Road to SOW",bp:"BP",updates:"Updates"};
-function brandBar(id,r){const b=S.brands[id];const cid=campSel.bid===id?campSel.id:"";const deep=brandTab==="tasks"&&cid&&(cid===NOCAMP||S.camps[cid]);
-  const sec=brandTab==="tasks"&&!campsOf(id).length?"Tasks":brandTab==="sow"&&isInternal(b)?"Onboarding":SECT[brandTab];const [hk,hl]=healthOf(r.health);
-  const crumbs=[`<button class="linkb" data-act="tab" data-tab="home">Overview</button>`,deep?`<button class="linkb" data-act="camp" data-id="">${esc(sec)}</button>`:`<b>${esc(sec)}</b>`].concat(deep?[`<b>${esc(campName(cid))}</b>`]:[]);
-  return`<div class="bslim"><div class="bsl"><h1 class="bsh1"><button class="bsname" data-act="tab" data-tab="home">${esc(b.name)}</button></h1>${sig(hk,hl)}<nav class="crumb" aria-label="You are here"><span class="faint">›</span> ${crumbs.join(` <span class="faint">›</span> `)}</nav></div>
+function brandBar(id,r){const b=S.brands[id];const [hk,hl]=healthOf(r.health);
+  return`<div class="bslim"><div class="bsl"><h1 class="bsh1"><button class="bsname" data-act="tab" data-tab="home">${esc(b.name)}</button></h1>${sig(hk,hl)}</div>
    <nav class="mtabs" aria-label="Sections"><button class="mt" data-act="tab" data-tab="home">Overview</button>${brandTiles(id,r).map(([k,l,v,sub,st])=>`<button class="mt ${k===brandTab?"on":""}" ${k===brandTab?`aria-current="page"`:""} data-act="tab" data-tab="${k}" title="${esc(l+": "+v+(sub?", "+sub:""))}">${st==="bad"||st==="warn"?`<span class="sig sm sig-${st}">${SHAPE[st]}</span>`:""}${esc(k==="tasks"&&!campsOf(id).length?"Tasks":k==="sow"?l:SHORT[k]||l)} <b>${esc(k==="tasks"?String(campsOf(id).length||r.open):v)}</b></button>`).join("")}</nav></div>`}
 function campRoll(bid,cid){const ts=withId(S.tasks).filter(t=>t.brand===bid&&t.title&&campOf(t)===cid);const op=ts.filter(t=>t.status!=="Complete");
   return{ts,op,done:ts.length-op.length,blocked:op.filter(t=>t.status==="Blocked").length,late:op.filter(t=>dueFlag(t.deadline,false)==="Overdue").length,
@@ -1810,7 +1843,7 @@ document.addEventListener("click",e=>{
   if(act==="nav"){if(e.target.closest("a,select,button"))return;go(a.dataset.to);return}
   if(act==="open"){if(e.target.closest("select")||(e.target.closest("a")&&e.target.closest("a")!==a&&e.target.closest("a").getAttribute("href")!=="#"))return;e.preventDefault();openDrawer(a.dataset.kind,a.dataset.id,a.dataset.code);return}
   e.preventDefault();
-  if(act==="menu")$("#rail").classList.toggle("open");
+  if(act==="menu"){if(matchMedia("(max-width:900px)").matches)$("#rail").classList.toggle("open");else{railOff=!railOff;ls.set("vt-railoff",railOff?"1":"0");renderTop()}}
   else if(act==="simple"){simple=a.dataset.v==="1";ls.set("vt-simple",simple?"1":"0");render()}
   else if(act==="theme"){theme=a.dataset.v==="dark"?"dark":"light";ls.set("vt-theme",theme);applyTheme();renderTop()}
   else if(act==="tab"){go(brandHash(route.id,a.dataset.tab))}
