@@ -1498,7 +1498,7 @@ function campTimeline(c,ts){
   const key=c._id+"|";
   let h=`<div class="tlbar"><div class="seg" role="group" aria-label="Show"><button data-act="tlwin" data-v="all" class="${tlWin==="all"?"on":""}">Whole campaign</button><button data-act="tlwin" data-v="2w" class="${tlWin==="2w"?"on":""}">Next 2 weeks</button></div>
     <button class="btn sm" data-act="tlall" data-k="${esc(key)}">${DEPTS().some(d=>tlOpen.has(key+d))?"Fold all teams":"Open all teams"}</button><span class="muted">One bar per team. Open a team to see its tasks.</span></div>
-   <div class="gantt"><div class="grow2 ghead"><span class="gl">Team</span><span class="gt">${ticks.map(d=>`<span class="gk" style="left:${pos(d)}%">${esc(new Date(d).toLocaleDateString("en-GB",{day:"numeric",month:"short"}))}</span>`).join("")}</span></div>`;
+   <div class="gantt"><div class="grow2 ghead"><span class="gl">Team</span><span class="gt">${ticks.filter(d=>Math.abs(pos(d)-pos(t0))>4&&(!parseD(c.end)||Math.abs(pos(d)-pos(+parseD(c.end)))>4)).map(d=>`<span class="gk" style="left:${pos(d)}%">${esc(new Date(d).toLocaleDateString("en-GB",{day:"numeric",month:"short"}))}</span>`).join("")}</span></div>`;
   let any=false;
   for(const d of DEPTS()){const all=dated.filter(t=>depOf(t)===d);const rows=all.filter(inWin).sort((a,b)=>String(a.start||a.deadline).localeCompare(String(b.start||b.deadline)));if(!rows.length)continue;any=true;
     const sp=rows.map(ends);const s0=Math.min(...sp.map(x=>+x[0])),e0=Math.max(...sp.map(x=>+x[1]));const op=rows.filter(t=>t.status!=="Complete");

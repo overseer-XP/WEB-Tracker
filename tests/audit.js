@@ -13,7 +13,7 @@ const SKIP = new Set(['del', 'export-xlsx', 'export-json', 'menu', 'dsave', 'mok
   for (const [w, label] of [[1440, 'desktop'], [390, 'phone']]) {
     for (const lens of ['simple', 'full', 'leadership']) {
       const p = await b.newPage({ viewport: { width: w, height: 900 } });
-      const errs = []; p.on('pageerror', e => errs.push(e.message));
+      const errs = []; p.on('pageerror', e => errs.push(e.message)); p.on('crash', () => console.error('CRASH ' + p.url())); p.on('close', () => process.env.TRACE && console.error('CLOSED ' + p.url()));
       await p.goto(url + '#overview'); await p.waitForTimeout(500);
       await p.evaluate(l => { localStorage.setItem('vt-simple', l === 'full' ? '0' : '1'); localStorage.setItem('vt-lens', l === 'leadership' ? 'leadership' : '') }, lens); await p.reload(); await p.waitForTimeout(500);
       if (lens === 'leadership') { await p.evaluate(() => { location.hash = 'settings' }); await p.waitForTimeout(250); await p.click('[data-act=settab][data-tab=people]'); await p.check('input[aria-label="Leadership access for Noopur"]'); await p.waitForTimeout(250) }
@@ -23,7 +23,7 @@ const SKIP = new Set(['del', 'export-xlsx', 'export-json', 'menu', 'dsave', 'mok
         await p.evaluate(h => { location.hash = h }, s); await p.waitForTimeout(250);
         const sw = await p.evaluate(() => document.documentElement.scrollWidth);
         if (sw > w + 1) out.overflow.push(`${label} ${lens} #${s}: page is ${sw}px wide`);
-        out.screens.push(`${label}/${lens}/${s}`);
+        out.screens.push(`${label}/${lens}/${s}`); if (process.env.TRACE) console.error(out.screens.at(-1));
         // only the top bar may hold a Simple / Full switch
         const dup = await p.$$eval('button', bs => bs.filter(b => /^(Simple|Full)$/.test(b.innerText.trim()) && !b.closest('#topbar')).length);
         if (dup) out.dupes.push(`${label} ${lens} #${s}: ${dup} extra Simple/Full buttons`);
