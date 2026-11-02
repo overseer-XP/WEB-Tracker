@@ -7,7 +7,7 @@ const url = 'file://' + path.resolve(process.argv[2]);
 
 const measure = () => {
   const vis = e => { const r = e.getBoundingClientRect(); const s = getComputedStyle(e); return r.width > 1 && r.height > 1 && s.visibility !== 'hidden' && s.display !== 'none' && !e.closest('[hidden]') && !e.closest('.sr') && !(e.closest('details:not([open])') && !e.closest('summary')) };
-  const rgb = c => { const m = c.match(/[\d.]+/g); if (!m) return [0, 0, 0, 0]; const v = m.map(Number); if (/^color\(srgb/.test(c)) return [v[0] * 255, v[1] * 255, v[2] * 255].concat(v.length > 3 ? [v[3]] : []); return v }; // browsers report color-mix() results as color(srgb r g b) on a 0 to 1 scale
+  const rgb = c => { const m = c.match(/[\d.]+/g); if (!m) return [0, 0, 0, 0]; const v = m.map(Number); if (/^color\(srgb/.test(c)) return [v[0] * 255, v[1] * 255, v[2] * 255].concat(v.length > 3 ? [v[3]] : []); return v }; /* browsers report color-mix() results as color(srgb r g b) on a 0 to 1 scale */
   const lum = ([r, g, b]) => { const f = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4) }; return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b) };
   const blend = (top, bot) => { const a = top[3] === undefined ? 1 : top[3]; return [0, 1, 2].map(i => top[i] * a + bot[i] * (1 - a)).concat([1]) };
   const bgOf = e => { const layers = []; let n = e; while (n && n.nodeType === 1) { const s = getComputedStyle(n); const c = rgb(s.backgroundColor); if ((c[3] === undefined || c[3] > 0) && s.backgroundColor !== 'rgba(0, 0, 0, 0)') layers.push(c); if (s.backgroundImage && s.backgroundImage.includes('gradient') && !layers.length) return null; if (layers.length && (layers[layers.length - 1][3] === undefined || layers[layers.length - 1][3] === 1)) break; n = n.parentElement }
@@ -34,7 +34,7 @@ const measure = () => {
     if (/INPUT|SELECT|TEXTAREA/.test(e.tagName) && !['checkbox', 'radio'].includes(e.type)) { const has = e.getAttribute('aria-label') || e.getAttribute('aria-labelledby') || (e.id && document.querySelector(`label[for="${CSS.escape(e.id)}"]`)) || e.closest('label'); if (!has) out.noLabel.push({ el: label(e), name: e.name || e.id || e.placeholder || '' }) }
   }
   // heading order
-  let last = 0; for (const h of document.querySelectorAll('main h1, main h2, main h3, main h4, main h5, main h6')) { if (!vis(h) && !h.classList.contains('sr')) continue; // screen-reader-only headings still count const l = +h.tagName[1]; if (last && l > last + 1) out.headings.push(`${h.tagName} after H${last}: ${h.innerText.slice(0, 30)}`); last = l }
+  let last = 0; for (const h of document.querySelectorAll('main h1, main h2, main h3, main h4, main h5, main h6')) { if (!vis(h) && !h.classList.contains('sr')) continue; /* screen-reader-only headings still count */ const l = +h.tagName[1]; if (last && l > last + 1) out.headings.push(`${h.tagName} after H${last}: ${h.innerText.slice(0, 30)}`); last = l }
   return out;
 };
 
