@@ -272,6 +272,8 @@ select.ps:disabled{cursor:default;background-image:none;padding-right:9px}
 .kroles{font-size:10.5px;font-weight:700;color:var(--muted);margin-right:4px;align-self:center}.kbq{border:1px solid var(--line2);border-radius:8px;padding:6px 10px;min-width:180px;background:var(--panel)}
 @media (max-width:900px){.cov{grid-template-columns:1fr}.rgrid{grid-template-columns:1fr}.ctabs button{padding:10px 10px}}
 .orgd{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-top:10px}.orgt{background:var(--panel);border-radius:12px;padding:10px 14px}.orgt h3{margin:0 0 6px;font-size:13px}.orgp{display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:4px 0;width:100%}
+.bpgate{border-radius:12px;padding:12px 14px;margin-bottom:12px;background:var(--panel);border-left:4px solid var(--info);display:flex;flex-direction:column;gap:6px}.bpgate.ok{border-left-color:var(--ok)}.bpgate.warn{border-left-color:var(--warn)}.bgr{display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap}
+.bpr2{font-size:11.5px;font-weight:600}.bpr2.ok{color:var(--ok)}.bpr2.warn{color:var(--warn)}#modal .box.wide{max-width:980px;width:calc(100vw - 32px);max-height:calc(100vh - 40px);overflow:auto}.faintrow td{opacity:.6}
 .allx{font-size:13px;align-self:flex-start}
 a.cl{color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:6px}a.cl:hover{text-decoration:underline}
 .excs{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:12px}
@@ -715,7 +717,12 @@ const holdOf=bid=>onHold(S.brands[bid]);
 const stepBlocks=bid=>Object.values((S.bsteps[bid]&&S.bsteps[bid].s)||{}).filter(x=>x&&x.blocker&&x.blocker.text&&!["Done","N/A"].includes(x.status)).length;
 const stepsSorted=()=>Object.entries(S.steps).map(([id,s])=>Object.assign({id},s)).sort((a,b)=>a.order-b.order);
 function phases(){const out=[];for(const s of stepsSorted()){let p=out.find(x=>x.code===s.phase);if(!p){p={code:s.phase,name:s.phase_name,steps:[]};out.push(p)}p.steps.push(s)}return out}
-const stepState=(bid,code)=>((S.bsteps[bid]&&S.bsteps[bid].s)||{})[code]||{};
+const stepRaw=(bid,code)=>((S.bsteps[bid]&&S.bsteps[bid].s)||{})[code]||{};
+const AUTO={access_all:{label:"Platform access: every platform the brand needs is granted",test:bid=>{const r=Object.values(S.access).filter(a=>a.brand===bid&&a.status!=="Not Needed");return r.length>0&&r.every(accGranted)}},
+  bp_drafted:{label:"Best Practices: every section is past Not Started",test:bid=>{const d=S.bps[bid];if(!d)return false;const v=L("bp_section").map(x=>(d.sections||{})[x]||"Not Started").filter(x=>x!=="N/A");return v.length>0&&v.every(x=>x!=="Not Started"&&x!=="Blocked")}},
+  bp_complete:{label:"Best Practices: every section is Complete",test:bid=>{const r=bpRoll(bid);return!!r&&r.overall==="Complete"}}};
+function stepState(bid,code){const raw=stepRaw(bid,code);const s=S.steps[code];const a=s&&s.auto&&AUTO[s.auto];
+  if(a&&raw.status!=="N/A"&&memo("auto|"+s.auto+"|"+bid,()=>a.test(bid)))return Object.assign({},raw,{status:"Done",auto:true});return raw}
 const withId=o=>Object.entries(o).map(([k,v])=>Object.assign({_id:k},v));
 const opts=(arr,cur,blank)=>{const list=arr.slice();if(cur&&!list.includes(cur))list.push(cur);return(blank!==false?`<option value=""></option>`:"")+list.map(o=>`<option value="${esc(o)}" ${o===cur?"selected":""}>${esc(o)}</option>`).join("")};
 
@@ -1147,9 +1154,37 @@ function tasksTab(bid){
   return h+brandBlockers(bid)+(cs.length?campRows(bid,all):campTabs(bid,NOCAMP,{_id:NOCAMP,name:"All work"},campRoll(bid,NOCAMP)))}
 
 function phaseOpen(bid,p){return p.steps.filter(s=>!s.is_optional).some(s=>!["Done","N/A"].includes(stepState(bid,s.code).status))}
+let accImport=null;
+const normH=v=>String(v||"").toLowerCase().replace(/\s+/g," ").trim();
+async function readAccessSheet(bid,file){const cfg=ACCESS_SETUP().sheet_import;if(!cfg||!cfg.map){toast("The sheet import is not set up yet (Settings, Access setup).");return}
+  let X;try{X=await loadXlsx()}catch(e){toast("Could not load the spreadsheet reader. Check your connection.");return}
+  const wb=X.read(await file.arrayBuffer(),{type:"array"});const rows=X.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:""});
+  const hi=rows.findIndex(r=>r.some(c=>normH(c)===normH(cfg.platform_col)));if(hi<0){toast(`No "${cfg.platform_col}" column found in the first sheet.`);return}
+  const pc=rows[hi].findIndex(c=>normH(c)===normH(cfg.platform_col)),nc=rows[hi].findIndex(c=>normH(c)===normH(cfg.notes_col));if(nc<0){toast(`No "${cfg.notes_col}" column found.`);return}
+  const rank=v=>ACC_STEPS.indexOf(v);const plan=[];const seen=new Set();
+  for(const r of rows.slice(hi+1)){const name=String(r[pc]||"").replace(/\s+/g," ").trim();if(!name)continue;const note=String(r[nc]||"").trim(); // only these two cells are read
+    const low=name.toLowerCase();const key=Object.keys(cfg.map).map(k=>[k,low.indexOf(k.toLowerCase())]).filter(([k,i])=>i>=0&&i<20).sort((a,b)=>a[1]-b[1]||b[0].length-a[0].length).map(x=>x[0])[0];const platform=key?cfg.map[key]:"";
+    let st="",word="Left blank by the founder";if(note){const hit=(cfg.rules||[]).find(x=>new RegExp(x.match,"i").test(note));st=hit?hit.status:cfg.default_status||"Founder actioned";word=hit?hit.word:"Founder filled it in"}
+    const cur=platform?withId(S.access).find(a=>a.brand===bid&&a.platform===platform):null;let act="skip",why="",on=false;
+    if(!platform)why="Not tracked in VALFLO";else if(seen.has(platform))why="Already in this sheet";else if(!st)why=word;
+    else if(!cur){if(st==="Not Needed")why="Not used, nothing to add";else{act="add";on=true}}
+    else if(cur.status===st)why="Already "+st;
+    else if(["Not Needed","Blocked"].includes(cur.status)||st==="Not Needed"){act="update";why="Check: VALFLO says "+cur.status}
+    else if(rank(st)>rank(cur.status)){act="update";on=true}else why="VALFLO is further along ("+cur.status+")";
+    if(platform)seen.add(platform);plan.push({name:name.slice(0,60),note:note.replace(/\S*\d\S*|\S+\.(com|io|co|net|au)\S*/gi,"•••").slice(0,90),platform,st,word,cur:cur?cur._id:"",now:cur?cur.status:"",act,why,on})}
+  accImport={bid,plan,file:file.name};showAccessImport()}
+function showAccessImport(){const{bid,plan,file}=accImport;const m=$("#modal");const n=plan.filter(x=>x.on).length;
+  m.innerHTML=`<div class="box wide" role="dialog" aria-label="Founder access sheet"><h3>Founder access sheet: ${esc(bname(bid))}</h3><p class="muted">${esc(file)}. Only the platform and the founder's notes were read. Logins, passwords and IDs in the sheet are never read or saved. Tick what to apply.</p>
+   <div class="tw"><table><thead><tr><th></th><th>In the sheet</th><th>Founder says</th><th>VALFLO platform</th><th>Now</th><th>Becomes</th></tr></thead><tbody>${plan.map((x,i)=>`<tr class="${x.act==="skip"?"faintrow":""}"><td>${x.act!=="skip"?`<input type="checkbox" data-act="ai-tick" data-i="${i}" ${x.on?"checked":""} aria-label="Apply ${esc(x.name)}">`:""}</td><td><b>${esc(x.name)}</b><div class="faint" style="font-size:12px">${esc(x.note)}</div></td><td>${esc(x.word)}</td><td>${esc(x.platform||"-")}</td><td>${esc(x.now||(x.platform?"Not tracked":""))}</td><td>${x.act==="skip"?`<span class="faint">${esc(x.why)}</span>`:`${pill(x.st)}${x.why?`<div class="hot" style="font-size:12px">${esc(x.why)}</div>`:""}`}</td></tr>`).join("")}</tbody></table></div>
+   <div class="row"><button class="btn pri" data-act="ai-apply">Apply ${n} change${n===1?"":"s"}</button><button class="btn" data-act="mclose">Cancel</button></div></div>`;m.hidden=false}
+async function applyAccessImport(){const{bid,plan}=accImport;const day=isoToday();let n=0;
+  for(const x of plan.filter(y=>y.on&&y.act!=="skip")){const tag=`Founder access sheet ${day}: ${x.word}.`;
+    if(x.act==="add"){await create("access",null,{brand:bid,platform:x.platform,access_level:"TBC",needed_for:"",owner:"",brand_contact:(S.brands[bid]||{}).founder||"",requested_date:day,deadline:"",status:x.st,blocker:"",notes:tag},bname(bid)+" "+x.platform);n++}
+    else{const a=S.access[x.cur];if(!a)continue;await save("access",x.cur,{status:x.st,notes:((a.notes||"")+(a.notes?" ":"")+tag).trim()},bname(bid)+" "+x.platform);n++}}
+  $("#modal").hidden=true;accImport=null;toast(n+" platform"+(n===1?"":"s")+" updated from the founder sheet")}
 function accessTable(bid){
   const waiting=withId(S.access).filter(a=>a.brand===bid&&ACC_FOUNDER.includes(a.status)).length;
-  return`<div class="row" style="margin-bottom:10px">${canWrite?`<button class="btn pri" data-act="add-access" data-id="${esc(bid)}">Add platform</button>`:""}${waiting?`<button class="btn" data-act="fm-open" data-id="${esc(bid)}">Message for founder (${waiting} missing)</button>`:""}<span class="muted">Any Blocked row turns the brand Blocked. Use Not Needed to leave a platform out.</span></div>`+accFull(bid)}
+  return`<div class="row" style="margin-bottom:10px">${canWrite?`<button class="btn pri" data-act="add-access" data-id="${esc(bid)}">Add platform</button><label class="btn">Import founder sheet<input type="file" id="ai-file" data-b="${esc(bid)}" accept=".xlsx,.xls,.csv" hidden></label>`:""}${waiting?`<button class="btn" data-act="fm-open" data-id="${esc(bid)}">Message for founder (${waiting} missing)</button>`:""}<span class="muted">Any Blocked row turns the brand Blocked. Use Not Needed to leave a platform out.</span></div>`+accFull(bid)}
 function sowCard(bid){
   const b=S.brands[bid];if(isInternal(b))return`<div class="tw"><div class="empty">Internal work has no SOW.</div></div>`;
   const s=S.sow[bid];if(!s)return`<div class="tw"><div class="empty">No SOW row yet. ${canWrite?`<button class="btn sm" data-act="add-sow" data-id="${esc(bid)}">Start one</button>`:""}</div></div>`;
@@ -1183,7 +1218,7 @@ function vBp(){
    <tr><th class="stick" rowspan="2">Brand</th><th rowspan="2">Progress</th><th rowspan="2">Overall</th>${groups.map((g,i)=>`<th colspan="${g.sections.length}" class="gh g${i%6}">${esc(g.name)}</th>`).join("")}${simple?"":`<th rowspan="2">Owner</th><th rowspan="2">Due</th>`}<th rowspan="2"><span class="sr">Edit</span></th><th rowspan="2">Link</th></tr>
    <tr>${groups.map((g,i)=>g.sections.map(x=>`<th class="pc g${i%6}" title="${esc(x)}"><span>${esc(x)}</span></th>`).join("")).join("")}</tr></thead><tbody>`;
   for(const b of rows){const d=S.bps[b.id];const r=R[b.id];
-    h+=`<tr class="${onHold(b)?"held":""}"><td class="stick"><a class="bname" href="#${brandHash(b.id,"bp")}" title="Open ${esc(b.name)} Best Practices">${esc(b.name)}</a></td><td class="nowrap"><span class="bar"><i style="width:${Math.round(r.progress*100)}%"></i></span> <span class="faint">${r.done}/${r.total}</span></td><td>${pill(r.overall)}</td>${secs.map(x=>{const v=(d.sections||{})[x]||"Not Started";
+    h+=`<tr class="${onHold(b)?"held":""}"><td class="stick"><a class="bname" href="#${brandHash(b.id,"bp")}" title="Open ${esc(b.name)} Best Practices">${esc(b.name)}</a>${(()=>{const g=bpReady(b.id);return g.locked.length?`<div class="bpr2 warn">${g.locked.length} waiting on access</div>`:g.ready.length&&!g.unchecked.length?`<div class="bpr2 ok">Access ready</div>`:""})()}</td><td class="nowrap"><span class="bar"><i style="width:${Math.round(r.progress*100)}%"></i></span> <span class="faint">${r.done}/${r.total}</span></td><td>${pill(r.overall)}</td>${secs.map(x=>{const v=(d.sections||{})[x]||"Not Started";
       const ax=v==="Not Started"?bpAccess(b.id,x):null;const lk=ax&&ax.state==="locked";const rd=ax&&ax.state==="ready";
       return`<td class="gc"><button class="bpd bp-${lk?"Locked":key(v)}${rd?" bp-Ready":""}" data-act="bpdot" data-id="${esc(b.id)}" data-sec="${esc(x)}" title="${esc(x+": "+v+(lk?"\nWaiting on access: "+ax.missing.join(", "):rd?"\nAccess is in place. Ready to start":""))}" aria-label="${esc(b.name+", "+x+": "+v+(lk?", waiting on access":rd?", ready to start":""))}" ${canWrite?"":"disabled"}>${lk?LOCK:esc(BPMARK[v]??"")}</button></td>`}).join("")}
       ${simple?"":`<td class="nowrap">${esc(d.owner)||`<span class="faint">Not set</span>`}</td><td class="nowrap">${dueHtml(d.due_date,r.progress===1)||`<span class="faint">No date</span>`}</td>`}
@@ -1191,10 +1226,18 @@ function vBp(){
       <td class="nowrap">${d.doc_link?`<a class="btn sm quiet" href="${esc(d.doc_link)}" target="_blank" rel="noopener" title="${esc(d.doc_link)}">Open</a>`:""}${canWrite?`<button class="btn sm quiet" data-act="bp-link" data-id="${esc(b.id)}" aria-label="${esc((d.doc_link?"Change":"Add")+" the Best Practices link for "+b.name)}">${d.doc_link?"Change":"Add link"}</button>`:d.doc_link?"":`<span class="faint">None</span>`}</td></tr>`}
   if(!rows.length)h+=`<tr><td colspan="${secs.length+7}"><div class="empty">No brands match this filter.</div></td></tr>`;
   return h+`</tbody></table></div>`}
+function bpReady(bid){const d=S.bps[bid]||{sections:{}};const out={ready:[],locked:[],unchecked:[]};
+  for(const x of L("bp_section")){const v=(d.sections||{})[x]||"Not Started";if(v==="N/A"||v==="Complete")continue;const ax=bpAccess(bid,x);if(!ax)continue;
+    if(ax.state==="locked")out.locked.push({sec:x,missing:ax.missing});else if(ax.state==="untracked")out.unchecked.push({sec:x,need:ax.need});else out.ready.push(x)}return out}
+function bpGate(bid){const g=bpReady(bid);if(!g.ready.length&&!g.locked.length&&!g.unchecked.length)return"";const ok=!g.locked.length&&!g.unchecked.length;
+  return`<div class="bpgate ${ok?"ok":g.locked.length?"warn":"info"}"><b>${ok?"Ready for Best Practices: every section has the access it needs":g.locked.length?"Ready except "+g.locked.length+" section"+(g.locked.length>1?"s":""):"Access not checked for "+g.unchecked.length+" section"+(g.unchecked.length>1?"s":"")}</b>
+   ${g.locked.map(x=>`<div class="bgr"><span>${LOCK} <b>${esc(x.sec)}</b> waiting on ${esc(x.missing.join(", "))}</span>${canWrite?`<button class="btn sm quiet" data-act="bp-na" data-id="${esc(bid)}" data-sec="${esc(x.sec)}" title="The brand will not give this access: leave the section out">Leave out (N/A)</button>`:""}</div>`).join("")}
+   ${g.unchecked.length?`<div class="bgr"><span class="faint">Not in Platform access yet: ${g.unchecked.map(x=>esc(x.sec)+" ("+esc(x.need.join(", "))+")").join("; ")}</span></div>`:""}
+   <a class="allx" href="#${brandHash(bid,"access")}">Open platform access ›</a></div>`}
 function bpCard(bid){
   const d=S.bps[bid];if(!d)return`<div class="tw"><div class="empty">Best Practices not started for this brand. ${canWrite?`<button class="btn sm" data-act="add-bp" data-id="${esc(bid)}">Start tracking</button>`:""}</div></div>`;
   const r=bpRoll(bid);
-  return`<div class="row" style="margin-bottom:10px">${pill(r.overall)}<span class="muted">${r.done} of ${r.total} sections complete</span>${d.due_date?dueHtml(d.due_date,r.progress===1):""}${d.doc_link?`<a class="btn sm quiet" href="${esc(d.doc_link)}" target="_blank" rel="noopener">Open Best Practices document</a>`:""}${canWrite?`<button class="btn sm quiet" data-act="bp-link" data-id="${esc(bid)}">${d.doc_link?"Change link":"Add document link"}</button>`:""}<span class="grow"></span>${canWrite?`<button class="btn" data-act="open" data-kind="bp" data-id="${esc(bid)}">Edit owner, due date and notes</button>`:""}</div>
+  return bpGate(bid)+`<div class="row" style="margin-bottom:10px">${pill(r.overall)}<span class="muted">${r.done} of ${r.total} sections complete</span>${d.due_date?dueHtml(d.due_date,r.progress===1):""}${d.doc_link?`<a class="btn sm quiet" href="${esc(d.doc_link)}" target="_blank" rel="noopener">Open Best Practices document</a>`:""}${canWrite?`<button class="btn sm quiet" data-act="bp-link" data-id="${esc(bid)}">${d.doc_link?"Change link":"Add document link"}</button>`:""}<span class="grow"></span>${canWrite?`<button class="btn" data-act="open" data-kind="bp" data-id="${esc(bid)}">Edit owner, due date and notes</button>`:""}</div>
    <div class="bpcards">${BPGROUPS().map((g,i)=>`<div class="bpc g${i%6}"><h3>${esc(g.name||"Sections")}</h3>${g.sections.map(x=>{const v=(d.sections||{})[x]||"Not Started";const ax=v==="Not Started"?bpAccess(bid,x):null;return`<div class="bpr"><span>${esc(x)}${ax&&ax.state==="locked"?`<span class="lockt">${LOCK} Waiting on ${esc(ax.missing.join(", "))}</span>`:ax&&ax.state==="ready"?`<span class="readyt">Ready to start</span>`:""}</span>${canWrite?`<select class="ps ${cls(v)}" data-act="bpsec" data-id="${esc(bid)}" data-sec="${esc(x)}" aria-label="${esc(x)}">${opts(L("bp_status"),v,false)}</select>`:pill(v)}</div>`}).join("")}</div>`).join("")}</div>
    <div class="next"><label>Owner</label><div>${esc(d.owner)||`<span class="faint">Not set</span>`}</div></div><div class="next"><label>Blocker</label><div>${esc(d.blocker)||`<span class="faint">None</span>`}</div></div>${simple?"":`<div class="next"><label>Notes</label><div>${esc(d.notes)||`<span class="faint">None</span>`}</div></div>`}`}
 function openPop(btn){closePop();const id=btn.dataset.id,sec=btn.dataset.sec;const cur=((S.bps[id]||{}).sections||{})[sec]||"Not Started";
@@ -1905,7 +1948,7 @@ function openDrawer(kind,id,extra,refresh){
      +field("Sprint",inp("sprint_label",b.sprint_label),1)+field("Next step",area("next_step",b.next_step),1)
      +field("On hold (paused)",`<select name="paused" id="d-paused">${opts(["No","Yes"],b.paused?"Yes":"No",false)}</select>`)+field("Restricted",`<select name="restricted" id="d-restricted">${opts(["No","Yes"],b.restricted?"Yes":"No",false)}</select>`,0,"Marks the brand as sensitive. Access limits come with the full build")}
   else if(kind==="step"){const s=S.steps[extra];const st=stepState(id,extra);if(!s){closeDrawer();return}title=s.code+" "+s.name;
-    body=(st.sent_back?`<div class="notice bad w" style="grid-column:1/-1;margin:0">Sent back by ${esc(st.sent_back.by||"leadership")} on ${esc(fmtD(st.sent_back.at,true))}: ${esc(st.sent_back.note||"")}. Change the step to send it again.</div>`:"")+`<p class="muted w" style="grid-column:1/-1;margin:0">${esc(bname(id))}${s.is_gate?" · Gate step":""}${s.is_optional?" · Optional":""}${s.default_owner?" · Usually "+esc(s.default_owner):""}</p>`
+    body=(st.sent_back?`<div class="notice bad w" style="grid-column:1/-1;margin:0">Sent back by ${esc(st.sent_back.by||"leadership")} on ${esc(fmtD(st.sent_back.at,true))}: ${esc(st.sent_back.note||"")}. Change the step to send it again.</div>`:"")+`<p class="muted w" style="grid-column:1/-1;margin:0">${esc(bname(id))}${s.is_gate?" · Gate step":""}${s.auto&&AUTO[s.auto]?" · Ticks itself when "+esc(AUTO[s.auto].label.toLowerCase())+(st.auto?" (it is now)":""):""}${s.is_optional?" · Optional":""}${s.default_owner?" · Usually "+esc(s.default_owner):""}</p>`
      +field("Status",sel("status",L("checklist"),st.status||"Not Started",false))+field("Owner",sel("owner",activePeople(),st.owner))+field("Deadline",inp("deadline",st.deadline,"date"))
      +field(s.doc_label?"Link to "+s.doc_label:"Document link",inp("link",st.link,"url"))+field("Blocked because",inp("blk_text",st.blocker&&st.blocker.text),1,"Leave empty when nothing blocks it")+field("Waiting on",sel("blk_person",activePeople(),st.blocker&&st.blocker.person))
      +field("Notes",area("notes",st.notes),1)}
@@ -2100,6 +2143,8 @@ document.addEventListener("click",e=>{
   else if(act==="go-camp"){const c=S.camps[a.dataset.id];if(!c)return;brandTab="tasks";go(campHash(c.brand,a.dataset.id))}
   else if(act==="kbf-clear"){kbFilter=Object.assign(kbFilter,{who:"",due:"",q:"",st:""});render()}
   else if(act==="kbst-clear"){kbFilter.st="";render()}
+  else if(act==="ai-apply"){if(accImport)applyAccessImport()}
+  else if(act==="bp-na"){const id=a.dataset.id,sec=a.dataset.sec;const d=S.bps[id];if(!d)return;confirmBox(`Leave ${sec} out of Best Practices for ${bname(id)}? It will show as N/A until someone changes it.`,"Leave out",()=>save("bps",id,{sections:Object.assign({},d.sections,{[sec]:"N/A"})},bname(id)+" BP "+sec))}
   else if(act==="whomore"){const tb=a.closest(".tw");tb.classList.add("all");a.remove()}
   else if(act==="campview"){campView=a.dataset.v;render()}
   else if(act==="campslice"){kbFilter.st=a.dataset.v;campView="board";render()}
@@ -2157,6 +2202,8 @@ document.addEventListener("click",e=>{
   else if(act==="export-json")exportJson();
 });
 document.addEventListener("change",e=>{
+  if(e.target.id==="ai-file"&&e.target.files&&e.target.files[0]){readAccessSheet(e.target.dataset.b,e.target.files[0]);e.target.value="";return}
+  if(e.target.dataset&&e.target.dataset.act==="ai-tick"&&accImport){accImport.plan[+e.target.dataset.i].on=e.target.checked;showAccessImport();return}
   if(e.target.form&&e.target.form.id==="dform"&&e.target.name)drawerDirty[e.target.name]=e.target.value;
   const t=e.target;const act=t.dataset&&t.dataset.act;if(!act)return;
   if(act==="kbf"){kbFilter[t.dataset.k]=t.value;render();return}
