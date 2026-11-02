@@ -306,8 +306,8 @@ select.ps:disabled{cursor:default;background-image:none;padding-right:9px}
 .itsub{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:4px}
 .itb{display:flex;align-items:flex-end;gap:10px;height:120px;padding-top:4px}.itbc{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px}.itbc i{display:block;width:100%;max-width:44px;border-radius:8px;background:var(--accent)}.itbc.lo i{background:color-mix(in srgb,var(--accent) 30%,transparent)}.itbc.hi i{background:var(--ember)}.itbc em{font-style:normal;font-size:13px;font-weight:700}.itbc small{font-size:12px;color:var(--muted)}
 .itm{display:flex;flex-direction:column;gap:6px}.itmb{height:12px;border-radius:999px;background:var(--line);overflow:hidden}.itmb i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--ember));border-radius:999px}.itml{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}.itml b{color:var(--ink);font-size:15px}
-.itr{display:flex;flex-direction:column;gap:6px}.itr>span{display:flex;justify-content:space-between;align-items:center;gap:10px;background:color-mix(in srgb,var(--panel) 70%,transparent);border:1px solid var(--line);border-radius:12px;padding:8px 12px;font-size:13.5px}.itr b{font-size:15px}
-.itl{display:flex;flex-direction:column;gap:6px}.itl>span{display:flex;justify-content:space-between;align-items:center;gap:10px;background:color-mix(in srgb,var(--panel) 70%,transparent);border:1px solid var(--line);border-radius:12px;padding:8px 12px}.itl>span>span{display:flex;flex-direction:column;min-width:0}.itl b{font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.itl small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.itr{display:flex;flex-direction:column;gap:6px}.itr>span{display:flex;justify-content:space-between;align-items:center;gap:10px;background:color-mix(in srgb,var(--panel) 88%,var(--bg));border:1px solid var(--line);border-radius:12px;padding:8px 12px;font-size:13.5px}.itr b{font-size:15px}
+.itl{display:flex;flex-direction:column;gap:6px}.itl>span{display:flex;justify-content:space-between;align-items:center;gap:10px;background:color-mix(in srgb,var(--panel) 88%,var(--bg));border:1px solid var(--line);border-radius:12px;padding:8px 12px}.itl>span>span{display:flex;flex-direction:column;min-width:0}.itl b{font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.itl small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pillx{font-size:12px;font-weight:600;border-radius:999px;padding:3px 9px;white-space:nowrap}.px-ok{background:var(--okBg);color:var(--ok)}.px-warn{background:var(--warnBg);color:var(--warn)}.px-bad{background:var(--badBg);color:var(--bad)}.px-info{background:var(--infoBg);color:var(--info)}
 .itx{font-size:13.5px}.itgo{position:absolute;right:16px;bottom:12px;font-size:20px;color:var(--accent);opacity:.55}.it:hover .itgo{opacity:1}
 @media (max-width:1100px){.ib{grid-template-columns:repeat(6,minmax(0,1fr))}.s5,.s6,.s7,.s8,.s12{grid-column:span 6}.s3,.s4{grid-column:span 3}.r2{grid-row:auto}}
@@ -335,7 +335,7 @@ select.ps:disabled{cursor:default;background-image:none;padding-right:9px}
   .tmore{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:1px solid var(--line2);border-radius:10px;background:var(--panel);color:var(--ink);flex:none}.tmore svg{width:20px;height:20px;fill:currentColor}
   .tctl{display:none}.topbar.open .tctl{display:flex;flex-wrap:wrap;gap:8px;width:100%;align-items:center}.topbar.open .tmore{background:var(--accentSoft)}
   .ib.strip{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.ib.strip .it{grid-column:auto;padding:12px 14px;gap:8px;border-radius:18px}.ib.strip .it:first-child{grid-column:1/-1}
-  .ib.strip .its,.ib.strip .itml span:last-child{display:none}.ib.strip .ithero b{font-size:30px}.ib.strip .itb{height:70px;gap:4px}.ib.strip .itbc small{font-size:11.5px;text-align:center;line-height:1.2}.ib.strip .itr>span{padding:6px 10px;font-size:13px}
+  .ib.strip .its,.ib.strip .itml span:last-child{display:none}.ib.strip .ithero b{font-size:30px}.ib.strip .itb{height:70px;gap:4px}.ib.strip .itbc small{font-size:12px;text-align:center;line-height:1.2}.ib.strip .itr>span{padding:6px 10px;font-size:13px}
   .it{padding:16px}.ithero b{font-size:36px}.itg svg{width:180px}.itb{height:96px;gap:6px}.lhead{padding:18px 20px;font-size:17px}.lhead .lhn{font-size:36px;text-align:left}
   .kbbar{gap:8px}.kbbar .kbq{flex:1 1 100%;min-width:0}.kbbar .grow,.kbbar>.faint{display:none}.kbbar .tl{font-size:13px}
   .cbox .ctop{flex-wrap:wrap}.ctabs button{padding:10px 12px;font-size:14px}
@@ -1085,7 +1085,7 @@ function vOverview(){
     ${simple?"":`<td class="num">${r.open}</td><td class="num">${r.blocked?`<span class="hot">${r.blocked}</span>`:0}</td><td class="num">${r.overdue?`<span class="hot">${r.overdue}</span>`:0}</td>${accLink(b.id,r)}${sowLink(b.id,r)}<td><a class="cl" href="#${brandHash(b.id,"sow")}">${targetHtml(s)}</a></td>${bpLink(b.id,r)}${roadLink(b.id,r)}<td class="${lu&&Date.now()-lu>7*DAY?"hot":"faint"}" style="white-space:nowrap">${lu?esc(agoText(lu)):"Not yet"}</td>`}
     <td class="clip muted"><span class="clamp" title="${esc(b.next_step||"")}">${esc(b.next_step||"")}</span></td><td>${b.lead?esc(b.lead):`<span class="faint">No lead yet</span>`}</td></tr>`}
   P.all=A+`</tbody></table></div>`;
-  if(sub)return h+P[sub];
+  if(sub)return h+`<h2 class="sr">${esc(OV_SECTIONS[sub])} details</h2>`+P[sub];
   const act=bs.filter(b=>!onHold(b)&&!isInternal(b));const hc={ok:0,warn:0,bad:0};for(const b of act){const x=R[b.id].health;hc[x==="Blocked"?"bad":x==="At Risk"||x==="Has blockers"?"warn":"ok"]++}
   const seg=(v,k,w)=>v?`<i class="${k}" style="flex:${v}" title="${v} ${w}"></i>`:"";
   const stages=L("stage").filter(x=>x!=="Internal"&&x!=="On Hold");const sc=stages.map(st=>({st,n:act.filter(b=>b.stage===st).length}));const smax=Math.max(1,...sc.map(x=>x.n));
@@ -1861,7 +1861,7 @@ function vLeadership(){
   P.week=weekAhead(bs);
   P.all=leadAll(bs,R);
   P.launches=`<p class="hint2">Campaign launch and end dates for the next six weeks, with anything still holding them up. Late means the date has passed and the campaign is not Done.</p>`+launchCalendar(launches);
-  const sub=route.id||"";if(sub&&LEAD_SECTIONS[sub])return`<h1>${esc(LEAD_SECTIONS[sub])}</h1>`+P[sub];
+  const sub=route.id||"";if(sub&&LEAD_SECTIONS[sub])return`<h1>${esc(LEAD_SECTIONS[sub])}</h1><h2 class="sr">${esc(LEAD_SECTIONS[sub])} details</h2>`+P[sub];
   return h+leadBento({bs,R,n,prev,onb,live,dueMonth,riskCamps,gates,escs,att,launches})}
 /* infographic tiles: one grid of 12 columns, tiles span by importance; every number has a word and every colour a label */
 const IB={
@@ -1875,7 +1875,7 @@ const IB={
   bars(items){const mx=Math.max(1,...items.map(x=>x.n));return`<span class="itb" role="img" aria-label="${esc(items.map(x=>x.l+": "+x.n).join(", "))}">${items.map(x=>`<span class="itbc ${x.k?"":x.n&&x.n===mx?"hi":x.n<mx/2?"lo":""}" title="${esc((x.t||x.l)+": "+x.n)}"><em>${x.n}</em><i style="height:${Math.max(4,Math.round(x.n/mx*100))}%${x.k?";background:var(--"+x.k+")":""}"></i><small>${esc(x.l)}</small></span>`).join("")}</span>`},
   meter(a,b,la,lb){const t=a+b||1;return`<span class="itm"><span class="itmb" role="img" aria-label="${a} ${esc(la)}, ${b} ${esc(lb)}"><i style="width:${Math.round(a/t*100)}%"></i></span><span class="itml"><span><b>${Math.round(a/t*100)}%</b> ${esc(la)}</span><span>${b} ${esc(lb)}</span></span></span>`},
   rows:r=>`<span class="itr">${r.map(([l,v,k])=>`<span><span>${esc(l)}</span><b class="${k?"c-"+k:""}">${v}</b></span>`).join("")}</span>`,
-  list:(r,empty)=>r.length?`<span class="itl">${r.map(([t,sub,pill,k])=>`<span><span><b>${esc(t)}</b>${sub?`<small>${esc(sub)}</small>`:""}</span>${pill?`<span class="pillx px-${k||"info"}">${esc(pill)}</span>`:""}</span>`).join("")}</span>`:`<span class="itx faint">${esc(empty)}</span>`};
+  list:(r,empty)=>r.length?`<span class="itl">${r.map(([t,sub,pill,k])=>`<span title="${esc(t+(sub?": "+sub:""))}"><span><b>${esc(t)}</b>${sub?`<small>${esc(sub)}</small>`:""}</span>${pill?`<span class="pillx px-${k||"info"}">${esc(pill)}</span>`:""}</span>`).join("")}</span>`:`<span class="itx faint">${esc(empty)}</span>`};
 IB.box=(cls,inner)=>`<div class="it ${cls}">${inner}</div>`;
 const pct100=(a,b)=>b?Math.round(a/b*100):0;
 /* a strip of infographic tiles at the top of a page */
