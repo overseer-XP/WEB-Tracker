@@ -274,6 +274,16 @@ select.ps:disabled{cursor:default;background-image:none;padding-right:9px}
 .orgd{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-top:10px}.orgt{background:var(--panel);border-radius:12px;padding:10px 14px}.orgt h3{margin:0 0 6px;font-size:13px}.orgp{display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:4px 0;width:100%}
 .bpgate{border-radius:12px;padding:12px 14px;margin-bottom:12px;background:var(--panel);border-left:4px solid var(--info);display:flex;flex-direction:column;gap:6px}.bpgate.ok{border-left-color:var(--ok)}.bpgate.warn{border-left-color:var(--warn)}.bgr{display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap}
 .bpr2{font-size:11.5px;font-weight:600}.bpr2.ok{color:var(--ok)}.bpr2.warn{color:var(--warn)}#modal .box.wide{max-width:980px;width:calc(100vw - 32px);max-height:calc(100vh - 40px);overflow:auto}.faintrow td{opacity:.6}
+.lbento{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:6px}
+.lbt{background:var(--panel);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:8px;min-height:190px;color:var(--ink);text-decoration:none;border-top:4px solid var(--line2);transition:transform .12s}
+.lbt:hover,.lbt:focus-visible{transform:translateY(-2px);box-shadow:0 6px 20px rgba(10,10,112,.10)}.lbt-ok{border-top-color:var(--ok)}.lbt-warn{border-top-color:var(--warn)}.lbt-bad{border-top-color:var(--bad)}.lbt-info{border-top-color:var(--info)}
+.lbl{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}.lbn{display:flex;align-items:baseline;gap:8px}.lbn b{font-size:40px;line-height:1;font-weight:700;letter-spacing:-.02em}.lbn span{color:var(--muted);font-size:13.5px}
+.lbx{font-size:13.5px;line-height:1.4}.lbf{margin-top:auto;display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted)}.lbf .lgo{margin-left:auto;color:var(--accent);font-weight:600}
+.lbar{display:flex;gap:2px;height:10px;border-radius:5px;overflow:hidden;background:var(--line)}.lbar i{display:block;min-width:4px}.lbar .ok{background:var(--ok)}.lbar .warn{background:var(--warn)}.lbar .bad{background:var(--bad)}
+.c-ok{color:var(--ok)}.c-warn{color:var(--warn)}.c-bad{color:var(--bad)}
+.lpbars{display:flex;align-items:flex-end;gap:6px;height:64px}.lpb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:2px}.lpb i{display:block;width:100%;max-width:26px;background:var(--accent);border-radius:4px 4px 0 0;min-height:2px}.lpb em{font-style:normal;font-size:11px;font-weight:700}.lpb small{font-size:10.5px;color:var(--muted)}
+.lmore{display:flex;gap:18px;margin-top:14px;font-size:14px}
+@media (max-width:1100px){.lbento{grid-template-columns:repeat(2,minmax(0,1fr))}}@media (max-width:560px){.lbento{grid-template-columns:1fr}.lbt{min-height:0}}
 .allx{font-size:13px;align-self:flex-start}
 a.cl{color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:6px}a.cl:hover{text-decoration:underline}
 .excs{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:12px}
@@ -802,6 +812,7 @@ function addLog(c,id,patch,old,label){
 function parseHash(){const h=location.hash.replace(/^#/,"");
   if(h.startsWith("brand-")){const[head,cid]=h.slice(6).split("/c/");const[bid,tab]=head.split("/");route={v:"brand",id:bid,camp:cid?decodeURIComponent(cid):""};campSel={bid,id:route.camp};brandTab=route.camp?"tasks":tab==="steps"?"sow":(tab||"home")}
   else if(h.startsWith("client-"))route={v:"client",id:h.slice(7)};
+  else if(h.startsWith("leadership/"))route={v:"leadership",id:h.slice(11)};
   else if(["mine","leadership","overview","access","sow","bp","settings","people","changes"].includes(h))route={v:h,id:""};
   else route={v:"",id:""};
   $("#rail").classList.remove("open");closeDrawer();render();$("#main").scrollTop=0}
@@ -869,6 +880,7 @@ function crumbsOf(){
       const sec=brandTab==="tasks"&&!campsOf(id).length?"Tasks":brandTab==="sow"&&isInternal(b)?"Onboarding":SECT[brandTab]||"";
       out.push(deep?{l:sec,act:`data-act="camp" data-id=""`}:{l:sec,href:"#"+brandHash(id,brandTab)});if(deep)out.push({l:campName(cid)})}
     return out}
+  if(route.v==="leadership"&&route.id&&LEAD_SECTIONS[route.id])return[{l:"Leadership",href:"#leadership"},{l:LEAD_SECTIONS[route.id]}];
   if(route.v==="client"&&S.brands[route.id])return[{l:S.brands[route.id].name,href:"#brand-"+route.id},{l:"Founder view"}];
   return[{l:TOPNAME[route.v]||"Overview",href:"#"+(route.v||"overview")}]}
 function renderTop(){
@@ -1693,34 +1705,67 @@ function vLeadership(){
   const bs=brandList();const R={};bs.forEach(b=>R[b.id]=roll(b.id));const n=portfolioNumbers(bs,R);keepSnapshot(n);const prev=reviewBase();
   const lr=lastReview();const gates=readyGates();const escs=openEsc().sort((a,b)=>String(a.due||"9").localeCompare(String(b.due||"9"))||a.at-b.at);
   const launches=launchItems();const soon=launches.filter(x=>x.when!=="late"&&x.days<=14).length;
-  let h=`<h1>Leadership</h1><p class="sub">Week of ${esc(lr.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"}))}. Changes are compared with the review before, ${prev?esc(fmtD(prev.date,true)):"once there is a week of history"}.</p>
+  let h=`<h1>Leadership</h1><p class="sub">Week of ${esc(lr.toLocaleDateString("en-GB",{day:"numeric",month:"long"}))}${prev?" · compared with "+esc(fmtD(prev.date,true)):""}. Click a tile to open it.</p>
    <div class="row" style="gap:8px;margin:-6px 0 14px"><span class="faint" style="font-size:12.5px">Review day</span>${canEdit&&canWrite?`<select data-act="review-day" aria-label="Review day">${DAYNAMES.map((d,i)=>`<option value="${i}" ${i===REVIEW_DAY()?"selected":""}>${d}</option>`).join("")}</select>`:`<b style="font-size:13px">${DAYNAMES[REVIEW_DAY()]}</b>`}
-   <button class="btn sm" data-act="lead-jump" data-to="lead-decisions">Decisions <span class="cnt">${gates.length+escs.length}</span></button><button class="btn sm" data-act="lead-jump" data-to="lead-launches">Launch calendar</button></div>`;
+</div>`;
   const onb=bs.filter(b=>!onHold(b)&&inOnboarding(b)),live=bs.filter(b=>!onHold(b)&&!isInternal(b)&&b.stage==="Live");
   const m0=new Date(today().getFullYear(),today().getMonth(),1),m1=new Date(m0.getFullYear(),m0.getMonth()+1,1);
   const dueMonth=onb.filter(b=>{const d=parseD((S.sow[b.id]||{}).target_sign);return d&&d>=m0&&d<m1});
   const riskCamps=liveCampaigns(bs).filter(x=>x.k==="bad"||x.k==="warn");const dec=gates.length+escs.length;
   const sent=[`${onb.length} brand${onb.length===1?"":"s"} in onboarding, ${live.length} live.`,n.blocked?`${n.blocked} blocked.`:"Nothing blocked.",dec?`${dec} decision${dec>1?"s":""} waiting for you.`:"No decisions waiting.",riskCamps.length?`${riskCamps.length} live campaign${riskCamps.length>1?"s":""} at risk.`:""].filter(Boolean).join(" ");
   h+=`<p class="lhead ${n.blocked||riskCamps.length?"warn":"ok"}">${esc(sent)}</p>`;
-  const tile=(v,label,k,goodDown,c,to,sub)=>`<button class="tile ltile ${c||""}" data-act="lead-jump" data-to="${to}"><b>${v}</b><span>${label}</span>${sub?`<span class="faint">${sub}</span>`:""}${k?trendHtml(k,v,prev,goodDown):""}</button>`;
-  h+=`<div class="tiles" style="grid-template-columns:repeat(4,minmax(0,1fr))">${tile(onb.length,"brands in onboarding","onb",false,"","lead-onb")}${tile(dueMonth.length,"SOWs due to sign this month","",false,dueMonth.length?"warn":"","lead-week",`${n.signed} signed so far`)}${tile(n.blocked,"brands blocked","blocked",true,n.blocked?"bad":"","lead-exc")}${tile(riskCamps.length,"live campaigns at risk","",false,riskCamps.length?"bad":"","lead-live")}</div>`;
   const att=attention(bs,R).filter(x=>x.kind!=="No update").slice(0,5);
   const ASK={"Blocked":"Help unblock it, or agree a workaround","Past SOW target":"Agree a new sign date, or push the client","Chase founder":"Use the founder relationship to get access shared","Stage mismatch":"Confirm which stage is right"};
-  h+=`<h2 id="lead-exc">Needs attention <span class="count">${att.length}</span></h2>`+(att.length?`<div class="excs">${att.map(x=>`<div class="exc"><div class="row" style="gap:8px"><span class="pill ${x.kind==="Blocked"||x.kind==="Past SOW target"?"s-bad":"s-warn"}">${esc(x.kind)}</span><a class="bname" href="#brand-${esc(x.b.id)}">${esc(x.b.name)}</a><span class="grow"></span><button class="btn sm" data-act="att-go" data-id="${esc(x.b.id)}" data-tab="${esc(x.tab)}">Open ${esc((SECT[x.tab]||"brand").toLowerCase())}</button>${canWrite&&x.b.lead?`<button class="btn sm" data-act="ask-lead" data-id="${esc(x.b.id)}">Ask ${esc(x.b.lead)}</button>`:""}</div>
+  const P={};P.attention=`<p class="hint2">The top problems across active brands, with the cause, the owner, the next step and what is asked of you.</p>`+(att.length?`<div class="excs">${att.map(x=>`<div class="exc"><div class="row" style="gap:8px"><span class="pill ${x.kind==="Blocked"||x.kind==="Past SOW target"?"s-bad":"s-warn"}">${esc(x.kind)}</span><a class="bname" href="#brand-${esc(x.b.id)}">${esc(x.b.name)}</a><span class="grow"></span><button class="btn sm" data-act="att-go" data-id="${esc(x.b.id)}" data-tab="${esc(x.tab)}">Open ${esc((SECT[x.tab]||"brand").toLowerCase())}</button>${canWrite&&x.b.lead?`<button class="btn sm" data-act="ask-lead" data-id="${esc(x.b.id)}">Ask ${esc(x.b.lead)}</button>`:""}</div>
     <dl class="excd"><dt>Cause</dt><dd>${esc(x.text)}</dd><dt>Owner</dt><dd>${esc(x.b.lead||"No brand lead")}</dd><dt>Next step</dt><dd>${x.b.next_step?esc(x.b.next_step):`<span class="faint">Not written</span>`}</dd><dt>Ask</dt><dd><b>${esc(ASK[x.kind]||"Decide the next step")}</b></dd></dl></div>`).join("")}</div>`:`<div class="tw"><div class="empty">No exceptions. Every active brand is on track.</div></div>`);
-  h+=`<h2 id="lead-decisions">Decisions <span class="count">${gates.length+escs.length}</span></h2><p class="hint2">Escalations from the team, then gate steps where every earlier step is done. Agreeing a gate marks it Done with your name. Sending something back asks for a reason, which reaches the person by @mention.</p>`;
-  h+=escs.length||gates.length?`<div class="decs">${escs.map(e=>{const late=e.due&&dayDiff(e.due)<0;return`<div class="dec"><div class="dk"><span class="tag warn">Escalated</span><a class="bname" href="#brand-${esc(e.brand)}">${esc(bname(e.brand))}</a> · ${esc(escTitle(e.kind,e.ref,e.code))}</div>
+  P.decisions=`<p class="hint2">Escalations from the team, then gate steps where every earlier step is done. Agreeing a gate marks it Done with your name. Sending something back asks for a reason, which reaches the person by @mention.</p>`;
+  P.decisions+=escs.length||gates.length?`<div class="decs">${escs.map(e=>{const late=e.due&&dayDiff(e.due)<0;return`<div class="dec"><div class="dk"><span class="tag warn">Escalated</span><a class="bname" href="#brand-${esc(e.brand)}">${esc(bname(e.brand))}</a> · ${esc(escTitle(e.kind,e.ref,e.code))}</div>
      <div class="dq">${esc(e.ask)}</div><div class="faint" style="font-size:12.5px">${esc(e.by||"Someone")}, ${esc(agoText(e.at))}${e.due?` · needed by <span class="${late?"hot":""}">${esc(fmtD(e.due,true))}</span>`:""}</div>
      <div class="row da2"><button class="btn sm quiet" data-act="esc-open" data-id="${esc(e._id)}">Open item</button><span class="grow"></span>${canWrite?`<button class="btn sm" data-act="esc-decide" data-id="${esc(e._id)}" data-v="Sent back">Send back</button><button class="btn sm pri" data-act="esc-decide" data-id="${esc(e._id)}" data-v="Agreed">Agree</button>`:""}</div></div>`}).join("")}
    ${gates.map(({b,s,st})=>`<div class="dec"><div class="dk"><span class="tag">Gate</span><a class="bname" href="#brand-${esc(b.id)}">${esc(b.name)}</a> · ${esc(s.code)} ${esc(s.name)}</div><div class="dq">Every earlier step in ${esc(s.phase_name||"this phase")} is done. Ready to sign off.</div><div class="faint" style="font-size:12.5px">${st.owner?"Owner "+esc(st.owner):"No owner"}${st.link?` · <a href="${esc(st.link)}" target="_blank" rel="noopener">Open ${esc(s.doc_label||"document")}</a>`:""}</div>
      <div class="row da2"><button class="btn sm quiet" data-act="open" data-kind="step" data-id="${esc(b.id)}" data-code="${esc(s.code)}">Open step</button><span class="grow"></span>${canWrite?`<button class="btn sm" data-act="gate-back" data-id="${esc(b.id)}" data-code="${esc(s.code)}">Send back</button><button class="btn sm pri" data-act="gate-ok" data-id="${esc(b.id)}" data-code="${esc(s.code)}">Sign off</button>`:""}</div></div>`).join("")}</div>`:`<div class="tw"><div class="empty">Nothing is waiting for a decision.</div></div>`;
   const done=withId(S.esc).filter(e=>e.state!=="Open"&&S.brands[e.brand]).sort((a,b)=>(b.decided_at||0)-(a.decided_at||0)).slice(0,8);
-  if(done.length)h+=`<details class="recent"><summary>Recently decided (${done.length})</summary>${done.map(e=>`<div class="rd"><span class="tag ${e.state==="Agreed"?"ok":"warn"}">${esc(e.state)}</span><b>${esc(bname(e.brand))}</b> · ${esc(e.kind==="gate"?escTitle("step","",e.code):escTitle(e.kind,e.ref,e.code))}<span class="faint"> · ${esc(e.decided_by||"")}, ${esc(agoText(e.decided_at))}${e.decision?": "+esc(e.decision):""}</span></div>`).join("")}</details>`;
-  h+=`<h2 id="lead-onb">Onboarding by SOW phase <span class="count">${onb.length}</span></h2><p class="hint2">Where each brand is on the Road to SOW. A brand sits in the first phase that still has open required steps. Days count from the last step change in that phase.</p>`+phaseLane(onb,R);
-  h+=`<h2 id="lead-live">Live brands <span class="count">${live.length}</span></h2>`+liveLane(live,R,bs);
-  h+=`<h2 id="lead-week">Next 7 days</h2>`+weekAhead(bs);
-  h+=`<details class="recent allb"><summary>All brands (${bs.filter(b=>!isInternal(b)).length})</summary>${leadAll(bs,R)}</details>`;
-  h+=`<h2 id="lead-launches">Launch calendar</h2><p class="hint2">Campaign launch and end dates for the next six weeks, with anything still holding them up. Late means the date has passed and the campaign is not Done.</p>`+launchCalendar(launches);
+  if(done.length)P.decisions+=`<details class="recent"><summary>Recently decided (${done.length})</summary>${done.map(e=>`<div class="rd"><span class="tag ${e.state==="Agreed"?"ok":"warn"}">${esc(e.state)}</span><b>${esc(bname(e.brand))}</b> · ${esc(e.kind==="gate"?escTitle("step","",e.code):escTitle(e.kind,e.ref,e.code))}<span class="faint"> · ${esc(e.decided_by||"")}, ${esc(agoText(e.decided_at))}${e.decision?": "+esc(e.decision):""}</span></div>`).join("")}</details>`;
+  P.onboarding=`<p class="hint2">Where each brand is on the Road to SOW. A brand sits in the first phase that still has open required steps. The number on each phase is how many brands are in it.</p>`+phaseLane(onb,R);
+  P.live=liveLane(live,R,bs);
+  P.week=weekAhead(bs);
+  P.all=leadAll(bs,R);
+  P.launches=`<p class="hint2">Campaign launch and end dates for the next six weeks, with anything still holding them up. Late means the date has passed and the campaign is not Done.</p>`+launchCalendar(launches);
+  const sub=route.id||"";if(sub&&LEAD_SECTIONS[sub])return`<h1>${esc(LEAD_SECTIONS[sub])}</h1>`+P[sub];
+  return h+leadBento({bs,R,n,prev,onb,live,dueMonth,riskCamps,gates,escs,att,launches})}
+const LEAD_SECTIONS={attention:"Needs attention",decisions:"Decisions",onboarding:"Onboarding by SOW phase",live:"Live brands",launches:"Launch calendar",week:"Next 7 days",all:"All brands"};
+function leadBento(d){const{bs,R,n,prev,onb,live,dueMonth,riskCamps,gates,escs,att,launches}=d;
+  const act=bs.filter(b=>!onHold(b)&&!isInternal(b));const hc={ok:0,warn:0,bad:0};for(const b of act){const h=R[b.id].health;hc[h==="Blocked"?"bad":h==="At Risk"||h==="Has blockers"?"warn":"ok"]++}
+  const ps=phases();const pc=ps.map(p=>({p,n:onb.filter(b=>{const c=curPhase(b.id);return c&&c.code===p.code}).length}));const pmax=Math.max(1,...pc.map(x=>x.n));const busy=pc.reduce((a,x)=>x.n>a.n?x:a,{n:0});
+  const soon=launches.filter(x=>x.when!=="late"&&x.days<=14);const late=launches.filter(x=>x.when==="late");const nx=soon[0];
+  const accRows=withId(S.access).filter(a=>accOpen(a)&&!holdOf(a.brand)&&S.brands[a.brand]);const accF=accRows.filter(a=>ACC_FOUNDER.includes(a.status)).length;const accC=accRows.filter(needsChase).length;
+  const bpb=bs.filter(b=>S.bps[b.id]&&!onHold(b)&&(bpRoll(b.id)||{}).overall!=="Complete");const bpr=bpb.filter(b=>{const g=bpReady(b.id);return!g.locked.length&&!g.unchecked.length});
+  const nextSign=onb.map(b=>({b,d:parseD((S.sow[b.id]||{}).target_sign)})).filter(x=>x.d&&x.d>=today()).sort((a,c)=>a.d-c.d)[0];
+  const dec=gates.length+escs.length;const topEsc=escs[0];
+  const T=(href,k,label,big,unit,body,foot)=>`<a class="lbt lbt-${k}" href="#${href}"><span class="lbl">${label}</span><span class="lbn"><b>${big}</b><span>${unit}</span></span>${body||""}<span class="lbf">${foot||""}<span class="lgo">Open ›</span></span></a>`;
+  const seg=(v,k,w)=>v?`<i class="${k}" style="flex:${v}" title="${v} ${w}"></i>`:"";
+  let h=`<div class="lbento">`;
+  h+=T("leadership/attention",hc.bad?"bad":hc.warn?"warn":"ok","Brand health",act.length,"active brands",
+    `<span class="lbar" role="img" aria-label="${hc.ok} on track, ${hc.warn} need a look, ${hc.bad} blocked">${seg(hc.ok,"ok","on track")}${seg(hc.warn,"warn","need a look")}${seg(hc.bad,"bad","blocked")}</span><span class="lbx"><b class="c-ok">${hc.ok}</b> on track · <b class="c-warn">${hc.warn}</b> need a look · <b class="c-bad">${hc.bad}</b> blocked</span>`,
+    att.length?`${att.length} need attention`:"Nothing needs attention");
+  h+=T("leadership/decisions",dec?"warn":"ok","Decisions",dec,dec===1?"waiting for you":"waiting for you",
+    topEsc?`<span class="lbx">${esc(bname(topEsc.brand))}: ${esc(String(topEsc.ask||"").slice(0,70))}</span>`:gates.length?`<span class="lbx">${gates.length} gate step${gates.length>1?"s":""} ready to sign off</span>`:`<span class="lbx faint">Nothing to decide</span>`,
+    `${escs.length} escalated · ${gates.length} gate${gates.length===1?"":"s"}`);
+  h+=T("leadership/onboarding","info","Onboarding by SOW phase",onb.length,"brands in onboarding",
+    `<span class="lpbars" role="img" aria-label="${pc.map(x=>x.p.code+": "+x.n).join(", ")}">${pc.map(x=>`<span class="lpb" title="${esc(x.p.code+" "+(x.p.name||"")+": "+x.n)}"><em>${x.n||""}</em><i style="height:${Math.round(x.n/pmax*100)}%"></i><small>${esc(x.p.code)}</small></span>`).join("")}</span>`,
+    busy.n?`Most waiting: ${esc(busy.p.code+" "+(busy.p.name||""))}`:"");
+  h+=T("sow",dueMonth.length?"warn":"ok","SOWs to sign",dueMonth.length,"due this month",
+    `<span class="lbx">${n.signed} signed so far</span>`,nextSign?`Next: ${esc(nextSign.b.name)}, ${esc(fmtD(nextSign.d.toISOString().slice(0,10)))}`:"No sign dates set");
+  h+=T("leadership/live",riskCamps.length?"bad":"ok","Live brands",live.length,"live",
+    `<span class="lbx">${riskCamps.length?`<b class="c-bad">${riskCamps.length}</b> campaign${riskCamps.length>1?"s":""} need a look`:"Every live campaign on track"}</span>`,
+    `${liveCampaigns(bs).length} active campaigns`);
+  h+=T("leadership/launches",late.length?"bad":"info","Launches",soon.length,"in the next 2 weeks",
+    nx?`<span class="lbx">${esc(nx.b.name)}: ${esc(nx.c.name)}, ${esc(fmtD(nx.c.end))}</span>`:`<span class="lbx faint">Nothing in the next 2 weeks</span>`,late.length?`<b class="c-bad">${late.length} late</b>`:"None late");
+  h+=T("access",accC?"warn":"info","Platform access",accRows.length,"open requests",
+    `<span class="lbx">${accF} waiting on founders</span>`,accC?`<b class="c-warn">${accC} to chase</b>`:"Nothing to chase");
+  h+=T("bp",bpb.length>bpr.length?"warn":"ok","Best Practices",bpr.length,`of ${bpb.length} ready to work`,
+    `<span class="lbar">${seg(bpr.length,"ok","ready")}${seg(bpb.length-bpr.length,"warn","waiting on access")}</span><span class="lbx">${bpb.length-bpr.length} waiting on platform access</span>`,"");
+  h+=`</div><div class="lmore"><a href="#leadership/week">Next 7 days ›</a><a href="#leadership/all">All brands table ›</a></div>`;
   return h}
 const inOnboarding=b=>!!b&&!isInternal(b)&&b.stage!=="Live"&&(S.sow[b.id]||{}).stage!=="Signed";
 function curPhase(bid){return phases().find(p=>phaseOpen(bid,p))||null}
