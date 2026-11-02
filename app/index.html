@@ -314,6 +314,21 @@ select.ps:disabled{cursor:default;background-image:none;padding-right:9px}
 @media (max-width:600px){.ib{grid-template-columns:1fr}.s3,.s4,.s5,.s6,.s7,.s8,.s12{grid-column:auto}.ithero b{font-size:40px}}
 @media (prefers-reduced-motion:reduce){.it{transition:none}.it:hover{transform:none}}
 .chealth,.cdon,.csum{border-radius:22px;background:linear-gradient(155deg,var(--panel) 35%,var(--ta));box-shadow:0 1px 2px rgba(5,10,46,.05)}.cdon{background:linear-gradient(155deg,var(--panel) 35%,var(--tc))}.csum{background:linear-gradient(155deg,var(--panel) 35%,var(--tb))}
+/* Valerie look for the timeline, campaign rows and board */
+.gantt{border:0;border-radius:22px;background:linear-gradient(155deg,var(--panel) 40%,var(--tc));box-shadow:0 1px 2px rgba(5,10,46,.05)}
+.ghead{background:transparent;border-bottom:1px solid var(--line)}.gteam2{background:color-mix(in srgb,var(--ta) 55%,transparent)}.gteam2:hover{background:var(--ta)}.gsub{background:color-mix(in srgb,var(--panel) 70%,transparent)}
+.gsum{height:18px;margin-top:-9px;border-radius:999px}.gsum i{border-radius:999px}.gb{height:14px;margin-top:-7px;border-radius:999px}.gd{border-radius:4px}
+.g-plan{background:color-mix(in srgb,var(--accent) 14%,var(--panel));box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--accent) 45%,transparent)}.g-prog{background:var(--accent)}.g-done{background:var(--ok);opacity:.75}
+.crow{border:0;border-radius:20px;background:linear-gradient(155deg,var(--panel) 45%,var(--ta));box-shadow:0 1px 2px rgba(5,10,46,.05)}.crow:hover{background:linear-gradient(155deg,var(--panel) 30%,var(--tc))}
+.kcol{border:0!important;border-radius:20px!important;background:linear-gradient(180deg,var(--tc) 0,color-mix(in srgb,var(--panel2) 70%,var(--bg)) 160px)!important}
+.kc{border-radius:14px}
+.orgwrap{display:flex;flex-direction:column;gap:16px;margin-top:6px}.orgcols{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;align-items:start}
+.orgcol{border-radius:22px;padding:14px 14px 16px;background:linear-gradient(180deg,var(--ta) 0,color-mix(in srgb,var(--panel) 80%,var(--bg)) 220px);min-height:120px}.orgcol.lead{color:#fff;background:radial-gradient(circle at 96% 0%,rgb(240 122 40/.8),transparent 40%),radial-gradient(circle at 8% 130%,rgb(10 91 216/.85),transparent 55%),#050A2E}.orgcol.lead header,.orgcol.lead header .faint{color:#fff}
+.orgcol header{display:flex;justify-content:space-between;align-items:center;margin:0 4px 10px;font-size:15px}.orgcol.lead .orgtree,.orgcol.lead .orgtree ul{flex-direction:row;flex-wrap:wrap;align-items:flex-start}.orgcol.lead .orgtree ul{border-left:0;padding-left:0;margin:10px 0 0;width:100%}.orgcol.lead li{flex:0 1 250px}.orgcol.lead .orgtree>li{flex:1 1 100%}.orgcol.lead .orgtree>li>.orgc{max-width:320px}
+.orgtree,.orgtree ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}.orgtree ul{margin:8px 0 0 18px;padding-left:12px;border-left:2px solid color-mix(in srgb,var(--accent) 35%,transparent)}
+.orgc .av{flex:none}.orgc{display:flex;gap:10px;align-items:flex-start;background:var(--panel);color:var(--ink);border-radius:14px;padding:10px 12px;box-shadow:0 1px 2px rgba(5,10,46,.08);cursor:pointer;border:2px solid transparent}.orgc:hover,.orgc:focus-visible{border-color:var(--accent)}.orgc.dragging{opacity:.5}
+.orgt{display:flex;flex-direction:column;min-width:0}.orgt b{font-size:14px}.orgt small{font-size:12.5px;color:var(--muted)}.orgb{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}.px-off{background:var(--offBg);color:var(--off)}
+.orgover{outline:3px dashed var(--ember);outline-offset:2px}
 .ib.strip{margin:6px 0 18px}.ib.strip .it{gap:10px;padding:16px 18px}.ib.strip .itb{height:96px}.ib.strip .ithero b{font-size:40px}
 .allx{font-size:13px;align-self:flex-start}
 a.cl{color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:6px;min-height:28px}a.cl:hover{text-decoration:underline}
@@ -1403,9 +1418,28 @@ function vertOf(t){if(t.vertical)return t.vertical;const s=" "+((t.title||"")+" 
   for(const[v,ws]of VERT_RULES)if(VERTS().includes(v)&&ws.some(w=>s.includes(w)))return v;return""}
 
 /* ---------- people and capacity ---------- */
-let peopleSel="",peopleVert="",peopleDept="";
+let peopleSel="",peopleVert="",peopleDept="",peopleView="work",orgDrag="";
+/* team structure: org teams as columns, people nested under the person they report to (people.reports_to) */
+const orgPeople=()=>people().filter(p=>p.active!==false&&p.kind==="team");
+function orgTeams(){const ps=orgPeople();const t=L("org_team").slice();if(ps.some(p=>!p.team||!t.includes(p.team)))t.push("");return t}
+function orgUnder(name,ps){return ps.filter(p=>p.reports_to===name)}
+function isBelow(a,b,ps){let cur=ps.find(p=>p.name===b);const seen=new Set();while(cur&&cur.reports_to&&!seen.has(cur.name)){seen.add(cur.name);if(cur.reports_to===a)return true;cur=ps.find(p=>p.name===cur.reports_to)}return false}
+function orgCard(p,ps,team){const kids=orgUnder(p.name,ps).filter(k=>(k.team||"")===team);const ed=canEdit&&canWrite;const boss=p.reports_to&&!ps.some(x=>x.name===p.reports_to&&(x.team||"")===team)?p.reports_to:"";
+  return`<li><div class="orgc" ${ed?`draggable="true"`:""} data-org="${esc(p.name)}" data-orgdrop="person" data-act="org-edit" tabindex="0" role="button" aria-label="${esc((p.full_name||p.name)+(p.title?", "+p.title:"")+". "+(ed?"Click to edit or move":"Click for details"))}">
+    <span class="av big">${esc(ini(p.full_name||p.name))}</span><span class="orgt"><b>${esc(p.full_name||p.name)}</b><small>${esc(p.title||"No title yet")}</small>${p.location?`<small class="faint">${esc(p.location)}</small>`:""}
+    <span class="orgb">${p.leadership?`<span class="pillx px-info">Leadership</span>`:""}${p.escalate?`<span class="pillx px-em">Can escalate</span>`:""}${p.log?`<span class="pillx px-ok">Change log</span>`:""}${boss?`<span class="pillx px-off">Reports to ${esc(boss)}</span>`:""}</span></span></div>
+    ${kids.length?`<ul>${kids.map(k=>orgCard(k,ps,team)).join("")}</ul>`:""}</li>`}
+function orgChart(){const ps=orgPeople();const ed=canEdit&&canWrite;const teams=orgTeams();
+  const col=t=>{const mem=ps.filter(p=>(t?p.team===t:!p.team||!L("org_team").includes(p.team)));const roots=mem.filter(p=>!p.reports_to||!mem.some(x=>x.name===p.reports_to));
+    return`<section class="orgcol ${t===teams[0]?"lead":""}" data-orgdrop="team" data-team="${esc(t)}" aria-label="${esc(t||"No team")}"><header><b>${esc(t||"No team yet")}</b><span class="faint">${mem.length}</span></header>${roots.length?`<ul class="orgtree">${roots.map(p=>orgCard(p,ps,t)).join("")}</ul>`:`<p class="faint">${ed?"Drop a person here":"Nobody yet"}</p>`}</section>`};
+  return`<p class="hint2">${ed?"Drag a person onto a team to move them, or onto a person to report to them. Click a person to edit their title, team, manager and roles.":"Who is in which team and who reports to whom. Leads and admins can change it."}</p>
+   <div class="orgwrap">${col(teams[0])}<div class="orgcols">${teams.slice(1).map(col).join("")}</div></div>`}
+function orgMove(name,patch,label){const ps=people().map(p=>Object.assign({},p));const p=ps.find(x=>x.name===name);if(!p)return;
+  if(patch.reports_to&&(patch.reports_to===name||isBelow(name,patch.reports_to,ps))){toast("That would make a loop: "+patch.reports_to+" already reports to "+name+".");return}
+  Object.assign(p,patch);savePeople(ps,label||name)}
 function vPeople(){
-  let h=`<h1>People</h1><p class="sub">Who is carrying what across every brand. Open work per person, how much is late or blocked, and what has no date. Click a name to see their list.</p>`+guide("people");
+  if(peopleView==="org")return`<h1>People</h1>`+viewSeg("pview","org",[["work","Workload"],["org","Team structure"]])+orgChart();
+  let h=`<h1>People</h1>`+viewSeg("pview","work",[["work","Workload"],["org","Team structure"]])+`<p class="sub">Who is carrying what across every brand. Open work per person, how much is late or blocked, and what has no date. Click a name to see their list.</p>`+guide("people");
   const open=withId(S.tasks).filter(t=>t.title&&t.status!=="Complete"&&!holdOf(t.brand)&&(!peopleVert||vertOf(t)===peopleVert)&&(!peopleDept||depOf(t)===peopleDept));
   h+=`<div class="filters"><select data-act="pf" data-k="dept" aria-label="Team"><option value="">All teams</option>${DEPTS().map(d=>`<option ${peopleDept===d?"selected":""}>${esc(d)}</option>`).join("")}</select>
    <select data-act="pf" data-k="vert" aria-label="Vertical"><option value="">All verticals</option>${VERTS().map(v=>`<option ${peopleVert===v?"selected":""}>${esc(v)}</option>`).join("")}</select></div>`;
@@ -2296,6 +2330,13 @@ document.addEventListener("click",e=>{
   else if(act==="go-camp"){const c=S.camps[a.dataset.id];if(!c)return;brandTab="tasks";go(campHash(c.brand,a.dataset.id))}
   else if(act==="kbf-clear"){kbFilter=Object.assign(kbFilter,{who:"",due:"",q:"",st:""});render()}
   else if(act==="kbst-clear"){kbFilter.st="";render()}
+  else if(act==="pview"){peopleView=a.dataset.v==="org"?"org":"work";render()}
+  else if(act==="org-edit"){const n=a.dataset.org;const p=people().find(x=>x.name===n);if(!p)return;const ed=canEdit&&canWrite;const dis=ed?"":"disabled";const yn=(k,l)=>`<div class="f"><label for="o-${k}">${l}</label><select id="o-${k}" name="${k}" ${dis}><option value="No">No</option><option value="Yes" ${p[k]?"selected":""}>Yes</option></select></div>`;
+    const others=orgPeople().map(x=>x.name).filter(x=>x!==n&&!isBelow(n,x,people()));
+    formBox(p.full_name||p.name,`<div class="f"><label for="o-full_name">Full name</label><input id="o-full_name" name="full_name" value="${esc(p.full_name||"")}" ${dis}></div><div class="f"><label for="o-title">Title</label><input id="o-title" name="title" value="${esc(p.title||"")}" ${dis}></div>
+      <div class="f"><label for="o-team">Team</label><select id="o-team" name="team" ${dis}>${opts(L("org_team"),p.team||"")}</select></div><div class="f"><label for="o-rep">Reports to</label><select id="o-rep" name="reports_to" ${dis}>${opts(others,p.reports_to||"")}</select></div>
+      <div class="f"><label for="o-location">Location</label><input id="o-location" name="location" value="${esc(p.location||"")}" ${dis}></div>${yn("leadership","Leadership page")}${yn("escalate","Can escalate")}${yn("log","Change log")}`,ed?"Save":"Close",
+      v=>{if(!ed)return;orgMove(n,{full_name:v.full_name,title:v.title,team:v.team,reports_to:v.reports_to,location:v.location,leadership:v.leadership==="Yes",escalate:v.escalate==="Yes",log:v.log==="Yes"},n+": details")})}
   else if(act==="ai-apply"){if(accImport)applyAccessImport()}
   else if(act==="bp-na"){const id=a.dataset.id,sec=a.dataset.sec;const d=S.bps[id];if(!d)return;confirmBox(`Leave ${sec} out of Best Practices for ${bname(id)}? It will show as N/A until someone changes it.`,"Leave out",()=>save("bps",id,{sections:Object.assign({},d.sections,{[sec]:"N/A"})},bname(id)+" BP "+sec))}
   else if(act==="whomore"){const tb=a.closest(".tw");tb.classList.add("all");a.remove()}
@@ -2392,6 +2433,12 @@ document.addEventListener("change",e=>{
 function savePeople(ps,label){save("config","people",{people:ps},"People: "+label)}
 function saveTemplates(list){if(S.config.templates)save("config","templates",{list},"Task templates");else create("config","templates",{list},"Task templates")}
 let dragId="";
+document.addEventListener("dragstart",e=>{const o=e.target.closest&&e.target.closest(".orgc[draggable=true]");if(o){orgDrag=o.dataset.org;o.classList.add("dragging");try{e.dataTransfer.setData("text/plain",orgDrag);e.dataTransfer.effectAllowed="move"}catch(x){}return}});
+document.addEventListener("dragover",e=>{if(!orgDrag)return;const z=e.target.closest&&e.target.closest("[data-orgdrop]");if(!z)return;e.preventDefault();document.querySelectorAll(".orgover").forEach(x=>x!==z&&x.classList.remove("orgover"));z.classList.add("orgover")});
+document.addEventListener("drop",e=>{if(!orgDrag)return;const z=e.target.closest&&e.target.closest("[data-orgdrop]");const n=orgDrag;orgDrag="";document.querySelectorAll(".orgover,.orgc.dragging").forEach(x=>x.classList.remove("orgover","dragging"));if(!z)return;e.preventDefault();
+  if(z.dataset.orgdrop==="person"){const m=z.dataset.org;if(m===n)return;const mp=people().find(x=>x.name===m)||{};const me2=people().find(x=>x.name===n)||{};orgMove(n,(me2.team?{reports_to:m}:{reports_to:m,team:mp.team||""}),n+" reports to "+m)}
+  else{const t=z.dataset.team||"";orgMove(n,{team:t,reports_to:""},n+" moved to "+(t||"no team"))}});
+document.addEventListener("dragend",()=>{if(orgDrag){orgDrag="";document.querySelectorAll(".orgover,.orgc.dragging").forEach(x=>x.classList.remove("orgover","dragging"))}});
 document.addEventListener("dragstart",e=>{const c=e.target.closest&&e.target.closest(".kc");if(!c)return;dragId=c.dataset.id;c.classList.add("dragging");try{e.dataTransfer.setData("text/plain",dragId);e.dataTransfer.effectAllowed="move"}catch(x){}});
 document.addEventListener("dragend",e=>{dragId="";document.querySelectorAll(".kc.dragging,.kcards.over").forEach(x=>x.classList.remove("dragging","over"))});
 document.addEventListener("dragover",e=>{const z=e.target.closest&&e.target.closest(".kcards");if(!z||!dragId)return;e.preventDefault();document.querySelectorAll(".kcards.over").forEach(x=>x!==z&&x.classList.remove("over"));z.classList.add("over")});
