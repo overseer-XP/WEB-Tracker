@@ -417,7 +417,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await setMe('Noopur'); await go('brand-celf'); await p.click('.rsub [data-tab=tasks]'); await p.waitForTimeout(150); await ctab('board');
   await p.click('[data-act=camp][data-id=_none]'); await p.waitForTimeout(200); await ctab('board');
   const escCard = await p.$eval('.kc', e => e.dataset.id); await p.click(`.kc[data-id="${escCard}"]`); await p.waitForTimeout(250);
-  await p.click('#drawer [data-act=escalate]'); await p.fill('#n-ask', 'Approve the extra shoot day'); await p.click('#fbox button[type=submit]'); await p.waitForTimeout(400);
+  await p.click('#drawer [data-act=escalate]'); await p.fill('#n-ask', 'Approve the extra shoot day'); await p.selectOption('#n-pri', 'High'); await p.fill('#n-due', '2026-12-01'); await p.click('#fbox button[type=submit]'); await p.waitForTimeout(400);
   check('Leadership', 'Escalated item says it is with leadership', (await text('#drawer footer')).includes('With leadership'));
   await p.click('#drawer [data-act=close]'); await p.waitForTimeout(200);
   check('Leadership', 'Card front shows With leadership', (await text(`.kc[data-id="${escCard}"]`)).includes('With leadership'));
