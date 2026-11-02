@@ -303,7 +303,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
 
   // 29. Best Practices: click a dot, pick a status, it saves and shows everywhere
   await go('bp'); const dotSel = 'button[data-act=bpdot][data-id=sourced-food-co][data-sec="SEO"]';
-  await p.click(dotSel); await p.waitForTimeout(120);
+  await p.$eval(dotSel, e => e.scrollIntoView({ block: 'center' })); await p.waitForTimeout(150); await p.click(dotSel); await p.waitForTimeout(120);
   check('BP dot', 'Clicking a dot opens a status menu', !!(await p.$('#pop')));
   await p.click('#pop [data-v="Complete"]'); await p.waitForTimeout(250);
   check('BP dot', 'Choosing a status closes the menu and updates the dot', !(await p.$('#pop')) && (await p.$eval(dotSel, e => e.title)) === 'SEO: Complete');

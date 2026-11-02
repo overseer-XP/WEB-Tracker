@@ -5,35 +5,38 @@
 <style>
 /* Calm palette: misty sage-grey ground, soft teal accent, pastel status fills. Layout: left rail, top bar with search and Simple / Full, work area, edit drawer */
 :root{color-scheme:light;--shadow:none;
-  --bg:#F1F3F8; --panel:#FFFFFF; --panel2:#EEF1F6; --ink:#2A3337; --muted:#59646A; --faint:#5E666A; --line:#E1E8E5; --line2:#D0D9D5;
-  --rail:#0B0C33; --railHover:#1A1C52; --accent:#0A0A70; --accentInk:#FFFFFF; --accentSoft:#E4E4F3;
+  --bg:#F4F6FB; --panel:#FFFFFF; --panel2:#EEF1F8; --ink:#0B1033; --muted:#4A5375; --faint:#545C7C; --line:#E2E6F0; --line2:#CDD3E3;
+  --rail:#050A2E; --railHover:#141B4D; --accent:#0A5BD8; --accentInk:#FFFFFF; --accentSoft:#E4ECFB;
   --ok:#3A7454; --okBg:#E2F0E7; --warn:#856325; --warnBg:#F7EDD8; --bad:#9F4E48; --badBg:#F6E2DF;
-  --info:#486887; --infoBg:#E3EBF3; --off:#59646A; --offBg:#ECF0EE;
-  --fDone:#A9D0B6; --fProg:#C9DAEC; --fNot:#F4E2DF; --fNA:#E7ECEA;
-  --dLive:#6EAD86; --dRisk:#D6A44C; --dTrack:#86ABCF;
-  --g0:#8DB89B; --g1:#8FB0CF; --g2:#B5A4D5; --g3:#D6A98B; --g4:#93C1AF; --g5:#C7B88A;
+  --info:#0A5BD8; --infoBg:#E4ECFB; --off:#59607A; --offBg:#ECEFF6;
+  --fDone:#A9D0B6; --fProg:#C7D8F7; --fNot:#F4E2DF; --fNA:#E7EAF2;
+  --dLive:#6EAD86; --dRisk:#D6A44C; --dTrack:#7FA6EE;
+  --g0:#8DB89B; --g1:#8FB0E8; --g2:#B5A4D5; --g3:#E8A87A; --g4:#93C1AF; --g5:#C7B88A;
+  --ember:#F07A28; --emberInk:#B5470B; --emberBg:#FDEBDD; --mid:#050A2E;
   --f-ui:"DM Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --f-head:"DM Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --f-code:"DM Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
-  --navy:#0A0A70; --amber:#EA9F44;
+  --navy:#050A2E; --amber:#EA9F44;
   --r:10px;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#161B1D; --panel:#1E2427; --panel2:#252C30; --ink:#E1E7E8; --muted:#A2AEB2; --faint:#97A0A3; --line:#2E373B; --line2:#3A4448;
-  --rail:#08091F; --railHover:#171A45; --accent:#86D9FF; --accentInk:#08091F; --accentSoft:#1B2447;
-  --ok:#8CC6A1; --okBg:#1E3227; --warn:#E0BF7E; --warnBg:#38301F; --bad:#E3A09A; --badBg:#3D2624;
-  --info:#9DBAD8; --infoBg:#212F3B; --off:#ADB8BC; --offBg:#293033;
-  --fDone:#3C6B50; --fProg:#3D5F82; --fNot:#48302E; --fNA:#2C3437;
-  --dLive:#7BBE95; --dRisk:#D9AE5E; --dTrack:#8FB3D6;
-  --g0:#5E8A6D; --g1:#5F80A0; --g2:#7F70A3; --g3:#A37B5F; --g4:#5F9483; --g5:#978A5F; color-scheme:dark; --shadow:none}}
+  --bg:#070B24; --panel:#0E1438; --panel2:#141B45; --ink:#EEF1FA; --muted:#A9B2CF; --faint:#97A1C2; --line:#222A55; --line2:#2E3768;
+  --rail:#040820; --railHover:#141B4D; --accent:#5B95FF; --accentInk:#050A2E; --accentSoft:#14214F;
+  --ok:#8CC6A1; --okBg:#173326; --warn:#E0BF7E; --warnBg:#3A2D12; --bad:#E3A09A; --badBg:#3D1C1B;
+  --info:#7EAAFF; --infoBg:#14214F; --off:#A9B2CF; --offBg:#1A2148;
+  --fDone:#3C6B50; --fProg:#24407A; --fNot:#48302E; --fNA:#1C234D;
+  --dLive:#7BBE95; --dRisk:#D9AE5E; --dTrack:#7EAAFF;
+  --g0:#5E8A6D; --g1:#4A6FB3; --g2:#7F70A3; --g3:#B07A50; --g4:#5F9483; --g5:#978A5F;
+  --ember:#F59A52; --emberInk:#F59A52; --emberBg:#33200F; --mid:#050A2E; color-scheme:dark; --shadow:none}}
 :root[data-theme="dark"]{
-  --bg:#161B1D; --panel:#1E2427; --panel2:#252C30; --ink:#E1E7E8; --muted:#A2AEB2; --faint:#97A0A3; --line:#2E373B; --line2:#3A4448;
-  --rail:#08091F; --railHover:#171A45; --accent:#86D9FF; --accentInk:#08091F; --accentSoft:#1B2447;
-  --ok:#8CC6A1; --okBg:#1E3227; --warn:#E0BF7E; --warnBg:#38301F; --bad:#E3A09A; --badBg:#3D2624;
-  --info:#9DBAD8; --infoBg:#212F3B; --off:#ADB8BC; --offBg:#293033;
-  --fDone:#3C6B50; --fProg:#3D5F82; --fNot:#48302E; --fNA:#2C3437;
-  --dLive:#7BBE95; --dRisk:#D9AE5E; --dTrack:#8FB3D6;
-  --g0:#5E8A6D; --g1:#5F80A0; --g2:#7F70A3; --g3:#A37B5F; --g4:#5F9483; --g5:#978A5F; color-scheme:dark; --shadow:none}
+  --bg:#070B24; --panel:#0E1438; --panel2:#141B45; --ink:#EEF1FA; --muted:#A9B2CF; --faint:#97A1C2; --line:#222A55; --line2:#2E3768;
+  --rail:#040820; --railHover:#141B4D; --accent:#5B95FF; --accentInk:#050A2E; --accentSoft:#14214F;
+  --ok:#8CC6A1; --okBg:#173326; --warn:#E0BF7E; --warnBg:#3A2D12; --bad:#E3A09A; --badBg:#3D1C1B;
+  --info:#7EAAFF; --infoBg:#14214F; --off:#A9B2CF; --offBg:#1A2148;
+  --fDone:#3C6B50; --fProg:#24407A; --fNot:#48302E; --fNA:#1C234D;
+  --dLive:#7BBE95; --dRisk:#D9AE5E; --dTrack:#7EAAFF;
+  --g0:#5E8A6D; --g1:#4A6FB3; --g2:#7F70A3; --g3:#B07A50; --g4:#5F9483; --g5:#978A5F;
+  --ember:#F59A52; --emberInk:#F59A52; --emberBg:#33200F; --mid:#050A2E; color-scheme:dark; --shadow:none}
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{height:100%;margin:0}
@@ -56,9 +59,9 @@ input,select,textarea{background-color:var(--panel);color:var(--ink)}
 .app{display:grid;grid-template-columns:252px minmax(0,1fr);grid-template-rows:minmax(0,1fr);height:100%;overflow:hidden}
 .app>*{min-height:0}
 /* rail */
-.rail{position:relative;background-color:#0E1129;background-image:radial-gradient(rgb(255 255 255/.07) 1px,transparent 1.2px);background-size:16px 16px;color:#E6E8F2;border-right:1px solid #1B1F3B;overflow-y:auto;padding:22px 14px 20px;display:flex;flex-direction:column;gap:6px;
+.rail{position:relative;background-color:#050A2E;background-image:radial-gradient(rgb(255 255 255/.06) 1px,transparent 1.2px),radial-gradient(circle at 15% 105%,rgb(10 91 216/.55),transparent 55%);background-size:16px 16px,100% 100%;background-attachment:local,local;color:#E6E8F2;border-right:1px solid #1B1F3B;overflow-y:auto;padding:22px 14px 20px;display:flex;flex-direction:column;gap:6px;
   --ok:#86D9A6;--warn:#F2C26B;--bad:#F4A39B;--faint:#9DA2C4;--off:#9DA2C4;--muted:#A9AECB;--ink:#E6E8F2;scrollbar-width:thin;scrollbar-color:#2C3157 transparent}
-:root[data-theme="dark"] .rail{background-color:#0A0C1F}
+:root[data-theme="dark"] .rail{background-color:#040820}
 .mark{display:flex;align-items:center;gap:12px;padding:2px 10px 18px;color:#fff;text-decoration:none}
 .mark .logo{width:30px;height:auto;fill:var(--amber);flex:none}
 .mark .mk{font-family:var(--f-head);font-weight:600;font-size:22px;letter-spacing:.02em;line-height:1}
@@ -67,7 +70,7 @@ input,select,textarea{background-color:var(--panel);color:var(--ink)}
 .nav{display:flex;flex-direction:column;gap:2px}
 .nav a,.blink,.rsub a{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:10px;color:#C9CDE2;text-decoration:none;min-height:38px;font-size:14.5px;border:1px solid transparent}
 .nav a:hover,.blink:hover,.rsub a:hover,.rgh button:hover{background:rgb(255 255 255/.05);color:#fff}
-.nav a.on,.blink.on,.rsub a.on{background:rgb(255 255 255/.10);border-color:rgb(255 255 255/.14);color:#fff;font-weight:500}
+.nav a.on,.blink.on,.rsub a.on{background:rgb(255 255 255/.10);border-color:rgb(255 255 255/.14);color:#fff;font-weight:500;box-shadow:inset 3px 0 0 var(--ember)}
 .nav a:focus-visible,.blink:focus-visible,.rsub a:focus-visible,.rgh button:focus-visible,.mark:focus-visible{outline:2px solid #86D9FF;outline-offset:1px}
 .ni{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;opacity:.8}
 .nav .n,.blink .n,.rgh .n{margin-left:auto;font-size:12.5px;color:#A9AECB}
@@ -186,7 +189,7 @@ td .hot{color:var(--bad);font-weight:600}
 /* pills */
 .pill{display:inline-flex;align-items:center;gap:4px;padding:1px 8px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap;line-height:20px}
 .s-ok{background:var(--okBg);color:var(--ok)}.s-warn{background:var(--warnBg);color:var(--warn)}.s-bad{background:var(--badBg);color:var(--bad)}
-.s-info{background:var(--infoBg);color:var(--info)}.s-off{background:var(--offBg);color:var(--off)}
+.s-info{background:var(--infoBg);color:var(--info)}.s-em{background:var(--emberBg);color:var(--emberInk)}.kbg.em{background:var(--emberBg);color:var(--emberInk)}.px-em{background:var(--emberBg);color:var(--emberInk)}.s-off{background:var(--offBg);color:var(--off)}
 select.ps{appearance:none;-webkit-appearance:none;border:0;border-radius:999px;padding:1px 22px 1px 9px;font-size:12px;font-weight:600;cursor:pointer;line-height:20px;
   background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);
   background-position:calc(100% - 11px) 50%,calc(100% - 7px) 50%;background-size:4px 4px;background-repeat:no-repeat}
@@ -246,18 +249,19 @@ select.ps:disabled{cursor:default;background-image:none;padding-right:9px}
 .gb{position:absolute;top:50%;height:12px;margin-top:-6px;border-radius:6px}.gd{position:absolute;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:3px;transform:rotate(45deg)}
 .g-plan{background:var(--fNA);box-shadow:inset 0 0 0 1px var(--line2)}.g-prog{background:var(--info)}.g-late{background:var(--warn)}.g-bad{background:var(--bad)}.g-done{background:var(--ok);opacity:.55}
 .gover{position:absolute;inset:0 0 0 var(--lw);pointer-events:none}
-.gm{position:absolute;top:0;bottom:0;left:var(--x);border-left:2px solid var(--accent)}.gm span{position:absolute;top:2px;left:4px;font-size:12px;font-weight:700;color:var(--accent);background:var(--panel2);padding:0 4px;border-radius:3px}
+.gm{position:absolute;top:0;bottom:0;left:var(--x);border-left:2px solid var(--ember)}.gm span{position:absolute;top:2px;left:4px;font-size:12px;font-weight:700;color:var(--emberInk);background:var(--panel2);padding:0 4px;border-radius:3px}
 .gm.gend{border-left:2px dashed var(--ink);opacity:.6}.gm.gend span{color:var(--ink)}
 .undated{margin-top:8px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:8px 12px}.undated summary{cursor:pointer;font-size:13px;color:var(--muted)}
 .gr2{all:unset;box-sizing:border-box;display:flex;gap:10px;align-items:baseline;width:100%;padding:6px 0;border-top:1px solid var(--line);cursor:pointer;font-size:13px}.gr2:hover b{color:var(--accent)}
 .deps{background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}.deps>.empty{padding:14px}
 .dep{display:grid;grid-template-columns:140px minmax(0,1fr) 140px auto;gap:10px;align-items:center;padding:9px 12px;border-bottom:1px solid var(--line);font-size:13.5px}.dep.cleared{opacity:.6}.dep.cleared .dt{text-decoration:line-through}
 .dep .tag{justify-self:start}.dep .da{display:flex;gap:4px;justify-content:flex-end}.deps details{padding:6px 12px}.deps summary{cursor:pointer;font-size:13px;color:var(--muted)}
-.lhead{font-size:18px;font-weight:600;margin:4px 0 6px;padding:12px 16px;border-radius:12px;background:var(--panel);border-left:4px solid var(--ok)}.lhead.warn{border-left-color:var(--warn)}
+.lhead{font-size:19px;font-weight:600;margin:4px 0 14px;padding:22px 26px;border-radius:22px;color:#fff;background:radial-gradient(circle at 96% 0%,rgb(240 122 40/.85),transparent 42%),radial-gradient(circle at 8% 130%,rgb(10 91 216/.9),transparent 55%),#050A2E;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.lhead .lhn{font-size:44px;font-weight:700;letter-spacing:-.03em;line-height:1;text-align:right}.lhead .lhn small{display:block;font-size:13px;font-weight:500;letter-spacing:0;color:#C9D2E8;margin-top:4px}.lhead .lhs{display:block;font-size:14px;font-weight:500;color:#C9D2E8;margin-top:6px}
 .ltile{text-align:left;font:inherit;color:inherit;cursor:pointer;display:flex;flex-direction:column;gap:2px}.ltile:hover{outline:2px solid var(--accentSoft)}
 .lane .pcol.neck{background:var(--warnBg)}.lane .tag{white-space:normal;align-self:flex-start}.lane .ph span{text-transform:none;letter-spacing:0}.allb{margin-top:18px}.allb summary{font-weight:600}
 .ppl .pin{border:1px solid var(--line2);border-radius:6px;padding:4px 6px;width:100%;min-width:120px;background:var(--panel)}
-.ctabs{display:flex;gap:4px;margin:6px 0 16px;border-bottom:1px solid var(--line)}.ctabs button{font:inherit;font-size:15px;font-weight:600;background:none;border:0;border-bottom:3px solid transparent;padding:10px 16px;color:var(--muted);cursor:pointer}.ctabs button.on{color:var(--ink);border-bottom-color:var(--accent)}.ctabs .cnt{font-weight:500;color:var(--faint);font-size:13px}
+.ctabs{display:flex;gap:4px;margin:6px 0 16px;border-bottom:1px solid var(--line)}.ctabs button{font:inherit;font-size:15px;font-weight:600;background:none;border:0;border-bottom:3px solid transparent;padding:10px 16px;color:var(--muted);cursor:pointer}.ctabs button.on{color:var(--ink);border-bottom-color:var(--ember)}.ctabs .cnt{font-weight:500;color:var(--faint);font-size:13px}
 .cov{display:grid;grid-template-columns:minmax(260px,340px) 1fr;gap:18px;align-items:start;margin-bottom:8px}.covl{display:flex;flex-direction:column;gap:12px}
 .chealth{background:var(--panel);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;font-size:13.5px}
 .cdon{background:var(--panel);border-radius:12px;padding:14px;display:flex;gap:14px;align-items:center}.donut{width:140px;height:140px;flex:none}.dseg{cursor:pointer}.dseg:hover,.dseg:focus{stroke-width:24;outline:none}
@@ -265,7 +269,7 @@ select.ps:disabled{cursor:default;background-image:none;padding-right:9px}
 .dleg{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;flex:1}.dleg button{display:flex;align-items:center;gap:8px;width:100%;font-size:13.5px;color:var(--ink);text-decoration:none}.dleg button:disabled{opacity:.45}.dleg i{width:10px;height:10px;border-radius:3px;flex:none}.dleg b{margin-left:auto}
 .csum{margin:0 0 6px;padding:12px 14px 12px 30px;background:var(--panel);border-radius:12px;display:flex;flex-direction:column;gap:6px;font-size:14px}
 .whot tr.more{display:none}.tw.all .whot tr.more{display:table-row}
-:root{--d-done:#0ca30c;--d-rev:#fab219;--d-todo:#9aa3a8;--d-blk:#d03b3b;--d-prog:#2f6fb8}.showmore{margin:8px}
+:root{--d-done:#0ca30c;--d-rev:#F07A28;--d-todo:#9aa3a8;--d-blk:#d03b3b;--d-prog:#0A5BD8}.showmore{margin:8px}
 .roles{border-radius:10px;background:var(--panel2);padding:8px 12px}.roles summary{cursor:pointer;font-weight:600}.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin-top:8px}.okline{color:var(--ok);font-weight:600;margin:6px 0 0}
 .lbls{display:flex;flex-wrap:wrap;gap:6px}.lchip{font:inherit;font-size:12.5px;border:1px solid var(--line2);background:var(--panel);color:var(--ink);border-radius:999px;padding:3px 10px;cursor:pointer}.lchip.on{background:var(--accent);color:#fff;border-color:var(--accent)}.lchip.add{border-style:dashed;color:var(--muted)}.lchip.sm{font-size:11px;padding:1px 8px;cursor:default}.klbls{display:flex;flex-wrap:wrap;gap:4px}
 .kdone{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--line2);background:var(--panel);vertical-align:-3px;margin-right:6px;cursor:pointer;padding:0;display:inline-flex;align-items:center;justify-content:center;font-size:10px;color:#fff}.kdone:hover{border-color:var(--ok);background:var(--okBg)}.kdone.on{background:var(--ok);border-color:var(--ok)}
@@ -291,24 +295,26 @@ select.ps:disabled{cursor:default;background-image:none;padding-right:9px}
 .ib{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-auto-flow:dense;gap:16px;margin-top:6px}
 .it{position:relative;border-radius:22px;padding:18px 20px 16px;display:flex;flex-direction:column;gap:12px;color:var(--ink);text-decoration:none;background:linear-gradient(155deg,var(--panel) 35%,var(--tint,var(--panel)) 100%);box-shadow:0 1px 2px rgba(10,10,112,.05);transition:transform .18s ease,box-shadow .18s ease;min-width:0}
 .it:hover,.it:focus-visible{transform:translateY(-2px);box-shadow:0 10px 28px rgba(10,10,112,.12)}.it:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-.s3{grid-column:span 3}.s4{grid-column:span 4}.s5{grid-column:span 5}.s6{grid-column:span 6}.s7{grid-column:span 7}.r2{grid-row:span 2}
-:root{--ta:#E3F2EA;--tb:#E8E6F8;--tc:#E0ECF8;--td:#F7EEDD}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ta:#1F3329;--tb:#27253F;--tc:#1E2D3D;--td:#352D1E}}:root[data-theme="dark"]{--ta:#1F3329;--tb:#27253F;--tc:#1E2D3D;--td:#352D1E}
+.s8{grid-column:span 8}.s12{grid-column:span 12}.s3{grid-column:span 3}.s4{grid-column:span 4}.s5{grid-column:span 5}.s6{grid-column:span 6}.s7{grid-column:span 7}.r2{grid-row:span 2}
+:root{--ta:#E4ECFB;--tb:#FDEBDD;--tc:#EAF0FC;--td:#FEF2E8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ta:#14214F;--tb:#33200F;--tc:#111A42;--td:#2A1A0E}}:root[data-theme="dark"]{--ta:#14214F;--tb:#33200F;--tc:#111A42;--td:#2A1A0E}
 .tint-a{--tint:var(--ta)}.tint-b{--tint:var(--tb)}.tint-c{--tint:var(--tc)}.tint-d{--tint:var(--td)}
 .ith{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.itt{display:block;font-size:16px;font-weight:600}.its{display:block;font-size:13px;color:var(--muted);margin-top:2px}.itc{font-size:12.5px;font-weight:600;border:1px solid var(--line2);border-radius:999px;padding:3px 10px;white-space:nowrap;background:var(--panel)}
 .ithero{display:flex;align-items:baseline;gap:8px}.ithero b{font-size:48px;line-height:1;font-weight:700;letter-spacing:-.03em}.ithero>span{font-size:14px;color:var(--muted)}
 .itg{display:flex;align-items:center;gap:18px;flex-wrap:wrap}.itg svg{width:220px;max-width:100%;height:auto}.itg .gn{font-size:32px;font-weight:700;fill:var(--ink)}.itg .gs{font-size:12px;fill:var(--muted)}
 .itleg{display:flex;flex-direction:column;gap:6px;font-size:13.5px;flex:1;min-width:140px}.itleg span{display:flex;align-items:center;gap:8px}.itleg i{width:10px;height:10px;border-radius:3px}.itleg b{margin-left:auto}
 .itsub{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:4px}
-.itb{display:flex;align-items:flex-end;gap:10px;height:120px;padding-top:4px}.itbc{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px}.itbc i{display:block;width:100%;max-width:44px;border-radius:8px;background:color-mix(in srgb,var(--accent) 35%,transparent)}.itbc.hi i{background:var(--accent)}.itbc em{font-style:normal;font-size:13px;font-weight:700}.itbc small{font-size:12px;color:var(--muted)}
-.itm{display:flex;flex-direction:column;gap:6px}.itmb{height:12px;border-radius:999px;background:var(--line);overflow:hidden}.itmb i{display:block;height:100%;background:var(--ok);border-radius:999px}.itml{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}.itml b{color:var(--ink);font-size:15px}
+.itb{display:flex;align-items:flex-end;gap:10px;height:120px;padding-top:4px}.itbc{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px}.itbc i{display:block;width:100%;max-width:44px;border-radius:8px;background:var(--accent)}.itbc.lo i{background:color-mix(in srgb,var(--accent) 30%,transparent)}.itbc.hi i{background:var(--ember)}.itbc em{font-style:normal;font-size:13px;font-weight:700}.itbc small{font-size:12px;color:var(--muted)}
+.itm{display:flex;flex-direction:column;gap:6px}.itmb{height:12px;border-radius:999px;background:var(--line);overflow:hidden}.itmb i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--ember));border-radius:999px}.itml{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}.itml b{color:var(--ink);font-size:15px}
 .itr{display:flex;flex-direction:column;gap:6px}.itr>span{display:flex;justify-content:space-between;align-items:center;gap:10px;background:color-mix(in srgb,var(--panel) 70%,transparent);border:1px solid var(--line);border-radius:12px;padding:8px 12px;font-size:13.5px}.itr b{font-size:15px}
 .itl{display:flex;flex-direction:column;gap:6px}.itl>span{display:flex;justify-content:space-between;align-items:center;gap:10px;background:color-mix(in srgb,var(--panel) 70%,transparent);border:1px solid var(--line);border-radius:12px;padding:8px 12px}.itl>span>span{display:flex;flex-direction:column;min-width:0}.itl b{font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.itl small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pillx{font-size:12px;font-weight:600;border-radius:999px;padding:3px 9px;white-space:nowrap}.px-ok{background:var(--okBg);color:var(--ok)}.px-warn{background:var(--warnBg);color:var(--warn)}.px-bad{background:var(--badBg);color:var(--bad)}.px-info{background:var(--infoBg);color:var(--info)}
 .itx{font-size:13.5px}.itgo{position:absolute;right:16px;bottom:12px;font-size:20px;color:var(--accent);opacity:.55}.it:hover .itgo{opacity:1}
-@media (max-width:1100px){.ib{grid-template-columns:repeat(6,minmax(0,1fr))}.s5,.s6,.s7{grid-column:span 6}.s3,.s4{grid-column:span 3}.r2{grid-row:auto}}
-@media (max-width:600px){.ib{grid-template-columns:1fr}.s3,.s4,.s5,.s6,.s7{grid-column:auto}.ithero b{font-size:40px}}
+@media (max-width:1100px){.ib{grid-template-columns:repeat(6,minmax(0,1fr))}.s5,.s6,.s7,.s8,.s12{grid-column:span 6}.s3,.s4{grid-column:span 3}.r2{grid-row:auto}}
+@media (max-width:600px){.ib{grid-template-columns:1fr}.s3,.s4,.s5,.s6,.s7,.s8,.s12{grid-column:auto}.ithero b{font-size:40px}}
 @media (prefers-reduced-motion:reduce){.it{transition:none}.it:hover{transform:none}}
+.chealth,.cdon,.csum{border-radius:22px;background:linear-gradient(155deg,var(--panel) 35%,var(--ta));box-shadow:0 1px 2px rgba(5,10,46,.05)}.cdon{background:linear-gradient(155deg,var(--panel) 35%,var(--tc))}.csum{background:linear-gradient(155deg,var(--panel) 35%,var(--tb))}
+.ib.strip{margin:6px 0 18px}.ib.strip .it{gap:10px;padding:16px 18px}.ib.strip .itb{height:96px}.ib.strip .ithero b{font-size:40px}
 .allx{font-size:13px;align-self:flex-start}
 a.cl{color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:6px;min-height:28px}a.cl:hover{text-decoration:underline}
 .excs{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:12px}
@@ -595,11 +601,11 @@ button.bt{cursor:pointer;transition:box-shadow .15s,border-color .15s}button.bt:
 .rmh,.rmr{display:grid;grid-template-columns:var(--nw) minmax(0,1fr) var(--mw);gap:14px;align-items:center;padding:0 6px}
 .rmh{font-size:12px;color:var(--muted);min-height:22px}.rmh .rmt{position:relative;height:20px}
 .rmm{position:absolute;top:2px;padding-left:4px;white-space:nowrap;font-weight:600}
-.mS{display:none}.rmtl{position:absolute;top:2px;transform:translateX(-50%);font-weight:700;color:var(--ink);background:var(--panel);padding:0 4px;border-radius:4px;white-space:nowrap}
+.mS{display:none}.rmtl{position:absolute;top:2px;transform:translateX(-50%);font-weight:700;color:var(--emberInk);background:var(--panel);padding:0 4px;border-radius:4px;white-space:nowrap}
 .rmbody{position:relative;display:flex;flex-direction:column;gap:2px}
 .rmgrid{position:absolute;top:0;bottom:0;left:calc(6px + var(--nw) + 14px);right:calc(6px + var(--mw) + 14px);pointer-events:none}
 .rmw{position:absolute;top:0;bottom:0;border-left:1px solid var(--line)}.rmw.mo{border-left:1px solid var(--line2)}
-.rmtoday{position:absolute;top:-22px;bottom:0;border-left:2px solid var(--ink);opacity:.7}
+.rmtoday{position:absolute;top:-22px;bottom:0;border-left:2px solid var(--ember)}
 .rmr{all:unset;box-sizing:border-box;display:grid;grid-template-columns:var(--nw) minmax(0,1fr) var(--mw);gap:14px;align-items:center;padding:6px;cursor:pointer;min-height:52px;border-radius:10px;position:relative}
 .rmr:hover{background:var(--offBg)}.rmr:focus-visible{outline:2px solid var(--accent)}
 .rmn{display:flex;flex-direction:column;min-width:0}.rmn b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rmn .faint{font-size:12px}
@@ -737,6 +743,7 @@ function cls(v){
   // Five meanings only: green finished or healthy, blue moving, amber needs a look, red stopped, grey not started or parked.
   if(["Complete","Granted","Team confirmed","Signed","Done","Live","All Granted","On Time","On Track"].includes(v))return"s-ok";
   if(["Blocked","Overdue","Urgent"].includes(v))return"s-bad";
+  if(v==="In Review")return"s-em"; // waiting for a review or approval: the one Ember status
   if(["At Risk","Has blockers","Due Soon","High","Asked founder","Founder actioned"].includes(v))return"s-warn";
   if(["In Progress","Briefed","Requested","Drafting","Internal Review","Final Review (Ben)","Founder Check-in","Revisions","Sent for Signature","Foundations","Tactics In","In QA","Template Pending"].includes(v))return"s-info";
   return"s-off";
@@ -955,6 +962,7 @@ function vMine(){
   h+=sinceBanner(all)+guide("mine");
   const reqs=withId(S.esc).filter(e=>e.state==="Proposed"&&e.lead&&isPerson(e.lead,me));
   if(reqs.length)h+=`<section class="group"><h2>Escalation requests <span class="count">${reqs.length}</span></h2>${reqs.map(e=>`<div class="item"><div><div class="t">${e.priority?`<span class="tag">${esc(e.priority)}</span> `:""}<a class="bname" href="#brand-${esc(e.brand)}">${esc(bname(e.brand))}</a> · ${esc(e.title)}</div><div class="meta">${esc(e.by||"Someone")}: ${esc(e.ask)}${e.due?` · needed by ${esc(fmtD(e.due,true))}`:""}</div></div><div class="row" style="gap:6px"><button class="btn sm" data-act="esc-decline" data-id="${esc(e._id)}">Decline</button><button class="btn sm pri" data-act="esc-raise" data-id="${esc(e._id)}">Send to leadership</button></div><div></div></div>`).join("")}</section>`;
+  if(me){const mine=withId(S.tasks).filter(t=>t.title&&t.status!=="Complete"&&!holdOf(t.brand)&&(isPerson(t.owner,me)||(t.support||[]).some(x=>isPerson(x,me))));if(mine.length)h+=strip(stripTasks(mine))}
   const men=myMentions(me);if(men.length)h+=`<section class="group"><h2>Mentions <span class="count">${men.length}</span></h2>${men.slice(0,5).map(c=>`<a class="item men" href="#brand-${esc(c.brand)}" data-act="men-go" data-id="${esc(c.brand)}" data-acc="${esc(c.access||"")}" data-task="${esc(c.task||"")}"><div><div class="t">${esc(c.by||"Someone")} on ${esc(bname(c.brand))}${c.access&&S.access[c.access]?" · "+esc(S.access[c.access].platform):""}${c.task&&S.tasks[c.task]?" · "+esc(S.tasks[c.task].title):""}</div><div class="meta">${linkMentions(c.text).slice(0,400)}</div></div><div class="faint" style="font-size:12px">${esc(agoText(c.at))}</div><div></div></a>`).join("")}</section>`;
   if(mineTab===null)mineTab=ls.get("vt-minetab")||(onb.length?"onboarding":"live");
   const urgent=a=>a.filter(it=>!holdOf(it.brand)&&(it.blocked||it.flag==="Overdue")).length;
@@ -1052,6 +1060,7 @@ function vOverview(){
   const open=withId(S.tasks).filter(t=>t.title&&t.status!=="Complete"&&!holdOf(t.brand));const lateT=open.filter(t=>dueFlag(t.deadline,false)==="Overdue").length,blkT=open.filter(t=>t.status==="Blocked").length;
   const kc={};for(const x of att)kc[x.kind]=(kc[x.kind]||0)+1;const pct=act.length?Math.round(hc.ok/act.length*100):0;
   const hyAll=hygiene();
+  h+=`<div class="lhead"><span>${act.length} active brands, ${hc.bad} blocked.<span class="lhs">${att.length} things need attention · ${soon} SOW${soon===1?"":"s"} to sign in the next 2 weeks · ${lateT} tasks late</span></span><span class="lhn">${pct}%<small>brands on track</small></span></div>`;
   h+=`<div class="ib">`;
   h+=IB.tile("overview/attention","s5 r2 tint-d",IB.head("Needs attention","Brands to act on today",`${att.length} items`)+IB.rows(Object.entries(kc).map(([k,v])=>[k,v,k==="Blocked"||k==="Past SOW target"?"bad":"warn"]))+IB.list(att.slice(0,4).map(x=>[x.b.name,x.text.slice(0,60),x.kind,x.kind==="Blocked"||x.kind==="Past SOW target"?"bad":"warn"]),"Nothing needs attention"),"Needs attention: "+att.length);
   h+=IB.tile("overview/all","s3 tint-a",IB.head("Brand health","Active brands")+IB.gauge([{l:"On track",n:hc.ok,k:"ok"},{l:"Need a look",n:hc.warn,k:"warn"},{l:"Blocked",n:hc.bad,k:"bad"}],pct+"%","on track"),"Brand health: "+pct+"% on track");
@@ -1257,10 +1266,15 @@ function BPGROUPS(){const secs=L("bp_section");const cfg=(S.config.bp_groups&&S.
   const gs=cfg.map(g=>({name:g.name,sections:(g.sections||[]).filter(x=>secs.includes(x)&&!used.has(x)&&used.add(x))})).filter(g=>g.sections.length);
   const rest=secs.filter(x=>!used.has(x));if(rest.length)gs.push({name:gs.length?"Other":"",sections:rest});return gs}
 let bpFilter="all",bpSort="progress",pop=null;
+function bpStrip(){const bs=brandList().filter(b=>S.bps[b.id]&&!onHold(b));if(!bs.length)return"";const rr=bs.map(b=>bpRoll(b.id));const ready=bs.filter(b=>{const g=bpReady(b.id);return!g.locked.length&&!g.unchecked.length}).length;
+  const ov={};for(const r of rr)ov[r.overall]=(ov[r.overall]||0)+1;const avg=Math.round(rr.reduce((a,r)=>a+r.progress,0)/rr.length*100);
+  return strip([IB.box("s3 tint-a",IB.head("Sections complete","Average across brands")+IB.hero(avg+"%","")+IB.meter(rr.filter(r=>r.overall==="Complete").length,rr.filter(r=>r.overall!=="Complete").length,"brands complete","in progress")),
+    IB.box("s5 tint-c",IB.head("Where brands are","Overall Best Practices status")+IB.bars([["Not Started","d-todo"],["In Progress","d-prog"],["In QA","d-rev"],["Blocked","d-blk"],["Complete","d-done"]].map(([l,k])=>({l,k,n:ov[l]||0})))),
+    IB.box("s4 tint-b",IB.head("Ready to work","Platform access in place")+IB.rows([["Ready",ready,"ok"],["Waiting on access",bs.length-ready,bs.length-ready?"warn":""]]))])}
 function vBp(){
   const groups=BPGROUPS();const secs=groups.flatMap(g=>g.sections);
   let rows=brandList().filter(b=>S.bps[b.id]);const others=brandList().filter(b=>!S.bps[b.id]&&!isInternal(b));
-  let h=`<h1>Best Practices</h1><p class="sub">One row per brand, one dot per section. Click a dot to set that section. Use Edit on a row for owner, due date, blocker and notes.</p>
+  let h=`<h1>Best Practices</h1>${bpStrip()}<p class="sub">One row per brand, one dot per section. Click a dot to set that section. Use Edit on a row for owner, due date, blocker and notes.</p>
   <div class="legend">${L("bp_status").map(v=>`<span><span class="bpd bp-${key(v)}">${esc(BPMARK[v]??"")}</span>${esc(v)}</span>`).join("")}<span><span class="bpd bp-Locked">${LOCK}</span>Waiting on access</span><span><span class="bpd bp-NotStarted bp-Ready"></span>Access in place, ready to start</span></div>
   <div class="toolbar"><div class="seg" role="group" aria-label="Show"><button data-act="bpf" data-v="all" class="${bpFilter==="all"?"on":""}">All</button><button data-act="bpf" data-v="open" class="${bpFilter==="open"?"on":""}">Not complete</button><button data-act="bpf" data-v="blocked" class="${bpFilter==="blocked"?"on":""}">Blocked</button></div>
    <label class="tl">Sort by <select data-act="bps" id="bp-sort"><option value="progress" ${bpSort==="progress"?"selected":""}>Needs work first</option><option value="name" ${bpSort==="name"?"selected":""}>Brand A to Z</option><option value="due" ${bpSort==="due"?"selected":""}>Due date</option></select></label>
@@ -1303,18 +1317,31 @@ function openPop(btn){closePop();const id=btn.dataset.id,sec=btn.dataset.sec;con
   el.style.left=Math.max(8,Math.min(innerWidth-w-8,r.left+r.width/2-w/2))+"px";el.style.top=(r.bottom+hh+8>innerHeight?r.top-hh-6:r.bottom+6)+"px";
   pop={id,sec,btn:btn.getAttribute("aria-label")};const f=el.querySelector(".pi.on")||el.querySelector(".pi");if(f)f.focus()}
 function closePop(){const el=$("#pop");if(el)el.remove();pop=null}
+function sowStrip(bs){const xs=bs.filter(b=>!onHold(b));const pc=xs.map(b=>Math.round(onboarding(b.id)*100));const bk=[["0 to 25%",0,25],["25 to 50%",25,50],["50 to 75%",50,75],["75 to 99%",75,100],["Done",100,101]].map(([l,a,z])=>({l,n:pc.filter(v=>v>=a&&v<z).length}));
+  const m0=new Date(today().getFullYear(),today().getMonth(),1),m1=new Date(m0.getFullYear(),m0.getMonth()+1,1);const sw=xs.map(b=>S.sow[b.id]||{});
+  const due=sw.filter(s=>{const d=parseD(s.target_sign);return d&&d>=m0&&d<m1&&s.stage!=="Signed"}).length,past=sw.filter(s=>{const d=parseD(s.target_sign);return d&&d<today()&&s.stage!=="Signed"}).length,signed=sw.filter(s=>s.stage==="Signed").length,blk=sw.filter(s=>s.stage==="Blocked").length;
+  const avg=pc.length?Math.round(pc.reduce((a,v)=>a+v,0)/pc.length):0;
+  return strip([IB.box("s3 tint-a",IB.head("Road to SOW","Average across brands")+IB.hero(avg+"%","")+IB.meter(signed,xs.length-signed,"signed","to go")),
+    IB.box("s5 tint-c",IB.head("How far each brand is","Brands by Road to SOW")+IB.bars(bk)),
+    IB.box("s4 tint-b",IB.head("Signing","This month")+IB.rows([["Due to sign this month",due,due?"warn":""],["Past target",past,past?"bad":""],["SOW blocked",blk,blk?"bad":""],["Signed",signed,"ok"]]))])}
 function vSow(){
   const bs=brandList().filter(b=>!isInternal(b));
   const rows=bs.map(b=>({b,s:Object.assign({brand:b.id},S.sow[b.id]||{})})).sort((x,y)=>(onHold(x.b)?1:0)-(onHold(y.b)?1:0)||String(x.s.target_sign||"9999").localeCompare(String(y.s.target_sign||"9999")));
-  let h=`<h1>SOW tracker</h1>`+viewSeg("sowview",sowView,[["board","Progress board"],["list","Sign dates and blockers"]]);
+  let h=`<h1>SOW tracker</h1>`+sowStrip(bs)+viewSeg("sowview",sowView,[["board","Progress board"],["list","Sign dates and blockers"]]);
   if(sowView==="board")return h+sowBoard();
   h+=`<p class="sub">One SOW per brand, sorted by target sign date. A blocked SOW keeps its target date and is marked Blocked. Brands on hold are at the bottom.</p><div class="tw"><table><thead><tr><th>Brand</th><th>Stage</th><th>Owner</th><th>Target sign</th>${simple?"":"<th>Draft due</th><th>Batch</th>"}<th>Documents</th><th>Blocker</th><th>Next step</th></tr></thead><tbody>`;
   for(const{b,s}of rows){h+=`<tr class="click" data-act="open" data-kind="sow" data-id="${esc(b.id)}"><td><a class="bname" href="#${brandHash(b.id,"sow")}" title="Open ${esc(b.name)} Road to SOW">${esc(b.name)}</a>${onHold(b)?` <span class="tag">Brand on hold</span>`:""}</td><td>${statusSel("sow",b.id,s.stage||"Not Started",L("sow_stage"),canEdit&&canWrite)}</td><td>${esc(s.owner)||`<span class="faint">Not set</span>`}</td><td>${targetHtml(s)}</td>
    ${simple?"":`<td>${dueHtml(s.draft_due,false)||esc(fmtD(s.draft_due))}</td><td class="muted">${esc(s.batch)}</td>`}<td style="white-space:nowrap">${s.sow_link?`<a href="${esc(s.sow_link)}" target="_blank" rel="noopener">SOW</a> `:""}${s.gf_link?`<a href="${esc(s.gf_link)}" target="_blank" rel="noopener">GF</a>${s.gf_updated?` <span class="tag">Updated</span>`:""}`:""}${!s.sow_link&&!s.gf_link?`<span class="faint">None yet</span>`:""}${s.gf_status?`<div class="muted" style="white-space:normal;font-size:12px">GF: ${esc(s.gf_status)}</div>`:""}</td>
    <td class="muted clip">${esc(s.blocker)}</td><td class="muted clip">${esc(s.next_step)}</td></tr>`}
   return h+`</tbody></table></div>`}
+function accStrip(){const all=withId(S.access).filter(a=>a.status!=="Not Needed"&&S.brands[a.brand]&&!holdOf(a.brand));const g=all.filter(accGranted).length;const op=all.filter(accOpen);
+  const byP={};for(const a of op)byP[a.platform]=(byP[a.platform]||0)+1;const top=Object.entries(byP).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([l,n])=>({l:l.replace(/ (Ads Manager|Seller Central|Business Manager)$/,""),t:l,n}));
+  const noLogin=all.filter(a=>accGranted(a)&&!(a.seats||[]).length).length;
+  return strip([IB.box("s4 tint-a",IB.head("Access granted","Every platform every brand needs")+IB.meter(g,all.length-g,"granted","still open")+IB.rows([["Waiting on founders",op.filter(a=>ACC_FOUNDER.includes(a.status)).length,"warn"],["To chase now",op.filter(needsChase).length,"bad"]])),
+    IB.box("s5 tint-c",IB.head("Most missing","Open requests by platform")+IB.bars(top)),
+    IB.box("s3 tint-b",IB.head("Team logins","Granted, but nobody listed")+IB.hero(noLogin,"platforms"))])}
 function vAccess(){
-  const head=`<h1>Platform access</h1>`;
+  const head=`<h1>Platform access</h1>`+accStrip();
   if(simple)return head+accessGrid();
   return head+`<p class="sub">Pick a brand on the left to see who has access to what, what kind, and what happens next. Click a platform for the steps, team logins, chasing and the comment thread.</p>`+accFull("");
 }
@@ -1384,6 +1411,8 @@ function vPeople(){
   const rows=Object.values(ppl).map(p=>{const o=p.own;return Object.assign(p,{n:o.length,blocked:o.filter(t=>t.status==="Blocked").length,late:o.filter(t=>dueFlag(t.deadline,false)==="Overdue").length,
     week:o.filter(t=>{const n=dayDiff(t.deadline);return n!==null&&n>=0&&n<=7}).length,nodate:o.filter(t=>!t.deadline).length})}).sort((a,b)=>b.n-a.n||b.sup.length-a.sup.length);
   const max=Math.max(1,...rows.map(r=>r.n));const un=open.filter(t=>!t.owner);
+  h+=strip([IB.box("s4 tint-a",IB.head("Open work","Across every brand")+IB.hero(open.length,"open tasks")+IB.rows([["No owner",un.length,un.length?"warn":""],["People carrying work",rows.filter(r=>r.n).length,""]])),
+    IB.box("s8 tint-c",IB.head("Who carries the most","Open tasks each person owns")+IB.bars(rows.slice(0,8).map(r=>({l:(personOf(r.name)||{}).full_name?r.name:r.name,n:r.n}))))]);
   h+=`<div class="tw"><table class="sortless"><thead><tr><th>Person</th><th>Owns</th><th class="num">Blocked</th><th class="num">Late</th><th class="num">Due in 7 days</th><th class="num">No date</th><th class="num">Supports</th><th class="num">Brands</th></tr></thead><tbody>`;
   for(const r of rows){const pp=personOf(r.name)||{};h+=`<tr class="click ${peopleSel===r.name?"sel":""}" data-act="person-pick" data-name="${esc(r.name)}"><td><b>${esc(pp.full_name||r.name)}</b>${pp.title||pp.team?`<div class="faint" style="font-size:12px">${esc([pp.title,pp.team].filter(Boolean).join(" · "))}</div>`:""}</td><td><span class="load"><i style="width:${Math.round(r.n/max*100)}%"></i></span> ${r.n}</td>
     <td class="num">${r.blocked?`<span class="hot">${r.blocked}</span>`:0}</td><td class="num">${r.late?`<span class="hot">${r.late}</span>`:0}</td><td class="num">${r.week}</td><td class="num">${r.nodate?`<span class="faint">${r.nodate}</span>`:0}</td><td class="num">${r.sup.length}</td><td class="num">${r.brands.size}</td></tr>`}
@@ -1709,7 +1738,7 @@ function kbCard(t,showCamp,hideTeam){const cl=t.checklist||[];const cd=cl.filter
   return`<div class="kc ${t.status==="Blocked"?"kc-bad":""}" draggable="${canChangeTask(t)}" data-act="open" data-kind="task" data-id="${esc(t._id)}" tabindex="0" role="button" aria-label="${esc(t.title+", "+(t.status||"")+(t.owner?", "+t.owner:""))}">
    <span class="kls">${hideTeam?"":`<span class="klabel" style="--tc:${teamColor(d)}">${esc(d)}</span>`}${showCamp&&campOf(t)!==NOCAMP?`<span class="klabel kcamp">${esc(campName(campOf(t)))}</span>`:""}</span>
    ${(t.labels||[]).length?`<span class="klbls">${t.labels.map(x=>`<span class="lchip sm">${esc(x)}</span>`).join("")}</span>`:""}<span class="kt">${canChangeTask(t)&&t.status!==DONE?`<button class="kdone" data-act="kc-done" data-id="${esc(t._id)}" title="Mark done" aria-label="Mark ${esc(t.title)} done"></button>`:t.status===DONE?`<span class="kdone on" aria-hidden="true">✓</span>`:""}${esc(t.title)}</span>${t.status==="Blocked"&&t.blocker&&t.blocker.text?`<span class="blk">${esc(t.blocker.text)}</span>`:""}
-   <span class="kb2">${t.status&&t.status!=="Blocked"?`<span class="kbg ${t.status==="Complete"?"ok":t.status==="On Hold"||t.status===REVIEW?"warn":t.status==="In Progress"?"info":""}">${esc(t.status)}</span>`:""}${escFor("task",t._id)?`<span class="kbg warn">With leadership</span>`:""}${needsOk(t)&&t.status===REVIEW?`<span class="kbg warn">Awaiting approval</span>`:t.approved_at?`<span class="kbg ok">Approved</span>`:""}${dueBadge(t)}${["High","Urgent"].includes(t.priority)?`<span class="kbg warn">${esc(t.priority)}</span>`:""}${cl.length?`<span class="kbg ${cd===cl.length?"ok":""}" title="Checklist">${ICON.check}${cd}/${cl.length}</span>`:""}${nc?`<span class="kbg" title="${nc} comment${nc>1?"s":""}">${ICON.talk}${nc}</span>`:""}${t.brief_link||t.creative_link?`<span class="kbg" title="Has brief or creative links">${ICON.link}</span>`:""}
+   <span class="kb2">${t.status&&t.status!=="Blocked"?`<span class="kbg ${t.status==="Complete"?"ok":t.status==="On Hold"?"warn":t.status===REVIEW?"em":t.status==="In Progress"?"info":""}">${esc(t.status)}</span>`:""}${escFor("task",t._id)?`<span class="kbg warn">With leadership</span>`:""}${needsOk(t)&&t.status===REVIEW?`<span class="kbg em">Awaiting approval</span>`:t.approved_at?`<span class="kbg ok">Approved</span>`:""}${dueBadge(t)}${["High","Urgent"].includes(t.priority)?`<span class="kbg warn">${esc(t.priority)}</span>`:""}${cl.length?`<span class="kbg ${cd===cl.length?"ok":""}" title="Checklist">${ICON.check}${cd}/${cl.length}</span>`:""}${nc?`<span class="kbg" title="${nc} comment${nc>1?"s":""}">${ICON.talk}${nc}</span>`:""}${t.brief_link||t.creative_link?`<span class="kbg" title="Has brief or creative links">${ICON.link}</span>`:""}
     <span class="grow"></span><span class="avs">${t.lead||t.qa||t.approver?`<span class="kroles" title="${esc([t.lead?"Lead "+t.lead:"",t.qa?"QA "+t.qa:"",t.approver?"Approver "+t.approver:""].filter(Boolean).join(", "))}">${[t.lead?"L":"",t.qa?"QA":"",t.approver?"A":""].filter(Boolean).join(" ")}</span>`:""}${ppl.slice(0,3).map((p,i)=>`<span class="av ${i?"sup":""}" title="${esc(p)}${i?" (support)":" (owner)"}">${esc(ini(p))}</span>`).join("")}${ppl.length>3?`<span class="av more">+${ppl.length-3}</span>`:""}</span></span></div>`}
 /* labels: a shared list (Settings > Lists > Card labels); add one straight from the card */
 function labelEditor(id,t){const on=new Set(t.labels||[]);const ed=canChangeTask(t);
@@ -1760,7 +1789,8 @@ function vLeadership(){
   const dueMonth=onb.filter(b=>{const d=parseD((S.sow[b.id]||{}).target_sign);return d&&d>=m0&&d<m1});
   const riskCamps=liveCampaigns(bs).filter(x=>x.k==="bad"||x.k==="warn");const dec=gates.length+escs.length;
   const sent=[`${onb.length} brand${onb.length===1?"":"s"} in onboarding, ${live.length} live.`,n.blocked?`${n.blocked} blocked.`:"Nothing blocked.",dec?`${dec} decision${dec>1?"s":""} waiting for you.`:"No decisions waiting.",riskCamps.length?`${riskCamps.length} live campaign${riskCamps.length>1?"s":""} at risk.`:""].filter(Boolean).join(" ");
-  h+=`<p class="lhead ${n.blocked||riskCamps.length?"warn":"ok"}">${esc(sent)}</p>`;
+  const actB=bs.filter(b=>!onHold(b)&&!isInternal(b));const okPct=actB.length?Math.round(actB.filter(b=>!["Blocked","At Risk","Has blockers"].includes(R[b.id].health)).length/actB.length*100):0;
+  h+=`<div class="lhead"><span>${esc(sent.split(". ")[0])}.<span class="lhs">${esc(sent.split(". ").slice(1).join(". "))}</span></span><span class="lhn">${okPct}%<small>brands on track</small></span></div>`;
   const att=attention(bs,R).filter(x=>x.kind!=="No update").slice(0,5);
   const ASK={"Blocked":"Help unblock it, or agree a workaround","Past SOW target":"Agree a new sign date, or push the client","Chase founder":"Use the founder relationship to get access shared","Stage mismatch":"Confirm which stage is right"};
   const P={};P.attention=`<p class="hint2">The top problems across active brands, with the cause, the owner, the next step and what is asked of you.</p>`+(att.length?`<div class="excs">${att.map(x=>`<div class="exc"><div class="row" style="gap:8px"><span class="pill ${x.kind==="Blocked"||x.kind==="Past SOW target"?"s-bad":"s-warn"}">${esc(x.kind)}</span><a class="bname" href="#brand-${esc(x.b.id)}">${esc(x.b.name)}</a><span class="grow"></span><button class="btn sm" data-act="att-go" data-id="${esc(x.b.id)}" data-tab="${esc(x.tab)}">Open ${esc((SECT[x.tab]||"brand").toLowerCase())}</button>${canWrite&&x.b.lead?`<button class="btn sm" data-act="ask-lead" data-id="${esc(x.b.id)}">Ask ${esc(x.b.lead)}</button>`:""}</div>
@@ -1789,10 +1819,19 @@ const IB={
     const arcs=parts.map(x=>{if(!x.n)return"";const len=x.n/tot*C;const a=`<circle r="${R}" cx="90" cy="88" fill="none" stroke="var(--${x.k})" stroke-width="18" stroke-dasharray="${Math.max(0,len-gap)} ${2*Math.PI*R}" stroke-dashoffset="${-off}" transform="rotate(180 90 88)"><title>${esc(x.l+": "+x.n)}</title></circle>`;off+=len;return a}).join("");
     return`<span class="itg"><svg viewBox="0 0 180 100" role="img" aria-label="${esc(parts.map(x=>x.n+" "+x.l).join(", "))}"><circle r="${R}" cx="90" cy="88" fill="none" stroke="var(--line)" stroke-width="18" stroke-dasharray="${C} ${2*C}" transform="rotate(180 90 88)"/>${arcs}<text x="90" y="80" text-anchor="middle" class="gn">${center}</text><text x="90" y="97" text-anchor="middle" class="gs">${esc(sub)}</text></svg>
       <span class="itleg">${parts.map(x=>`<span><i style="background:var(--${x.k})"></i>${esc(x.l)}<b>${x.n}</b></span>`).join("")}</span></span>`},
-  bars(items){const mx=Math.max(1,...items.map(x=>x.n));return`<span class="itb" role="img" aria-label="${esc(items.map(x=>x.l+": "+x.n).join(", "))}">${items.map(x=>`<span class="itbc ${x.n&&x.n===mx?"hi":""}" title="${esc((x.t||x.l)+": "+x.n)}"><em>${x.n}</em><i style="height:${Math.max(4,Math.round(x.n/mx*100))}%"></i><small>${esc(x.l)}</small></span>`).join("")}</span>`},
+  bars(items){const mx=Math.max(1,...items.map(x=>x.n));return`<span class="itb" role="img" aria-label="${esc(items.map(x=>x.l+": "+x.n).join(", "))}">${items.map(x=>`<span class="itbc ${x.k?"":x.n&&x.n===mx?"hi":x.n<mx/2?"lo":""}" title="${esc((x.t||x.l)+": "+x.n)}"><em>${x.n}</em><i style="height:${Math.max(4,Math.round(x.n/mx*100))}%${x.k?";background:var(--"+x.k+")":""}"></i><small>${esc(x.l)}</small></span>`).join("")}</span>`},
   meter(a,b,la,lb){const t=a+b||1;return`<span class="itm"><span class="itmb" role="img" aria-label="${a} ${esc(la)}, ${b} ${esc(lb)}"><i style="width:${Math.round(a/t*100)}%"></i></span><span class="itml"><span><b>${Math.round(a/t*100)}%</b> ${esc(la)}</span><span>${b} ${esc(lb)}</span></span></span>`},
   rows:r=>`<span class="itr">${r.map(([l,v,k])=>`<span><span>${esc(l)}</span><b class="${k?"c-"+k:""}">${v}</b></span>`).join("")}</span>`,
   list:(r,empty)=>r.length?`<span class="itl">${r.map(([t,sub,pill,k])=>`<span><span><b>${esc(t)}</b>${sub?`<small>${esc(sub)}</small>`:""}</span>${pill?`<span class="pillx px-${k||"info"}">${esc(pill)}</span>`:""}</span>`).join("")}</span>`:`<span class="itx faint">${esc(empty)}</span>`};
+IB.box=(cls,inner)=>`<div class="it ${cls}">${inner}</div>`;
+const pct100=(a,b)=>b?Math.round(a/b*100):0;
+/* a strip of infographic tiles at the top of a page */
+function stripTasks(open){const late=open.filter(t=>dueFlag(t.deadline,false)==="Overdue").length,blk=open.filter(t=>t.status==="Blocked").length,wk=open.filter(t=>{const n=dayDiff(t.deadline);return n!==null&&n>=0&&n<=7}).length,nod=open.filter(t=>!t.deadline).length;
+  const by={};for(const t of open){const b=bucketOf(t);by[b]=(by[b]||0)+1}
+  return[IB.box("s4 tint-a",IB.head("Open tasks","")+IB.hero(open.length,"open")+IB.meter(open.length-late-blk,late+blk,"moving","late or blocked")),
+    IB.box("s4 tint-b",IB.head("Needs you","")+IB.rows([["Blocked",blk,blk?"bad":""],["Late",late,late?"bad":""],["Due in 7 days",wk,wk?"warn":""],["No date",nod,""]])),
+    IB.box("s4 tint-c",IB.head("By status","")+IB.bars([["To do","d-todo"],["In progress","d-prog"],[REVIEW_LABEL(),"d-rev"],["Blocked","d-blk"]].map(([l,k])=>({l,k,n:by[l]||0}))))]}
+const strip=tiles=>`<div class="ib strip">${tiles.join("")}</div>`;
 const bentoTile=(href,k,label,big,unit,body,foot)=>`<a class="lbt lbt-${k}" href="#${href}"><span class="lbl">${label}</span><span class="lbn"><b>${big}</b><span>${unit}</span></span>${body||""}<span class="lbf">${foot||""}<span class="lgo">Open ›</span></span></a>`;
 const OV_SECTIONS={attention:"Needs attention",pipeline:"Pipeline",plan:"SOW signing plan",all:"All brands"};
 const LEAD_SECTIONS={attention:"Needs attention",decisions:"Decisions",onboarding:"Onboarding by SOW phase",live:"Live brands",launches:"Launch calendar",week:"Next 7 days",all:"All brands"};
