@@ -20,7 +20,7 @@ const res = []; const check = (who, what, ok, d = '') => res.push([ok ? 'OK  ' :
   check('Member', 'No Founder view or Edit details button', !(await p.$('a[href="#client-bespoke"]')) && !(await p.$('.hero [data-kind=brand]')));
   await go(p, 'client-bespoke'); check('Member', 'Founder view is not available', !(await p.$('.fv')));
   await go(p, 'brand-bespoke'); await p.click('.rsub [data-tab=tasks]'); await p.waitForTimeout(200);
-  await p.selectOption('#whoSel', 'Cat'); await p.waitForTimeout(200);
+  await p.selectOption('#whoSel', 'Cat'); await p.waitForTimeout(200); { const bt = await p.$('[data-act=campview][data-v=board]'); if (bt) { await bt.click(); await p.waitForTimeout(200) } }
   const own = await p.$$eval('main .kc', cs => { const c = cs.find(x => x.querySelector('.av[title="Cat (owner)"]')); return c ? c.getAttribute('draggable') : null });
   if (own !== null) check('Member', 'Can move their own card', own === 'true');
   const notOwn = await p.$$eval('main .kc', cs => { const c = cs.find(x => ![...x.querySelectorAll('.av')].some(a => (a.title || '').startsWith('Cat '))); return c ? c.getAttribute('draggable') : null });

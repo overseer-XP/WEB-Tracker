@@ -22,6 +22,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   const planColumn = name => p.evaluate(n => { for (const w of document.querySelectorAll('.week')) for (const c of w.querySelectorAll('.chip .nm')) if (c.innerText === n) return w.querySelector('h3').innerText; return null }, name);
   const overviewRow = name => p.evaluate(n => { const tbs = document.querySelectorAll('main table'); const last = tbs[tbs.length - 1]; if (!last) return ''; for (const r of last.querySelectorAll('tbody tr')) if (r.querySelector('.bname') && r.querySelector('.bname').innerText === n) return r.innerText.replace(/\s+/g, ' '); return '' }, name);
   const openBrandEditor = async id => { await go('brand-' + id); await p.click('.hero [data-act=open][data-kind=brand]'); await p.waitForTimeout(200) };
+  const ctab = async v => { const b = await p.$(`[data-act=campview][data-v=${v}]`); if (b) { await b.click(); await p.waitForTimeout(150) } };
   const drawerSave = async () => { await p.click('[data-act=dsave]'); await p.waitForTimeout(350) };
   const view = async (k, v) => { const b = await p.$(`[data-act=${k}][data-v="${v}"]`); if (b) { await b.click(); await p.waitForTimeout(200) } };
   const setMe = async name => { await p.selectOption('#whoSel', name); await p.waitForTimeout(250) };
@@ -73,17 +74,17 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
 
   // 5. Task status to Blocked, with reason, on a brand that was On Track (CELF)
   await go('overview'); const celf0 = await overviewRow('CELF');
-  await go('brand-celf'); await p.click('.rsub [data-tab=tasks]'); await p.waitForTimeout(150);
+  await go('brand-celf'); await p.click('.rsub [data-tab=tasks]'); await p.waitForTimeout(150); await ctab('board');
   await p.click('main .kc'); await p.waitForTimeout(250); await p.selectOption('#d-status', 'Blocked'); await p.click('[data-act=dsave]'); await p.waitForTimeout(250);
   await p.fill('#b-text', 'Need founder files'); await p.selectOption('#b-person', 'Cat'); await p.click('#bform button[type=submit]'); await p.waitForTimeout(350);
   await go('overview');
   check('Task blocked', 'Brand health turns Has blockers (or Blocked if the task is High or Urgent)', !celf0.includes('Blocked') && !celf0.includes('Has blockers') && /Has blockers|Blocked/.test(await overviewRow('CELF')), (await overviewRow('CELF')).slice(0, 60));
   check('Task blocked', 'Left menu dot turns red', await p.evaluate(() => [...document.querySelectorAll('.rail .blink')].some(a => [...a.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join('').trim() === 'CELF' && a.querySelector('.dot.h-Blocked, .dot.h-Hasblockers'))));
-  await go('brand-celf'); await p.click('.rsub [data-tab=tasks]'); await p.waitForTimeout(150); await p.click('[data-act=dept][data-dep=""]').catch(() => {}); await p.waitForTimeout(150);
+  await go('brand-celf'); await p.click('.rsub [data-tab=tasks]'); await p.waitForTimeout(150); await ctab('board'); await p.click('[data-act=dept][data-dep=""]').catch(() => {}); await p.waitForTimeout(150);
   check('Task blocked', 'Board shows the card as blocked with its reason', (await text('.kc.kc-bad')).includes('Need founder files'));
 
   // 6. Task deadline in the past makes it late (Tiny Wins)
-  await go('brand-tiny-wins'); await p.click('.rsub [data-tab=tasks]'); await p.waitForTimeout(150);
+  await go('brand-tiny-wins'); await p.click('.rsub [data-tab=tasks]'); await p.waitForTimeout(150); await ctab('board');
   await p.click('main .kc'); await p.waitForTimeout(200);
   const past = new Date(); past.setDate(past.getDate() - 2); await p.fill('#d-deadline', past.toISOString().slice(0, 10)); await drawerSave();
   await go('overview');
@@ -129,7 +130,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   check('BP section', 'Brand health turns Blocked', (await overviewRow('KNDZ')).includes('KNDZ Founder Workshops Blocked'));
 
   // 11. Task team change moves it between cards (Eco Protein)
-  await go('brand-eco-protein'); await p.click('.rsub [data-tab=tasks]'); await p.waitForTimeout(150); const moved = await p.$eval('main .kc', e => e.dataset.id);
+  await go('brand-eco-protein'); await p.click('.rsub [data-tab=tasks]'); await p.waitForTimeout(150); await ctab('board'); const moved = await p.$eval('main .kc', e => e.dataset.id);
   await p.click('main .kc'); await p.waitForTimeout(200); await p.selectOption('#d-department', 'Finance'); await drawerSave();
   check('Task team', 'Card moves to the Finance list', !!(await p.$(`.kcol:has(.kname:text-is("Finance")) .kc[data-id="${moved}"]`)));
 
@@ -351,20 +352,21 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
 
 
   // 31. Campaigns: add one, move tasks in, timeline, dependencies, team cards, section tiles
-  await go('brand-celf'); await p.click('.rsub [data-tab=tasks]'); await p.waitForTimeout(150);
+  await go('brand-celf'); await p.click('.rsub [data-tab=tasks]'); await p.waitForTimeout(150); await ctab('board');
   check('Campaigns', 'Brand with no campaigns shows its board and offers Add campaign', !!(await p.$('main [data-act=add-camp]')) && !!(await p.$('.kb .kcol')));
   await p.click('[data-act=add-camp]'); await p.fill('#n-cn', 'Spring launch'); await p.fill('#n-cp', 'Launch the spring range with creators and paid'); await p.fill('#n-cs', '2026-10-01'); await p.fill('#n-ce', '2026-11-15');
   await p.click('#fbox button[type=submit]'); await p.waitForTimeout(400);
   check('Campaigns', 'New campaign opens with what it is for', (await text('.cbox')).includes('Launch the spring range'));
   check('Campaigns', 'Brand bar shows the path and counts the campaign', (await text('.vcrumb')).includes('Spring launch') && (await text('.rsub [data-tab=tasks]')).replace(/\s+/g, ' ').trim() === 'Campaigns 1');
   await p.click('[data-act=camp][data-id=""]'); await p.waitForTimeout(150);
-  await p.click('[data-act=camp][data-id=_none]'); await p.waitForTimeout(200);
+  await p.click('[data-act=camp][data-id=_none]'); await p.waitForTimeout(200); await ctab('board');
   await p.click('.kc'); await p.waitForTimeout(250);
   const campOpt = await p.$eval('#d-campaign', e => [...e.options].find(o => o.text === 'Spring launch').value);
   await p.selectOption('#d-campaign', campOpt); await p.fill('#d-start', '2026-10-05'); await p.fill('#d-deadline', '2026-10-20'); await drawerSave();
   await p.click('.crumb [data-act=camp][data-id=""]'); await p.waitForTimeout(150);
-  await p.click(`[data-act=camp][data-id="${campOpt}"]`); await p.waitForTimeout(250);
+  await p.click(`[data-act=camp][data-id="${campOpt}"]`); await p.waitForTimeout(250); await ctab('timeline');
   check('Campaigns', 'Moved task shows on the campaign timeline: a team bar, and its own bar once the team is opened', !!(await p.$('.gantt .gteam2 .gsum')) && await (async () => { await p.click('.gteam2'); await p.waitForTimeout(200); const ok = !!(await p.$('.gantt .gsub .gb')); await p.click('.gteam2'); await p.waitForTimeout(150); return ok })());
+  await ctab('board');
   check('Campaigns', 'Campaign board has one list, for the team that owns the moved task, with the card in it', (await p.$$('.kb section.kcol')).length === 1 && (await p.$$('.kb .kc')).length === 1);
   check('Campaigns', 'No dependency box on the campaign page', !(await p.$('.deps')));
   await p.click('.crumb [data-act=camp]'); await p.waitForTimeout(150);
@@ -372,7 +374,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await go('mine'); await go('brand-celf');
 
   // 32. Board: lists per team, add and rename a list, drag cards between lists, card back
-  await go('brand-celf'); await p.click('.rsub [data-tab=tasks]'); await p.waitForTimeout(150); await p.click('[data-act=camp][data-id=_none]'); await p.waitForTimeout(200);
+  await go('brand-celf'); await p.click('.rsub [data-tab=tasks]'); await p.waitForTimeout(150); await ctab('board'); await p.click('[data-act=camp][data-id=_none]'); await p.waitForTimeout(200); await ctab('board');
   const teamNames = await p.evaluate(() => window.__SEED.config.lists.department);
   check('Board', 'One list per team that has cards, named after the team', await p.$$eval('.kname', (e, t) => e.length > 0 && e.every(x => t.includes(x.innerText)), teamNames));
   await p.click('[data-act=kl-add]'); await p.fill('#n-ln', 'Shoot day'); await p.click('#fbox button[type=submit]'); await p.waitForTimeout(400);
@@ -410,8 +412,8 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await setMe('Noopur');
 
   // 33. Leadership room: escalate, decide, sign off and send back gates, launch calendar
-  await setMe('Noopur'); await go('brand-celf'); await p.click('.rsub [data-tab=tasks]'); await p.waitForTimeout(150);
-  await p.click('[data-act=camp][data-id=_none]'); await p.waitForTimeout(200);
+  await setMe('Noopur'); await go('brand-celf'); await p.click('.rsub [data-tab=tasks]'); await p.waitForTimeout(150); await ctab('board');
+  await p.click('[data-act=camp][data-id=_none]'); await p.waitForTimeout(200); await ctab('board');
   const escCard = await p.$eval('.kc', e => e.dataset.id); await p.click(`.kc[data-id="${escCard}"]`); await p.waitForTimeout(250);
   await p.click('#drawer [data-act=escalate]'); await p.fill('#n-ask', 'Approve the extra shoot day'); await p.click('#fbox button[type=submit]'); await p.waitForTimeout(400);
   check('Leadership', 'Escalated item says it is with leadership', (await text('#drawer footer')).includes('With leadership'));
@@ -445,7 +447,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   check('Leadership', 'Launch card opens the campaign', (await text('.cbox')).includes('Spring launch'));
 
   // 34. Audit fixes: campaign has its own address, Back works, keyboard way to move a card, skip link
-  await go('brand-celf'); await p.click('.rsub [data-tab=tasks]'); await p.waitForTimeout(150);
+  await go('brand-celf'); await p.click('.rsub [data-tab=tasks]'); await p.waitForTimeout(150); await ctab('board');
   await p.click('.crow:has-text("Spring launch")'); await p.waitForTimeout(300);
   const campUrl = await p.evaluate(() => location.hash);
   check('Audit fixes', 'A campaign has its own address', /^#brand-celf\/c\//.test(campUrl), campUrl);
@@ -453,7 +455,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   check('Audit fixes', 'Browser Back returns to the campaign list', (await p.evaluate(() => location.hash)) === '#brand-celf/tasks' && !!(await p.$('.clist')));
   await p.goto(url + campUrl); await p.waitForTimeout(700);
   check('Audit fixes', 'Opening the address goes straight to the campaign', (await text('.vcrumb')).includes('Spring launch'));
-  await go('brand-celf'); await p.click('.rsub [data-tab=tasks]'); await p.waitForTimeout(150); await p.click('[data-act=camp][data-id=_none]'); await p.waitForTimeout(200);
+  await go('brand-celf'); await p.click('.rsub [data-tab=tasks]'); await p.waitForTimeout(150); await ctab('board'); await p.click('[data-act=camp][data-id=_none]'); await p.waitForTimeout(200); await ctab('board');
   const lcard = await p.$eval('.kcards .kc', e => e.dataset.id); await p.click(`.kc[data-id="${lcard}"]`); await p.waitForTimeout(250);
   const target = await p.$eval('#d-list', e => [...e.options].find(o => !o.selected).value);
   const tname = await p.$eval('#d-list', (e, v) => [...e.options].find(o => o.value === v).text, target);
