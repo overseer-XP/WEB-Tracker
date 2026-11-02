@@ -329,6 +329,21 @@ select.ps:disabled{cursor:default;background-image:none;padding-right:9px}
 .orgc .av{flex:none}.orgc{display:flex;gap:10px;align-items:flex-start;background:var(--panel);color:var(--ink);border-radius:14px;padding:10px 12px;box-shadow:0 1px 2px rgba(5,10,46,.08);cursor:pointer;border:2px solid transparent}.orgc:hover,.orgc:focus-visible{border-color:var(--accent)}.orgc.dragging{opacity:.5}
 .orgt{display:flex;flex-direction:column;min-width:0}.orgt b{font-size:14px}.orgt small{font-size:12.5px;color:var(--muted)}.orgb{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}.px-off{background:var(--offBg);color:var(--off)}
 .orgover{outline:3px dashed var(--ember);outline-offset:2px}
+.tmore{display:none}.tctl{display:contents}.ph{display:none}@media (max-width:600px){.dt{display:none}.ph{display:inline}}
+@media (max-width:600px){
+  .topbar{flex-wrap:wrap;gap:8px;padding:8px 12px;min-height:0}.topbar .search{flex:1 1 0;min-width:0}
+  .tmore{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:1px solid var(--line2);border-radius:10px;background:var(--panel);color:var(--ink);flex:none}.tmore svg{width:20px;height:20px;fill:currentColor}
+  .tctl{display:none}.topbar.open .tctl{display:flex;flex-wrap:wrap;gap:8px;width:100%;align-items:center}.topbar.open .tmore{background:var(--accentSoft)}
+  .ib.strip{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.ib.strip .it{grid-column:auto;padding:12px 14px;gap:8px;border-radius:18px}.ib.strip .it:first-child{grid-column:1/-1}
+  .ib.strip .its,.ib.strip .itml span:last-child{display:none}.ib.strip .ithero b{font-size:30px}.ib.strip .itb{height:70px;gap:4px}.ib.strip .itbc small{font-size:11.5px;text-align:center;line-height:1.2}.ib.strip .itr>span{padding:6px 10px;font-size:13px}
+  .it{padding:16px}.ithero b{font-size:36px}.itg svg{width:180px}.itb{height:96px;gap:6px}.lhead{padding:18px 20px;font-size:17px}.lhead .lhn{font-size:36px;text-align:left}
+  .kbbar{gap:8px}.kbbar .kbq{flex:1 1 100%;min-width:0}.kbbar .grow,.kbbar>.faint{display:none}.kbbar .tl{font-size:13px}
+  .cbox .ctop{flex-wrap:wrap}.ctabs button{padding:10px 12px;font-size:14px}
+  .kbbar .tl{flex:1 1 45%;display:flex;align-items:center;gap:6px}.kbbar .tl select{flex:1;min-width:0}
+  .kb{scroll-snap-type:x mandatory}.kb .kcol{flex:0 0 86%!important;scroll-snap-align:start}
+  .orgcol.lead li,.orgcol.lead .orgtree>li>.orgc{flex:1 1 100%;max-width:none}.orgtree ul{margin-left:10px;padding-left:8px}
+  .lmore,.bmore{flex-wrap:wrap}
+}
 .ib.strip{margin:6px 0 18px}.ib.strip .it{gap:10px;padding:16px 18px}.ib.strip .itb{height:96px}.ib.strip .ithero b{font-size:40px}
 .allx{font-size:13px;align-self:flex-start}
 a.cl{color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:6px;min-height:28px}a.cl:hover{text-decoration:underline}
@@ -942,10 +957,11 @@ function renderTop(){
   const cr=crumbsOf();const up=cr.length>1?cr[cr.length-2]:route.v==="brand"?{l:"Overview",href:"#overview"}:null;
   const tog=c=>`<button class="rtog ${c}" data-act="menu" aria-label="${railOff?"Show menu":"Hide menu"}" title="${railOff?"Show menu":"Hide menu"}"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="3.5" width="15" height="13" rx="2.5"/><path d="M7.5 3.5v13"/></svg></button>`;
   $("#topbar").innerHTML=`${tog("")}<nav class="crumb vcrumb" aria-label="You are here" title="${esc(cr.map(c=>c.l).join(" › "))}">${up?`<a class="vx" href="${up.href||"#"}" ${up.act||""} aria-label="Back to ${esc(up.l)}">×</a>`:""}${cr.map((c,i)=>i===cr.length-1?`<b>${esc(c.l)}</b>`:c.act?`<button class="linkb" ${c.act}>${esc(c.l)}</button>`:`<a href="${c.href}">${esc(c.l)}</a>`).join(`<span class="sep" aria-hidden="true">›</span>`)}</nav><div class="search"><label for="q" class="sr">Search brands, tasks, people and steps</label><input id="q" type="search" placeholder="Search brands, tasks, people" autocomplete="off" value="${esc(searchQ)}"><div id="sres" class="sres" hidden></div></div>
-   <div class="seg" role="group" aria-label="Detail"><button data-act="simple" data-v="1" class="${simple?"on":""}" title="Fewer columns and fields">Simple</button><button data-act="simple" data-v="0" class="${simple?"":"on"}" title="Every column and field">Full</button></div>
+   <button class="tmore" data-act="tmore" aria-expanded="false" aria-controls="tctl" aria-label="View settings: detail, your name, colours"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.8"/><circle cx="10" cy="10" r="1.8"/><circle cx="16" cy="10" r="1.8"/></svg></button>
+   <div class="tctl" id="tctl"><div class="seg" role="group" aria-label="Detail"><button data-act="simple" data-v="1" class="${simple?"on":""}" title="Fewer columns and fields">Simple</button><button data-act="simple" data-v="0" class="${simple?"":"on"}" title="Every column and field">Full</button></div>
    <label class="who" for="whoSel">You are <select id="whoSel" data-act="who"><option value="">Pick your name</option>${ppl.map(p=>`<option ${p===me?"selected":""}>${esc(p)}</option>`).join("")}</select></label>
    <div class="seg" role="group" aria-label="Colours"><button data-act="theme" data-v="light" class="${theme==="light"?"on":""}">Light</button><button data-act="theme" data-v="dark" class="${theme==="dark"?"on":""}">Dark</button></div>
-   <span class="tag">${canEdit?"Lead / admin":canWrite?"Member":"View only"}</span>${window.__signOut?`<button class="btn sm" data-act="signout">Sign out</button>`:""}`;
+   <span class="tag">${canEdit?"Lead / admin":canWrite?"Member":"View only"}</span></div>${window.__signOut?`<button class="btn sm" data-act="signout">Sign out</button>`:""}`;
 }
 function renderMain(){
   const m=$("#main");
@@ -1432,7 +1448,7 @@ function orgCard(p,ps,team){const kids=orgUnder(p.name,ps).filter(k=>(k.team||""
 function orgChart(){const ps=orgPeople();const ed=canEdit&&canWrite;const teams=orgTeams();
   const col=t=>{const mem=ps.filter(p=>(t?p.team===t:!p.team||!L("org_team").includes(p.team)));const roots=mem.filter(p=>!p.reports_to||!mem.some(x=>x.name===p.reports_to));
     return`<section class="orgcol ${t===teams[0]?"lead":""}" data-orgdrop="team" data-team="${esc(t)}" aria-label="${esc(t||"No team")}"><header><b>${esc(t||"No team yet")}</b><span class="faint">${mem.length}</span></header>${roots.length?`<ul class="orgtree">${roots.map(p=>orgCard(p,ps,t)).join("")}</ul>`:`<p class="faint">${ed?"Drop a person here":"Nobody yet"}</p>`}</section>`};
-  return`<p class="hint2">${ed?"Drag a person onto a team to move them, or onto a person to report to them. Click a person to edit their title, team, manager and roles.":"Who is in which team and who reports to whom. Leads and admins can change it."}</p>
+  return`<p class="hint2">${ed?`<span class="dt">Drag a person onto a team to move them, or onto a person to report to them. Click</span><span class="ph">Tap</span> a person to edit their title, team, manager and roles${matchMedia("(max-width:600px)").matches?", or to move them":""}.`:"Who is in which team and who reports to whom. Leads and admins can change it."}</p>
    <div class="orgwrap">${col(teams[0])}<div class="orgcols">${teams.slice(1).map(col).join("")}</div></div>`}
 function orgMove(name,patch,label){const ps=people().map(p=>Object.assign({},p));const p=ps.find(x=>x.name===name);if(!p)return;
   if(patch.reports_to&&(patch.reports_to===name||isBelow(name,patch.reports_to,ps))){toast("That would make a loop: "+patch.reports_to+" already reports to "+name+".");return}
@@ -2330,6 +2346,7 @@ document.addEventListener("click",e=>{
   else if(act==="go-camp"){const c=S.camps[a.dataset.id];if(!c)return;brandTab="tasks";go(campHash(c.brand,a.dataset.id))}
   else if(act==="kbf-clear"){kbFilter=Object.assign(kbFilter,{who:"",due:"",q:"",st:""});render()}
   else if(act==="kbst-clear"){kbFilter.st="";render()}
+  else if(act==="tmore"){const tb=a.closest(".topbar");const o=!tb.classList.contains("open");tb.classList.toggle("open",o);a.setAttribute("aria-expanded",String(o))}
   else if(act==="pview"){peopleView=a.dataset.v==="org"?"org":"work";render()}
   else if(act==="org-edit"){const n=a.dataset.org;const p=people().find(x=>x.name===n);if(!p)return;const ed=canEdit&&canWrite;const dis=ed?"":"disabled";const yn=(k,l)=>`<div class="f"><label for="o-${k}">${l}</label><select id="o-${k}" name="${k}" ${dis}><option value="No">No</option><option value="Yes" ${p[k]?"selected":""}>Yes</option></select></div>`;
     const others=orgPeople().map(x=>x.name).filter(x=>x!==n&&!isBelow(n,x,people()));
