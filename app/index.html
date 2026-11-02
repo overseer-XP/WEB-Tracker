@@ -572,6 +572,9 @@ table.grid td{vertical-align:middle}
 
 /* brand home: bento tiles; size follows importance */
 .bento{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px;margin-bottom:8px}
+.bento .bt{border:0;border-radius:22px;background:linear-gradient(155deg,var(--panel) 35%,var(--tc));box-shadow:0 1px 2px rgba(5,10,46,.05)}.bento .bt:nth-child(3n+1){background:linear-gradient(155deg,var(--panel) 35%,var(--ta))}.bento .bt:nth-child(3n+2){background:linear-gradient(155deg,var(--panel) 35%,var(--td))}
+.bento .bt.hero{color:#fff;background:radial-gradient(circle at 96% 0%,rgb(240 122 40/.85),transparent 45%),radial-gradient(circle at 8% 130%,rgb(10 91 216/.9),transparent 55%),#050A2E;--ink:#FFFFFF;--muted:#C9D2E8;--faint:#AEB8D6;--line2:rgb(255 255 255/.35);--panel:#0E1438}
+.bento .bt.hero .bh1{color:#fff}.bento .bt.hero .missing{color:#C9D2E8;border-color:rgb(255 255 255/.35)}.bento .bt.hero .btn{background:rgb(255 255 255/.08);border-color:rgb(255 255 255/.30);color:#fff}.bento .bt.hero .av{background:#fff;color:#050A2E}.bento .bt.hero a{color:#fff}
 .bt{all:unset;box-sizing:border-box;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px 22px;display:flex;flex-direction:column;gap:10px;min-width:0;box-shadow:var(--shadow)}
 button.bt{cursor:pointer;transition:box-shadow .15s,border-color .15s}button.bt:hover{border-color:var(--line2);box-shadow:0 6px 20px rgb(0 0 0/.08)}button.bt:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .bt.hero{grid-column:span 8}.bt.health{grid-column:span 4}.bt.tc{grid-column:span 12}.bt.troad{grid-column:span 12}.bt.ts{grid-column:span 4}
@@ -662,9 +665,9 @@ button.bt{cursor:pointer;transition:box-shadow .15s,border-color .15s}button.bt:
 /* seamless sections: cards are told apart by fill, not by lines or shadows */
 :is(.bt,.panel,.road,.crow,.cbox,.tile,.card,.item,.team,.camp,.sec,.facts,.gantt,.undated,.acclist,.bcard,.bpc,.next,.tw,.exc,.slane,.kcol,.bblock){border-color:transparent!important;box-shadow:none!important}
 :is(.bt,.road,.cbox,.panel){border-radius:20px}
-.bt.hero,.bt.troad{background:var(--panel2)}
+.bt.troad{background:var(--panel2)}
 button.bt:hover,.crow:hover{box-shadow:none;background:var(--panel2)}
-.bt.hero:hover,.bt.troad:hover{background:var(--panel2)}
+.bt.troad:hover{background:var(--panel2)}
 .btl{font-weight:500;letter-spacing:.04em}
 /* top strip: where you are, with x to go up one level and a button to hide the menu */
 .rtog{all:unset;box-sizing:border-box;width:36px;height:36px;display:grid;place-items:center;border-radius:8px;cursor:pointer;color:var(--muted)}
@@ -932,7 +935,7 @@ function renderTop(){
 function renderMain(){
   const m=$("#main");
   // a brand page can carry the brand's own colours (set in Edit details)
-  const tb=route.v==="brand"&&S.brands[route.id];const hex=v=>/^#[0-9a-f]{6}$/i.test(v||"");const th=tb&&tb.theme_on&&hex(tb.tint)?tb:null;
+  const tb=route.v==="brand"&&S.brands[route.id];const hex=v=>/^#[0-9a-f]{6}$/i.test(v||"");const th=null&&tb&&tb.theme_on&&hex(tb.tint)?tb:null; // brand colours paused: every page uses the Valerie palette until the team picks how brands stay distinct (the saved colours are kept)
   m.classList.toggle("themed",!!th);if(th){m.style.setProperty("--btint",th.tint);m.style.setProperty("--bink",hex(th.color)?th.color:"var(--ink)")}else{m.style.removeProperty("--btint");m.style.removeProperty("--bink")}
   if(!db){return}
   if(!ready.brands||!ready.config){m.innerHTML=`<h1>VALFLO</h1><p class="sub">Loading brands, tasks and steps.</p>`;return}
