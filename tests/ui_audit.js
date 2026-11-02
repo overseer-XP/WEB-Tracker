@@ -40,7 +40,7 @@ const measure = () => {
 
 (async () => {
   const b = await chromium.launch(); const all = {}; const errs = [];
-  const pages = [['overview'], ['mine'], ['leadership'], ['people'], ['sow'], ['access'], ['bp'], ['settings'], ['brand-bespoke'], ['brand-bespoke/sow'], ['brand-bespoke', 'campaigns'], ['brand-bespoke', 'campaign'], ['brand-bespoke', 'card'], ['brand-bespoke', 'steps'], ['brand-celf', 'board']];
+  const pages = [['overview'], ['mine'], ['leadership'], ['people'], ['sow'], ['access'], ['bp'], ['settings'], ['brand-bespoke'], ['brand-bespoke/sow'], ['brand-bespoke', 'campaigns'], ['brand-bespoke', 'campaign'], ['brand-bespoke', 'card'], ['brand-bespoke', 'steps'], ['brand-celf', 'board'], ['overview/attention'], ['overview/pipeline'], ['overview/plan'], ['overview/all'], ['leadership/attention'], ['leadership/decisions'], ['leadership/onboarding'], ['leadership/live'], ['leadership/launches'], ['leadership/week'], ['leadership/all'], ['brand-bespoke', 'board'], ['brand-bespoke', 'timeline'], ['changes'], ['client-bespoke']];
   for (const [w, wl] of [[1440, 'desktop'], [375, 'phone']]) for (const theme of ['light', 'dark']) {
     const p = await b.newPage({ viewport: { width: w, height: 900 } }); p.on('pageerror', e => errs.push(e.message));
     await p.goto(url + '#overview'); await p.waitForTimeout(600);
@@ -49,7 +49,8 @@ const measure = () => {
     for (const [h, sub] of pages) {
       await p.evaluate(h => { location.hash = h }, h); await p.waitForTimeout(250);
       if (sub) { await p.click('.rsub [data-tab=tasks]').catch(() => {}); await p.waitForTimeout(150) }
-      if (sub === 'campaign' || sub === 'card') { await p.click('[data-act=camp][data-id=bespoke-plumpicity-launch]').catch(() => {}); await p.waitForTimeout(250) }
+      if (['campaign', 'card', 'board', 'timeline'].includes(sub)) { await p.click('[data-act=camp][data-id=bespoke-plumpicity-launch]').catch(() => {}); await p.waitForTimeout(250) }
+      if (sub === 'card' || sub === 'board' || sub === 'timeline') { await p.click(`[data-act=campview][data-v=${sub === 'timeline' ? 'timeline' : 'board'}]`).catch(() => {}); await p.waitForTimeout(200) }
       if (sub === 'card') { await p.click('.kc').catch(() => {}); await p.waitForTimeout(250) }
       if (sub === 'steps') { await p.click('[data-act=camp][data-id=""]').catch(() => {}); await p.click('.rsub [data-tab=sow]').catch(() => {}); await p.waitForTimeout(200) }
       const key = `${wl}/${theme}/${h}${sub ? '/' + sub : ''}`; all[key] = await p.evaluate(measure);

@@ -18,9 +18,9 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   const text = sel => p.$eval(sel, e => e.innerText).catch(() => '');
   const mainText = () => text('main');
   const railGroup = name => p.evaluate(name => { let g = ''; const out = {}; for (const el of document.querySelectorAll('.rail h3, .rail .blink')) { if (el.tagName === 'H3') g = (el.querySelector('.rgl') || el).innerText.trim(); else out[[...el.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join('').trim()] = g } return out[name] }, name);
-  const tile = label => p.evaluate(l => { for (const t of document.querySelectorAll('.tile')) if (t.innerText.includes(l)) return +t.querySelector('b').innerText; return null }, label);
-  const planColumn = name => p.evaluate(n => { for (const w of document.querySelectorAll('.week')) for (const c of w.querySelectorAll('.chip .nm')) if (c.innerText === n) return w.querySelector('h3').innerText; return null }, name);
-  const overviewRow = name => p.evaluate(n => { const tbs = document.querySelectorAll('main table'); const last = tbs[tbs.length - 1]; if (!last) return ''; for (const r of last.querySelectorAll('tbody tr')) if (r.querySelector('.bname') && r.querySelector('.bname').innerText === n) return r.innerText.replace(/\s+/g, ' '); return '' }, name);
+  const tile = async label => { await go('overview'); return p.evaluate(l => { for (const t of document.querySelectorAll('.tile, .it')) if (t.innerText.toLowerCase().includes(l.toLowerCase())) { const leg = t.querySelectorAll('.itleg b'); if (leg.length) return [...leg].reduce((a, b) => a + +b.innerText, 0); const h = t.querySelector('.ithero b') || t.querySelector('b'); return +h.innerText } return null }, label) };
+  const planColumn = async name => { await go('overview/plan'); return p.evaluate(n => { for (const w of document.querySelectorAll('.week')) for (const c of w.querySelectorAll('.chip .nm')) if (c.innerText === n) return w.querySelector('h3').innerText; return null }, name) };
+  const overviewRow = async name => { if (!/^#overview\/all/.test(await p.evaluate(() => location.hash))) await go('overview/all'); return p.evaluate(n => { const tbs = document.querySelectorAll('main table'); const last = tbs[tbs.length - 1]; if (!last) return ''; for (const r of last.querySelectorAll('tbody tr')) if (r.querySelector('.bname') && r.querySelector('.bname').innerText === n) return r.innerText.replace(/\s+/g, ' '); return '' }, name) };
   const openBrandEditor = async id => { await go('brand-' + id); await p.click('.hero [data-act=open][data-kind=brand]'); await p.waitForTimeout(200) };
   const ctab = async v => { const b = await p.$(`[data-act=campview][data-v=${v}]`); if (b) { await b.click(); await p.waitForTimeout(150) } };
   const drawerSave = async () => { await p.click('[data-act=dsave]'); await p.waitForTimeout(350) };
@@ -60,7 +60,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   else ideoBlocker = JSON.parse(require('fs').readFileSync(path.join(process.env.LIVE || '.live', 'sow', 'ideo.json'))).blocker;
   await go('overview');
   check('SOW stage', 'Overview SOW column shows Blocked', (await overviewRow('IDEO')).includes('Blocked'));
-  check('SOW stage', 'Signing plan chip shows Blocked tag', await p.evaluate(() => [...document.querySelectorAll('.week .chip')].some(c => c.innerText.includes('IDEO') && c.querySelector('.tag.bad'))));
+  await go('overview/plan'); check('SOW stage', 'Signing plan chip shows Blocked tag', await p.evaluate(() => [...document.querySelectorAll('.week .chip')].some(c => c.innerText.includes('IDEO') && c.querySelector('.tag.bad'))));
   check('SOW stage', 'Brand health turns Blocked', (await overviewRow('IDEO')).includes('IDEO Best Practices + Briefs Blocked'));
   await go('brand-ideo'); await p.click('.rsub [data-tab=sow]'); await p.waitForTimeout(150);
   check('SOW stage', 'Brand SOW tab shows the blocker', !!ideoBlocker && (await mainText()).includes(ideoBlocker.slice(0, 30)), ideoBlocker);
@@ -186,7 +186,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   check('Search', 'Task result opens its brand page with the task highlighted', !!(await p.$('.kc.flash')));
 
   // 17. Sort the brands table
-  await go('overview'); await p.click('[data-act=sort][data-k=health]'); await p.waitForTimeout(150);
+  await go('overview/all'); await p.click('[data-act=sort][data-k=health]'); await p.waitForTimeout(150);
   const firstH = await p.evaluate(() => { const tbs = document.querySelectorAll('main table'); return tbs[tbs.length - 1].querySelector('tbody tr td:nth-child(3)').innerText.trim() }).catch(() => '');
   check('Sort', 'Sorting by health puts Blocked first', firstH === 'Blocked', firstH);
   await p.click('[data-act=sort][data-k=health]'); await p.waitForTimeout(150);
@@ -197,7 +197,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await go('sow'); await view('sowview', 'list'); await p.click('tr[data-kind=sow][data-id=tiny-wins] td:nth-child(3)'); await p.waitForTimeout(200);
   const pastD = new Date(); pastD.setDate(pastD.getDate() - 3); await p.fill('#d-target_sign', pastD.toISOString().slice(0, 10)); await drawerSave();
   await go('overview');
-  check('Needs attention', 'Past SOW target appears for Tiny Wins', await p.evaluate(() => [...document.querySelectorAll('.att tr')].some(r => r.innerText.includes('Past SOW target') && r.innerText.includes('Tiny Wins'))));
+  await go('overview/attention'); check('Needs attention', 'Past SOW target appears for Tiny Wins', await p.evaluate(() => [...document.querySelectorAll('.att tr')].some(r => r.innerText.includes('Past SOW target') && r.innerText.includes('Tiny Wins'))));
 
   // 19. Stage change starts the days-in-stage clock
   await openBrandEditor('celf'); await p.selectOption('#d-stage', 'Founder Workshops'); await drawerSave();
@@ -261,7 +261,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await p.check('input[aria-label="Leadership access for Noopur"]'); await p.waitForTimeout(250);
   check('Leadership', 'Leadership page appears in the menu once Noopur has the tick', !!(await p.$('.nav a[href="#leadership"]')));
   await go('leadership');
-  check('Leadership', 'Page opens on one screen of tiles, each opening its own page', (await text('main h1')) === 'Leadership' && (await p.$$('a.lbt')).length === 8);
+  check('Leadership', 'Page opens on one screen of tiles, each opening its own page', (await text('main h1')) === 'Leadership' && (await p.$$('main a.it')).length === 9);
   await go('leadership/attention');
   check('Leadership', 'Needs attention page lists the top exceptions', (await text('main h1')) === 'Needs attention' && (await p.$$('.exc')).length > 0 && (await p.$$('.exc')).length <= 5);
   await setMe('Cat'); await go('leadership');
@@ -269,7 +269,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await setMe('Noopur');
 
   // 27. Simple / Full is back for everyone
-  await go('overview'); await p.click('[data-act=simple][data-v="1"]'); await p.waitForTimeout(150);
+  await go('overview/all'); await p.click('[data-act=simple][data-v="1"]'); await p.waitForTimeout(150);
   const simpleCols = await p.evaluate(() => { const t = document.querySelectorAll('main table'); return t[t.length - 1].querySelectorAll('thead th').length });
   await p.click('[data-act=simple][data-v="0"]'); await p.waitForTimeout(150);
   const fullCols = await p.evaluate(() => { const t = document.querySelectorAll('main table'); return t[t.length - 1].querySelectorAll('thead th').length });
@@ -350,7 +350,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   const readyAfter = await p.$eval('button[data-act=bpdot][data-id=eco-protein][data-sec="Paid Meta"]', e => e.className.includes('bp-Ready'));
   check('Access', 'BP section is locked until access is granted, then ready to start', lockBefore && readyAfter, `${lockBefore} ${readyAfter}`);
   await go('overview');
-  check('Access', 'Needs attention lists founders to chase', await p.evaluate(() => [...document.querySelectorAll('.att tr')].some(r => r.innerText.includes('Chase founder'))));
+  await go('overview/attention'); check('Access', 'Needs attention lists founders to chase', await p.evaluate(() => [...document.querySelectorAll('.att tr')].some(r => r.innerText.includes('Chase founder'))));
 
 
   // 31. Campaigns: add one, move tasks in, timeline, dependencies, team cards, section tiles
