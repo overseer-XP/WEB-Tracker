@@ -345,7 +345,7 @@ select.ps:disabled{cursor:default;background-image:none;padding-right:9px}
   .lmore,.bmore{flex-wrap:wrap}
 }
 /* pinned tables: the table box scrolls, so the header row and brand column stay in view */
-.tw.tpin{max-height:calc(100vh - 210px);overflow:auto;overscroll-behavior:contain}.tw.tpin thead th{position:sticky;top:0;z-index:3;background:var(--panel2)}.tw.tpin thead tr.r2 th{top:var(--h1,34px)}.tw.tpin thead th.stick{z-index:5;left:0}
+.tw.tpin{max-height:calc(100vh - 210px);overflow:auto;overscroll-behavior:contain}.tw.tpin thead{position:sticky;top:0;z-index:3}.tw.tpin thead th{background:var(--panel2)}.tw.tpin thead th.stick{position:sticky;z-index:5;left:0}
 .tw.tpin td.stick{position:sticky;left:0;z-index:2;background:var(--panel)}
 .tbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 10px}.tfind{border:1px solid var(--line2);border-radius:10px;padding:8px 12px;min-width:220px;background:var(--panel);color:var(--ink);font:inherit}
 .pager{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;padding:12px 4px;font-size:13.5px}.pg{display:flex;align-items:center;gap:6px}.pg button{font:inherit;font-size:13.5px;min-width:36px;height:34px;padding:0 10px;border:1px solid var(--line2);border-radius:9px;background:var(--panel);color:var(--ink);cursor:pointer}.pg button.on{background:var(--accentSoft);color:var(--accent);border-color:var(--accent);font-weight:600}.pg button:disabled{opacity:.4;cursor:default}
@@ -357,9 +357,6 @@ select.ps:disabled{cursor:default;background-image:none;padding-right:9px}
 .smk-doing{background:conic-gradient(var(--accent) 0 50%,transparent 50% 100%);box-shadow:inset 0 0 0 2px var(--accent)}
 .smk-todo{box-shadow:inset 0 0 0 2px var(--line2)}.smk-blk{background:var(--bad)}.smk-blk::after{content:"!";position:absolute;inset:0;text-align:center;font:800 11px/16px var(--f-ui);color:var(--panel)}
 .smk-na{width:12px;height:2px;border-radius:2px;background:var(--line2)}
-.board .bd{background:transparent!important;min-width:0;width:32px;height:30px;padding:0;border-radius:8px}.board .bd:hover,.dot:hover{background:var(--panel2)!important}.board .bd .smk{width:18px;height:18px}.board .bd .smk-done::after{left:5.5px;top:3.5px}
-table.phases th.phh{min-width:150px;text-align:left}td.phc{padding:8px 10px;min-width:150px}td.phc .pm{display:block;height:8px;border-radius:999px;background:var(--line);overflow:hidden;margin:2px 0 6px}td.phc .pm i{display:block;height:100%;background:var(--accent);border-radius:999px}
-td.phc.now{box-shadow:inset 0 0 0 2px var(--ember);border-radius:10px}.dots{display:flex;gap:2px;flex-wrap:wrap}.dot{all:unset;box-sizing:border-box;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;cursor:pointer}.dot:focus-visible{outline:2px solid var(--accent)}.dot .smk{width:13px;height:13px}.dot .smk-done::after{left:4px;top:2.5px;width:3px;height:6px}.dot .smk-blk::after{font-size:9px;line-height:13px}
 .bsub{font-size:12px;font-weight:500}
 /* Best Practices marks on the same scale: the fill grows with each stage */
 .bpd{background:transparent!important;color:var(--panel)!important;box-shadow:inset 0 0 0 2px var(--line2)!important;border:0!important}
@@ -373,7 +370,7 @@ td.phc.now{box-shadow:inset 0 0 0 2px var(--ember);border-radius:10px}.dots{disp
 th.gfold span{writing-mode:horizontal-tb!important;transform:none!important;font-weight:500}.gsumc{min-width:96px}.gsb{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:4px;width:100%;padding:4px 6px;border-radius:8px}.gsb:hover{background:var(--panel2)}.gsb .pm{display:block;height:8px;border-radius:999px;background:var(--line);overflow:hidden}.gsb .pm i{display:block;height:100%;background:var(--accent)}.gsn{font-size:12.5px;line-height:1.2}
 /* access brand list: one status word */
 .aw{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;margin-top:2px}.aw .smk{width:13px;height:13px}.aw .smk-done::after{left:4px;top:2.5px;width:3px;height:6px}.aw .smk-blk::after{font-size:9px;line-height:13px}.aw.bad{color:var(--bad)}.aw.warn{color:var(--warn)}.aw.ok{color:var(--ok)}.aw.off{color:var(--muted)}
-table.bpg th.gh,table.bpg th.pc,table.board th.gh,table.board th.pc{border-bottom-color:var(--line2)!important}
+table.bpg th.gh,table.bpg th.pc{border-bottom-color:var(--line2)!important}
 .ib.strip{margin:6px 0 18px}.ib.strip .it{gap:10px;padding:16px 18px}.ib.strip .itb{height:96px}.ib.strip .ithero b{font-size:40px}
 .allx{font-size:13px;align-self:flex-start}
 a.cl{color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:6px;min-height:28px}a.cl:hover{text-decoration:underline}
@@ -2067,7 +2064,7 @@ function boardCols(){const cfg=S.config.sow_board;
   if(cfg&&Array.isArray(cfg.groups)&&cfg.groups.length)return cfg.groups;
   return phases().map(p=>({name:p.code+" "+p.name,cols:p.steps.map(s=>({label:s.name,steps:[s.code]}))}))}
 /* shared table helpers: rows per page (remembered), a brand find box, sort chips */
-let pager={},tq={},sowSort="date",sowSteps=false,bpOpenG="";
+let pager={},tq={},bpOpenG="";
 const pgSize=()=>{const v=ls.get("vt-rows");return v===null||v===undefined||v===""?20:+v};
 function paged(k,rows){const p=pager[k]||(pager[k]={page:1});const size=pgSize();const n=rows.length;const pages=size?Math.max(1,Math.ceil(n/size)):1;if(p.page>pages)p.page=pages;if(p.page<1)p.page=1;const start=size?(p.page-1)*size:0;
   const nums=[];for(let i=1;i<=pages;i++)if(i===1||i===pages||Math.abs(i-p.page)<=1)nums.push(i);else if(nums[nums.length-1]!=="…")nums.push("…");
@@ -2091,31 +2088,20 @@ function boardCell(bid,col){
   return"Not done"}
 const BOARD_MARK={"Done":"✓","In progress":"•","N/A":"–"};
 const BOARD_CLS={"Done":"bd-done","In progress":"bd-prog","Not done":"bd-not","N/A":"bd-na","":"bd-na"};
-function boardKey(bid,col){const v=boardCell(bid,col);if(v==="Done")return"done";if(v==="N/A"||v==="")return"na";
-  const bl=(col.steps||[]).some(c=>{const st=stepRaw(bid,c);return st.blocker&&st.blocker.text&&!["Done","N/A"].includes(st.status)});if(bl)return"blk";return v==="In progress"?"doing":"todo"}
-function sowRows(){const bs=brandList().filter(b=>!isInternal(b)&&tqMatch("sow",b));
-  const date=b=>{const d=parseD((S.sow[b.id]||{}).target_sign);return d?+d:9e15};
-  const cmp=sowSort==="pct"?(x,y)=>onboarding(y.id)-onboarding(x.id):sowSort==="az"?(x,y)=>x.name.localeCompare(y.name):(x,y)=>date(x)-date(y)||onboarding(y.id)-onboarding(x.id);
-  return bs.sort((x,y)=>(onHold(x)?1:0)-(onHold(y)?1:0)||cmp(x,y))}
 function sowBoard(){
-  const groups=boardCols();const all=sowRows();const pg=paged("sow",all);
-  const sorts=[["date","Target sign date"],["pct","Road to SOW"],["az","A to Z"]];
-  let h=`<div class="tbar">${findBox("sow",brandList().filter(b=>!isInternal(b)).length)}<span class="faint">Sort</span>${sorts.map(([k,l])=>`<button class="chipbtn ${sowSort===k?"on":""}" data-act="sowsort" data-v="${k}" aria-pressed="${sowSort===k}">${l}</button>`).join("")}<span class="grow"></span><button class="chipbtn ${sowSteps?"on":""}" data-act="sowsteps" aria-pressed="${sowSteps}">${sowSteps?"Show phases":"Show every step"}</button></div>
-  <div class="slegend" role="note" aria-label="How to read the board"><b>Steps</b>${["done","doing","todo","blk","na"].map(k=>`<span>${smark(k)}<span aria-hidden="true">${SMARK[k]}</span></span>`).join("")}${sowSteps?"":`<span class="grow"></span><span><i class="nowkey" aria-hidden="true"></i>The phase each brand is in now</span>`}</div>`+guide("sow");
-  h+=`<div class="tw tpin"><table class="grid board ${sowSteps?"":"phases"}"><thead>`;
-  if(sowSteps)h+=`<tr><th class="stick" rowspan="2">Brand</th><th rowspan="2" class="num">Road to SOW</th>${groups.map((g,i)=>`<th colspan="${g.cols.length}" class="gh g${i%6}">${esc(g.name)}</th>`).join("")}${simple?"":`<th rowspan="2">Blocker</th>`}<th rowspan="2">Docs</th></tr><tr class="r2">${groups.map((g,i)=>g.cols.map(c=>`<th class="pc g${i%6}"><span>${esc(c.label)}</span></th>`).join("")).join("")}</tr>`;
-  else h+=`<tr><th class="stick">Brand</th><th class="num">Road to SOW</th>${groups.map((g,i)=>`<th class="phh">${i+1} ${esc(g.name)}</th>`).join("")}<th>Target sign</th><th>Docs</th></tr>`;
-  h+=`</thead><tbody>`;
-  for(const b of pg.rows){const s=S.sow[b.id]||{};const hold=onHold(b);const pct=Math.round(onboarding(b.id)*100);
-    const docs=`<td class="nowrap">${s.gf_link?`<a href="${esc(s.gf_link)}" target="_blank" rel="noopener">GF</a> `:""}${s.sow_link?`<a href="${esc(s.sow_link)}" target="_blank" rel="noopener">SOW</a>`:""}${!s.gf_link&&!s.sow_link?`<span class="faint">None</span>`:""}</td>`;
-    h+=`<tr class="${hold?"held":""}"><td class="stick"><a class="bname" href="#${brandHash(b.id,"sow")}" title="Open ${esc(b.name)} Road to SOW">${esc(b.name)}</a><div class="faint bsub">${hold?"On hold":esc(s.stage||"Not Started")}</div></td><td class="num"><b>${pct}%</b></td>`;
-    if(sowSteps){groups.forEach((g,gi)=>g.cols.forEach((c,ci)=>{const k=boardKey(b.id,c);h+=`<td class="gc"><button class="bd bd-${k}" data-act="board" data-b="${esc(b.id)}" data-c="${gi}.${ci}" title="${esc(c.label+": "+SMARK[k])}">${smark(k,c.label+": "+SMARK[k])}</button></td>`}));
-      h+=`${simple?"":`<td class="muted bblk"><div class="clamp2" title="${esc(s.blocker||"")}">${esc(s.blocker||"")}</div></td>`}${docs}</tr>`;continue}
-    let cur=-1;const ks=groups.map(g=>g.cols.map(c=>boardKey(b.id,c)));ks.forEach((k,i)=>{if(cur<0&&k.some(x=>x!=="done"&&x!=="na"))cur=i});
-    groups.forEach((g,gi)=>{const k=ks[gi];const live=k.filter(x=>x!=="na");const sc=live.length?Math.round(live.reduce((a,x)=>a+(x==="done"?1:x==="doing"?.5:0),0)/live.length*100):100;
-      h+=`<td class="phc ${gi===cur&&!hold?"now":""}"><span class="pm" role="img" aria-label="${esc(g.name)}: ${sc}% done"><i style="width:${sc}%"></i></span><span class="dots">${g.cols.map((c,ci)=>`<button class="dot" data-act="board" data-b="${esc(b.id)}" data-c="${gi}.${ci}" title="${esc(c.label+": "+SMARK[k[ci]])}">${smark(k[ci],c.label+": "+SMARK[k[ci]])}</button>`).join("")}</span></td>`});
-    h+=`<td class="nowrap">${targetHtml(Object.assign({brand:b.id},s))||`<span class="faint">No date</span>`}</td>${docs}</tr>`}
-  if(!pg.rows.length)h+=`<tr><td colspan="${groups.length+4}"><div class="empty">No brands match.</div></td></tr>`;
+  const groups=boardCols();const all=brandList().filter(b=>!isInternal(b));const bs=all.filter(b=>tqMatch("sow",b));
+  const rows=bs.map(b=>({b,pct:Math.round(onboarding(b.id)*100)})).sort((x,y)=>(onHold(x.b)?1:0)-(onHold(y.b)?1:0)||y.pct-x.pct||String(x.b.name).localeCompare(y.b.name));
+  const ncol=groups.reduce((n,g)=>n+g.cols.length,0);const pg=paged("sow",rows);
+  let h=`<p class="sub">The whole onboarding journey on one screen, brand by brand. Each square rolls up one or more onboarding steps. Click a square to see and change those steps.</p>
+  <div class="legend">${["Done","In progress","Not done","N/A"].map(v=>`<span><span class="bdl ${BOARD_CLS[v]}">${BOARD_MARK[v]||""}</span>${esc(v)}</span>`).join("")}</div>`+guide("sow")+`
+  <div class="tbar">${findBox("sow",all.length)}</div><div class="tw tpin"><table class="grid board"><thead><tr><th class="stick" rowspan="2">Brand</th><th rowspan="2">SOW stage</th><th rowspan="2" class="num" title="Road to SOW: share of required steps done">Road to SOW</th>${groups.map((g,i)=>`<th colspan="${g.cols.length}" class="gh g${i%6}">${esc(g.name)}</th>`).join("")}${simple?"":`<th rowspan="2">Blocker</th>`}<th rowspan="2">Docs</th></tr>
+  <tr>${groups.map((g,i)=>g.cols.map(c=>`<th class="pc g${i%6}"><span>${esc(c.label)}</span></th>`).join("")).join("")}</tr></thead><tbody>`;
+  for(const{b,pct}of pg.rows){const s=S.sow[b.id]||{};const hold=onHold(b);
+    h+=`<tr class="${hold?"held":""}"><td class="stick"><a class="bname" href="#${brandHash(b.id,"sow")}" title="Open ${esc(b.name)} Road to SOW">${esc(b.name)}</a></td><td>${hold?`<span class="pill s-off">On hold</span>`:pill(s.stage||"Not Started")}</td><td class="num"><b>${pct}%</b></td>`;
+    groups.forEach((g,gi)=>g.cols.forEach((c,ci)=>{const v=boardCell(b.id,c);
+      h+=`<td class="gc"><button class="bd ${BOARD_CLS[v]}" data-act="board" data-b="${esc(b.id)}" data-c="${gi}.${ci}" title="${esc(c.label+": "+(v||"No steps linked"))}">${esc(BOARD_WORD[v]||"")}<span class="sr">${esc(c.label+" "+v)}</span></button></td>`}));
+    h+=`${simple?"":`<td class="muted bblk"><div class="clamp2" title="${esc(s.blocker||"")}">${esc(s.blocker||"")}</div></td>`}<td style="white-space:nowrap">${s.gf_link?`<a href="${esc(s.gf_link)}" target="_blank" rel="noopener">GF</a> `:""}${s.sow_link?`<a href="${esc(s.sow_link)}" target="_blank" rel="noopener">SOW</a>`:""}${!s.gf_link&&!s.sow_link?`<span class="faint">None</span>`:""}</td></tr>`}
+  if(!rows.length)h+=`<tr><td colspan="${ncol+5}"><div class="empty">${tq.sow?"No brand matches that name.":"No brands yet."}</div></td></tr>`;
   return h+`</tbody></table></div>`+pg.html}
 function boardDrawerBody(bid,path){
   const [gi,ci]=String(path).split(".").map(Number);const g=boardCols()[gi];const c=g&&g.cols[ci];if(!c)return null;
@@ -2408,8 +2394,6 @@ document.addEventListener("click",e=>{
   else if(act==="kbst-clear"){kbFilter.st="";render()}
   else if(act==="pgsize"){ls.set("vt-rows",a.dataset.v);for(const k in pager)pager[k].page=1;render()}
   else if(act==="pgp"){const k=a.dataset.k;(pager[k]||(pager[k]={})).page=+a.dataset.v;render();const m=$("#main");if(m)m.scrollTop=0}
-  else if(act==="sowsort"){sowSort=a.dataset.v;render()}
-  else if(act==="sowsteps"){sowSteps=!sowSteps;render()}
   else if(act==="bpgroup"){const g=a.dataset.g;bpOpenG=g==="*"||g===""?g:(bpOpenG===g?"":g);render()}
   else if(act==="tmore"){const tb=a.closest(".topbar");const o=!tb.classList.contains("open");tb.classList.toggle("open",o);a.setAttribute("aria-expanded",String(o))}
   else if(act==="pview"){peopleView=a.dataset.v==="org"?"org":"work";render()}

@@ -150,7 +150,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   // 14. SOW progress board: a square opens its steps, changing them recolours the square and moves onboarding % (CELF, W1)
   const lastPct = t => { const m = [...t.matchAll(/(\d+)%/g)]; return m.length ? +m[m.length - 1][1] : -1 };
   await go('overview'); const celfPct0 = lastPct(await overviewRow('CELF'));
-  await go('sow'); await view('sowview', 'board'); await p.click('[data-act=sowsteps]'); await p.waitForTimeout(200);
+  await go('sow'); await view('sowview', 'board');
   const sq = 'button.bd[data-b=celf][data-c="1.0"]';
   const sqBefore = await p.$eval(sq, e => e.className);
   await p.click(sq); await p.waitForTimeout(250);
