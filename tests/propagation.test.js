@@ -150,7 +150,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   // 14. SOW progress board: a square opens its steps, changing them recolours the square and moves onboarding % (CELF, W1)
   const lastPct = t => { const m = [...t.matchAll(/(\d+)%/g)]; return m.length ? +m[m.length - 1][1] : -1 };
   await go('overview'); const celfPct0 = lastPct(await overviewRow('CELF'));
-  await go('sow'); await view('sowview', 'board');
+  await go('sow'); await view('sowview', 'board'); await p.click('[data-act=sowsteps]'); await p.waitForTimeout(200);
   const sq = 'button.bd[data-b=celf][data-c="1.0"]';
   const sqBefore = await p.$eval(sq, e => e.className);
   await p.click(sq); await p.waitForTimeout(250);
@@ -302,7 +302,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
 
 
   // 29. Best Practices: click a dot, pick a status, it saves and shows everywhere
-  await go('bp'); const dotSel = 'button[data-act=bpdot][data-id=sourced-food-co][data-sec="SEO"]';
+  await go('bp'); await p.click('[data-act=bpgroup][data-g="*"]'); await p.waitForTimeout(150); const dotSel = 'button[data-act=bpdot][data-id=sourced-food-co][data-sec="SEO"]';
   await p.$eval(dotSel, e => e.scrollIntoView({ block: 'center' })); await p.waitForTimeout(150); await p.click(dotSel); await p.waitForTimeout(120);
   check('BP dot', 'Clicking a dot opens a status menu', !!(await p.$('#pop')));
   await p.click('#pop [data-v="Complete"]'); await p.waitForTimeout(250);
