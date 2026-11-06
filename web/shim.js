@@ -30,7 +30,7 @@
     f.onsubmit = async e => {
       e.preventDefault(); const email = g.querySelector("#g-e").value.trim().toLowerCase(); const b = f.querySelector("button"); b.disabled = true; b.textContent = "Sending...";
       const { error } = await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
-      if (error) { b.disabled = false; b.textContent = "Email me a code"; g.querySelector("#g-err").textContent = /rate|seconds/i.test(error.message) ? "Too many codes asked for. Wait a minute and try again." : "Could not send the code. Check the address and try again."; return }
+      if (error) { b.disabled = false; b.textContent = "Email me a code"; g.querySelector("#g-err").textContent = /rate|seconds/i.test(error.message) ? "Too many codes asked for. Wait a minute and try again." : "Could not send the code. Check the address and try again. (Reason: " + (error.message || "unknown") + ")"; return }
       askCode(email)
     }
   }
