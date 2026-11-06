@@ -13,7 +13,7 @@ if (!/^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(url) || key.length < 20) {
 }
 const read = p => fs.readFileSync(path.join(root, p), "utf8");
 const lib = `<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>`;
-const cfg = `<script>window.__TRACKER_CFG=${JSON.stringify({ url, key })}</script>`;
+const cfg = `<script>window.__TRACKER_CFG=${JSON.stringify({ url, key, proxy: true })}</script>`;
 const shim = `<script>${read("web/shim.js")}</script>`;
 const page = (title, body) => `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>${title}</title>${lib}${cfg}${shim}</head><body>${body}</body></html>`;
 const out = path.join(root, "web", "dist");

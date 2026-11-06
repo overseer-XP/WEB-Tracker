@@ -8,11 +8,29 @@
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "X-Frame-Options", "value": "DENY" },
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "Referrer-Policy", "value": "same-origin" },
-        { "key": "Cache-Control", "value": "no-cache" }
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "same-origin"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
       ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/sb/:path*",
+      "destination": "https://qxnmcggavnnzumwkamkk.supabase.co/:path*"
     }
   ]
 }

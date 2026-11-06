@@ -4,7 +4,11 @@
    Sign-in: the person types their work email, gets a 6-digit code by email, and types it in. */
 (function () {
   const CFG = window.__TRACKER_CFG || {};
-  const sb = window.supabase.createClient(CFG.url, CFG.key, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+  /* Some networks (several Indian internet providers among them) block supabase.co. The website passes /sb/* on to Supabase
+     (vercel.json rewrites), so the browser only ever talks to this site. Locally and in tests the direct URL is used. */
+  const viaSite = CFG.proxy && /^https:$/.test(location.protocol) && !/supabase\.co$/.test(location.hostname);
+  const projRef = (String(CFG.url).match(/^https:\/\/([a-z0-9-]+)\.supabase\.co/) || [])[1] || "app";
+  const sb = window.supabase.createClient(viaSite ? location.origin + "/sb" : CFG.url, CFG.key, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, storageKey: "sb-" + projRef + "-auth-token" } });
   window.__sb = sb;
   let session = null, member = null, markReady;
   const ready = new Promise(r => { markReady = r });
@@ -90,14 +94,15 @@
     stores[c] = out; emit(c)
   }
   function local(c, id, data) { stores[c] = stores[c] || {}; if (data === null) delete stores[c][id]; else stores[c][id] = data; emit(c) }
-  let channel = null, everSubscribed = false;
+  let channel = null, everSubscribed = false, poller = null;
   function live() {
     if (channel) return;
     channel = sb.channel("docs-all").on("postgres_changes", { event: "*", schema: "public", table: "docs" }, p => {
       if (p.eventType === "DELETE") { const o = p.old || {}; if (o.coll && stores[o.coll]) local(o.coll, o.id, null) }
       else { const n = p.new || {}; if (n.coll && listeners[n.coll]) local(n.coll, n.id, n.data) }
     }).subscribe(status => {
-      if (status === "SUBSCRIBED") { if (everSubscribed) Object.keys(listeners).forEach(c => loadAll(c).catch(() => {})); everSubscribed = true }
+      if (status === "SUBSCRIBED") { if (everSubscribed) Object.keys(listeners).forEach(c => loadAll(c).catch(() => {})); everSubscribed = true; if (poller) { clearInterval(poller); poller = null } }
+      else if (!poller && (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED")) poller = setInterval(() => { if (document.visibilityState === "visible" && member) Object.keys(listeners).forEach(c => loadAll(c).catch(() => {})) }, 30000);
     })
   }
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && member) Object.keys(listeners).forEach(c => loadAll(c).catch(() => {})) });
