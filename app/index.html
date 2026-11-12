@@ -126,6 +126,7 @@ table.accfull td{vertical-align:middle}table.accfull tr.grp td{background:var(--
 .kcard .meta{font-size:12px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap}
 .kcard.blocked,.kcard.late{border-left:3px solid color-mix(in srgb,var(--bad) 60%,transparent)}.kcard.soon{border-left:3px solid var(--dRisk)}
 .hint2{color:var(--muted);font-size:13px;margin:-6px 0 10px}
+.minesum{font-size:13.5px;color:var(--muted);margin:-4px 0 12px;line-height:1.5}.minesum b{color:var(--ink);font-weight:600}.minesum .bad{color:var(--bad);font-weight:600}.mineb .ksub{display:flex;gap:6px;flex-wrap:wrap;margin-top:-2px}.mineb .kh .bprog{margin-left:auto}.mineb .kcol.held{opacity:.7}.kcard .meta .role{color:var(--accent);font-weight:600}
 .pipe{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(150px,1fr);background:var(--panel);border:1px solid var(--line);border-radius:var(--r);overflow-x:auto}
 .pcol{padding:12px 12px 14px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:4px;min-width:0}
 .pcol:last-child{border-right:0}.pcol.held{background:var(--panel2)}
@@ -985,11 +986,12 @@ function renderTop(){
   const tog=c=>`<button class="rtog ${c}" data-act="menu" aria-label="${railOff?"Show menu":"Hide menu"}" title="${railOff?"Show menu":"Hide menu"}"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="3.5" width="15" height="13" rx="2.5"/><path d="M7.5 3.5v13"/></svg></button>`;
   $("#topbar").innerHTML=`${tog("")}<nav class="crumb vcrumb" aria-label="You are here" title="${esc(cr.map(c=>c.l).join(" › "))}">${up?`<a class="vx" href="${up.href||"#"}" ${up.act||""} aria-label="Back to ${esc(up.l)}">×</a>`:""}${cr.map((c,i)=>i===cr.length-1?`<b>${esc(c.l)}</b>`:c.act?`<button class="linkb" ${c.act}>${esc(c.l)}</button>`:`<a href="${c.href}">${esc(c.l)}</a>`).join(`<span class="sep" aria-hidden="true">›</span>`)}</nav><div class="search"><label for="q" class="sr">Search brands, tasks, people and steps</label><input id="q" type="search" placeholder="Search brands, tasks, people" autocomplete="off" value="${esc(searchQ)}"><div id="sres" class="sres" hidden></div></div>
    <button class="tmore" data-act="tmore" aria-expanded="false" aria-controls="tctl" aria-label="View settings: detail, your name, colours"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.8"/><circle cx="10" cy="10" r="1.8"/><circle cx="16" cy="10" r="1.8"/></svg></button>
-   <div class="tctl" id="tctl"><div class="seg" role="group" aria-label="Detail"><button data-act="simple" data-v="1" class="${simple?"on":""}" title="Fewer columns and fields">Simple</button><button data-act="simple" data-v="0" class="${simple?"":"on"}" title="Every column and field">Full</button></div>
+   <div class="tctl" id="tctl">${viewNow()==="mine"?"":`<div class="seg" role="group" aria-label="Detail"><button data-act="simple" data-v="1" class="${simple?"on":""}" title="Fewer columns and fields">Simple</button><button data-act="simple" data-v="0" class="${simple?"":"on"}" title="Every column and field">Full</button></div>`}
    <label class="who" for="whoSel">You are <select id="whoSel" data-act="who"><option value="">Pick your name</option>${ppl.map(p=>`<option ${p===me?"selected":""}>${esc(p)}</option>`).join("")}</select></label>
    <div class="seg" role="group" aria-label="Colours"><button data-act="theme" data-v="light" class="${theme==="light"?"on":""}">Light</button><button data-act="theme" data-v="dark" class="${theme==="dark"?"on":""}">Dark</button></div>
    <span class="tag">${canEdit?"Lead / admin":canWrite?"Member":"View only"}</span></div>${window.__signOut?`<button class="btn sm" data-act="signout">Sign out</button>`:""}`;
 }
+const viewNow=()=>{let v=route.v;if(!v)v=isLeader(me)?"leadership":canEdit?"overview":"mine";return v};
 function renderMain(){
   const m=$("#main");
   // a brand page can carry the brand's own colours (set in Edit details)
@@ -1026,59 +1028,59 @@ function vMine(){
   if(me){const mine=withId(S.tasks).filter(t=>t.title&&t.status!=="Complete"&&!holdOf(t.brand)&&(isPerson(t.owner,me)||(t.support||[]).some(x=>isPerson(x,me))));if(mine.length)h+=strip(stripTasks(mine))}
   const men=myMentions(me);if(men.length)h+=`<section class="group"><h2>Mentions <span class="count">${men.length}</span></h2>${men.slice(0,5).map(c=>`<a class="item men" href="#brand-${esc(c.brand)}" data-act="men-go" data-id="${esc(c.brand)}" data-acc="${esc(c.access||"")}" data-task="${esc(c.task||"")}"><div><div class="t">${esc(c.by||"Someone")} on ${esc(bname(c.brand))}${c.access&&S.access[c.access]?" · "+esc(S.access[c.access].platform):""}${c.task&&S.tasks[c.task]?" · "+esc(S.tasks[c.task].title):""}</div><div class="meta">${linkMentions(c.text).slice(0,400)}</div></div><div class="faint" style="font-size:12px">${esc(agoText(c.at))}</div><div></div></a>`).join("")}</section>`;
   if(mineTab===null)mineTab=ls.get("vt-minetab")||(onb.length?"onboarding":"live");
-  const urgent=a=>a.filter(it=>!holdOf(it.brand)&&(it.blocked||it.flag==="Overdue")).length;
-  const tabBtn=(k,l,a)=>`<button data-act="minetab" data-v="${k}" class="${mineTab===k?"on":""}">${l} <span class="cnt">${a.length}</span>${urgent(a)?`<span class="cnt bad">${urgent(a)} need you</span>`:""}</button>`;
+  const live1=a=>a.filter(it=>!holdOf(it.brand)),nBlk=a=>live1(a).filter(it=>it.blocked).length,nLate=a=>live1(a).filter(it=>!it.blocked&&it.flag==="Overdue").length;
+  const urgTxt=a=>{const n=nBlk(a)+nLate(a);return n?`${n} late or blocked`:""};
+  const tabTip=a=>`${a.length} open${nBlk(a)?`, ${nBlk(a)} blocked`:""}${nLate(a)?`, ${nLate(a)} past the due date`:""}`;
+  const tabBtn=(k,l,a)=>`<button data-act="minetab" data-v="${k}" class="${mineTab===k?"on":""}" title="${esc(tabTip(a))}">${l} <span class="cnt">${a.length}</span>${urgTxt(a)?`<span class="cnt bad">${urgTxt(a)}</span>`:""}</button>`;
   h+=`<div class="seg viewseg" role="group" aria-label="Which work">${tabBtn("onboarding","Brand onboarding",onb)}${tabBtn("live","Onboarded brands",live)}${tabBtn("all","All my work",items)}</div>`;
   const list=mineTab==="onboarding"?onb:mineTab==="live"?live:items;
-  const grp=mineGroup[mineTab]||(mineTab==="live"?"due":"brand");
+  if(list.length){const rc={};list.forEach(it=>{rc[it.role]=(rc[it.role]||0)+1});
+    const why=[["Owner","you own"],["Support","you support"],["Step owner","onboarding step"+(rc["Step owner"]>1?"s":"")+" you own"],["Access next step","platform access next step"+(rc["Access next step"]>1?"s":"")+" on you"]].filter(([k])=>rc[k]).map(([k,l])=>`${rc[k]} ${l}`);
+    const nb=nBlk(list),nl=nLate(list),ok=list.length-nb-nl;
+    h+=`<p class="minesum"><b>Why these are yours:</b> ${esc(why.join(", "))}. <b>Now:</b> ${nb?`<span class="bad">${nb} blocked</span>, `:""}${nl?`<span class="bad">${nl} past the due date</span>, `:""}${ok} on track or not yet due.</p>`}
   h+=`<div class="toolbar">
-    <div class="seg" role="group" aria-label="Layout"><button data-act="mlayout" data-v="list" class="${mineLayout==="list"?"on":""}">List</button><button data-act="mlayout" data-v="board" class="${mineLayout==="board"?"on":""}">Board</button></div>
-    ${mineLayout==="list"?`<label class="tl">Group by <select data-act="mgroup" id="m-group">${MINE_GROUPS.map(([k,l])=>`<option value="${k}" ${grp===k?"selected":""}>${l}</option>`).join("")}</select></label>`:""}
+    <span class="tl">Columns</span><div class="seg" role="group" aria-label="Columns">${MINE_COLS.map(([k,l])=>`<button data-act="mcols" data-v="${k}" class="${mineCols===k?"on":""}" aria-pressed="${mineCols===k}">${l}</button>`).join("")}</div>
     <label class="tl">Sort by <select data-act="msort" id="m-sort">${MINE_SORTS.map(([k,l])=>`<option value="${k}" ${mineSort===k?"selected":""}>${l}</option>`).join("")}</select></label>
-    <label class="tl">Vertical <select data-act="mvertsel" id="m-vert"><option value="">All</option>${VERTS().map(v=>`<option ${mineVert===v?"selected":""}>${esc(v)}</option>`).join("")}</select></label>
-    ${mineLayout==="list"&&grp!=="none"?`<span class="grow"></span><button class="btn sm quiet" data-act="mfold" data-v="${mineFold.size?"open":"close"}">${mineFold.size?"Open all groups":"Fold all groups"}</button>`:""}</div>`;
+    <label class="tl">Vertical <select data-act="mvertsel" id="m-vert"><option value="">All</option>${VERTS().map(v=>`<option ${mineVert===v?"selected":""}>${esc(v)}</option>`).join("")}</select></label></div>`;
   if(!list.length)return h+`<div class="tw"><div class="empty">${mineVert?`Nothing open for ${esc(me)} in ${esc(mineVert)} here.`:mineTab==="onboarding"?`No onboarding work for ${esc(me)} right now.`:mineTab==="live"?`No work on onboarded brands for ${esc(me)} right now.`:`Nothing open for ${esc(me)}. When a task or step is assigned to you it shows here.`}</div></div>`;
-  const sorted=list.slice().sort(mineCmp(mineSort));
-  if(mineLayout==="board")return h+mineBoard(sorted);
-  if(grp==="none")return h+`<div class="flat">${sorted.map(it=>itemHtml(it,itemCls(it))).join("")}</div>`;
-  const groups=mineGroups(sorted,grp);
-  for(const g of groups){const nb=g.items.filter(i=>i.blocked).length,nl=g.items.filter(i=>i.flag==="Overdue").length;const fk=mineTab+"|"+grp+"|"+g.key;const folded=mineFold.has(fk);
-    const brandHead=grp==="brand"?(()=>{const b=S.brands[g.key]||{};const pct=Math.round(onboarding(g.key)*100);return`${holdOf(g.key)?`<span class="pill s-off">On hold</span>`:`<span class="pill s-info">${esc(b.stage||"")}</span>`}${isLiveBrand(g.key)?"":`<span class="bprog" title="Road to SOW: ${pct}% of required steps done"><span class="bar"><i style="width:${pct}%"></i></span>${pct}%</span>`}`})():"";
-    h+=`<section class="bcard ${grp==="brand"&&holdOf(g.key)?"held":""}"><header><button class="fold" data-act="mfold1" data-k="${esc(fk)}" aria-expanded="${!folded}" aria-label="${folded?"Open":"Fold"} ${esc(g.label)}">${folded?"▸":"▾"}</button>${grp==="brand"?`<a class="bname" href="#brand-${esc(g.key)}">${esc(g.label)}</a>`:`<b class="gl">${esc(g.label)}</b>`}${brandHead}<span class="grow"></span>
-      ${nb?`<span class="tag bad">${nb} blocked</span>`:""}${nl?`<span class="tag bad">${nl} late</span>`:""}<span class="faint" style="font-size:12.5px">${g.items.length} open</span></header>
-      ${folded?"":g.items.map(it=>itemHtml(it,itemCls(it),grp==="brand")).join("")}</section>`}
-  return h}
-const MINE_GROUPS=[["brand","Brand"],["priority","Priority"],["due","Due date"],["status","Status"],["team","Team"],["none","No groups"]];
-const MINE_SORTS=[["urgency","Most urgent first"],["due","Due date"],["priority","Priority"],["brand","Brand A to Z"]];
-let mineLayout="list",mineSort="urgency",mineGroup={};const mineFold=new Set();
-try{mineLayout=ls.get("vt-mlayout")||"list";mineSort=ls.get("vt-msort")||"urgency";mineGroup=JSON.parse(ls.get("vt-mgroup")||"{}")||{}}catch(e){}
+  return h+mineBoard(list.slice().sort(mineCmp(mineSort)),mineCols)}
+/* My tasks is a board only. Columns by status, brand or team; cards inside a column follow the sort. */
+const MINE_COLS=[["status","Status"],["brand","Brand"],["team","Team"]];
+const MINE_SORTS=[["due","Deadline, soonest first"],["priority","Priority, Urgent to Low"],["brand","Brand A to Z"]];
+let mineSort="due",mineCols="status";
+try{mineSort=ls.get("vt-msort")||"due";if(!MINE_SORTS.some(x=>x[0]===mineSort))mineSort="due";mineCols=ls.get("vt-mcols")||"status";if(!MINE_COLS.some(x=>x[0]===mineCols))mineCols="status"}catch(e){}
 const PRI=["Urgent","High","Medium","Low"];
 const itemRank=it=>it.blocked?0:it.flag==="Overdue"?1:it.flag==="Due Soon"?2:3;
 const itemCls=it=>it.blocked?"blocked":it.flag==="Overdue"?"late":it.flag==="Due Soon"?"soon":"";
 const priIdx=it=>{const i=PRI.indexOf(it.priority||"");return i<0?9:i};
-function mineCmp(k){const due=(a,b)=>String(a.due||"9999").localeCompare(String(b.due||"9999"));
-  if(k==="due")return(a,b)=>due(a,b)||itemRank(a)-itemRank(b);
-  if(k==="priority")return(a,b)=>priIdx(a)-priIdx(b)||itemRank(a)-itemRank(b)||due(a,b);
-  if(k==="brand")return(a,b)=>bname(a.brand).localeCompare(bname(b.brand))||itemRank(a)-itemRank(b)||due(a,b);
-  return(a,b)=>(holdOf(a.brand)?1:0)-(holdOf(b.brand)?1:0)||itemRank(a)-itemRank(b)||due(a,b)}
-function dueBucket(it){if(!it.due)return["5","No date"];const n=dayDiff(it.due);if(n<0)return["0","Late"];if(n===0)return["1","Due today"];if(n<=7)return["2","Due in the next 7 days"];if(n<=30)return["3","Due this month"];return["4","Later"]}
-function mineGroups(items,by){const m=new Map();
-  const keyOf=it=>by==="brand"?[it.brand,bname(it.brand)]:by==="priority"?[String(priIdx(it)),it.priority||(it.kind==="step"?"Onboarding steps":"No priority")]
-    :by==="due"?dueBucket(it):by==="status"?[it.status||"Not Started",it.status||"Not Started"]:[it.kind==="step"?"~steps":it.kind==="access"?"~access":depOf(S.tasks[it.id]||{}),it.kind==="step"?"Onboarding steps":it.kind==="access"?"Platform access":depOf(S.tasks[it.id]||{})];
-  for(const it of items){const[k,l]=keyOf(it);if(!m.has(k))m.set(k,{key:k,label:l,items:[]});m.get(k).items.push(it)}
-  const gs=[...m.values()];const st=L("task_status").concat(L("checklist"));
-  if(by==="brand")gs.sort((a,b)=>(holdOf(a.key)?1:0)-(holdOf(b.key)?1:0)||Math.min(...a.items.map(itemRank))-Math.min(...b.items.map(itemRank))||b.items.length-a.items.length);
-  else if(by==="status")gs.sort((a,b)=>(a.key==="Blocked"?-1:0)-(b.key==="Blocked"?-1:0)||st.indexOf(a.key)-st.indexOf(b.key));
-  else if(by==="team")gs.sort((a,b)=>DEPTS().indexOf(a.key)-DEPTS().indexOf(b.key));
-  else gs.sort((a,b)=>String(a.key).localeCompare(String(b.key)));
-  return gs}
-function mineBoard(items){const st=[...new Set(["Blocked"].concat(L("task_status").filter(s=>s!=="Complete"),items.map(i=>i.status)))];
-  const cols=st.map(s=>({s,items:items.filter(i=>(i.status||"Not Started")===s)})).filter(c=>c.items.length||["Not Started","In Progress","Blocked"].includes(c.s));
-  return`<p class="hint2">One column per status, Blocked first. Change a card's status to move it. Scroll sideways for more columns.</p><div class="kb">${cols.map(c=>`<div class="kcol ${c.s==="Blocked"?"kbad":""}"><div class="kh"><b>${esc(c.s)}</b><span class="cnt">${c.items.length}</span></div>${c.items.map(it=>`<div class="kcard ${itemCls(it)}">
-    <a href="#brand-${esc(it.brand)}" data-act="goto-item" data-kind="${it.kind}" data-id="${esc(it.id)}" data-code="${esc(it.code||"")}" class="bname">${esc(it.title)}</a>
-    <div class="meta"><span>${esc(bname(it.brand))}</span>${it.priority?`<span>${esc(it.priority)}</span>`:""}${it.kind==="step"?`<span>Onboarding step</span>`:""}</div>
-    ${it.blocked&&it.blocker?`<div class="blk">${esc(it.blocker.text||"")}</div>`:""}
-    <div class="row" style="justify-content:space-between;gap:6px">${dueHtml(it.due,false)||`<span class="faint" style="font-size:12px">No date</span>`}${it.kind==="task"?statusSel("task",it.id,it.status,L("task_status"),canChangeTask(S.tasks[it.id]||{})):statusSel("step",it.id,it.status,L("checklist"),canWrite,`data-code="${esc(it.code)}"`)}</div></div>`).join("")||`<div class="faint" style="font-size:12.5px;padding:6px">Nothing here</div>`}</div>`).join("")}</div>`}
+const ROLE_SHORT={"Owner":"You own","Support":"You support","Step owner":"Your step","Access next step":"Your access step"};
+function mineCmp(k){const due=(a,b)=>String(a.due||"9999").localeCompare(String(b.due||"9999"));const hold=(a,b)=>(holdOf(a.brand)?1:0)-(holdOf(b.brand)?1:0);
+  if(k==="priority")return(a,b)=>hold(a,b)||priIdx(a)-priIdx(b)||due(a,b)||itemRank(a)-itemRank(b);
+  if(k==="brand")return(a,b)=>bname(a.brand).localeCompare(bname(b.brand))||due(a,b)||priIdx(a)-priIdx(b);
+  return(a,b)=>hold(a,b)||due(a,b)||priIdx(a)-priIdx(b)} // deadline first, then priority
+const teamOf=it=>it.kind==="step"?"Onboarding steps":it.kind==="access"?"Platform access":depOf(S.tasks[it.id]||{});
+function ctlOf(it){return it.kind==="access"?statusSel("access",it.id,it.status,L("access_status"),canWrite):it.kind==="task"?statusSel("task",it.id,it.status,L("task_status"),canChangeTask(S.tasks[it.id]||{}))
+  :statusSel("step",it.id,it.status,L("checklist"),canWrite,`data-code="${esc(it.code)}"`)}
+function mineBoard(items,by){let cols;
+  const urg=c=>c.items.filter(i=>i.blocked||i.flag==="Overdue").length;
+  if(by==="brand"){const m=new Map();items.forEach(i=>{if(!m.has(i.brand))m.set(i.brand,[]);m.get(i.brand).push(i)});
+    cols=[...m].map(([k,a])=>({k,label:bname(k),items:a})).sort((x,y)=>(holdOf(x.k)?1:0)-(holdOf(y.k)?1:0)||urg(y)-urg(x)||y.items.length-x.items.length||x.label.localeCompare(y.label))}
+  else if(by==="team"){const order=DEPTS().concat(["Onboarding steps","Platform access"]);const m=new Map();items.forEach(i=>{const t=teamOf(i);if(!m.has(t))m.set(t,[]);m.get(t).push(i)});
+    cols=[...m].map(([k,a])=>({k,label:k,items:a})).sort((x,y)=>order.indexOf(x.k)-order.indexOf(y.k))}
+  else{const st=[...new Set(["Blocked"].concat(L("task_status").filter(s=>s!=="Complete"),items.map(i=>i.status||"Not Started")))];
+    cols=st.map(s=>({k:s,label:s,items:items.filter(i=>(i.status||"Not Started")===s)})).filter(c=>c.items.length||["Not Started","In Progress","Blocked"].includes(c.k))}
+  const hint=by==="brand"?"One column per brand, the brands that need you most first. Cards follow the sort, so you can see which to do first for each brand.":by==="team"?"One column per team, plus your onboarding steps and platform access steps. Cards follow the sort.":"One column per status, Blocked first. Change a card's status to move it.";
+  const head=c=>{const nb=c.items.filter(i=>i.blocked).length,nl=c.items.filter(i=>!i.blocked&&i.flag==="Overdue").length;
+    const name=by==="brand"?`<a class="bname" href="#brand-${esc(c.k)}">${esc(c.label)}</a>`:`<b>${esc(c.label)}</b>`;
+    const sub=by==="brand"?(holdOf(c.k)?`<span class="pill s-off">On hold</span>`:isLiveBrand(c.k)?"":`<span class="bprog" title="Road to SOW: share of required steps done"><span class="bar"><i style="width:${Math.round(onboarding(c.k)*100)}%"></i></span>${Math.round(onboarding(c.k)*100)}%</span>`):"";
+    return`<div class="kh">${name}<span class="cnt">${c.items.length}</span>${sub}</div>${nb||nl?`<div class="ksub">${nb?`<span class="tag bad">${nb} blocked</span>`:""}${nl?`<span class="tag bad">${nl} late</span>`:""}</div>`:""}`};
+  const card=it=>`<div class="kcard ${itemCls(it)}" data-due="${esc(it.due||"")}" data-pri="${priIdx(it)}" data-brand="${esc(bname(it.brand))}" data-held="${holdOf(it.brand)?1:0}">
+    <a href="#brand-${esc(it.brand)}" data-act="goto-item" data-kind="${it.kind}" data-id="${esc(it.id)}" data-code="${esc(it.code||"")}" class="bname" title="Open on the ${esc(bname(it.brand))} page">${esc(it.title)}</a>
+    <div class="meta">${by==="brand"?"":`<span>${esc(bname(it.brand))}</span>`}${it.priority?`<span>${esc(it.priority)}</span>`:""}${it.kind==="step"?`<span class="code">${esc(it.code)}</span>`:""}${by==="team"?"":it.kind==="task"?`<span>${esc(teamOf(it))}</span>`:""}<span class="role">${esc(ROLE_SHORT[it.role]||it.role)}</span></div>
+    ${it.blocked&&it.blocker?`<div class="blk">${esc(it.blocker.text||"")}${it.blocker.person?` (waiting on ${esc(it.blocker.person)})`:""}</div>`:""}
+    <div class="row" style="justify-content:space-between;gap:6px">${dueHtml(it.due,false)||`<span class="faint" style="font-size:12px">No date</span>`}${ctlOf(it)}</div></div>`;
+  return`<p class="hint2">${hint} Scroll sideways for more columns.</p><div class="kb mineb">${cols.map(c=>`<div class="kcol ${by==="status"&&c.k==="Blocked"?"kbad":""} ${by==="brand"&&holdOf(c.k)?"held":""}">${head(c)}${c.items.map(card).join("")||`<div class="faint" style="font-size:12.5px;padding:4px 2px">Nothing here</div>`}</div>`).join("")}</div>`}
+
 function itemHtml(it,cl,noBrand){
   const brand=`<a href="#brand-${esc(it.brand)}" class="muted">${esc(bname(it.brand))}</a>`;
   const ctl=it.kind==="access"?statusSel("access",it.id,it.status,L("access_status"),canWrite):it.kind==="task"?statusSel("task",it.id,it.status,L("task_status"),canChangeTask(S.tasks[it.id]||{}))
@@ -1595,7 +1597,7 @@ function vClient(bid){const b=S.brands[bid];if(!b)return`<h1 class="sr">Founder 
 /* ---------- first-visit guides ---------- */
 const GUIDES={
   overview:["Start with Needs attention: these are the brands to act on today.","Tiles compare with last week once the tracker has a week of history.","Pipeline shows where every brand is. Click a name to open it."],
-  mine:["Brand onboarding: one card per brand you work on. Onboarded brands: live work by urgency.","Click a task name to jump to it on its brand page. Change status right here.","Mentions from comments show at the top for 14 days."],
+  mine:["Everything with your name on it: tasks you own or support, onboarding steps you own, platform access steps on you.","Columns: Status, Brand or Team. Sort by deadline, priority or brand. Click a card title to jump to it on its brand page; change status right on the card.","Late or blocked counts are the cards that need you first. Mentions from comments show at the top for 14 days."],
   people:["Owns is the number of open tasks a person owns. The bar compares people.","Click a row to see their tasks. No owner lists work nobody has picked up.","Filter by team or vertical to see one part of the business."],
   sow:["Each square rolls up a few onboarding steps and says where they are: Done, Doing, To do or N/A.","Click a square to tick its steps. Signed comes from the SOW stage."]};
 function guide(k){if(!GUIDES[k]||ls.get("vt-guide-"+k))return"";return`<details class="guide gfold"><summary>How to use this page</summary><div class="row" style="align-items:flex-start"><ul>${GUIDES[k].map(x=>`<li>${esc(x)}</li>`).join("")}</ul><button class="btn sm quiet" data-act="guide-off" data-k="${k}">Hide for good</button></div></details>`}
@@ -2326,9 +2328,6 @@ document.addEventListener("click",e=>{
   else if(act==="att-go"){go(brandHash(a.dataset.id,a.dataset.tab||"tasks"))}
   else if(act==="person-pick"){peopleSel=peopleSel===a.dataset.name?"":a.dataset.name;render()}
   else if(act==="mvert"){mineVert=a.dataset.v;render()}
-  else if(act==="mlayout"){mineLayout=a.dataset.v;ls.set("vt-mlayout",mineLayout);render()}
-  else if(act==="mfold1"){const k=a.dataset.k;if(mineFold.has(k))mineFold.delete(k);else mineFold.add(k);render()}
-  else if(act==="mfold"){if(a.dataset.v==="open")mineFold.clear();else{const all=myItems();const list=mineTab==="onboarding"?all.filter(i=>!isLiveBrand(i.brand)):mineTab==="live"?all.filter(i=>isLiveBrand(i.brand)):all;const grp=mineGroup[mineTab]||(mineTab==="live"?"due":"brand");for(const g of mineGroups(list,grp))mineFold.add(mineTab+"|"+grp+"|"+g.key)}render()}
   else if(act==="men-go"&&a.dataset.task&&S.tasks[a.dataset.task]){const tk=S.tasks[a.dataset.task];brandTab="tasks";go(campHash(tk.brand,campsOf(tk.brand).length?campOf(tk):""));setTimeout(()=>openDrawer("task",a.dataset.task),60)}
   else if(act==="men-go"&&a.dataset.acc){accBrand=(S.access[a.dataset.acc]||{}).brand||accBrand;go("access");setTimeout(()=>openDrawer("access",a.dataset.acc),60)}
   else if(act==="men-go"){go(brandHash(a.dataset.id,"updates"))}
@@ -2353,6 +2352,7 @@ document.addEventListener("click",e=>{
     const p={chases:(a.chases||[]).concat([c])};if(a.status==="Needed")p.status="Asked founder";if(!a.requested_date)p.requested_date=isoToday();save("access",id,p,bname(a.brand)+" "+a.platform+" chase");accSystemNote(a,id,`Chased the founder by ${c.how}${c.note?": "+c.note:""}`)}
   else if(act==="acc-post"){const id=drawerCtx&&drawerCtx.id;const a=S.access[id];const t=$("#acc-c");const text=t.value.trim();if(!a||!text)return;if(!me){toast("Pick your name in the top bar first.");return}
     create("comments",null,{brand:a.brand,access:id,text,by:me,at:Date.now(),mentions:mentionsIn(text)},"Comment on "+bname(a.brand)+" "+a.platform).then(r=>{if(r)t.value=""})}
+  else if(act==="mcols"){mineCols=a.dataset.v;ls.set("vt-mcols",mineCols);render()}
   else if(act==="minetab"){mineTab=a.dataset.v;ls.set("vt-minetab",mineTab);render()}
   else if(act==="accb"){accBrand=a.dataset.id;ls.set("vt-accbrand",accBrand);render()}
   else if(act==="sowview"){sowView=a.dataset.v;ls.set("vt-sowview",sowView);render()}
@@ -2483,7 +2483,6 @@ document.addEventListener("change",e=>{
   if(act==="fa"){flt[t.dataset.k]=t.value;render();return}
   if(act==="seat"){const id=drawerCtx&&drawerCtx.id;const a=S.access[id];if(!a)return;const seats=(a.seats||[]).map(x=>Object.assign({},x));const x=seats[+t.dataset.i];const old=x.s;x.s=t.value;save("access",id,{seats},bname(a.brand)+" "+a.platform+" logins");accSystemNote(a,id,`${x.p}: ${old} to ${x.s}`);return}
   if(act==="bps"){bpSort=t.value;render();return}
-  if(act==="mgroup"){mineGroup[mineTab]=t.value;ls.set("vt-mgroup",JSON.stringify(mineGroup));render();return}
   if(act==="msort"){mineSort=t.value;ls.set("vt-msort",mineSort);render();return}
   if(act==="mvertsel"){mineVert=t.value;render();return}
   if(act==="pf"){if(t.dataset.k==="vert")peopleVert=t.value;else peopleDept=t.value;render();return}

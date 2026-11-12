@@ -43,7 +43,8 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   check('Brand stage On Hold', 'Brand page SOW tile says On hold', (await text('.troad')).includes('On hold'));
   await setMe('Cyrus'); await go('mine');
   await view('minetab', 'onboarding');
-  check('Brand stage On Hold', 'My tasks: its brand card is greyed as On hold and sorted last', await p.evaluate(() => { const cs = [...document.querySelectorAll('.bcard')]; const c = cs.find(x => x.querySelector('.bname').innerText === 'MUMUK'); return !!c && c.classList.contains('held') && cs.indexOf(c) >= cs.filter(x => !x.classList.contains('held')).length }));
+  await p.click('[data-act=mcols][data-v=brand]'); await p.waitForTimeout(150);
+  check('Brand stage On Hold', 'My tasks: its brand column is greyed as On hold and sorted last', await p.evaluate(() => { const cs = [...document.querySelectorAll('.mineb .kcol')]; const c = cs.find(x => x.querySelector('.kh .bname') && x.querySelector('.kh .bname').innerText === 'MUMUK'); return !!c && c.classList.contains('held') && cs.indexOf(c) === cs.length - 1 }));
 
   // 2. Paused flag (Sourced Food Co.) counts as on hold too
   await openBrandEditor('sourced-food-co'); await p.selectOption('#d-paused', 'Yes'); await drawerSave();
@@ -113,7 +114,8 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await go('brand-ora'); check('Step blocker', 'Brand health tile counts the blocked step', (await text('.bt.health')).includes((blocked0 + 1) + ' onboarding step' + (blocked0 ? 's' : '') + ' blocked'), await text('.bt.health'));
   await setMe('Noopur'); await go('mine');
   await view('minetab', 'onboarding');
-  check('Step owner', 'My tasks shows the step as blocked on the ORA card', await p.evaluate(code => { const c = [...document.querySelectorAll('.bcard')].find(x => x.querySelector('.bname').innerText === 'ORA'); return !!c && [...c.querySelectorAll('.item.blocked')].some(i => i.innerText.includes(code)) && c.innerText.includes('1 blocked') }, open[1]));
+  await p.click('[data-act=mcols][data-v=brand]'); await p.waitForTimeout(150);
+  check('Step owner', 'My tasks shows the step as blocked in the ORA column', await p.evaluate(code => { const c = [...document.querySelectorAll('.mineb .kcol')].find(x => x.querySelector('.kh .bname') && x.querySelector('.kh .bname').innerText === 'ORA'); return !!c && [...c.querySelectorAll('.kcard.blocked')].some(i => i.innerText.includes(code)) }, open[1]));
 
   // 9. Platform access Blocked turns brand Blocked (Bespoke row)
   await go('access'); await view('simple', '0'); await p.click('[data-act=accq][data-v=open]'); await p.click('[data-act=accb][data-id=bespoke]'); await p.waitForTimeout(150); await p.selectOption('select[data-kind=access]', 'Blocked'); await p.waitForTimeout(250);
@@ -238,9 +240,9 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   await p.selectOption('select[data-k=vert]', '');
 
   // 24. My tasks vertical filter
-  await setMe('Cat'); await go('mine'); const n24 = (await p.$$('main .item:not(.men)')).length;
+  await setMe('Cat'); await go('mine'); const n24 = (await p.$$('.mineb .kcard')).length;
   await p.selectOption('#m-vert', 'UGC'); await p.waitForTimeout(150);
-  check('My tasks', 'Vertical filter narrows the list', (await p.$$('main .item:not(.men)')).length < n24);
+  check('My tasks', 'Vertical filter narrows the board', (await p.$$('.mineb .kcard')).length < n24);
   await p.selectOption('#m-vert', '');
 
   // 25. Founder view shows no internal data
@@ -275,30 +277,34 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   const fullCols = await p.evaluate(() => { const t = document.querySelectorAll('main table'); return t[t.length - 1].querySelectorAll('thead th').length });
   check('Simple / Full', 'Simple shows fewer columns than Full', simpleCols < fullCols, `${simpleCols} vs ${fullCols}`);
 
-  // 28. My tasks: group by, sort, board, fold
+  // 28. My tasks: board only, columns by status, brand or team, three sorts
   await setMe('Cat'); await go('mine'); await view('minetab', 'all');
-  for (const g of ['priority', 'due', 'status', 'team', 'brand']) { await p.selectOption('#m-group', g); await p.waitForTimeout(120) }
-  await p.selectOption('#m-group', 'priority'); await p.waitForTimeout(120);
-  const heads = await p.$$eval('.bcard header .gl', e => e.map(x => x.innerText));
-  check('My tasks', 'Group by priority puts Urgent or High first', /Urgent|High/.test(heads[0] || ''), heads.join(', '));
-  await p.selectOption('#m-group', 'due'); await p.waitForTimeout(120);
-  const dheads = await p.$$eval('.bcard header .gl', e => e.map(x => x.innerText));
-  check('My tasks', 'Group by due date starts with Late and ends with No date', dheads[0] === 'Late' && dheads[dheads.length - 1] === 'No date', dheads.join(', '));
-  await p.selectOption('#m-sort', 'brand'); await p.selectOption('#m-group', 'none'); await p.waitForTimeout(150);
-  const brandsOrder = await p.$$eval('.flat .item .meta a', e => e.map(x => x.innerText));
-  check('My tasks', 'Sort by brand A to Z with no groups', brandsOrder.every((b, i) => i === 0 || brandsOrder[i - 1].localeCompare(b) <= 0), brandsOrder.slice(0, 5).join(', '));
-  await p.selectOption('#m-sort', 'urgency'); await p.selectOption('#m-group', 'brand'); await p.waitForTimeout(150);
-  const n28 = (await p.$$('.bcard .item')).length; await p.click('[data-act=mfold]'); await p.waitForTimeout(150);
-  check('My tasks', 'Fold all groups hides the items', (await p.$$('.bcard .item')).length === 0 && n28 > 0);
-  await p.click('[data-act=mfold]'); await p.waitForTimeout(150);
-  check('My tasks', 'Open all groups brings them back', (await p.$$('.bcard .item')).length === n28);
-  await p.click('[data-act=mlayout][data-v=board]'); await p.waitForTimeout(150);
+  check('My tasks', 'No List switch and no Simple / Full switch on My tasks', !(await p.$('[data-act=mlayout]')) && !(await p.$('#topbar [data-act=simple]')));
+  await p.click('[data-act=mcols][data-v=status]'); await p.waitForTimeout(150);
+  await p.selectOption('#m-sort', 'priority'); await p.waitForTimeout(150);
+  const pord = await p.$$eval('.mineb .kcol', cs => cs.map(c => [...c.querySelectorAll('.kcard')].map(k => (+k.dataset.held) * 100 + (+k.dataset.pri))));
+  check('My tasks', 'Sort by priority: Urgent to Low inside every column (on-hold brands last)', pord.every(a => a.every((x, i) => i === 0 || a[i - 1] <= x)), JSON.stringify(pord.slice(0, 3)));
+  await p.selectOption('#m-sort', 'due'); await p.waitForTimeout(150);
+  const dord = await p.$$eval('.mineb .kcol', cs => cs.map(c => [...c.querySelectorAll('.kcard')].map(k => k.dataset.held + (k.dataset.due || '9999'))));
+  check('My tasks', 'Sort by deadline: soonest first, no date last, inside every column (on-hold brands last)', dord.every(a => a.every((x, i) => i === 0 || a[i - 1] <= x)), JSON.stringify(dord.slice(0, 2)));
+  await p.selectOption('#m-sort', 'brand'); await p.waitForTimeout(150);
+  const bord = await p.$$eval('.mineb .kcol', cs => cs.map(c => [...c.querySelectorAll('.kcard')].map(k => k.dataset.brand)));
+  check('My tasks', 'Sort by brand A to Z inside every column', bord.every(a => a.every((x, i) => i === 0 || a[i - 1].localeCompare(x) <= 0)));
+  await p.selectOption('#m-sort', 'due');
+  await p.click('[data-act=mcols][data-v=brand]'); await p.waitForTimeout(150);
+  const bcols = await p.$$eval('.mineb .kcol', cs => cs.map(c => [c.querySelector('.kh .bname') ? c.querySelector('.kh .bname').innerText : '', [...c.querySelectorAll('.kcard')].map(k => k.dataset.brand)]));
+  check('My tasks', 'Brand columns: one column per brand holding only that brand', bcols.length > 1 && bcols.every(([n, a]) => a.every(x => x === n)), bcols.map(x => x[0]).join(', '));
+  await p.click('[data-act=mcols][data-v=team]'); await p.waitForTimeout(150);
+  const tcols = await p.$$eval('.mineb .kcol .kh b', e => e.map(x => x.innerText));
+  check('My tasks', 'Team columns: one per team, steps and access in their own', tcols.length > 0, tcols.join(', '));
+  check('My tasks', 'Every card says why it is yours', await p.$$eval('.mineb .kcard', ks => ks.length > 0 && ks.every(k => !!k.querySelector('.role'))));
+  check('My tasks', 'Tab badge says late or blocked, and the summary explains it', /late or blocked/.test(await text('[data-act=minetab][data-v=all]')) === /blocked|past the due date/.test(await text('.minesum')) && /Why these are yours/.test(await text('.minesum')));
+  await p.click('[data-act=mcols][data-v=status]'); await p.waitForTimeout(150);
   const bcol = await p.$$eval('.kcol', cs => cs.map(c => c.querySelector('.kh b').innerText));
   check('My tasks', 'Board shows a column per status', bcol.includes('In Progress') && bcol.includes('Blocked'), bcol.join(', '));
   const card = await p.$('.kcol:not(.kbad) .kcard select[data-kind=task]:not([disabled])');
   if (card) { await card.selectOption('Blocked'); await p.waitForTimeout(150); if (await p.$('#bform:not([hidden]) #b-text')) { await p.fill('#b-text', 'Waiting on assets'); await p.selectOption('#b-person', 'Ben'); await p.click('#bform button[type=submit]'); await p.waitForTimeout(300) } }
   check('My tasks', 'Changing status on a card moves it to that column', !card || await p.$$eval('.kcol.kbad .kcard', cs => cs.some(c => c.innerText.includes('Waiting on assets'))));
-  await p.click('[data-act=mlayout][data-v=list]');
 
 
   // 29. Best Practices: click a dot, pick a status, it saves and shows everywhere
