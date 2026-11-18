@@ -372,6 +372,23 @@ th.gfold span{writing-mode:horizontal-tb!important;transform:none!important;font
 /* access brand list: one status word */
 .aw{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;margin-top:2px}.aw .smk{width:13px;height:13px}.aw .smk-done::after{left:4px;top:2.5px;width:3px;height:6px}.aw .smk-blk::after{font-size:9px;line-height:13px}.aw.bad{color:var(--bad)}.aw.warn{color:var(--warn)}.aw.ok{color:var(--ok)}.aw.off{color:var(--muted)}
 table.bpg th.gh,table.bpg th.pc{border-bottom-color:var(--line2)!important}
+.sadm{background:var(--mid);color:#fff}.sadraft{background:var(--emberBg);color:var(--emberInk)}
+.sawrap{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:14px;align-items:start}@media(max-width:1100px){.sawrap{grid-template-columns:1fr}}
+.saboard{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;align-items:flex-start}
+.sacol{flex:0 0 230px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:6px}.sacol.sadropend{box-shadow:inset 0 -3px 0 var(--accent)}
+.sach{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px}.sach b{font-size:13.5px}
+.sacard{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:7px 9px;font-size:12.5px;line-height:1.35;cursor:grab}.sacard:hover{border-color:var(--line2)}
+.sacard.int{margin-left:14px;border-style:dashed;background:var(--panel2)}.sacard.gate{background:var(--emberBg);border-color:color-mix(in srgb,var(--ember) 45%,var(--line))}.sacard.opt{background:var(--panel2)}
+.sacard.arch{opacity:.55;cursor:default}.sacard.sel{outline:2px solid var(--accent);outline-offset:1px}.sacard.dragging{opacity:.4}.sacard.sadrop{box-shadow:0 -3px 0 var(--accent)}
+.sano{font-weight:700;color:var(--accent);margin-right:3px}.sacard.gate .sano{color:var(--emberInk)}.sawho{color:var(--muted);font-size:11.5px;margin-top:2px}
+.sachip{display:inline-block;font-size:10.5px;font-weight:700;border-radius:999px;padding:1px 7px;margin:3px 4px 0 0}.sachip.g{background:var(--ember);color:#fff}.sachip.o{background:var(--offBg);color:var(--off)}.sachip.a{background:var(--accentSoft);color:var(--accent)}.sachip.n{background:var(--okBg);color:var(--ok)}.sachip.e{background:var(--warnBg);color:var(--warn)}
+.saadd{font:inherit;font-size:12.5px;border:1.5px dashed var(--line2);background:none;border-radius:10px;padding:6px;color:var(--muted);cursor:pointer}.saphadd{background:none;border-style:dashed}
+.saedit{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;position:sticky;top:8px}.saedit h3{margin:0;font-size:16px}.saedit input,.saedit select{box-sizing:border-box;max-width:100%;font:inherit;font-size:13px;width:100%;border:1px solid var(--line2);border-radius:8px;padding:6px 8px;background:var(--panel);color:var(--ink)}.saedit .tl select{width:auto}
+.salab{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:12px 0 4px}
+.saraci{display:grid;grid-template-columns:24px 1fr;gap:5px 8px;align-items:center}.saraci b{background:var(--mid);color:#fff;border-radius:6px;text-align:center;font-size:11px;padding:3px 0}
+.saafter,.saused{display:flex;flex-wrap:wrap;gap:5px;align-items:center}.saafter span,.saused span{background:var(--panel2);border-radius:8px;padding:3px 8px;font-size:12px}.saafter select{width:auto}
+.sawarn{background:var(--emberBg);color:var(--emberInk);border-radius:9px;padding:8px 10px;font-size:12.5px;margin:10px 0 0}
+.sachg{margin:0;padding-left:18px;font-size:13px}.sahist{margin:0;padding-left:16px;font-size:12.5px}.sahist li{margin-bottom:6px}
 .ib.strip{margin:6px 0 18px}.ib.strip .it{gap:10px;padding:16px 18px}.ib.strip .itb{height:96px}.ib.strip .ithero b{font-size:40px}
 .allx{font-size:13px;align-self:flex-start}
 a.cl{color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:6px;min-height:28px}a.cl:hover{text-decoration:underline}
@@ -818,12 +835,14 @@ const isInternal=b=>(b&&b.stage)==="Internal";
 const onHold=b=>!!b&&(b.stage==="On Hold"||!!b.paused);
 const holdOf=bid=>onHold(S.brands[bid]);
 const stepBlocks=bid=>Object.values((S.bsteps[bid]&&S.bsteps[bid].s)||{}).filter(x=>x&&x.blocker&&x.blocker.text&&!["Done","N/A"].includes(x.status)).length;
-const stepsSorted=()=>Object.entries(S.steps).map(([id,s])=>Object.assign({id},s)).sort((a,b)=>a.order-b.order);
+const stepsSorted=()=>Object.entries(S.steps).filter(([,s])=>!s.archived).map(([id,s])=>Object.assign({id},s)).sort((a,b)=>a.order-b.order);
+const sno=s=>s?(s.no||s.code||""):"";
 function phases(){const out=[];for(const s of stepsSorted()){let p=out.find(x=>x.code===s.phase);if(!p){p={code:s.phase,name:s.phase_name,steps:[]};out.push(p)}p.steps.push(s)}return out}
 const stepRaw=(bid,code)=>((S.bsteps[bid]&&S.bsteps[bid].s)||{})[code]||{};
 const AUTO={access_all:{label:"Platform access: every platform the brand needs is granted",test:bid=>{const r=Object.values(S.access).filter(a=>a.brand===bid&&a.status!=="Not Needed");return r.length>0&&r.every(accGranted)}},
   bp_drafted:{label:"Best Practices: every section is past Not Started",test:bid=>{const d=S.bps[bid];if(!d)return false;const v=L("bp_section").map(x=>(d.sections||{})[x]||"Not Started").filter(x=>x!=="N/A");return v.length>0&&v.every(x=>x!=="Not Started"&&x!=="Blocked")}},
-  bp_complete:{label:"Best Practices: every section is Complete",test:bid=>{const r=bpRoll(bid);return!!r&&r.overall==="Complete"}}};
+  bp_complete:{label:"Best Practices: every section is Complete",test:bid=>{const r=bpRoll(bid);return!!r&&r.overall==="Complete"}},
+  sow_signed:{label:"SOW tracker: SOW stage is Signed",test:bid=>{const x=S.sow[bid];return!!x&&x.stage==="Signed"}}};
 function stepState(bid,code){const raw=stepRaw(bid,code);const s=S.steps[code];const a=s&&s.auto&&AUTO[s.auto];
   if(a&&raw.status!=="N/A"&&memo("auto|"+s.auto+"|"+bid,()=>a.test(bid)))return Object.assign({},raw,{status:"Done",auto:true});return raw}
 const withId=o=>Object.entries(o).map(([k,v])=>Object.assign({_id:k},v));
@@ -907,7 +926,7 @@ function parseHash(){const h=location.hash.replace(/^#/,"");
   else if(h.startsWith("client-"))route={v:"client",id:h.slice(7)};
   else if(h.startsWith("leadership/"))route={v:"leadership",id:h.slice(11)};
   else if(h.startsWith("overview/"))route={v:"overview",id:h.slice(9)};
-  else if(["mine","leadership","overview","access","sow","bp","settings","people","changes"].includes(h))route={v:h,id:""};
+  else if(["mine","leadership","overview","access","sow","bp","settings","stepsadmin","people","changes"].includes(h))route={v:h,id:""};
   else route={v:"",id:""};
   $("#rail").classList.remove("open");closeDrawer();render();$("#main").scrollTop=0}
 window.addEventListener("hashchange",()=>{parseHash();const h=$("#main h1");if(h&&!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest("#drawer,#modal"))){h.tabIndex=-1;h.focus({preventScroll:true})}});
@@ -936,7 +955,7 @@ function myItemsNow(){
   return out}
 /* left menu: Valerie navy, VALFLO name, sections, brand stages that open and close, the open brand's sections nested under it */
 const LOGO=`<svg class="logo" viewBox="0 0 124 94.3" aria-hidden="true"><path d="M61.63,27.67l12.83,12.83h28.64c-1.12-.5-2.22-1.03-3.31-1.58-15.87-7.98-28.92-20.83-37.14-36.85-.3-.58-.59-1.17-.88-1.76l-.15-.32-.15.32c-.29.59-.58,1.18-.88,1.76-8.21,16.02-21.27,28.87-37.14,36.85-1.09.55-2.19,1.07-3.31,1.58h28.64l12.83-12.83Z"/><path d="M123.26,47.15h-41.1c-8.03,5.16-15.03,11.9-20.53,19.92-5.34-7.77-12.09-14.35-19.81-19.45-.24-.16-.48-.32-.72-.47H0l8.54,2.42c23.18,6.56,42.45,22.72,52.94,44.41l.15.32.15-.32c10.49-21.69,29.76-37.85,52.94-44.41l8.54-2.42h0Z"/></svg>`;
-const NI={mine:'<path d="M3 4h10M3 8h10M3 12h6"/>',leadership:'<path d="M2 13l3-8 3 5 3-6 3 9z"/>',overview:'<rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/>',
+const NI={stepsadmin:'<rect x="2" y="2.5" width="3.5" height="11" rx="1"/><rect x="6.25" y="2.5" width="3.5" height="7" rx="1"/><rect x="10.5" y="2.5" width="3.5" height="9" rx="1"/>',mine:'<path d="M3 4h10M3 8h10M3 12h6"/>',leadership:'<path d="M2 13l3-8 3 5 3-6 3 9z"/>',overview:'<rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/>',
   people:'<circle cx="6" cy="5.5" r="2.5"/><path d="M1.5 14c.6-3 2.4-4.5 4.5-4.5S9.9 11 10.5 14M11 3.2a2.4 2.4 0 010 4.6M12.5 9.8c1.2.6 1.8 2 2 4.2"/>',sow:'<path d="M4 1.8h6l3 3V14H4zM10 1.8V5h3M6 8h5M6 10.5h5"/>',
   access:'<rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/>',bp:'<path d="M8 1.8l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.6l-3.8 2 .7-4.3-3.1-3 4.3-.6z"/>',changes:'<path d="M8 3.5V8l3 1.8"/><circle cx="8" cy="8" r="6"/>',settings:'<circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4"/>'};
 const nicon=k=>`<svg class="ni" viewBox="0 0 16 16" aria-hidden="true">${NI[k]||""}</svg>`;
@@ -950,7 +969,7 @@ function renderRail(){
   const across=[["overview","Overview",""],["people","People",""],["sow","SOW tracker",""],["access","Platform access",""],["bp","Best Practices",""]];
   const item=([k,l,n])=>`<a href="#${k}" class="${route.v===k?"on":""}" ${route.v===k?`aria-current="page"`:""}>${nicon(k)}<span class="nl">${esc(l)}</span><span class="n">${n}</span></a>`;
   let h=`<a class="mark" href="#overview" aria-label="VALFLO home">${LOGO}<span class="mk">VALFLO</span></a>
-   <nav class="nav" aria-label="Main"><div class="rsec">My work</div>${work.map(item).join("")}<div class="rsec">Across brands</div>${across.map(item).join("")}${canSeeLog()?item(["changes","Change log",""]):""}${canEdit?item(["settings","Settings",""]):""}</nav><div class="rbrands"><div class="rsec">Brands</div>`;
+   <nav class="nav" aria-label="Main"><div class="rsec">My work</div>${work.map(item).join("")}<div class="rsec">Across brands</div>${across.map(item).join("")}${canSeeLog()?item(["changes","Change log",""]):""}${canEdit?item(["stepsadmin","SOW steps",""]):""}${canEdit?item(["settings","Settings",""]):""}</nav><div class="rbrands"><div class="rsec">Brands</div>`;
   const groups={};for(const b of brandList())(groups[b.stage||"Qualification"]=groups[b.stage||"Qualification"]||[]).push(b);
   for(const st of STAGE_ORDER()){if(!groups[st])continue;const cur=route.v==="brand"&&groups[st].some(b=>b.id===route.id);const open=!railShut.has(st);
     h+=`<h3 class="rgh"><button data-act="rgrp" data-k="${esc(st)}" aria-expanded="${open}"><span class="rgl">${esc(st)}</span><span class="n">${groups[st].length}</span>${CHEV}</button></h3>`;
@@ -967,7 +986,7 @@ function renderRail(){
 }
 // Leadership view is a role: leads tick Leadership for a person in Settings > People.
 const isLeader=name=>!!name&&people().some(p=>p.name===name&&p.leadership);
-const TOPNAME={changes:"Change log",mine:"My tasks",leadership:"Leadership",overview:"Overview",people:"People",sow:"SOW tracker",access:"Platform access",bp:"Best Practices",settings:"Settings"};
+const TOPNAME={changes:"Change log",mine:"My tasks",leadership:"Leadership",overview:"Overview",people:"People",sow:"SOW tracker",access:"Platform access",bp:"Best Practices",settings:"Settings",stepsadmin:"SOW steps"};
 function crumbsOf(){
   if(route.v==="brand"&&S.brands[route.id]){const b=S.brands[route.id];const id=route.id;const out=[{l:b.name,href:"#"+brandHash(id,"home")}];
     if(brandTab!=="home"){const cid=campSel.bid===id?campSel.id:"";const deep=brandTab==="tasks"&&cid&&(cid===NOCAMP||S.camps[cid]);
@@ -1001,10 +1020,10 @@ function renderMain(){
   if(!ready.brands||!ready.config){m.innerHTML=`<h1>VALFLO</h1><p class="sub">Loading brands, tasks and steps.</p>`;return}
   if(!Object.keys(S.brands).length){m.innerHTML=`<h1>No brands yet</h1><p class="sub">${canEdit?"Use Add brand in the left menu to add the first one.":"Ask a lead to add brands."}</p>`;return}
   let v=route.v;if(!v)v=isLeader(me)?"leadership":canEdit?"overview":"mine";if(v==="leadership"&&!isLeader(me))v="overview";
-  if(v==="settings"&&!canEdit)v="overview";
+  if((v==="settings"||v==="stepsadmin")&&!canEdit)v="overview";
   const ro=canWrite?"":`<div class="notice info">You can view this tracker but not change it. Ask a lead for edit access.</div>`;
   if(focusItem&&v==="brand")setTimeout(()=>{const f=focusItem;focusItem=null;let el=document.querySelector("#main "+f.sel);if(!el)return;if(f.up)el=el.closest(f.up)||el;const mm=$("#main"),r=el.getBoundingClientRect(),mr=mm.getBoundingClientRect();mm.scrollTop+=r.top-mr.top-mm.clientHeight/2+r.height/2;el.classList.add("flash");setTimeout(()=>el.classList.remove("flash"),2600)},40);
-  m.innerHTML=ro+(v==="leadership"?vLeadership():v==="brand"?vBrand(route.id):v==="mine"?vMine():v==="sow"?vSow():v==="access"?vAccess():v==="bp"?vBp():v==="settings"?vSettings():v==="changes"?vChanges():v==="people"?vPeople():v==="client"?(canEdit?vClient(route.id):vOverview()):vOverview());
+  m.innerHTML=ro+(v==="leadership"?vLeadership():v==="brand"?vBrand(route.id):v==="mine"?vMine():v==="sow"?vSow():v==="access"?vAccess():v==="bp"?vBp():v==="settings"?vSettings():v==="stepsadmin"?vStepsAdmin():v==="changes"?vChanges():v==="people"?vPeople():v==="client"?(canEdit?vClient(route.id):vOverview()):vOverview());
 }
 function canChangeTask(t){if(!canWrite)return false;if(canEdit)return true;return isPerson(t.owner,me)||(t.support||[]).some(x=>isPerson(x,me))}
 function statusSel(kind,id,val,list,enabled,extra){return`<select class="ps ${cls(val)}" data-act="status" data-kind="${kind}" data-id="${esc(id)}" ${extra||""} ${enabled?"":"disabled"} aria-label="Status">${opts(list,val,false)}</select>`}
@@ -1259,7 +1278,7 @@ function stepsTrack(bid){
   h+=`<section class="panel phasep"><div class="bth"><span class="btl">${esc(sel.code)}</span><b style="font-size:17px">${esc(sel.name)}</b>${complete?sig("good","Done"):sel===cur?sig("info","Current phase"):""}<span class="faint">${d} of ${req.length} required done</span><span class="grow"></span>${canEdit&&canWrite&&!complete?`<button class="btn sm" data-act="phase-done" data-id="${esc(bid)}" data-phase="${esc(sel.code)}">Mark every step in ${esc(sel.code)} done</button>`:""}</div>
    <p class="faint" style="margin:0 0 8px;font-size:13px">A gate step cannot be Done while earlier required steps are open. Optional steps never hold a phase back.</p>`;
   for(const s of sel.steps){const st=stepState(bid,s.code);const v=st.status||"Not Started";
-    h+=`<div class="step ${s.is_gate?"isgate":""} ${v==="Done"?"done":""}"><span class="code">${esc(s.code)}</span>
+    h+=`<div class="step ${s.is_gate?"isgate":""} ${v==="Done"?"done":""}"><span class="code">${esc(sno(s))}</span>
      <div class="nm"><span>${esc(s.name)}</span><span class="tags">${s.is_gate?`<span class="tag gate">Gate</span>`:""}${st.approved_by&&v==="Done"?`<span class="tag ok">Signed off by ${esc(st.approved_by)}, ${esc(fmtD(st.approved_at))}</span>`:""}${s.is_optional?`<span class="tag opt">Optional</span>`:""}${s.doc_label?`<span class="tag doc">Doc: ${esc(s.doc_label)}</span>`:""}</span>
      ${st.blocker&&st.blocker.text?`<span class="blk">Blocked: ${esc(st.blocker.text)}${st.blocker.person?` (waiting on ${esc(st.blocker.person)})`:""}</span>`:""}${st.link?`<a href="${esc(st.link)}" target="_blank" rel="noopener" style="font-size:12.5px">Open ${esc(s.doc_label||"document")}</a>`:""}</div>
      <div class="ctl">${st.owner?esc(st.owner):`<span class="faint">No owner</span>`}</div><div class="ctl">${dueHtml(st.deadline,v==="Done"||v==="N/A")||`<span class="faint">No date</span>`}</div>
@@ -2112,10 +2131,112 @@ function boardDrawerBody(bid,path){
   const st=(c.steps||[]).map(code=>S.steps[code]).filter(Boolean);
   if(!st.length)return{title:c.label,body:body+`<p class="w" style="grid-column:1/-1">No onboarding steps are linked to this column yet.</p>`};
   body+=`<div class="w" style="grid-column:1/-1">${st.map(s=>{const v=stepState(bid,s.code).status||"Not Started";
-    return`<div class="bstep"><div><span class="code">${esc(s.code)}</span> ${esc(s.name)}${s.is_gate?` <span class="tag gate">Gate</span>`:""}${s.is_optional?` <span class="tag opt">Optional</span>`:""}</div>
+    return`<div class="bstep"><div><span class="code">${esc(sno(s))}</span> ${esc(s.name)}${s.is_gate?` <span class="tag gate">Gate</span>`:""}${s.is_optional?` <span class="tag opt">Optional</span>`:""}</div>
     <div class="row" style="gap:6px;flex-wrap:nowrap">${statusSel("step",bid,v,L("checklist"),canWrite,`data-code="${esc(s.code)}"`)}<button class="btn sm quiet" type="button" data-act="open" data-kind="step" data-id="${esc(bid)}" data-code="${esc(s.code)}">Edit</button></div></div>`}).join("")}</div>`;
   return{title:c.label,body}}
 const BPMARK={"Not Started":"","Foundations":"","Tactics In":"","In QA":"","Complete":"✓","Blocked":"!","N/A":"–"}; // the fill shows how far a section is
+
+/* ---------- SOW steps admin board: admins edit the step list as a draft, then publish it to every place steps appear ---------- */
+let saSel="",saDrag="",saShowArch=false;
+const SA_FIELDS=["name","phase","phase_name","kind","is_gate","is_optional","proof","auto","archived","founder_stage","raci","after"];
+const saClone=o=>JSON.parse(JSON.stringify(o||{}));
+const saPad=n=>String(n).padStart(2,"0");
+function saFounderOf(id){const fv=S.config.founder_view;const st=fv&&Array.isArray(fv.stages)?fv.stages.find(g=>(g.steps||[]).includes(id)):null;return st?st.name:""}
+function saFromLive(){const steps={};const ph=[];
+  for(const[id,s]of Object.entries(S.steps).sort((a,b)=>(a[1].order||0)-(b[1].order||0))){
+    if(s.phase&&!ph.some(p=>p.code===s.phase))ph.push({code:s.phase,name:s.phase_name||s.phase});
+    steps[id]={name:s.name||"",phase:s.phase||"",phase_name:s.phase_name||"",order:s.order||0,kind:s.kind||"main",is_gate:!!s.is_gate,is_optional:!!s.is_optional,
+      raci:Object.assign({r:s.default_owner||"",a:"",c:"",i:""},s.raci||{}),proof:s.proof||"",after:(s.after||[]).slice(),archived:!!s.archived,auto:s.auto||"",
+      founder_stage:s.founder_stage!==undefined?s.founder_stage:saFounderOf(id)}}
+  return{steps,phases:ph}}
+function saWork(){const d=S.config.steps_draft;return d&&d.steps&&Object.keys(d.steps).length?saClone(d):saFromLive()}
+function saPut(d){if(!canEdit)return;d.by=me||"";d.at=Date.now();S.config.steps_draft=d;render();
+  chain("config/steps_draft",()=>db.doc(COLL.config+"/steps_draft").set(d)).catch(()=>toast("Draft not saved. Check your connection."))}
+function saPhaseSteps(d,ph,withArch){return Object.entries(d.steps).filter(([,s])=>s.phase===ph&&(withArch||!s.archived)).sort((a,b)=>a[1].order-b[1].order)}
+function saNums(d){const out={};d.phases.forEach((p,pi)=>{let main=0,last="",letter=0;
+  for(const[id,s]of saPhaseSteps(d,p.code)){if(s.kind==="interim"&&last){letter++;out[id]=last+String.fromCharCode(96+letter)}else{main++;letter=0;last=`${pi+1}.${saPad(main)}`;out[id]=last}}});return out}
+function saReorder(d,ph){saPhaseSteps(d,ph).forEach(([id],i)=>{d.steps[id].order=(d.phases.findIndex(p=>p.code===ph)+1)*1000+i*10})}
+function saType(s){return s.kind==="interim"?"Interim":s.is_gate?"Gate":s.is_optional?"Optional":"Main"}
+function saChanges(d){const nums=saNums(d);const out=[];const LV=saFromLive().steps;
+  const liveIdx=id=>{const s=S.steps[id];return Object.entries(S.steps).filter(([,x])=>x.phase===s.phase&&!x.archived).sort((a,b)=>(a[1].order||0)-(b[1].order||0)).findIndex(([k])=>k===id)};
+  for(const[id,s]of Object.entries(d.steps)){const live=S.steps[id];
+    if(!live){if(!s.archived)out.push({id,kind:"Added",text:`${nums[id]||""} ${s.name}`});continue}
+    if(!!s.archived!==!!live.archived){out.push({id,kind:s.archived?"Archived":"Restored",text:`${s.name}`});continue}
+    if(s.archived)continue;
+    const ch=[];const ls=LV[id];
+    for(const f of ["name","kind","is_gate","is_optional","proof","auto","founder_stage"])if(JSON.stringify(s[f]??"")!==JSON.stringify(ls[f]??""))ch.push(f==="kind"||f==="is_gate"||f==="is_optional"?"type":f==="founder_stage"?"founder view stage":f);
+    if(JSON.stringify(s.raci)!==JSON.stringify(ls.raci))ch.push("RACI");if(JSON.stringify(s.after||[])!==JSON.stringify(ls.after||[]))ch.push("starts after");
+    if(ch.length)out.push({id,kind:"Edited",text:`${nums[id]} ${s.name}: ${[...new Set(ch)].join(", ")}`});
+    const di=saPhaseSteps(d,s.phase).findIndex(([k])=>k===id);
+    if((d.moved||[]).includes(id)&&(s.phase!==live.phase||di!==liveIdx(id)))out.push({id,kind:"Moved",text:`${nums[id]} ${s.name}`})}
+  const lp={};for(const x of Object.values(S.steps))if(x.phase&&!lp[x.phase])lp[x.phase]=x.phase_name;
+  for(const ph of d.phases){if(!lp[ph.code]){if(saPhaseSteps(d,ph.code).length)out.push({id:"",kind:"Added",text:`Phase: ${ph.name}`})}else if(lp[ph.code]!==ph.name)out.push({id:"",kind:"Edited",text:`Phase renamed: ${lp[ph.code]} to ${ph.name}`})}
+  return out}
+function saUsedIn(d,id){const s=d.steps[id];if(s.archived)return["Hidden everywhere (progress kept)"];const u=["SOW tracker"];if(!s.is_optional)u.push("Road to SOW and progress %");u.push("My tasks (step owner)");
+  if(s.founder_stage)u.push("Founder view: "+s.founder_stage);if(s.is_gate)u.push("Gate check and Leadership decisions");if(s.auto&&AUTO[s.auto])u.push("Ticks itself");return u}
+function saProgress(id){let n=0;for(const d of Object.values(S.bsteps)){const x=(d.s||{})[id];if(x&&x.status&&x.status!=="Not Started")n++}return n}
+function vStepsAdmin(){
+  if(!canEdit)return`<h1>SOW steps</h1><p class="sub">Only admins can open this page.</p>`;
+  const d=saWork();const nums=saNums(d);const changes=S.config.steps_draft&&S.config.steps_draft.steps?saChanges(d):[];
+  if(saSel&&!d.steps[saSel])saSel="";
+  const card=([id,s])=>`<div class="sacard ${s.kind==="interim"?"int":""} ${s.is_gate?"gate":""} ${s.is_optional?"opt":""} ${s.archived?"arch":""} ${saSel===id?"sel":""}" draggable="${s.archived?"false":"true"}" data-said="${esc(id)}" data-act="sa-sel" data-id="${esc(id)}" tabindex="0" role="button" aria-label="${esc((nums[id]||"")+" "+s.name)}">
+    <span class="sano">${esc(s.archived?"Archived":nums[id]||"")}</span> ${esc(s.name)}
+    <div class="sawho">${["r","a"].map(k=>s.raci&&s.raci[k]?`${k.toUpperCase()} ${esc(s.raci[k])}`:"").filter(Boolean).join(" · ")||`<span class="faint">No owner yet</span>`}</div>
+    ${s.is_gate?`<span class="sachip g">Gate</span>`:""}${s.is_optional?`<span class="sachip o">Optional</span>`:""}${s.auto?`<span class="sachip a">Ticks itself</span>`:""}${changes.some(c=>c.id===id&&c.kind==="Added")?`<span class="sachip n">New</span>`:changes.some(c=>c.id===id)?`<span class="sachip e">Changed</span>`:""}</div>`;
+  let h=`<div class="row" style="gap:10px;align-items:center;margin-bottom:4px"><h1 style="margin:0">SOW steps</h1><span class="tag sadm">Admins only</span>${changes.length?`<span class="tag sadraft">Draft · ${changes.length} change${changes.length>1?"s":""} not published</span>`:`<span class="tag">Matches what the team sees</span>`}<span class="grow"></span>
+    ${S.config.steps_draft&&S.config.steps_draft.steps?`<button class="btn" data-act="sa-discard">Discard draft</button>`:""}<button class="btn" data-act="sa-arch-tog" aria-pressed="${saShowArch}">${saShowArch?"Hide archived":"Show archived"}</button><button class="btn pri" data-act="sa-pub" ${changes.length?"":"disabled"}>Review and publish</button></div>
+    <p class="sub">Drag a card to reorder it or move it to another phase, or use Move up and Move down. Numbers update themselves. Nothing changes for the team until you publish.</p>`;
+  h+=`<div class="sawrap"><div class="saboard">${d.phases.map((p,pi)=>{const list=saPhaseSteps(d,p.code,saShowArch);return`<section class="sacol" data-saph="${esc(p.code)}" aria-label="${esc(p.name)}"><div class="sach"><b>${pi+1} ${esc(p.name)}</b><span class="cnt">${list.filter(([,s])=>!s.archived).length}</span></div>
+    <div class="sabody">${list.map(card).join("")}</div><button class="saadd" data-act="sa-add" data-ph="${esc(p.code)}">+ Add step</button></section>`}).join("")}
+    <section class="sacol saphadd"><button class="saadd" data-act="sa-addph">+ Add phase</button></section></div>`;
+  const s=saSel&&d.steps[saSel];
+  if(s){const others=Object.entries(d.steps).filter(([k,x])=>k!==saSel&&!x.archived).sort((a,b)=>(nums[a[0]]||"").localeCompare(nums[b[0]]||"",undefined,{numeric:true}));
+    const fst=(S.config.founder_view&&S.config.founder_view.stages||[]).map(g=>g.name);const ppl=activePeople();
+    h+=`<aside class="saedit" aria-label="Edit step"><h3>${esc(nums[saSel]||"")} ${esc(s.name)}</h3><p class="faint" style="margin:2px 0 8px">Phase ${d.phases.findIndex(p=>p.code===s.phase)+1} · ${esc(s.phase_name)} · its ID never changes, so brand progress is kept</p>
+      <label class="salab" for="sa-name">Step name</label><input id="sa-name" data-act="sa-f" data-f="name" value="${esc(s.name)}">
+      <div class="salab">Type</div><div class="seg" role="group" aria-label="Type">${["Main","Interim","Gate","Optional"].map(t=>`<button data-act="sa-type" data-v="${t}" class="${saType(s)===t?"on":""}" aria-pressed="${saType(s)===t}">${t}</button>`).join("")}</div>
+      <div class="salab">RACI</div><div class="saraci">${[["r","Responsible"],["a","Accountable"],["c","Consulted"],["i","Informed"]].map(([k,l])=>`<b title="${l}">${k.toUpperCase()}</b><input data-act="sa-f" data-f="raci.${k}" value="${esc((s.raci||{})[k]||"")}" list="sa-ppl" aria-label="${l}">`).join("")}</div><datalist id="sa-ppl">${ppl.map(p=>`<option value="${esc(p)}">`).join("")}</datalist>
+      <label class="salab" for="sa-proof">Proof to tick it done</label><input id="sa-proof" data-act="sa-f" data-f="proof" value="${esc(s.proof||"")}" placeholder="For example: notes + recording link">
+      <div class="salab">Starts after</div><div class="saafter">${(s.after||[]).filter(k=>d.steps[k]).map(k=>`<span>${esc(nums[k]||"")} ${esc(d.steps[k].name)} <button class="linkb" data-act="sa-after-rm" data-v="${esc(k)}" aria-label="Remove">×</button></span>`).join("")}
+        <select data-act="sa-after-add" aria-label="Add a step this waits for"><option value="">+ Add</option>${others.map(([k,x])=>`<option value="${esc(k)}">${esc((nums[k]||"")+" "+x.name)}</option>`).join("")}</select></div>
+      <div class="salab">Phase</div><select data-act="sa-ph" aria-label="Phase">${d.phases.map((p,pi)=>`<option value="${esc(p.code)}" ${p.code===s.phase?"selected":""}>${pi+1} ${esc(p.name)}</option>`).join("")}</select>
+        <div class="salab">Founder view stage</div><select data-act="sa-f" data-f="founder_stage" aria-label="Founder view stage"><option value="">Not shown</option>${fst.map(n=>`<option ${n===s.founder_stage?"selected":""}>${esc(n)}</option>`).join("")}</select>
+        <div class="salab">Ticks itself when</div><select data-act="sa-f" data-f="auto" aria-label="Ticks itself when"><option value="">No</option>${Object.entries(AUTO).map(([k,a])=>`<option value="${k}" ${s.auto===k?"selected":""}>${esc(a.label)}</option>`).join("")}</select>
+      <div class="row" style="gap:6px;margin-top:10px"><button class="btn sm" data-act="sa-move" data-v="-1">Move up</button><button class="btn sm" data-act="sa-move" data-v="1">Move down</button><span class="grow"></span><button class="btn sm ${s.archived?"":"quiet"}" data-act="sa-arch">${s.archived?"Restore":"Archive"}</button></div>
+      <div class="salab">Shows up in</div><div class="saused">${saUsedIn(d,saSel).map(x=>`<span>${esc(x)}</span>`).join("")}</div>
+      ${S.steps[saSel]?`<p class="sawarn"><b>${saProgress(saSel)} brand${saProgress(saSel)===1?"":"s"}</b> have progress on this step. Moving, renaming or renumbering keeps it. Archiving hides the step but never deletes ticks.</p>`:`<p class="sawarn">New step. Brands start it as Not Started once you publish.</p>`}
+      ${d.phases.some(p=>p.code===s.phase)?`<label class="salab" for="sa-phname">Phase name (applies to the whole phase)</label><input id="sa-phname" data-act="sa-phname" data-ph="${esc(s.phase)}" value="${esc(s.phase_name)}">`:""}</aside>`}
+  else h+=`<aside class="saedit"><h3>Pick a step</h3><p class="faint">Click a card to edit its name, type, RACI, what it waits for and the proof needed to tick it.</p>
+    <div class="salab">Published versions</div>${saHistory()}</aside>`;
+  return h+`</div>`}
+function saHistory(){const rows=[];for(const d of Object.values(S.log))for(const e of d.entries||[])if(e.id==="steps_publish")rows.push(Object.assign({person:d.person},e));
+  rows.sort((a,b)=>b.at-a.at);return rows.length?`<ul class="sahist">${rows.slice(0,8).map(r=>`<li><b>${esc(r.person||"Someone")}</b> · ${esc(fmtD(new Date(r.at).toISOString().slice(0,10)))}<div class="faint">${esc(r.new)}</div></li>`).join("")}</ul>`:`<p class="faint">No step changes published yet.</p>`}
+function saEdit(fn){const d=saWork();fn(d);saPut(d)}
+function saOpenPublish(){const d=saWork();const ch=saChanges(d);if(!ch.length)return;const nums=saNums(d);
+  const by=k=>ch.filter(c=>c.kind===k);const m=$("#modal");
+  const groups=d.phases.map((p,pi)=>`<li><b>${pi+1} ${esc(p.name)}</b>: ${saPhaseSteps(d,p.code).filter(([,s])=>s.kind!=="interim").length} columns</li>`).join("");
+  m.innerHTML=`<div class="box wide"><h3>Publish ${ch.length} change${ch.length>1?"s":""} to the SOW steps</h3><p class="muted" style="margin-top:0">Publishing updates the SOW tracker, every brand's Road to SOW, My tasks, gates, the Founder view and Overview at once. Brand progress is kept.</p>
+   ${["Added","Edited","Moved","Archived","Restored"].map(k=>by(k).length?`<div class="salab">${k} (${by(k).length})</div><ul class="sachg">${by(k).map(c=>`<li>${esc(c.text)}</li>`).join("")}</ul>`:"").join("")}
+   <div class="salab">SOW tracker after publishing</div><ul class="sachg">${groups}</ul>
+   <div class="row" style="gap:8px;margin-top:14px"><button class="btn pri" data-act="sa-pubgo">Publish ${ch.length} change${ch.length>1?"s":""}</button><button class="btn" data-act="mcancel">Cancel</button></div></div>`;
+  m.hidden=false}
+async function saPublish(){const d=saWork();const ch=saChanges(d);if(!ch.length||!canEdit)return;const nums=saNums(d);
+  let order=0;const writes=[];
+  for(const p of d.phases)for(const[id,s]of saPhaseSteps(d,p.code,true).sort((a,b)=>(a[1].archived?1:0)-(b[1].archived?1:0)||a[1].order-b[1].order)){order++;
+    const full=Object.assign({},S.steps[id]||{},{code:id,name:s.name,phase:p.code,phase_name:p.name,order,kind:s.kind||"main",is_gate:!!s.is_gate,is_optional:!!s.is_optional,raci:s.raci||{},proof:s.proof||"",after:s.after||[],
+      archived:!!s.archived,auto:s.auto||"",founder_stage:s.founder_stage||"",no:s.archived?"":(nums[id]||""),default_owner:(s.raci&&s.raci.r)||"",updated_at:Date.now(),updated_by:uid||""});
+    if(!s.auto)delete full.auto;if(JSON.stringify(full)!==JSON.stringify(Object.assign({},S.steps[id]||{},{updated_at:full.updated_at,updated_by:full.updated_by})))writes.push([id,full])}
+  const groups=d.phases.map((p,pi)=>{const cols=[];for(const[id,s]of saPhaseSteps(d,p.code)){if(s.kind==="interim"&&cols.length)cols[cols.length-1].steps.push(id);else cols.push({label:s.name,steps:[id]})}return{name:`${pi+1} ${p.name}`,cols}}).filter(g=>g.cols.length);
+  const fv=S.config.founder_view;const fv2=fv&&Array.isArray(fv.stages)?Object.assign({},fv,{stages:fv.stages.map(g=>Object.assign({},g,{steps:d.phases.flatMap(p=>saPhaseSteps(d,p.code).filter(([,s])=>s.founder_stage===g.name).map(([id])=>id))}))}):null;
+  $("#modal").hidden=true;toast("Publishing…");
+  try{for(const[id,full]of writes){S.steps[id]=full;await db.doc(COLL.steps+"/"+id).set(full)}
+    const sb={groups,updated_at:Date.now(),updated_by:uid||""};S.config.sow_board=sb;await db.doc(COLL.config+"/sow_board").set(sb);
+    if(fv2){S.config.founder_view=fv2;await db.doc(COLL.config+"/founder_view").set(fv2)}
+    const sum=["Added","Edited","Moved","Archived","Restored"].map(k=>[k,ch.filter(c=>c.kind===k).length]).filter(x=>x[1]).map(([k,n])=>`${n} ${k.toLowerCase()}`).join(", ");
+    addLog("config","steps_publish",{published:sum},{published:""},"SOW steps published");
+    delete S.config.steps_draft;await db.doc(COLL.config+"/steps_draft").delete();saSel="";toast("Published. Every page now uses the new steps.")}
+  catch(e){if(!refused(e))toast("Publishing stopped part way. Open SOW steps again and publish to finish.")}
+  render()}
 
 /* ---------- Settings ---------- */
 let setTab="people";
@@ -2147,8 +2268,7 @@ function vSettings(){
       return`<tr><td><b>${esc(p.name)}</b></td><td>${ti("full_name","")}</td><td>${ti("title","")}</td><td><select data-act="person" data-i="${i}" data-f="team" aria-label="Team for ${esc(p.name)}">${opts(L("org_team"),p.team||"")}</select></td><td>${ti("location","")}</td><td><select data-act="person" data-i="${i}" data-f="kind" aria-label="Type">${opts(["team","external","group","unconfirmed"],p.kind||"team",false)}</select></td><td><input data-act="person" data-i="${i}" data-f="aliases" value="${esc((p.aliases||[]).join(", "))}" placeholder="e.g. Noops" aria-label="Other spellings" style="border:1px solid var(--line2);border-radius:6px;padding:4px 6px;width:100%;background:var(--panel)"></td><td><input type="checkbox" data-act="person" data-i="${i}" data-f="active" ${p.active!==false?"checked":""} aria-label="Active"></td><td><input type="checkbox" data-act="person" data-i="${i}" data-f="leadership" ${p.leadership?"checked":""} aria-label="Leadership access for ${esc(p.name)}"></td><td><input type="checkbox" data-act="person" data-i="${i}" data-f="log" ${p.log?"checked":""} aria-label="Change log access for ${esc(p.name)}"></td><td><input type="checkbox" data-act="person" data-i="${i}" data-f="escalate" ${p.escalate?"checked":""} aria-label="Can escalate: ${esc(p.name)}"></td><td class="num">${n}</td></tr>`}).join("")}</tbody></table></div>`}
   else if(setTab==="lists"){const labels={vertical:"Verticals",task_status:"Task status",priority:"Priority",stage:"Brand stage",platform:"Platforms",access_level:"Access level",access_status:"Access status",sow_stage:"SOW stage",checklist:"Step status",bp_section:"BP sections",bp_status:"BP status",department:"Teams (task groups)",org_team:"Org chart teams",esc_priority:"Escalation priority",task_label:"Card labels",campaign_status:"Campaign status",dependency_kind:"Dependency kinds"};
     h+=`<div class="notice">Renaming a value does not change rows that already use the old one. Add new values at the end.</div><div class="cols2">${Object.keys(labels).map(k=>`<div class="card"><label for="ls-${k}"><b>${esc(labels[k])}</b></label><textarea id="ls-${k}" data-list="${k}">${esc(L(k).join("\n"))}</textarea></div>`).join("")}</div><div class="row" style="margin-top:12px"><button class="btn pri" data-act="save-lists">Save lists</button></div>`}
-  else if(setTab==="steps"){
-    h+=`<p class="muted">Gates and optional steps are a proposal from the Stage 0 report. Change them here. Codes stay the same so progress is kept.</p><div class="tw"><table><thead><tr><th>Code</th><th>Step</th><th>Gate</th><th>Optional</th><th>Default owner</th><th>Document</th></tr></thead><tbody>${stepsSorted().map(s=>`<tr><td class="code">${esc(s.code)}</td><td><input data-act="stepdef" data-id="${esc(s.id)}" data-f="name" value="${esc(s.name)}" aria-label="Step name" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:4px 6px;background:var(--panel)"></td><td><input type="checkbox" data-act="stepdef" data-id="${esc(s.id)}" data-f="is_gate" ${s.is_gate?"checked":""} aria-label="Gate"></td><td><input type="checkbox" data-act="stepdef" data-id="${esc(s.id)}" data-f="is_optional" ${s.is_optional?"checked":""} aria-label="Optional"></td><td><input data-act="stepdef" data-id="${esc(s.id)}" data-f="default_owner" value="${esc(s.default_owner)}" aria-label="Default owner" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:4px 6px;background:var(--panel)"></td><td><input data-act="stepdef" data-id="${esc(s.id)}" data-f="doc_label" value="${esc(s.doc_label)}" aria-label="Document" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:4px 6px;background:var(--panel)"></td></tr>`).join("")}</tbody></table></div>`}
+  else if(setTab==="steps"){h+=`<div class="card"><h3 style="margin-top:0">Steps now live on their own board</h3><p class="muted">Reorder, rename, add, archive and set RACI for every SOW onboarding step on the SOW steps board. Changes are a draft until you publish them, then the SOW tracker, brand pages, My tasks and the Founder view all update.</p><a class="btn pri" href="#stepsadmin">Open SOW steps</a></div>`}
   else if(setTab==="nobrand"){const rows=withId(S.tasks).filter(t=>!t.brand);
     h+=rows.length?`<p class="muted">Completed rows from the old sheet have no brand. Pick one for each.</p><div class="tw"><table><thead><tr><th>Task</th><th>Owner</th><th>Deadline</th><th>Notes</th><th>Brand</th></tr></thead><tbody>${rows.map(t=>`<tr><td><b>${esc(t.title)}</b></td><td>${esc(t.owner)}</td><td>${esc(fmtD(t.deadline))}</td><td class="muted">${esc(t.notes)}</td><td><select data-act="setbrand" data-id="${esc(t._id)}" aria-label="Brand"><option value="">Pick a brand</option>${brandList().map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join("")}</select></td></tr>`).join("")}</tbody></table></div>`:`<div class="tw"><div class="empty">Every task has a brand.</div></div>`}
   else if(setTab==="access"){const cfg=ACCESS_SETUP();const teams=cfg.teams||[];const help=cfg.help||{};const bm=cfg.bp_map||{};
@@ -2436,6 +2556,17 @@ document.addEventListener("click",e=>{
   else if(act==="settab"){setTab=a.dataset.tab;render()}
   else if(act==="close")closeDrawer();
   else if(act==="mclose")$("#modal").hidden=true;
+  else if(act==="sa-sel"){saSel=a.dataset.id;render()}
+  else if(act==="sa-arch-tog"){saShowArch=!saShowArch;render()}
+  else if(act==="sa-add"){const ph=a.dataset.ph;saEdit(d=>{const p=d.phases.find(x=>x.code===ph);const id="S"+Date.now().toString(36);d.steps[id]={name:"New step",phase:p.code,phase_name:p.name,order:1e9,kind:"main",is_gate:false,is_optional:false,raci:{r:"",a:"",c:"",i:""},proof:"",after:[],archived:false,auto:"",founder_stage:""};saReorder(d,p.code);saSel=id})}
+  else if(act==="sa-addph"){saEdit(d=>{let n=d.phases.length+1;while(d.phases.some(p=>p.code==="P"+n))n++;const code="P"+n;d.phases.push({code,name:"New phase"});const id="S"+Date.now().toString(36);d.steps[id]={name:"New step",phase:code,phase_name:"New phase",order:1e9,kind:"main",is_gate:false,is_optional:false,raci:{r:"",a:"",c:"",i:""},proof:"",after:[],archived:false,auto:"",founder_stage:""};saReorder(d,code);saSel=id})}
+  else if(act==="sa-type"){const v=a.dataset.v;saEdit(d=>{const x=d.steps[saSel];if(!x)return;x.kind=v==="Interim"?"interim":"main";x.is_gate=v==="Gate";x.is_optional=v==="Optional"})}
+  else if(act==="sa-move"){const dv=+a.dataset.v;saEdit(d=>{const x=d.steps[saSel];if(!x)return;const ids=saPhaseSteps(d,x.phase).map(([k])=>k);const i=ids.indexOf(saSel),j=i+dv;if(i<0||j<0||j>=ids.length)return;[ids[i],ids[j]]=[ids[j],ids[i]];ids.forEach((k,n)=>d.steps[k].order=n);saReorder(d,x.phase);d.moved=[...new Set((d.moved||[]).concat([saSel]))]})}
+  else if(act==="sa-arch"){saEdit(d=>{const x=d.steps[saSel];if(x){x.archived=!x.archived;saReorder(d,x.phase)}});if(!saShowArch&&saWork().steps[saSel]&&saWork().steps[saSel].archived)saShowArch=true}
+  else if(act==="sa-after-rm"){const k=a.dataset.v;saEdit(d=>{const x=d.steps[saSel];if(x)x.after=(x.after||[]).filter(y=>y!==k)})}
+  else if(act==="sa-discard")confirmBox("Discard every unpublished change to the SOW steps?","Discard draft",()=>{delete S.config.steps_draft;saSel="";render();chain("config/steps_draft",()=>db.doc(COLL.config+"/steps_draft").delete()).then(()=>toast("Draft discarded"))})
+  else if(act==="sa-pub")saOpenPublish();
+  else if(act==="sa-pubgo")saPublish();
   else if(act==="dsave")drawerSave();
   else if(act==="del"){const{kind,id}=a.dataset;confirmBox("Delete this row? This cannot be undone.","Delete",()=>{closeDrawer();remove(kind==="task"?"tasks":kind==="camp"?"camps":"access",id,kind);if(kind==="camp")go(campHash(route.id,""))})}
   else if(act==="add-task"){const bid=a.dataset.id,dep0=a.dataset.dep||"";formBox("New task",`<div class="f"><label for="n-title">Task</label><input id="n-title" name="title" required></div><div class="f"><label for="n-dep">Team</label><select id="n-dep" name="department">${opts(DEPTS(),dep0||DEPTS()[0],false)}</select></div><div class="f"><label for="n-owner">Owner</label><select id="n-owner" name="owner">${opts(activePeople(),me)}</select></div><div class="f"><label for="n-dl">Deadline</label><input id="n-dl" name="deadline" type="date"></div><div class="f"><label for="n-pr">Priority</label><select id="n-pr" name="priority">${opts(L("priority"),"Medium")}</select></div>${campsOf(bid).length?`<div class="f"><label for="n-cmp">Campaign</label><select id="n-cmp" name="campaign"><option value="">Not in a campaign</option>${campsOf(bid).map(c=>`<option value="${esc(c._id)}" ${c._id===a.dataset.camp?"selected":""}>${esc(c.name)}</option>`).join("")}</select></div>`:""}`,"Add task",
@@ -2466,6 +2597,10 @@ document.addEventListener("change",e=>{
   if(e.target.dataset&&e.target.dataset.act==="ai-tick"&&accImport){accImport.plan[+e.target.dataset.i].on=e.target.checked;showAccessImport();return}
   if(e.target.form&&e.target.form.id==="dform"&&e.target.name)drawerDirty[e.target.name]=e.target.value;
   const t=e.target;const act=t.dataset&&t.dataset.act;if(!act)return;
+  if(act==="sa-f"){const f=t.dataset.f,v=t.value.trim();if(f==="name"&&!v){toast("A step needs a name.");render();return}saEdit(d=>{const x=d.steps[saSel];if(!x)return;if(f.startsWith("raci.")){x.raci=Object.assign({r:"",a:"",c:"",i:""},x.raci||{});x.raci[f.slice(5)]=v}else x[f]=v});return}
+  if(act==="sa-ph"){const np=t.value;saEdit(d=>{const x=d.steps[saSel];if(!x)return;const old=x.phase;const p=d.phases.find(y=>y.code===np);x.phase=np;x.phase_name=p.name;x.order=1e9;saReorder(d,old);saReorder(d,np);d.moved=[...new Set((d.moved||[]).concat([saSel]))]});return}
+  if(act==="sa-after-add"&&t.value){const k=t.value;saEdit(d=>{const x=d.steps[saSel];if(x&&!(x.after||[]).includes(k))x.after=(x.after||[]).concat([k])});return}
+  if(act==="sa-phname"){const v=t.value.trim(),ph=t.dataset.ph;if(!v)return;saEdit(d=>{const p=d.phases.find(y=>y.code===ph);if(p)p.name=v;for(const x of Object.values(d.steps))if(x.phase===ph)x.phase_name=v});return}
   if(act==="kbf"){kbFilter[t.dataset.k]=t.value;render();return}
   if(act==="mem-add"&&t.value){const id=drawerCtx&&drawerCtx.id;const tk=S.tasks[id];const p=t.value;t.value="";if(!tk||(tk.support||[]).includes(p))return;save("tasks",id,{support:(tk.support||[]).concat([p])},tk.title+" members");taskNote(tk,id,"Added "+p);return}
   if(act==="kbdone"){kbFilter.done=t.checked;render();return}
@@ -2503,6 +2638,13 @@ document.addEventListener("dragover",e=>{if(!orgDrag)return;const z=e.target.clo
 document.addEventListener("drop",e=>{if(!orgDrag)return;const z=e.target.closest&&e.target.closest("[data-orgdrop]");const n=orgDrag;orgDrag="";document.querySelectorAll(".orgover,.orgc.dragging").forEach(x=>x.classList.remove("orgover","dragging"));if(!z)return;e.preventDefault();
   if(z.dataset.orgdrop==="person"){const m=z.dataset.org;if(m===n)return;const mp=people().find(x=>x.name===m)||{};const me2=people().find(x=>x.name===n)||{};orgMove(n,(me2.team?{reports_to:m}:{reports_to:m,team:mp.team||""}),n+" reports to "+m)}
   else{const t=z.dataset.team||"";orgMove(n,{team:t,reports_to:""},n+" moved to "+(t||"no team"))}});
+document.addEventListener("dragstart",e=>{const c=e.target.closest&&e.target.closest(".sacard[draggable=true]");if(!c)return;saDrag=c.dataset.said;c.classList.add("dragging");try{e.dataTransfer.setData("text/plain",saDrag);e.dataTransfer.effectAllowed="move"}catch(x){}});
+const saDropAt=(col,y)=>{const cards=[...col.querySelectorAll(".sacard:not(.dragging):not(.arch)")];return cards.find(c=>{const r=c.getBoundingClientRect();return y<r.top+r.height/2})||null};
+document.addEventListener("dragover",e=>{if(!saDrag)return;const col=e.target.closest&&e.target.closest(".sacol[data-saph]");if(!col)return;e.preventDefault();document.querySelectorAll(".sadrop,.sadropend").forEach(x=>x.classList.remove("sadrop","sadropend"));const b=saDropAt(col,e.clientY);if(b)b.classList.add("sadrop");else col.classList.add("sadropend")});
+document.addEventListener("drop",e=>{if(!saDrag)return;const col=e.target.closest&&e.target.closest(".sacol[data-saph]");const id=saDrag;saDrag="";document.querySelectorAll(".sadrop,.sadropend,.sacard.dragging").forEach(x=>x.classList.remove("sadrop","sadropend","dragging"));if(!col)return;e.preventDefault();
+  const b=saDropAt(col,e.clientY);const before=b?b.dataset.said:"";const ph=col.dataset.saph;
+  saEdit(d=>{const x=d.steps[id];if(!x)return;const old=x.phase;const p=d.phases.find(y=>y.code===ph);const ids=saPhaseSteps(d,ph).map(([k])=>k).filter(k=>k!==id);const at=before?ids.indexOf(before):ids.length;ids.splice(at<0?ids.length:at,0,id);x.phase=ph;x.phase_name=p.name;ids.forEach((k,n)=>d.steps[k].order=n);saReorder(d,ph);if(old!==ph)saReorder(d,old);d.moved=[...new Set((d.moved||[]).concat([id]))]});saSel=id});
+document.addEventListener("dragend",()=>{if(saDrag){saDrag="";document.querySelectorAll(".sadrop,.sadropend,.sacard.dragging").forEach(x=>x.classList.remove("sadrop","sadropend","dragging"))}});
 document.addEventListener("dragend",()=>{if(orgDrag){orgDrag="";document.querySelectorAll(".orgover,.orgc.dragging").forEach(x=>x.classList.remove("orgover","dragging"))}});
 document.addEventListener("dragstart",e=>{const c=e.target.closest&&e.target.closest(".kc");if(!c)return;dragId=c.dataset.id;c.classList.add("dragging");try{e.dataTransfer.setData("text/plain",dragId);e.dataTransfer.effectAllowed="move"}catch(x){}});
 document.addEventListener("dragend",e=>{dragId="";document.querySelectorAll(".kc.dragging,.kcards.over").forEach(x=>x.classList.remove("dragging","over"))});
