@@ -11,7 +11,7 @@ const LOAD_LIMIT = 3000; // first load includes reading the 1.4 MB test file
   const p = await b.newPage({ viewport: { width: 1440, height: 900 } });
   const errs = []; p.on('pageerror', e => errs.push(e.message));
   const t0 = Date.now(); await p.goto(url + '#overview'); await p.waitForFunction(() => document.querySelector('.tiles')); const load = Date.now() - t0;
-  await p.selectOption('#whoSel', 'Cat');
+  await p.selectOption('[data-act=viewas]', 'Cat');
   const time = async (label, fn) => { const s = Date.now(); await fn(); const ms = Date.now() - s; rows.push([label, ms]); };
   const rows = [['First load to Overview', load]];
   const nav = h => p.evaluate(h => new Promise(r => { location.hash = h; requestAnimationFrame(() => setTimeout(r, 0)) }), h);

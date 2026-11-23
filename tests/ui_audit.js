@@ -45,7 +45,7 @@ const measure = () => {
     const p = await b.newPage({ viewport: { width: w, height: 900 } }); p.on('pageerror', e => errs.push(e.message));
     await p.goto(url + '#overview'); await p.waitForTimeout(600);
     await p.evaluate(t => { localStorage.setItem('vt-theme', t); localStorage.setItem('vt-simple', '0') }, theme); await p.reload(); await p.waitForTimeout(600);
-    if (await p.$('#whoSel')) await p.selectOption('#whoSel', 'Sairaj').catch(() => {});
+    if (await p.$('[data-act=viewas]')) await p.selectOption('[data-act=viewas]', 'Sairaj').catch(() => {});
     for (const [h, sub] of pages) {
       await p.evaluate(h => { location.hash = h }, h); await p.waitForTimeout(250);
       if (sub) { await p.click('.rsub [data-tab=tasks]').catch(() => {}); await p.waitForTimeout(150) }

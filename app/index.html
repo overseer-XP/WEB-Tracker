@@ -797,6 +797,52 @@ button.bt:hover,.crow:hover{box-shadow:none;background:var(--panel2)}
 .gteam2 .lt{color:var(--warn)}.gteam2 .bk{color:var(--bad)}
 .gsum{position:absolute;top:50%;height:16px;margin-top:-8px;border-radius:8px;overflow:hidden;--c:var(--info);background:color-mix(in srgb,var(--c) 26%,var(--panel));box-shadow:inset 0 0 0 1.5px var(--c)}.gsum i{display:block;height:100%;background:var(--c)}.gsum.rmb-good{--c:var(--ok)}.gsum.rmb-warn{--c:var(--warn)}.gsum.rmb-bad{--c:var(--bad)}
 .gsub .gl{padding-left:30px}
+
+/* ---- admin preview box and one-time name pick ---- */
+.admbox{display:inline-flex;align-items:center;gap:8px;border:1.5px dashed var(--ember);border-radius:10px;padding:3px 8px;background:color-mix(in srgb,var(--ember) 8%,var(--panel));font-size:12.5px;white-space:nowrap}
+.admbox b{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--emberInk,#B5470B)}.admbox label{display:inline-flex;align-items:center;gap:5px;color:var(--muted)}.admbox select{font:inherit;font-size:12.5px;padding:3px 6px;border-radius:7px;border:1px solid var(--line);background:var(--panel);color:var(--ink);max-width:150px}
+.iam{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:12px;padding:12px 14px;margin:0 0 14px}.iam span{color:var(--muted)}.iam select{font:inherit;padding:6px 8px;border-radius:8px;border:1px solid var(--line)}
+@media (max-width:1600px){.tclk span{display:none}.admbox select{max-width:118px}.admbox{gap:6px}}
+/* ---- My tasks update card ---- */
+.mupd{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:6px 0 14px}
+.mupdh{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.mupdh b{font-size:15px}.mupdh span{color:var(--muted);font-size:12.5px}
+.mupdl{margin:6px 0 10px;font-size:13.5px}.c-bad{color:var(--bad)}
+.mupdk{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.mpri{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.mpri li{display:grid;grid-template-columns:22px minmax(0,1fr) minmax(0,190px) 110px minmax(0,150px);gap:10px;align-items:center;padding:6px 8px;border-radius:9px;background:var(--panel2);font-size:13px}
+.mpri li .bname{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mpri .mm{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mi{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--panel);font-weight:700;font-size:12px;color:var(--muted)}.mpri li.hot .mi{background:var(--badBg);color:var(--bad)}
+.tgx{font-size:11.5px;font-weight:700;border-radius:999px;padding:2px 8px;justify-self:start;white-space:nowrap}.tgx.r{background:var(--badBg);color:var(--bad)}.tgx.a{background:color-mix(in srgb,var(--warn) 14%,var(--panel));color:var(--warn)}.tgx.b{background:var(--soft,#E4ECFB);color:var(--blue)}
+@media (max-width:760px){.mpri li{grid-template-columns:22px minmax(0,1fr) auto}.mpri li .mm{display:none}}
+/* ---- boards: lists and cards ---- */
+.kb .kcol{flex:0 0 272px!important;background:var(--panel2)!important;border:0!important;border-radius:12px!important;box-shadow:none!important;padding:0 8px 8px!important;gap:0!important}
+.kb .kcol header{padding:10px 6px 8px!important;display:flex;align-items:center;gap:8px}.kb .kcol header b,.kb .kcol header .kname{font-size:13.5px;font-weight:700}
+.kb .kcol .kn{color:var(--muted);font-size:12px;font-weight:600}
+.kcards{display:flex;flex-direction:column;gap:8px;min-height:12px;border-radius:9px}.kcards.over{background:color-mix(in srgb,var(--blue) 10%,transparent);outline:2px dashed var(--blue);outline-offset:2px}
+.kc.tc{position:relative;background:var(--panel)!important;border:0!important;border-radius:9px!important;box-shadow:0 1px 1px rgb(9 30 66/.25),0 0 1px rgb(9 30 66/.31)!important;padding:8px 10px!important;gap:6px!important;overflow:hidden}
+.kc.tc:hover{box-shadow:0 0 0 2px var(--blue)!important}.kc.tc.dragging{transform:rotate(3deg);opacity:.6}
+.kc.tc.hascov{padding-top:0!important}.kcov{display:block;height:30px;margin:0 -10px 2px}
+.kbars{display:flex;gap:4px;flex-wrap:wrap}.kbars:empty{display:none}.kbars i{display:block;height:8px;width:40px;border-radius:4px}
+.kc.tc .kt{font-weight:500;font-size:13.5px;padding-right:18px}
+.kqe{position:absolute;right:6px;top:6px;width:24px;height:24px;border-radius:50%;border:0;background:var(--panel2);color:var(--muted);cursor:pointer;opacity:0;font-size:12px}.kc.tc:hover .kqe,.kqe:focus-visible{opacity:1}
+.kc.tc .kb2{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.kc.tc .kbg{font-size:12px}
+.kc.tc .blk{font-size:12px;color:var(--bad)}
+.kadd{all:unset;cursor:pointer;color:var(--muted);font-weight:600;padding:8px 6px;border-radius:8px;margin-top:6px}.kadd:hover{background:color-mix(in srgb,var(--ink) 7%,transparent);color:var(--ink)}
+.kempty{color:var(--faint,var(--muted));font-size:12.5px;padding:2px 4px}
+/* ---- card back ---- */
+.drawer.cardback{top:24px;bottom:24px;left:50%;right:auto;transform:translateX(-50%);width:min(900px,calc(100% - 24px));border:0;border-radius:14px;box-shadow:0 20px 60px rgb(5 10 46/.35)}
+.drawer.cardback header{border:0;padding:8px 10px 0}.drawer.cardback footer{padding:8px 22px;border-top:1px solid var(--line)}
+.drawer.cardback .body{display:grid!important;grid-template-columns:minmax(0,1fr) 190px!important;gap:22px;padding:0 22px 22px}
+.cbmain{display:flex;flex-direction:column;gap:14px;min-width:0}.cbmain .f{margin:0}
+.cbtitle{font:700 20px var(--f-ui);border:1px solid transparent;border-radius:8px;padding:4px 6px;margin-left:-6px;background:transparent;color:var(--ink);width:100%}.cbtitle:hover,.cbtitle:focus{border-color:var(--line);background:var(--panel)}
+.cbin{margin:-8px 0 0;color:var(--muted);font-size:13px}.cbin b{color:var(--ink);text-decoration:underline}
+.cbtop{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.cbsec h4{margin:0 0 6px;font-size:14px}.cbsec textarea{width:100%;min-height:80px}.cbsec .dh{margin:0 0 6px;font-size:14px}
+.cbmore summary{cursor:pointer;color:var(--muted);font-weight:600}.cbmore .cbtop{margin-top:10px}
+.cbside{display:flex;flex-direction:column;gap:6px;padding-top:10px}.cbl{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:8px 0 2px}
+.cbb{all:unset;cursor:pointer;display:block;background:var(--panel2);border-radius:7px;padding:7px 10px;font-weight:600;font-size:13px}.cbb:hover{background:color-mix(in srgb,var(--ink) 9%,var(--panel2))}.cbb:focus-visible{outline:2px solid var(--blue)}
+.cbcov{display:flex;gap:5px;flex-wrap:wrap;padding:2px 0}.cbcov button{width:24px;height:18px;border-radius:4px;border:0;cursor:pointer;font-size:10px;background:var(--panel2);color:var(--muted)}.cbcov button.on{outline:2px solid var(--ink);outline-offset:1px}
+@media (max-width:760px){.drawer.cardback{top:0;bottom:0;width:100%;border-radius:0}.drawer.cardback .body{grid-template-columns:1fr!important}}
 </style>
 
 <div class="app">
@@ -820,7 +866,8 @@ const COLL={esc:"escalations",camps:"campaigns",brands:"brands",tasks:"tasks",ac
 const S={tarch:{},esc:{},camps:{},brands:{},tasks:{},access:{},sow:{},bps:{},steps:{},bsteps:{},config:{},comments:{},snaps:{},log:{}};
 const ready={};
 let db=null,U=null,uid=null,canEdit=false,canWrite=true,dl=null;
-let me="";               // the person this viewer picked
+let me="";               // the person shown (an admin may view as someone else)
+let selfMe="",realEdit=false,realWrite=true; // who this viewer really is, and their real rights
 let simple=null;          // null until we know the role
 let route={v:"",id:""};let campSel={bid:"",id:""};
 let brandTab="home",drawerCtx=null;
@@ -831,7 +878,7 @@ const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k
 let theme=ls.get("vt-theme")==="dark"?"dark":"light";
 const applyTheme=()=>{document.documentElement.setAttribute("data-theme",theme)};applyTheme();
 new MutationObserver(()=>{if(document.documentElement.getAttribute("data-theme")!==theme)applyTheme()}).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
-try{const sv=ls.get("vt-simple");if(sv!==null)simple=sv==="1";me=ls.get("vt-me")||"";accBrand=ls.get("vt-accbrand")||"";sowView=ls.get("vt-sowview")||"board"}catch(e){}
+try{const sv=ls.get("vt-simple");if(sv!==null)simple=sv==="1";me=ls.get("vt-me")||"";selfMe=me;accBrand=ls.get("vt-accbrand")||"";sowView=ls.get("vt-sowview")||"board"}catch(e){}
 
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s);
@@ -974,7 +1021,7 @@ function editing(){const a=document.activeElement;return a&&(a.tagName==="TEXTAR
 // Numbers per brand are worked out once per draw and reused by every part of the page.
 let epoch=0;const memoStore=new Map();function memo(k,fn){const e=memoStore.get(k);if(e&&e.ep===epoch)return e.v;const v=fn();memoStore.set(k,{ep:epoch,v});return v}
 let rq=0;function scheduleRender(){if(rq)return;rq=requestAnimationFrame(()=>{rq=0;render()})}
-function render(){epoch++;if(pop&&!document.activeElement?.closest?.("#pop"))closePop();if(editing()){pend=true;return}pend=false;renderRail();renderTop();renderMain();if(drawerCtx&&!$("#drawer").hidden)openDrawer(drawerCtx.kind,drawerCtx.id,drawerCtx.extra,true)}
+function render(){me=realEdit&&ls.get("vt-viewas")?ls.get("vt-viewas"):selfMe;epoch++;if(pop&&!document.activeElement?.closest?.("#pop"))closePop();if(editing()){pend=true;return}pend=false;renderRail();renderTop();renderMain();if(drawerCtx&&!$("#drawer").hidden)openDrawer(drawerCtx.kind,drawerCtx.id,drawerCtx.extra,true)}
 document.addEventListener("focusout",()=>setTimeout(()=>{if(pend&&!editing())render()},0));
 
 const STAGE_ORDER=()=>{const st=L("stage");const main=st.filter(s=>!["On Hold","Internal"].includes(s)).reverse();return main.concat(st.filter(s=>["On Hold","Internal"].includes(s)))};
@@ -1042,11 +1089,14 @@ function renderTop(){
    <button class="tclk" data-act="clock" aria-expanded="false" title="World clock"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.5"/><path d="M10 5.5V10l3 2"/></svg><span id="clkme">${esc(tzNow().tl+" "+tzNow().tz)}</span></button>
    <button class="tmore" data-act="tmore" aria-expanded="false" aria-controls="tctl" aria-label="View settings: detail, your name, colours"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.8"/><circle cx="10" cy="10" r="1.8"/><circle cx="16" cy="10" r="1.8"/></svg></button>
    <div class="tctl" id="tctl">${viewNow()==="mine"?"":`<div class="seg" role="group" aria-label="Detail"><button data-act="simple" data-v="1" class="${simple?"on":""}" title="Fewer columns and fields">Simple</button><button data-act="simple" data-v="0" class="${simple?"":"on"}" title="Every column and field">Full</button></div>`}
-   <label class="who" for="whoSel">You are <select id="whoSel" data-act="who"><option value="">Pick your name</option>${ppl.map(p=>`<option ${p===me?"selected":""}>${esc(p)}</option>`).join("")}</select></label>
+   ${!selfMe&&ready.config?`<label class="who iamtop">Which one is you? <select data-act="iam"><option value="">Pick your name</option>${ppl.map(p=>`<option>${esc(p)}</option>`).join("")}</select></label>`:""}
+   ${realEdit?`<span class="admbox" role="group" aria-label="Admin preview"><b>Admin</b><label>View as <select data-act="viewas" aria-label="View as"><option value="">Myself${selfMe?" ("+esc(selfMe)+")":""}</option>${ppl.map(p=>`<option ${p===ls.get("vt-viewas")?"selected":""}>${esc(p)}</option>`).join("")}</select></label><label>Role <select data-act="roleprev" aria-label="Role preview">${[["","Admin"],["member","Member"],["view","View only"]].map(([v,l])=>`<option value="${v}" ${(ls.get("vt-roleprev")||"")===v?"selected":""}>${l}</option>`).join("")}</select></label></span>`:""}
    <div class="seg" role="group" aria-label="Colours"><button data-act="theme" data-v="light" class="${theme==="light"?"on":""}">Light</button><button data-act="theme" data-v="dark" class="${theme==="dark"?"on":""}">Dark</button></div>
-   <span class="tag">${canEdit?"Lead / admin":canWrite?"Member":"View only"}</span></div>${window.__signOut?`<button class="btn sm" data-act="signout">Sign out</button>`:""}`;
+</div>${window.__signOut?`<button class="btn sm" data-act="signout">Sign out</button>`:""}`;
 }
+function applyRolePreview(){const r=realEdit?ls.get("vt-roleprev")||"":"";canEdit=realEdit&&!r;canWrite=realWrite&&r!=="view"}
 const viewNow=()=>{let v=route.v;if(!v)v=isLeader(me)?"leadership":canEdit?"overview":"mine";return v};
+function iamCard(){return`<div class="iam"><b>Which one is you?</b><span>Pick your name once. VALFLO remembers it for this account.</span><select data-act="iam" aria-label="Your name"><option value="">Pick your name</option>${activePeople().map(p=>`<option>${esc(p)}</option>`).join("")}</select></div>`}
 function renderMain(){
   const m=$("#main");
   // a brand page can carry the brand's own colours (set in Edit details)
@@ -1074,33 +1124,28 @@ let focusItem=null; // set when My tasks sends someone to an item on a brand pag
 const isLiveBrand=bid=>{const b=S.brands[bid];return !b||b.stage==="Live"||isInternal(b)};
 function vMine(){
   let h=`<h1>My tasks</h1>`;
-  if(!me)return h+`<p class="sub">Your open tasks and onboarding steps across every brand.</p><div class="card"><p style="margin-top:0">Pick your name to see your work.</p><select class="btn" data-act="who" aria-label="Your name"><option value="">Pick your name</option>${activePeople().map(p=>`<option>${esc(p)}</option>`).join("")}</select></div>`;
+  if(!me)return h+`<p class="sub">Your open tasks and onboarding steps across every brand.</p>`+iamCard();
   const all=myItems();const items=mineVert?all.filter(it=>it.kind==="task"&&vertOf(S.tasks[it.id]||{})===mineVert):all;
   const onb=items.filter(it=>!isLiveBrand(it.brand)),live=items.filter(it=>isLiveBrand(it.brand));
-  h+=sinceBanner(all)+guide("mine");
+  h+=mineUpdate(all);
   const reqs=withId(S.esc).filter(e=>e.state==="Proposed"&&e.lead&&isPerson(e.lead,me));
   if(reqs.length)h+=`<section class="group"><h2>Escalation requests <span class="count">${reqs.length}</span></h2>${reqs.map(e=>`<div class="item"><div><div class="t">${e.priority?`<span class="tag">${esc(e.priority)}</span> `:""}<a class="bname" href="#brand-${esc(e.brand)}">${esc(bname(e.brand))}</a> · ${esc(e.title)}</div><div class="meta">${esc(e.by||"Someone")}: ${esc(e.ask)}${e.due?` · needed by ${esc(fmtD(e.due,true))}`:""}</div></div><div class="row" style="gap:6px"><button class="btn sm" data-act="esc-decline" data-id="${esc(e._id)}">Decline</button><button class="btn sm pri" data-act="esc-raise" data-id="${esc(e._id)}">Send to leadership</button></div><div></div></div>`).join("")}</section>`;
-  if(me){const mine=withId(S.tasks).filter(t=>t.title&&t.status!=="Complete"&&!holdOf(t.brand)&&(isPerson(t.owner,me)||(t.support||[]).some(x=>isPerson(x,me))));if(mine.length)h+=strip(stripTasks(mine))}
   const men=myMentions(me);if(men.length)h+=`<section class="group"><h2>Mentions <span class="count">${men.length}</span></h2>${men.slice(0,5).map(c=>`<a class="item men" href="#brand-${esc(c.brand)}" data-act="men-go" data-id="${esc(c.brand)}" data-acc="${esc(c.access||"")}" data-task="${esc(c.task||"")}"><div><div class="t">${esc(c.by||"Someone")} on ${esc(bname(c.brand))}${c.access&&S.access[c.access]?" · "+esc(S.access[c.access].platform):""}${c.task&&S.tasks[c.task]?" · "+esc(S.tasks[c.task].title):""}</div><div class="meta">${linkMentions(c.text).slice(0,400)}</div></div><div class="faint" style="font-size:12px">${esc(agoText(c.at))}</div><div></div></a>`).join("")}</section>`;
   if(mineTab===null)mineTab=ls.get("vt-minetab")||(onb.length?"onboarding":"live");
   const live1=a=>a.filter(it=>!holdOf(it.brand)),nBlk=a=>live1(a).filter(it=>it.blocked).length,nLate=a=>live1(a).filter(it=>!it.blocked&&it.flag==="Overdue").length;
   const urgTxt=a=>{const n=nBlk(a)+nLate(a);return n?`${n} late or blocked`:""};
   const tabTip=a=>`${a.length} open${nBlk(a)?`, ${nBlk(a)} blocked`:""}${nLate(a)?`, ${nLate(a)} past the due date`:""}`;
-  const tabBtn=(k,l,a)=>`<button data-act="minetab" data-v="${k}" class="${mineTab===k?"on":""}" title="${esc(tabTip(a))}">${l} <span class="cnt">${a.length}</span>${urgTxt(a)?`<span class="cnt bad">${urgTxt(a)}</span>`:""}</button>`;
+  const tabBtn=(k,l,a)=>`<button data-act="minetab" data-v="${k}" class="${mineTab===k?"on":""}" title="${esc(tabTip(a))}">${l}</button>`;
   h+=`<div class="seg viewseg" role="group" aria-label="Which work">${tabBtn("onboarding","Brand onboarding",onb)}${tabBtn("live","Onboarded brands",live)}${tabBtn("all","All my work",items)}</div>`;
   const list=mineTab==="onboarding"?onb:mineTab==="live"?live:items;
-  if(list.length){const rc={};list.forEach(it=>{rc[it.role]=(rc[it.role]||0)+1});
-    const why=[["Owner","you own"],["Support","you support"],["Step owner","onboarding step"+(rc["Step owner"]>1?"s":"")+" you own"],["Access next step","platform access next step"+(rc["Access next step"]>1?"s":"")+" on you"]].filter(([k])=>rc[k]).map(([k,l])=>`${rc[k]} ${l}`);
-    const nb=nBlk(list),nl=nLate(list),ok=list.length-nb-nl;
-    h+=`<p class="minesum"><b>Why these are yours:</b> ${esc(why.join(", "))}. <b>Now:</b> ${nb?`<span class="bad">${nb} blocked</span>, `:""}${nl?`<span class="bad">${nl} past the due date</span>, `:""}${ok} on track or not yet due.</p>`}
   h+=`<div class="toolbar">
-    <span class="tl">Columns</span><div class="seg" role="group" aria-label="Columns">${MINE_COLS.map(([k,l])=>`<button data-act="mcols" data-v="${k}" class="${mineCols===k?"on":""}" aria-pressed="${mineCols===k}">${l}</button>`).join("")}</div>
+    <label class="tl">Lists <select data-act="mcolsel" id="m-cols">${MINE_COLS.map(([k,l])=>`<option value="${k}" ${mineCols===k?"selected":""}>${l}</option>`).join("")}</select></label>
     <label class="tl">Sort by <select data-act="msort" id="m-sort">${MINE_SORTS.map(([k,l])=>`<option value="${k}" ${mineSort===k?"selected":""}>${l}</option>`).join("")}</select></label>
     <label class="tl">Vertical <select data-act="mvertsel" id="m-vert"><option value="">All</option>${VERTS().map(v=>`<option ${mineVert===v?"selected":""}>${esc(v)}</option>`).join("")}</select></label></div>`;
   if(!list.length)return h+`<div class="tw"><div class="empty">${mineVert?`Nothing open for ${esc(me)} in ${esc(mineVert)} here.`:mineTab==="onboarding"?`No onboarding work for ${esc(me)} right now.`:mineTab==="live"?`No work on onboarded brands for ${esc(me)} right now.`:`Nothing open for ${esc(me)}. When a task or step is assigned to you it shows here.`}</div></div>`;
   return h+mineBoard(list.slice().sort(mineCmp(mineSort)),mineCols)}
 /* My tasks is a board only. Columns by status, brand or team; cards inside a column follow the sort. */
-const MINE_COLS=[["status","Status"],["brand","Brand"],["team","Team"]];
+const MINE_COLS=[["status","By status"],["brand","By brand"],["team","By team"]];
 const MINE_SORTS=[["due","Deadline, soonest first"],["priority","Priority, Urgent to Low"],["brand","Brand A to Z"]];
 let mineSort="due",mineCols="status";
 try{mineSort=ls.get("vt-msort")||"due";if(!MINE_SORTS.some(x=>x[0]===mineSort))mineSort="due";mineCols=ls.get("vt-mcols")||"status";if(!MINE_COLS.some(x=>x[0]===mineCols))mineCols="status"}catch(e){}
@@ -1125,16 +1170,33 @@ function mineBoard(items,by){let cols;
   else{const st=[...new Set(["Blocked"].concat(L("task_status").filter(s=>s!=="Complete"),items.map(i=>i.status||"Not Started")))];
     cols=st.map(s=>({k:s,label:s,items:items.filter(i=>(i.status||"Not Started")===s)})).filter(c=>c.items.length||["Not Started","In Progress","Blocked"].includes(c.k))}
   const hint=by==="brand"?"One column per brand, the brands that need you most first. Cards follow the sort, so you can see which to do first for each brand.":by==="team"?"One column per team, plus your onboarding steps and platform access steps. Cards follow the sort.":"One column per status, Blocked first. Change a card's status to move it.";
-  const head=c=>{const nb=c.items.filter(i=>i.blocked).length,nl=c.items.filter(i=>!i.blocked&&i.flag==="Overdue").length;
-    const name=by==="brand"?`<a class="bname" href="#brand-${esc(c.k)}">${esc(c.label)}</a>`:`<b>${esc(c.label)}</b>`;
-    const sub=by==="brand"?(holdOf(c.k)?`<span class="pill s-off">On hold</span>`:isLiveBrand(c.k)?"":`<span class="bprog" title="Road to SOW: share of required steps done"><span class="bar"><i style="width:${Math.round(onboarding(c.k)*100)}%"></i></span>${Math.round(onboarding(c.k)*100)}%</span>`):"";
-    return`<div class="kh">${name}<span class="cnt">${c.items.length}</span>${sub}</div>${nb||nl?`<div class="ksub">${nb?`<span class="tag bad">${nb} blocked</span>`:""}${nl?`<span class="tag bad">${nl} late</span>`:""}</div>`:""}`};
-  const card=it=>`<div class="kcard ${itemCls(it)}" data-due="${esc(it.due||"")}" data-pri="${priIdx(it)}" data-brand="${esc(bname(it.brand))}" data-held="${holdOf(it.brand)?1:0}">
-    <a href="#brand-${esc(it.brand)}" data-act="goto-item" data-kind="${it.kind}" data-id="${esc(it.id)}" data-code="${esc(it.code||"")}" class="bname" title="Open on the ${esc(bname(it.brand))} page">${esc(it.title)}</a>
-    <div class="meta">${by==="brand"?"":`<span>${esc(bname(it.brand))}</span>`}${it.priority?`<span>${esc(it.priority)}</span>`:""}${it.kind==="step"?`<span class="code">${esc(it.code)}</span>`:""}${by==="team"?"":it.kind==="task"?`<span>${esc(teamOf(it))}</span>`:""}<span class="role">${esc(ROLE_SHORT[it.role]||it.role)}</span></div>
-    ${it.blocked&&it.blocker?`<div class="blk">${esc(it.blocker.text||"")}${it.blocker.person?` (waiting on ${esc(it.blocker.person)})`:""}</div>`:""}
-    <div class="row" style="justify-content:space-between;gap:6px">${dueHtml(it.due,false)||`<span class="faint" style="font-size:12px">No date</span>`}${ctlOf(it)}</div></div>`;
-  return`<p class="hint2">${hint} Scroll sideways for more columns.</p><div class="kb mineb">${cols.map(c=>`<div class="kcol ${by==="status"&&c.k==="Blocked"?"kbad":""} ${by==="brand"&&holdOf(c.k)?"held":""}">${head(c)}${c.items.map(card).join("")||`<div class="faint" style="font-size:12.5px;padding:4px 2px">Nothing here</div>`}</div>`).join("")}</div>`}
+  const head=c=>{const name=by==="brand"?`<a class="bname" href="#brand-${esc(c.k)}">${esc(c.label)}</a>`:`<b>${esc(c.label)}</b>`;
+    const sub=by==="brand"&&holdOf(c.k)?`<span class="pill s-off">On hold</span>`:"";
+    return`<header>${name}<span class="kn">${c.items.length}</span>${sub}</header>`};
+  const card=it=>it.kind==="task"&&S.tasks[it.id]?kbCard(Object.assign({_id:it.id},S.tasks[it.id]),true,by==="team",by==="brand"):itemCard(it,by);
+  const drop=c=>by==="status"&&canWrite?`data-mst="${esc(c.k)}"`:"";
+  const add=c=>canWrite&&by!=="team"?`<button class="kadd" data-act="mine-add" data-st="${esc(by==="status"?c.k:"")}" data-b="${esc(by==="brand"?c.k:"")}">+ Add a card</button>`:"";
+  return`<div class="kb mineb tb">${cols.map(c=>`<section class="kcol ${by==="brand"&&holdOf(c.k)?"held":""}" aria-label="${esc(c.label)}">${head(c)}<div class="kcards" ${drop(c)}>${c.items.map(card).join("")||`<span class="kempty">No cards</span>`}</div>${add(c)}</section>`).join("")}</div>`}
+/* onboarding steps and access steps on My tasks: same card look, they open their own panel */
+function itemCard(it,by){const role=ROLE_SHORT[it.role]||it.role;
+  return`<div class="kc tc" data-act="open" data-kind="${it.kind==="access"?"access":"step"}" data-id="${esc(it.id)}" data-code="${esc(it.code||"")}" tabindex="0" role="button" aria-label="${esc(it.title)}">
+   <span class="kbars"><i style="background:var(--${it.kind==="access"?"g1":"g3"})" title="${it.kind==="access"?"Platform access":"Onboarding step"}"></i></span>
+   <span class="kt">${esc(it.title)}</span>${it.blocked&&it.blocker?`<span class="blk">${esc(it.blocker.text||"")}${it.blocker.person?" (waiting on "+esc(it.blocker.person)+")":""}</span>`:""}
+   <span class="kb2">${dueBadge({deadline:it.due,status:it.status})}${by==="brand"?"":`<span class="kbg">${esc(bname(it.brand))}</span>`}<span class="kbg">${it.kind==="access"?"Access":"Step "+esc(it.code||"")}</span><span class="kbg faint">${esc(role)}</span><span class="grow"></span><span class="avs"><span class="av" title="${esc(me)}">${esc(ini(me))}</span></span></span></div>`}
+/* the update card at the top of My tasks: what changed, today's numbers, and the five to do first */
+function mineUpdate(all){const k="vt-seen-"+me;if(sinceTs===null||sinceTs.who!==me){sinceTs={who:me,t:+(ls.get(k)||0)};ls.set(k,String(Date.now()))}
+  const live=all.filter(it=>!holdOf(it.brand));const ids=new Set(all.map(it=>it.id));let ch=[];
+  if(sinceTs.t)for(const d of Object.values(S.log))for(const e of d.entries||[])if(e.at>sinceTs.t&&ids.has(e.id)&&d.person!==me)ch.push(e);
+  const men=sinceTs.t?myMentions(me).filter(c=>c.at>sinceTs.t):[];
+  const blk=live.filter(i=>i.blocked).length,late=live.filter(i=>!i.blocked&&i.flag==="Overdue").length,wk=live.filter(i=>{const n=dayDiff(i.due);return n!==null&&n>=0&&n<=7}).length,nod=live.filter(i=>!i.due).length;
+  const rank=it=>it.blocked?0:it.flag==="Overdue"?1:it.flag==="Due Soon"?2:it.due?3:4;
+  const top=live.slice().sort((a,b)=>rank(a)-rank(b)||String(a.due||"9999").localeCompare(String(b.due||"9999"))||priIdx(a)-priIdx(b)).slice(0,5);
+  const z=tzNow();const when=new Date().toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"});
+  const tag=it=>{if(it.blocked)return`<span class="tgx r">Blocked</span>`;const n=dayDiff(it.due);if(n!==null&&n<0)return`<span class="tgx r">${-n} day${n===-1?"":"s"} late</span>`;if(n!==null)return`<span class="tgx ${n<=7?"a":"b"}">${n===0?"Today":n===1?"Tomorrow":esc(fmtD(it.due,true))}</span>`;return`<span class="tgx a">No date</span>`};
+  const since=sinceTs.t?(ch.length||men.length?`Since ${esc(agoText(sinceTs.t))}: ${ch.length?`<b>${ch.length} change${ch.length>1?"s":""}</b> to your work by others`:""}${ch.length&&men.length?", ":""}${men.length?`<b>${men.length} new mention${men.length>1?"s":""}</b>`:""}. `:`Nothing changed since ${esc(agoText(sinceTs.t))}. `):"";
+  return`<div class="mupd"><div class="mupdh"><b>Your update</b><span>Refreshed ${esc(when)}, ${esc(z.tl)} ${esc(z.tz)}</span></div>
+   <p class="mupdl">${since}Now: ${blk?`<b class="c-bad">${blk} blocked</b>, `:""}${late?`<b class="c-bad">${late} late</b>, `:""}${wk} due this week, ${nod} with no date.</p>
+   ${top.length?`<div class="mupdk">Do these first</div><ol class="mpri">${top.map((it,i)=>`<li class="${it.blocked||it.flag==="Overdue"?"hot":""}"><span class="mi">${i+1}</span><a href="#brand-${esc(it.brand)}" data-act="goto-item" data-kind="${it.kind}" data-id="${esc(it.id)}" data-code="${esc(it.code||"")}" class="bname">${esc(it.title)}</a><span class="mm">${esc(bname(it.brand))}${it.priority?" · "+esc(it.priority):""}</span>${tag(it)}<span class="mm">${esc(it.blocked&&it.blocker&&it.blocker.person?"Waiting on "+it.blocker.person:ROLE_SHORT[it.role]||it.role)}</span></li>`).join("")}</ol>`:`<p class="faint" style="margin:0">Nothing open for you. New work shows here first.</p>`}</div>`}
 
 function itemHtml(it,cl,noBrand){
   const brand=`<a href="#brand-${esc(it.brand)}" class="muted">${esc(bname(it.brand))}</a>`;
@@ -1745,7 +1807,7 @@ function accDrawer(id){const a=S.access[id];const th=accThread(id);const team=ac
    +(ACC_FOUNDER.includes(st)?`<h4 class="dh">Chasing the founder</h4><div class="w">${(a.chases||[]).slice(-5).map(c=>`<div class="faint" style="font-size:12.5px">${esc(fmtD(c.date,true))} · ${esc(c.by||"")} · ${esc(c.how||"")}${c.note?": "+esc(c.note):""}</div>`).join("")||`<p class="faint" style="margin:0">Not chased yet.</p>`}
      ${canWrite?`<div class="row" style="gap:6px;margin-top:6px"><select id="ch-how" aria-label="How">${opts(["WhatsApp","Email","Call","Slack","In a meeting"],"WhatsApp",false)}</select><input id="ch-note" placeholder="Optional note" aria-label="Chase note" style="flex:1;min-width:120px"><button type="button" class="btn sm" data-act="chase">Log a chase</button></div>`:""}
      <button type="button" class="btn sm" style="margin-top:8px" data-act="fm-open" data-id="${esc(a.brand)}">Message for founder</button></div>`:"")
-   +`<h4 class="dh">Notes and comments</h4><div class="w thread">${th.map(c=>c.kind==="system"?`<div class="sysn">${esc(new Date(c.at).toLocaleDateString("en-GB",{day:"numeric",month:"short"}))} · ${esc(c.by||"")} · ${esc(c.text)}</div>`:`<div class="cmt"><div class="row" style="gap:8px"><b>${esc(c.by||"Someone")}</b><span class="faint" style="font-size:12px">${esc(agoText(c.at))}</span></div><div class="ctext">${linkMentions(c.text)}</div></div>`).join("")||`<p class="faint" style="margin:0">No comments yet.</p>`}
+   +`<h4 class="dh">Notes and comments</h4><div class="w thread">${th.map(c=>c.kind==="system"?`<div class="sysn">${esc(new Date(c.at).toLocaleDateString("en-GB",{day:"numeric",month:"short"}))} · ${esc(c.by||"")} · ${esc(c.text)}</div>`:`<div class="cmt"><div class="row" style="gap:8px"><b>${esc(c.by||"Someone")}</b><span class="faint" style="font-size:12px" title="${esc(agoText(c.at))}">${esc(fmtD(new Date(c.at).toISOString().slice(0,10)))}, ${esc(new Date(c.at).toLocaleTimeString("en-GB",{hour:"numeric",minute:"2-digit",hour12:true}).replace(" ","").toLowerCase())}${c.tz?" "+esc(c.tz):""}</span></div><div class="ctext">${linkMentions(c.text)}</div></div>`).join("")||`<p class="faint" style="margin:0">No comments yet.</p>`}
      ${canWrite?`<label for="acc-c" class="sr">Comment</label><textarea id="acc-c" placeholder="Update or question. @name to tag someone" rows="2"></textarea><button type="button" class="btn sm pri" data-act="acc-post" style="align-self:flex-start">Post</button>`:""}</div>`}
 
 /* ---------- brand sections: one tile per area, each shows its own state ---------- */
@@ -1879,12 +1941,16 @@ const ICON={check:`<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3
   clock:`<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 4.5V8l2.5 1.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>`};
 function dueBadge(t){if(!t.deadline)return"";const done=t.status==="Complete";const f=dueFlag(t.deadline,done);
   const c=done?"ok":f==="Overdue"?"bad":f==="Due Soon"?"warn":"";return`<span class="kbg ${c}" title="Due ${esc(fmtD(t.deadline,true))}">${done?ICON.check:ICON.clock}${esc(fmtD(t.deadline))}</span>`}
-function kbCard(t,showCamp,hideTeam){const cl=t.checklist||[];const cd=cl.filter(x=>x.done).length;const nc=taskThread(t._id).filter(c=>c.kind!=="system").length;const d=depOf(t);const ppl=[t.owner].concat(t.support||[]).filter(Boolean);
-  return`<div class="kc ${t.status==="Blocked"?"kc-bad":""}" draggable="${canChangeTask(t)}" data-act="open" data-kind="task" data-id="${esc(t._id)}" tabindex="0" role="button" aria-label="${esc(t.title+", "+(t.status||"")+(t.owner?", "+t.owner:""))}">
-   <span class="kls">${hideTeam?"":`<span class="klabel" style="--tc:${teamColor(d)}">${esc(d)}</span>`}${showCamp&&campOf(t)!==NOCAMP?`<span class="klabel kcamp">${esc(campName(campOf(t)))}</span>`:""}</span>
-   ${(t.labels||[]).length?`<span class="klbls">${t.labels.map(x=>`<span class="lchip sm">${esc(x)}</span>`).join("")}</span>`:""}<span class="kt">${canChangeTask(t)&&t.status!==DONE?`<button class="kdone" data-act="kc-done" data-id="${esc(t._id)}" title="Mark done" aria-label="Mark ${esc(t.title)} done"></button>`:t.status===DONE?`<span class="kdone on" aria-hidden="true">✓</span>`:""}${esc(t.title)}</span>${t.status==="Blocked"&&t.blocker&&t.blocker.text?`<span class="blk">${esc(t.blocker.text)}</span>`:""}
-   <span class="kb2">${t.status&&t.status!=="Blocked"?`<span class="kbg ${t.status==="Complete"?"ok":t.status==="On Hold"?"warn":t.status===REVIEW?"em":t.status==="In Progress"?"info":""}">${esc(t.status)}</span>`:""}${escFor("task",t._id)?`<span class="kbg warn">With leadership</span>`:""}${needsOk(t)&&t.status===REVIEW?`<span class="kbg em">Awaiting approval</span>`:t.approved_at?`<span class="kbg ok">Approved</span>`:""}${dueBadge(t)}${["High","Urgent"].includes(t.priority)?`<span class="kbg warn">${esc(t.priority)}</span>`:""}${cl.length?`<span class="kbg ${cd===cl.length?"ok":""}" title="Checklist">${ICON.check}${cd}/${cl.length}</span>`:""}${nc?`<span class="kbg" title="${nc} comment${nc>1?"s":""}">${ICON.talk}${nc}</span>`:""}${t.brief_link||t.creative_link?`<span class="kbg" title="Has brief or creative links">${ICON.link}</span>`:""}
-    <span class="grow"></span><span class="avs">${t.lead||t.qa||t.approver?`<span class="kroles" title="${esc([t.lead?"Lead "+t.lead:"",t.qa?"QA "+t.qa:"",t.approver?"Approver "+t.approver:""].filter(Boolean).join(", "))}">${[t.lead?"L":"",t.qa?"QA":"",t.approver?"A":""].filter(Boolean).join(" ")}</span>`:""}${ppl.slice(0,3).map((p,i)=>`<span class="av ${i?"sup":""}" title="${esc(p)}${i?" (support)":" (owner)"}">${esc(ini(p))}</span>`).join("")}${ppl.length>3?`<span class="av more">+${ppl.length-3}</span>`:""}</span></span></div>`}
+const LBLC=["g1","g3","g0","g2","g6","g5","g4"];const lblColor=x=>{const k=L("task_label").indexOf(x);return"var(--"+LBLC[(k<0?String(x).length:k)%LBLC.length]+")"};
+const COVERS=["g1","g3","g0","g2","g6","g5"];
+function kbCard(t,showCamp,hideTeam,hideBrand){const cl=t.checklist||[];const cd=cl.filter(x=>x.done).length;const nc=taskThread(t._id).filter(c=>c.kind!=="system").length;const d=depOf(t);const ppl=[t.owner].concat(t.support||[]).filter(Boolean);const nl=(t.brief_link?1:0)+(t.creative_link?1:0)+(t.links||[]).length;
+  return`<div class="kc tc ${t.status==="Blocked"?"kc-bad":""} ${t.cover?"hascov":""}" draggable="${canChangeTask(t)}" data-act="open" data-kind="task" data-id="${esc(t._id)}" tabindex="0" role="button" aria-label="${esc(t.title+", "+(t.status||"")+(t.owner?", "+t.owner:""))}">
+   ${t.cover?`<span class="kcov" style="background:var(--${esc(t.cover)})"></span>`:""}
+   <span class="kbars">${hideTeam?"":`<i style="background:${teamColor(d)}" title="Team: ${esc(d)}"></i>`}${(t.labels||[]).map(x=>`<i style="background:${lblColor(x)}" title="${esc(x)}"></i>`).join("")}</span>
+   <span class="kt">${canChangeTask(t)&&t.status!==DONE?`<button class="kdone" data-act="kc-done" data-id="${esc(t._id)}" title="Mark done" aria-label="Mark ${esc(t.title)} done"></button>`:t.status===DONE?`<span class="kdone on" aria-hidden="true">✓</span>`:""}${esc(t.title)}</span>${t.status==="Blocked"&&t.blocker&&t.blocker.text?`<span class="blk">${esc(t.blocker.text)}${t.blocker.person?" (waiting on "+esc(t.blocker.person)+")":""}</span>`:""}
+   ${canChangeTask(t)?`<button class="kqe" data-act="kc-qe" data-id="${esc(t._id)}" title="Quick edit" aria-label="Quick edit ${esc(t.title)}">✎</button>`:""}
+   <span class="kb2">${dueBadge(t)}${showCamp&&!hideBrand?`<span class="kbg">${esc(bname(t.brand))}</span>`:""}${showCamp&&campOf(t)!==NOCAMP?`<span class="kbg">${esc(campName(campOf(t)))}</span>`:""}${t.status===REVIEW?`<span class="kbg em">${esc(REVIEW)}</span>`:""}${escFor("task",t._id)?`<span class="kbg warn">With leadership</span>`:""}${needsOk(t)&&t.status===REVIEW?`<span class="kbg em">Awaiting approval</span>`:t.approved_at?`<span class="kbg ok">Approved</span>`:""}${["High","Urgent"].includes(t.priority)?`<span class="kbg warn">${esc(t.priority)}</span>`:""}${t.notes?`<span class="kbg" title="Has a description">☰</span>`:""}${cl.length?`<span class="kbg ${cd===cl.length?"ok":""}" title="Checklist">${ICON.check}${cd}/${cl.length}</span>`:""}${nc?`<span class="kbg" title="${nc} comment${nc>1?"s":""}">${ICON.talk}${nc}</span>`:""}${nl?`<span class="kbg" title="${nl} link${nl>1?"s":""}">${ICON.link}${nl}</span>`:""}
+    <span class="grow"></span><span class="avs">${ppl.slice(0,3).map((p,i)=>`<span class="av ${i?"sup":""}" title="${esc(p)}${i?" (member)":" (owner)"}">${esc(ini(p))}</span>`).join("")}${ppl.length>3?`<span class="av more">+${ppl.length-3}</span>`:""}</span></span></div>`}
 /* labels: a shared list (Settings > Lists > Card labels); add one straight from the card */
 function labelEditor(id,t){const on=new Set(t.labels||[]);const ed=canChangeTask(t);
   return`<div class="lbls">${L("task_label").map(x=>`<button type="button" class="lchip ${on.has(x)?"on":""}" data-act="lbl" data-id="${esc(id)}" data-v="${esc(x)}" aria-pressed="${on.has(x)}" ${ed?"":"disabled"}>${esc(x)}</button>`).join("")}${ed?`<button type="button" class="lchip add" data-act="lbl-new" data-id="${esc(id)}">+ New label</button>`:""}${!L("task_label").length&&!ed?`<span class="faint">None</span>`:""}</div>`}
@@ -1895,7 +1961,7 @@ function taskBack(id,t){const cl=t.checklist||[];const cd=cl.filter(x=>x.done).l
   return`<h4 class="dh">Checklist${cl.length?` <span class="faint" style="font-weight:500">${cd} of ${cl.length}</span>`:""}</h4><div class="w cklist">${cl.length?`<span class="bar wide"><i style="width:${Math.round(cd/cl.length*100)}%"></i></span>`:""}
    ${cl.map((x,i)=>`<div class="ckrow ${x.done?"done":""}"><input type="checkbox" data-act="ck" data-i="${i}" ${x.done?"checked":""} ${ed?"":"disabled"} aria-label="${esc(x.text)}"><span class="ckt">${esc(x.text)}</span><span class="faint">${esc(x.who||"")}${x.due?(x.who?" · ":"")+esc(fmtD(x.due)):""}</span>${ed?`<button type="button" class="btn sm quiet" data-act="ck-del" data-i="${i}" aria-label="Remove ${esc(x.text)}">Remove</button>`:"<span></span>"}</div>`).join("")||`<p class="faint" style="margin:0">No checklist yet. Break the work into small steps.</p>`}
    ${ed?`<div class="row" style="gap:6px;margin-top:6px"><input id="ck-new" placeholder="Add an item" aria-label="New checklist item" style="flex:1;min-width:140px"><select id="ck-who" aria-label="Who does it">${opts(activePeople(),"")}</select><input id="ck-due" type="date" aria-label="Due"><button type="button" class="btn sm" data-act="ck-add">Add</button></div>`:""}</div>
-   <h4 class="dh">Comments and activity</h4><div class="w thread">${th.map(c=>c.kind==="system"?`<div class="sysn">${esc(new Date(c.at).toLocaleDateString("en-GB",{day:"numeric",month:"short"}))} · ${esc(c.by||"")} · ${esc(c.text)}</div>`:`<div class="cmt"><div class="row" style="gap:8px"><b>${esc(c.by||"Someone")}</b><span class="faint" style="font-size:12px">${esc(agoText(c.at))}</span></div><div class="ctext">${linkMentions(c.text)}</div></div>`).join("")||`<p class="faint" style="margin:0">No comments yet.</p>`}
+   <h4 class="dh">Comments and activity</h4><div class="w thread">${th.map(c=>c.kind==="system"?`<div class="sysn">${esc(new Date(c.at).toLocaleDateString("en-GB",{day:"numeric",month:"short"}))} · ${esc(c.by||"")} · ${esc(c.text)}</div>`:`<div class="cmt"><div class="row" style="gap:8px"><b>${esc(c.by||"Someone")}</b><span class="faint" style="font-size:12px" title="${esc(agoText(c.at))}">${esc(fmtD(new Date(c.at).toISOString().slice(0,10)))}, ${esc(new Date(c.at).toLocaleTimeString("en-GB",{hour:"numeric",minute:"2-digit",hour12:true}).replace(" ","").toLowerCase())}${c.tz?" "+esc(c.tz):""}</span></div><div class="ctext">${linkMentions(c.text)}</div></div>`).join("")||`<p class="faint" style="margin:0">No comments yet.</p>`}
    ${canWrite?`<label for="task-c" class="sr">Comment</label><textarea id="task-c" placeholder="Update or question. @name to tag someone" rows="2"></textarea><button type="button" class="btn sm pri" data-act="task-post" style="align-self:flex-start">Post</button>`:""}</div>`}
 
 /* ---------- Leadership room: weekly brief, decisions, escalations, launch calendar ---------- */
@@ -2371,17 +2437,27 @@ function openDrawer(kind,id,extra,refresh){
   if(!refresh||!drawerCtx||drawerCtx.kind!==kind||drawerCtx.id!==id)drawerDirty={};
   drawerCtx={kind,id,extra};let title="",body="",foot="",ro=!canWrite;
   if(kind==="task"){const t=S.tasks[id];if(!t){closeDrawer();return}ro=!canChangeTask(t);title=t.title||"New task";
-    body=field("Task",inp("title",t.title),1)+field("Brand",`<select name="brand" id="d-brand">${brandList().map(b=>`<option value="${esc(b.id)}" ${b.id===t.brand?"selected":""}>${esc(b.name)}</option>`).join("")}</select>`)+field("Owner",sel("owner",activePeople(),t.owner))+field("Members",memEditor(t),1,"People working on this card with the owner")
-      +`<details class="w roles" ${t.lead||t.qa||t.needs_approval?"open":""}><summary>Roles and approval <span class="faint">optional</span></summary><div class="rgrid">${field("Lead",sel("lead",activePeople(),t.lead||""),0,"Accountable for the result")+field("QA by",sel("qa",activePeople(),t.qa||""),0,"Checks it before it is done")+field("Approval",`<select name="needs_approval" id="d-needs_approval"><option value="No" ${t.needs_approval?"":"selected"}>Not needed</option><option value="Yes" ${t.needs_approval?"selected":""}>Needed</option></select>`,0,"Needed: Done waits for the approver")+field("Approver",sel("approver",activePeople(),t.approver||""))}</div>${t.approved_at?`<p class="okline">Approved by ${esc(t.approved_by||"")} on ${esc(fmtD(t.approved_at,true))}</p>`:needsOk(t)&&canApprove(t)&&t.status!==DONE?`<button type="button" class="btn pri sm" data-act="approve" data-id="${esc(id)}">Approve and mark done</button>`:needsOk(t)?`<p class="faint">Waiting for approval${t.approver?" from "+esc(t.approver):""}.</p>`:""}</details>`
-      +field("Labels",labelEditor(id,t),1)+field("Team",sel("department",DEPTS(),depOf(t),false))+(()=>{const cid=campOf(t)===NOCAMP?"":campOf(t);const bl=boardLists(t.brand,cid,withId(S.tasks).filter(x=>x.brand===t.brand&&x.title&&campOf(x)===campOf(t)));const cur=listOf(Object.assign({_id:id},t),bl);
-      return bl.length?field("List",`<select name="list" id="d-list">${bl.map(l=>`<option value="${esc(l.id)}" ${cur&&l.id===cur.id?"selected":""}>${esc(l.name)}</option>`).join("")}</select>`,0,"Same as dragging the card to another list"):""})()
-     +(campsOf(t.brand).length||t.campaign?field("Campaign",`<select name="campaign" id="d-campaign"><option value="">Not in a campaign</option>${campsOf(t.brand).map(c=>`<option value="${esc(c._id)}" ${c._id===t.campaign?"selected":""}>${esc(c.name)}</option>`).join("")}</select>`):"")
-     +field("Vertical",sel("vertical",VERTS(),t.vertical||""),0,t.vertical?"":(vertOf(t)?"Guessed from the name: "+vertOf(t)+". Pick one to confirm":"Optional"))+field("Status",sel("status",L("task_status"),t.status,false))+field("Priority",sel("priority",L("priority"),t.priority))+field("Deadline",inp("deadline",t.deadline,"date"))
-     +(simple?"":field("Start date",inp("start",t.start,"date")))
-     +field("Description and next step",area("notes",t.notes),1)+(simple?"":field("Brief link",inp("brief_link",t.brief_link,"url"))+field("Creative link",inp("creative_link",t.creative_link,"url")))
-     +(t.status==="Blocked"?field("Blocked because",inp("blk_text",t.blocker&&t.blocker.text),1)+field("Waiting on",sel("blk_person",activePeople(),t.blocker&&t.blocker.person)):"")
-     +(simple?"":`<p class="faint w" style="font-size:12px;grid-column:1/-1">${esc(t.source||"")}</p>`)+taskBack(id,t);
-    foot=(canChangeTask(t)?`<button class="btn" data-act="archive" data-id="${esc(id)}">Archive</button>`:"")+(canEdit&&canWrite?`<button class="btn danger" data-act="del" data-kind="task" data-id="${esc(id)}">Delete task</button>`:"")}
+    const cid=campOf(t)===NOCAMP?"":campOf(t);const bl=boardLists(t.brand,cid,withId(S.tasks).filter(x=>x.brand===t.brand&&x.title&&campOf(x)===campOf(t)));const cur=listOf(Object.assign({_id:id},t),bl);
+    const main=`<input class="cbtitle" name="title" id="d-title" value="${esc(t.title||"")}" aria-label="Card title">
+     <p class="cbin">in list <b>${esc(cur?cur.name:t.status||"")}</b> · <a href="#brand-${esc(t.brand)}">${esc(bname(t.brand))}</a>${cid?" · "+esc(campName(cid)):""} · ${esc(t.status||"Not Started")}</p>
+     <div class="cbtop">${field("Owner",sel("owner",activePeople(),t.owner))+field("Status",sel("status",L("task_status"),t.status,false))+field("Priority",sel("priority",L("priority"),t.priority))+field("Start",inp("start",t.start,"date"))+field("Due",inp("deadline",t.deadline,"date"))}</div>
+     <div class="cbsec" id="cb-members"><h4>Members</h4>${memEditor(t)}</div>
+     <div class="cbsec" id="cb-labels"><h4>Labels</h4>${labelEditor(id,t)}</div>
+     ${t.status==="Blocked"?`<div class="cbsec cbblk"><h4>Blocked</h4><div class="cbtop">${field("Because",inp("blk_text",t.blocker&&t.blocker.text),1)+field("Waiting on",sel("blk_person",activePeople(),t.blocker&&t.blocker.person))}</div></div>`:""}
+     <div class="cbsec" id="cb-desc"><h4>☰ Description</h4>${area("notes",t.notes)}</div>
+     <div class="cbsec" id="cb-check">${taskBack(id,t).split('<h4 class="dh">Comments and activity</h4>')[0]}</div>
+     <div class="cbsec" id="cb-links"><h4>${ICON.link} Links</h4><div class="cbtop">${field("Brief link",inp("brief_link",t.brief_link,"url"))+field("Creative link",inp("creative_link",t.creative_link,"url"))}</div><p class="hint">Links only. Never paste contract text.</p></div>
+     <details class="cbsec cbmore" id="cb-more" ${t.lead||t.qa||t.needs_approval?"open":""}><summary>More details: brand, team, list, campaign, roles and approval</summary><div class="cbtop">${field("Brand",`<select name="brand" id="d-brand">${brandList().map(b=>`<option value="${esc(b.id)}" ${b.id===t.brand?"selected":""}>${esc(b.name)}</option>`).join("")}</select>`)+field("Team",sel("department",DEPTS(),depOf(t),false))
+       +(bl.length?field("List",`<select name="list" id="d-list">${bl.map(l=>`<option value="${esc(l.id)}" ${cur&&l.id===cur.id?"selected":""}>${esc(l.name)}</option>`).join("")}</select>`):"")
+       +(campsOf(t.brand).length||t.campaign?field("Campaign",`<select name="campaign" id="d-campaign"><option value="">Not in a campaign</option>${campsOf(t.brand).map(c=>`<option value="${esc(c._id)}" ${c._id===t.campaign?"selected":""}>${esc(c.name)}</option>`).join("")}</select>`):"")
+       +field("Vertical",sel("vertical",VERTS(),t.vertical||""))+field("Lead",sel("lead",activePeople(),t.lead||""),0,"Accountable for the result")+field("QA by",sel("qa",activePeople(),t.qa||""))+field("Approval",`<select name="needs_approval" id="d-needs_approval"><option value="No" ${t.needs_approval?"":"selected"}>Not needed</option><option value="Yes" ${t.needs_approval?"selected":""}>Needed</option></select>`,0,"Needed: Done waits for the approver")+field("Approver",sel("approver",activePeople(),t.approver||""))}</div>
+       ${t.approved_at?`<p class="okline">Approved by ${esc(t.approved_by||"")} on ${esc(fmtD(t.approved_at,true))}</p>`:needsOk(t)&&canApprove(t)&&t.status!==DONE?`<button type="button" class="btn pri sm" data-act="approve" data-id="${esc(id)}">Approve and mark done</button>`:""}${t.source?`<p class="faint" style="font-size:12px">${esc(t.source)}</p>`:""}</details>
+     <div class="cbsec" id="cb-act"><h4>💬 Activity</h4>${taskBack(id,t).split('<h4 class="dh">Comments and activity</h4>')[1]||""}</div>`;
+    const sb=(a,l,extra)=>`<button type="button" class="cbb" data-act="${a}" ${extra||""}>${l}</button>`;
+    const side=`<div class="cbl">Add to card</div>${sb("cb-jump","👤 Members",'data-v="cb-members"')}${sb("cb-jump","🏷 Labels",'data-v="cb-labels"')}${sb("cb-jump","☑ Checklist",'data-v="ck-new"')}${sb("cb-jump","🕘 Dates",'data-v="d-deadline"')}${sb("cb-jump","🔗 Link",'data-v="d-brief_link"')}
+     <div class="cbcov">${COVERS.map(c=>`<button type="button" class="${t.cover===c?"on":""}" data-act="cb-cover" data-v="${c}" style="background:var(--${c})" aria-label="Cover colour"></button>`).join("")}<button type="button" class="${t.cover?"":"on"}" data-act="cb-cover" data-v="" aria-label="No cover">✕</button></div>
+     <div class="cbl">Actions</div>${sb("cb-jump","➜ Move",'data-v="d-status"')}${sb("cb-copy","⧉ Copy",`data-id="${esc(id)}"`)}${t.brand&&S.brands[t.brand]?escButton("task",id).replace('class="btn"','class="cbb"'):""}${canChangeTask(t)?sb("archive","🗄 Archive",`data-id="${esc(id)}"`):""}${canEdit&&canWrite?sb("del","Delete",`data-kind="task" data-id="${esc(id)}"`):""}`;
+    body=`<div class="cbmain">${main}</div><aside class="cbside">${ro?"":side}</aside>`;foot="cardback"}
   else if(kind==="brand"){const b=S.brands[id];if(!b){closeDrawer();return}ro=!(canEdit&&canWrite);title=b.name;
     body=field("Name",inp("name",b.name))+field("Stage",sel("stage",L("stage"),b.stage,false))+field("Brand lead",sel("lead",activePeople(),b.lead))+field("Founder",inp("founder",b.founder))+field("Website",inp("website",b.website,"url"),1)
      +field("Brand colours on this page",`<select name="theme_on" id="d-theme_on">${opts(["No","Yes"],b.theme_on?"Yes":"No",false)}</select>`,0,"A soft background in the brand's colour")+field("Brand colour",inp("color",b.color||"#2A3337","color"),0,"Used for the brand name")+field("Background colour",inp("tint",b.tint||"#DCE6EE","color"),0,"Shown behind the top of the page")
@@ -2410,28 +2486,30 @@ function openDrawer(kind,id,extra,refresh){
   else if(kind==="bp"){const d=S.bps[id];if(!d){closeDrawer();return}title="Best Practices · "+bname(id);
     body=BPGROUPS().map(g=>(g.name?`<h4 class="dh">${esc(g.name)}</h4>`:"")+g.sections.map(x=>field(x,`<select name="sec:${esc(x)}" id="d-sec-${key(x)}">${opts(L("bp_status"),(d.sections||{})[x]||"Not Started",false)}</select>`)).join("")).join("")+`<h4 class="dh">Details</h4>`
      +field("BP owner",sel("owner",activePeople(),d.owner))+field("Due date",inp("due_date",d.due_date,"date"))+field("Blocker",inp("blocker",d.blocker),1)+field("BP document link",inp("doc_link",d.doc_link,"url"),1)+field("Notes",area("notes",d.notes),1)}
-  if(["task","step","access","sow"].includes(kind)&&S.brands[kind==="task"?(S.tasks[id]||{}).brand:kind==="access"?(S.access[id]||{}).brand:id])foot=(kind==="step"?escButton("step",id,extra):escButton(kind,id))+(foot||"");
+  if(["step","access","sow"].includes(kind)&&S.brands[kind==="task"?(S.tasks[id]||{}).brand:kind==="access"?(S.access[id]||{}).brand:id])foot=(kind==="step"?escButton("step",id,extra):escButton(kind,id))+(foot||"");
   const dr=$("#drawer");
   // While someone types in the panel, wait. Otherwise redraw it and put back anything changed but not saved yet.
   const ae=document.activeElement;if(refresh&&dr.contains(ae)&&(ae.tagName==="TEXTAREA"||ae.tagName==="INPUT"&&!/checkbox|radio|button|submit/.test(ae.type)))return;
   const keepFocus=refresh&&dr.contains(ae)?(ae.id||(ae.dataset&&ae.dataset.act?`[data-act="${ae.dataset.act}"]${ae.dataset.i!==undefined?`[data-i="${ae.dataset.i}"]`:""}`:"")):"";
   const sc=refresh?(dr.querySelector(".body")||{}).scrollTop||0:0;
-  dr.innerHTML=`<header><h3>${esc(title)}</h3><button class="btn sm quiet" data-act="close">Close</button></header><form class="body" id="dform">${body}</form>
+  dr.classList.toggle("cardback",foot==="cardback");
+  dr.innerHTML=foot==="cardback"?`<header><h3 class="sr">${esc(title)}</h3><span class="grow"></span><button class="btn sm quiet" data-act="close" aria-label="Close">✕</button></header><form class="body" id="dform">${body}</form><footer><span class="muted">${ro?"You can view this card but not change it.":"Changes save as you go."}</span></footer>`:`<header><h3>${esc(title)}</h3><button class="btn sm quiet" data-act="close">Close</button></header><form class="body" id="dform">${body}</form>
    <footer>${foot==="board"?`<span class="muted">Changes save straight away.</span><span class="grow"></span><button class="btn" data-act="nav-steps" data-id="${esc(id)}">All steps for this brand</button>`:(ro?`<span class="muted">You can view this but not change it.</span>`:`<button class="btn pri" data-act="dsave">Save</button><button class="btn" data-act="close">Cancel</button>`)+`<span class="grow"></span>${foot}`}</footer>`;
+  if(foot==="cardback")dr.querySelector("form").addEventListener("submit",e=>e.preventDefault());
   if(refresh){const f=$("#dform");if(f)for(const[n,v]of Object.entries(drawerDirty)){const el=f.elements[n];if(el&&"value"in el)el.value=v}const b=dr.querySelector(".body");if(b)b.scrollTop=sc;
     if(keepFocus){const el=keepFocus.startsWith("[")?dr.querySelector(keepFocus):document.getElementById(keepFocus);if(el)el.focus()}}
   if(ro)dr.querySelectorAll("input,select,textarea").forEach(e=>e.disabled=true);
   if(ro&&canWrite&&kind==="task"){const c=dr.querySelector("#task-c");if(c)c.disabled=false}
-  dr.hidden=false;$("#scrim").hidden=false;if(!refresh){const f=dr.querySelector("input,select");if(f)f.focus()}
+  dr.hidden=false;$("#scrim").hidden=false;if(!refresh){const f=foot==="cardback"?dr.querySelector("[data-act=close]"):dr.querySelector("input,select");if(f)f.focus()}
 }
 let drawerDirty={};
-function closeDrawer(){drawerCtx=null;drawerDirty={};$("#drawer").hidden=true;$("#scrim").hidden=true}
+function closeDrawer(){drawerCtx=null;drawerDirty={};$("#drawer").hidden=true;$("#drawer").classList.remove("cardback");$("#scrim").hidden=true}
 /* members: tag or untag people on a card; saves straight away */
 function memEditor(t){const sup=t.support||[];const ed=canChangeTask(t);
   return`<div class="mems">${sup.map((p,i)=>`<span class="mem"><span class="av sup" aria-hidden="true">${esc(ini(p))}</span>${esc(p)}${ed?`<button type="button" class="memx" data-act="mem-del" data-i="${i}" aria-label="Remove ${esc(p)}">×</button>`:""}</span>`).join("")||`<span class="faint">No one tagged yet</span>`}</div>`
    +(ed?`<select id="mem-add" data-act="mem-add"><option value="">Tag a member...</option>${activePeople().filter(p=>p!==t.owner&&!sup.includes(p)).map(p=>`<option value="${esc(p)}">${esc(p)}</option>`).join("")}</select>`:"")}
 const splitNames=v=>String(v||"").split(",").map(s=>s.trim()).filter(Boolean);
-async function drawerSave(){
+async function drawerSave(keep){
   const{kind,id,extra}=drawerCtx;const fd={};for(const el of $("#dform").elements)if(el.name)fd[el.name]=el.value.trim();
   const diff=(cur,next)=>{const p={};for(const k of Object.keys(next)){if(JSON.stringify(cur[k]??"")!==JSON.stringify(next[k]??""))p[k]=next[k]}return p};
   if(kind==="task"){const t=S.tasks[id];const next={title:fd.title,brand:fd.brand,department:fd.department,campaign:fd.brand===t.brand?(fd.campaign??t.campaign??""):"",vertical:fd.vertical||"",owner:fd.owner,status:fd.status,priority:fd.priority,deadline:fd.deadline,notes:fd.notes,
@@ -2471,7 +2549,7 @@ async function drawerSave(){
     if(!next.name){toast("A campaign needs a name.");return}const p=diff(c,next);if(Object.keys(p).length)await save("camps",id,p,c.name)}
   else if(kind==="bp"){const d=S.bps[id];const sections=Object.assign({},d.sections||{});for(const x of L("bp_section"))if(fd["sec:"+x])sections[x]=fd["sec:"+x];
     const next={sections,owner:fd.owner,due_date:fd.due_date,blocker:fd.blocker,doc_link:fd.doc_link,notes:fd.notes};const p=diff(d,next);if(Object.keys(p).length)await save("bps",id,p,"BPs "+bname(id))}
-  closeDrawer()}
+  if(keep&&drawerCtx){drawerDirty={};openDrawer(drawerCtx.kind,drawerCtx.id,drawerCtx.extra,true)}else closeDrawer()}
 function gateBlock(bid,code){const s=S.steps[code];if(!s||!s.is_gate)return"";const open=stepsSorted().filter(x=>x.order<s.order&&!x.is_optional&&!["Done","N/A"].includes(stepState(bid,x.code).status));
   return open.length?`${s.code} is a gate. Finish ${open.length} earlier step${open.length>1?"s":""} first: ${open.slice(0,4).map(x=>x.code).join(", ")}${open.length>4?"...":""}`:""}
 async function saveStep(bid,code,next){
@@ -2553,7 +2631,7 @@ document.addEventListener("click",e=>{
   else if(act==="seat-del"){const id=drawerCtx&&drawerCtx.id;const a=S.access[id];const i=+a.dataset.i;const x=(a.seats||[])[i];save("access",id,{seats:(a.seats||[]).filter((_,j)=>j!==i)},bname(a.brand)+" "+a.platform+" logins");if(x)accSystemNote(a,id,x.p+" removed from logins")}
   else if(act==="chase"){const id=drawerCtx&&drawerCtx.id;const a=S.access[id];if(!a)return;const c={date:isoToday(),by:me||"",how:$("#ch-how").value,note:$("#ch-note").value.trim()};
     const p={chases:(a.chases||[]).concat([c])};if(a.status==="Needed")p.status="Asked founder";if(!a.requested_date)p.requested_date=isoToday();save("access",id,p,bname(a.brand)+" "+a.platform+" chase");accSystemNote(a,id,`Chased the founder by ${c.how}${c.note?": "+c.note:""}`)}
-  else if(act==="acc-post"){const id=drawerCtx&&drawerCtx.id;const a=S.access[id];const t=$("#acc-c");const text=t.value.trim();if(!a||!text)return;if(!me){toast("Pick your name in the top bar first.");return}
+  else if(act==="acc-post"){const id=drawerCtx&&drawerCtx.id;const a=S.access[id];const t=$("#acc-c");const text=t.value.trim();if(!a||!text)return;if(!me){toast("Pick your name first (Which one is you?).");return}
     create("comments",null,{brand:a.brand,access:id,text,by:me,at:Date.now(),mentions:mentionsIn(text)},"Comment on "+bname(a.brand)+" "+a.platform).then(r=>{if(r)t.value=""})}
   else if(act==="mcols"){mineCols=a.dataset.v;ls.set("vt-mcols",mineCols);render()}
   else if(act==="minetab"){mineTab=a.dataset.v;ls.set("vt-minetab",mineTab);render()}
@@ -2565,7 +2643,7 @@ document.addEventListener("click",e=>{
   else if(act==="acc-new"){const bid=a.dataset.b,pl=a.dataset.p;create("access",null,{brand:bid,platform:pl,access_level:"TBC",needed_for:"",owner:"",brand_contact:(S.brands[bid]||{}).founder||"",requested_date:"",deadline:"",status:"Needed",blocker:"",notes:""},bname(bid)+" "+pl).then(id=>{if(id)openDrawer("access",id)})}
   else if(act==="camp"){go(campHash(route.id,a.dataset.id));setTimeout(toSection,30)}
   else if(act==="lead-jump"){const el=document.getElementById(a.dataset.to);if(el)el.scrollIntoView({behavior:"smooth",block:"start"})}
-  else if(act==="escalate"){const kind=a.dataset.kind,ref=a.dataset.id,code=a.dataset.code||"";if(!me){toast("Pick your name in the top bar first.");return}
+  else if(act==="escalate"){const kind=a.dataset.kind,ref=a.dataset.id,code=a.dataset.code||"";if(!me){toast("Pick your name first (Which one is you?).");return}
     const direct=canEscalate(me);const leads=escLeads();if(!direct&&!leads.length){toast("No lead can escalate yet. Ask an admin to tick Can escalate in Settings, People.");return}
     formBox((direct?"Needs leadership: ":"Ask a lead to escalate: ")+escTitle(kind,ref,code),`<div class="f"><label for="n-ask">What do you need from leadership?</label><textarea id="n-ask" name="ask" required placeholder="For example: approve extra budget, call the founder, agree a new date"></textarea></div>
       ${ESC_PRI().length?`<div class="f"><label for="n-pri">Priority</label><select id="n-pri" name="priority" required>${opts(ESC_PRI(),"",true)}</select></div>`:""}<div class="f"><label for="n-due">Needed by</label><input id="n-due" name="due" type="date" required></div>
@@ -2575,21 +2653,21 @@ document.addEventListener("click",e=>{
         create("esc",null,rec,(direct?"Escalated ":"Asked to escalate ")+escTitle(kind,ref,code)).then(()=>{if(!direct&&rec.brand)create("comments",null,{brand:rec.brand,text:`@${v.lead} please review an escalation request: ${rec.title}`,by:me||"",at:Date.now(),mentions:[v.lead]},"Escalation request");if(drawerCtx)openDrawer(drawerCtx.kind,drawerCtx.id,drawerCtx.extra,true)})})}
   else if(act==="esc-raise"){const e=S.esc[a.dataset.id];if(!e)return;save("esc",a.dataset.id,{state:"Open",raised_by:me||"",raised_at:Date.now()},"Escalated "+e.title)}
   else if(act==="esc-decline"){const id=a.dataset.id;const e=S.esc[id];if(!e)return;formBox("Decline: "+e.title,`<div class="f"><label for="n-why">Why (goes to ${esc(e.by||"the person")})</label><textarea id="n-why" name="why" required></textarea></div>`,"Decline",v=>{if(!v.why)return false;save("esc",id,{state:"Declined",decision:v.why,decided_by:me||"",decided_at:Date.now()},"Declined "+e.title);if(e.brand)create("comments",null,{brand:e.brand,text:`@${e.by} ${me||"Your lead"} did not escalate "${e.title}": ${v.why}`,by:me||"",at:Date.now(),mentions:[e.by]},"Escalation declined")})}
-  else if(act==="esc-decide"){const id=a.dataset.id,st=a.dataset.v;const e=S.esc[id];if(!e)return;if(!me){toast("Pick your name in the top bar first.");return}
+  else if(act==="esc-decide"){const id=a.dataset.id,st=a.dataset.v;const e=S.esc[id];if(!e)return;if(!me){toast("Pick your name first (Which one is you?).");return}
     formBox((st==="Agreed"?"Agree: ":"Send back: ")+escTitle(e.kind,e.ref,e.code),`<p class="muted" style="margin:0">${esc(e.ask)}</p><div class="f"><label for="n-note">${st==="Agreed"?"Note (optional)":"Why, and what is needed instead"}</label><textarea id="n-note" name="note" ${st==="Agreed"?"":"required"}></textarea></div>`,st==="Agreed"?"Agree":"Send back",
       v=>{if(st!=="Agreed"&&!v.note){toast("Say why it is going back.");return false}decideEsc(id,st,v.note)})}
   else if(act==="esc-open"){const e=S.esc[a.dataset.id];if(!e)return;if(e.kind==="task")openDrawer("task",e.ref);else if(e.kind==="step")openDrawer("step",e.ref,e.code);else if(e.kind==="access")openDrawer("access",e.ref);else if(e.kind==="sow")openDrawer("sow",e.ref);else go("brand-"+e.brand)}
-  else if(act==="gate-ok"){const bid=a.dataset.id,code=a.dataset.code;const why=gateBlock(bid,code);if(why){toast(why);return}if(!me){toast("Pick your name in the top bar first.");return}
+  else if(act==="gate-ok"){const bid=a.dataset.id,code=a.dataset.code;const why=gateBlock(bid,code);if(why){toast(why);return}if(!me){toast("Pick your name first (Which one is you?).");return}
     saveStep(bid,code,{status:"Done"});const s=S.steps[code]||{};const owner=stepState(bid,code).owner||(S.brands[bid]||{}).lead||"";
     create("esc",null,{brand:bid,kind:"gate",ref:bid,code,title:code+" "+(s.name||""),ask:"Gate sign-off",by:me,at:Date.now(),state:"Agreed",decision:"",decided_by:me,decided_at:Date.now()},"Signed off "+code);
     create("comments",null,{brand:bid,text:`${owner?"@"+owner+" ":""}Leadership signed off ${code} ${s.name||""}`,by:me,at:Date.now(),mentions:owner?[owner]:[]},"Gate signed off")}
-  else if(act==="gate-back"){const bid=a.dataset.id,code=a.dataset.code;const s=S.steps[code]||{};if(!me){toast("Pick your name in the top bar first.");return}
+  else if(act==="gate-back"){const bid=a.dataset.id,code=a.dataset.code;const s=S.steps[code]||{};if(!me){toast("Pick your name first (Which one is you?).");return}
     formBox("Send back: "+code+" "+(s.name||""),`<div class="f"><label for="n-note">Why, and what is needed first</label><textarea id="n-note" name="note" required></textarea></div>`,"Send back",
       v=>{if(!v.note){toast("Say why it is going back.");return false}const owner=stepState(bid,code).owner||(S.brands[bid]||{}).lead||"";
         saveStep(bid,code,{sent_back:{by:me,at:isoToday(),note:v.note}});
         create("esc",null,{brand:bid,kind:"gate",ref:bid,code,title:code+" "+(s.name||""),ask:"Gate sign-off",by:me,at:Date.now(),state:"Sent back",decision:v.note,decided_by:me,decided_at:Date.now()},"Sent back "+code);
         create("comments",null,{brand:bid,text:`${owner?"@"+owner+" ":""}Leadership sent back ${code} ${s.name||""}: ${v.note}`,by:me,at:Date.now(),mentions:owner?[owner]:[]},"Gate sent back")})}
-  else if(act==="ask-lead"){const b=S.brands[a.dataset.id];if(!b||!b.lead)return;if(!me){toast("Pick your name in the top bar first.");return}
+  else if(act==="ask-lead"){const b=S.brands[a.dataset.id];if(!b||!b.lead)return;if(!me){toast("Pick your name first (Which one is you?).");return}
     formBox("Ask "+b.lead+" about "+b.name,`<div class="f"><label for="n-q">Question</label><textarea id="n-q" name="q" required></textarea><span class="hint">Posts on the brand's Updates and reaches ${esc(b.lead)} in My tasks</span></div>`,"Send",
       v=>{if(!v.q){toast("Write the question.");return false}create("comments",null,{brand:b.id,text:"@"+b.lead+" "+v.q,by:me,at:Date.now(),mentions:[b.lead]},"Question to "+b.lead)})}
   else if(act==="go-camp"){const c=S.camps[a.dataset.id];if(!c)return;brandTab="tasks";go(campHash(c.brand,a.dataset.id))}
@@ -2605,6 +2683,14 @@ document.addEventListener("click",e=>{
     formBox("Next steps · "+bname(id),`<div class="f"><label for="n-ns">What happens next</label><textarea id="n-ns" name="text" rows="4"></textarea></div><p class="faint" style="margin:0 0 10px;font-size:13px">Saved as: ${esc(fmtD(isoToday()))} · ${esc(z.tl)} ${esc(z.tz)} · ${esc(me)}. Earlier entries stay as they are.</p>`,"Add",v=>{if(!(v.text||"").trim()){toast("Write the next step.");return false}addNs(id,v.text.trim())})}
   else if(act==="clock"){const ex=$("#clkpop");if(ex){ex.remove();a.setAttribute("aria-expanded","false");return}const el=document.createElement("div");el.id="clkpop";el.className="pop clkpop";el.innerHTML=clockHtml();document.body.appendChild(el);a.setAttribute("aria-expanded","true");
     const r=a.getBoundingClientRect();el.style.top=(r.bottom+6)+"px";el.style.left=Math.max(8,Math.min(innerWidth-el.offsetWidth-8,r.right-el.offsetWidth))+"px"}
+  else if(act==="cb-jump"){const el=document.getElementById(a.dataset.v);if(el){el.scrollIntoView({block:"center",behavior:"smooth"});const f=el.matches("input,select,textarea")?el:el.querySelector("input,select,button");if(f)setTimeout(()=>f.focus(),250)}}
+  else if(act==="cb-cover"){const id=drawerCtx&&drawerCtx.id;const tk=S.tasks[id];if(!tk||!canChangeTask(tk))return;save("tasks",id,{cover:a.dataset.v||""},tk.title)}
+  else if(act==="cb-copy"){const id=a.dataset.id;const tk=S.tasks[id];if(!tk)return;formBox("Copy card",`<div class="f"><label for="n-ct">Title</label><input id="n-ct" name="title" value="${esc(tk.title)}"></div><p class="faint" style="margin:0 0 10px;font-size:13px">Copies the members, labels, dates, description, checklist (unticked) and links. Comments are not copied.</p>`,"Create card",v=>{if(!v.title){toast("Give the card a name.");return false}
+    const c=Object.assign({},tk);delete c._id;delete c.updated_at;delete c.updated_by;delete c.approved_at;delete c.approved_by;Object.assign(c,{title:v.title,status:L("task_status")[0]||"Not Started",blocker:null,checklist:(tk.checklist||[]).map(x=>Object.assign({},x,{done:false})),source:"Copied from "+tk.title});create("tasks",null,c,v.title)})}
+  else if(act==="kc-qe"){const id=a.dataset.id;const tk=S.tasks[id];if(!tk)return;formBox("Quick edit",`<div class="f"><label for="q-t">Title</label><input id="q-t" name="title" value="${esc(tk.title)}"></div><div class="f"><label for="q-o">Owner</label><select id="q-o" name="owner">${opts(activePeople(),tk.owner)}</select></div><div class="f"><label for="q-d">Due</label><input id="q-d" name="deadline" type="date" value="${esc(tk.deadline||"")}"></div>`,"Save",v=>{if(!v.title){toast("Give the card a name.");return false}const p={};for(const k of ["title","owner","deadline"])if((v[k]||"")!==(tk[k]||""))p[k]=v[k];if(Object.keys(p).length)save("tasks",id,p,tk.title)})}
+  else if(act==="mine-add"){const st=a.dataset.st,b0=a.dataset.b;const bs=brandList();formBox("New card",`<div class="f"><label for="n-title">Title</label><input id="n-title" name="title" required></div><div class="f"><label for="n-br">Brand</label><select id="n-br" name="brand">${bs.map(b=>`<option value="${esc(b.id)}" ${b.id===b0?"selected":""}>${esc(b.name)}</option>`).join("")}</select></div><div class="f"><label for="n-dep">Team</label><select id="n-dep" name="department">${opts(DEPTS(),DEPTS()[0],false)}</select></div><div class="f"><label for="n-dl">Due</label><input id="n-dl" name="deadline" type="date"></div>`,"Add card",
+    v=>{if(!v.title){toast("Give the card a name.");return false}if(!me){toast("Pick your name first (Which one is you?).");return false}const status=st&&L("task_status").includes(st)&&st!=="Blocked"?st:(L("task_status")[0]||"Not Started");
+      create("tasks",null,{brand:v.brand,department:v.department,title:v.title,owner:me,support:[],status,priority:"Medium",start:"",deadline:v.deadline,notes:"",brief_link:"",creative_link:"",blocker:null,campaign:"",list:"",checklist:[],source:"Added in tracker"},v.title)})}
   else if(act==="pgsize"){ls.set("vt-rows",a.dataset.v);for(const k in pager)pager[k].page=1;render()}
   else if(act==="pgp"){const k=a.dataset.k;(pager[k]||(pager[k]={})).page=+a.dataset.v;render();const m=$("#main");if(m)m.scrollTop=0}
   else if(act==="bpgroup"){const g=a.dataset.g;bpOpenG=g==="*"||g===""?g:(bpOpenG===g?"":g);render()}
@@ -2642,8 +2728,8 @@ document.addEventListener("click",e=>{
   else if(act==="ck-add"){const id=drawerCtx&&drawerCtx.id;const tk=S.tasks[id];const text=($("#ck-new")||{}).value;if(!tk||!text||!text.trim()){toast("Write the checklist item first.");return}
     save("tasks",id,{checklist:(tk.checklist||[]).concat([{text:text.trim(),who:$("#ck-who").value,due:$("#ck-due").value,done:false}])},tk.title+" checklist")}
   else if(act==="ck-del"){const id=drawerCtx&&drawerCtx.id;const tk=S.tasks[id];if(!tk)return;save("tasks",id,{checklist:(tk.checklist||[]).filter((x,i)=>i!==+a.dataset.i)},tk.title+" checklist")}
-  else if(act==="task-post"){const id=drawerCtx&&drawerCtx.id;const tk=S.tasks[id];const t=$("#task-c");const text=t&&t.value.trim();if(!tk||!text)return;if(!me){toast("Pick your name in the top bar first.");return}
-    create("comments",null,{brand:tk.brand,task:id,text,by:me,at:Date.now(),mentions:mentionsIn(text)},"Comment on "+tk.title).then(r=>{if(r&&$("#task-c"))$("#task-c").value=""})}
+  else if(act==="task-post"){const id=drawerCtx&&drawerCtx.id;const tk=S.tasks[id];const t=$("#task-c");const text=t&&t.value.trim();if(!tk||!text)return;if(!me){toast("Pick your name first (Which one is you?).");return}
+    create("comments",null,{brand:tk.brand,task:id,text,by:me,at:Date.now(),tz:tzNow().tz,mentions:mentionsIn(text)},"Comment on "+tk.title).then(r=>{if(r&&$("#task-c"))$("#task-c").value=""})}
   else if(act==="add-camp"){const bid=a.dataset.id;formBox("New campaign",`<div class="f"><label for="n-cn">Campaign name</label><input id="n-cn" name="name" required placeholder="For example: Spring launch"></div><div class="f"><label for="n-cp">What it is for</label><textarea id="n-cp" name="purpose" placeholder="One or two lines: the product, the goal, the audience"></textarea></div><div class="row" style="gap:10px"><div class="f" style="flex:1"><label for="n-cs">Start</label><input id="n-cs" name="start" type="date"></div><div class="f" style="flex:1"><label for="n-ce">Launch or end</label><input id="n-ce" name="end" type="date"></div></div><div class="f"><label for="n-co">Owner</label><select id="n-co" name="owner">${opts(activePeople(),me)}</select></div>`,"Add campaign",
     v=>{if(!v.name){toast("Give the campaign a name.");return false}create("camps",null,{brand:bid,name:v.name,purpose:v.purpose,goal:"",start:v.start,end:v.end,owner:v.owner,status:L("campaign_status")[0]||"",deps:[]},v.name).then(id=>{if(id){go(campHash(bid,id));render()}})})}
   else if(act==="settab"){setTab=a.dataset.tab;render()}
@@ -2689,7 +2775,9 @@ document.addEventListener("change",e=>{
   if(e.target.id==="ai-file"&&e.target.files&&e.target.files[0]){readAccessSheet(e.target.dataset.b,e.target.files[0]);e.target.value="";return}
   if(e.target.dataset&&e.target.dataset.act==="ai-tick"&&accImport){accImport.plan[+e.target.dataset.i].on=e.target.checked;showAccessImport();return}
   if(e.target.form&&e.target.form.id==="dform"&&e.target.name)drawerDirty[e.target.name]=e.target.value;
-  const t=e.target;const act=t.dataset&&t.dataset.act;if(!act)return;
+  const t=e.target;const act=t.dataset&&t.dataset.act;
+  if(t.form&&t.form.id==="dform"&&t.name&&$("#drawer").classList.contains("cardback")&&drawerCtx&&drawerCtx.kind==="task"){drawerDirty[t.name]=t.value;drawerSave(true);return}
+  if(!act)return;
   if(act==="sa-f"){const f=t.dataset.f,v=t.value.trim();if(f==="name"&&!v){toast("A step needs a name.");render();return}saEdit(d=>{const x=d.steps[saSel];if(!x)return;if(f.startsWith("raci.")){x.raci=Object.assign({r:"",a:"",c:"",i:""},x.raci||{});x.raci[f.slice(5)]=v}else x[f]=v});return}
   if(act==="sa-ph"){const np=t.value;saEdit(d=>{const x=d.steps[saSel];if(!x)return;const old=x.phase;const p=d.phases.find(y=>y.code===np);x.phase=np;x.phase_name=p.name;x.order=1e9;saReorder(d,old);saReorder(d,np);d.moved=[...new Set((d.moved||[]).concat([saSel]))]});return}
   if(act==="sa-after-add"&&t.value){const k=t.value;saEdit(d=>{const x=d.steps[saSel];if(x&&!(x.after||[]).includes(k))x.after=(x.after||[]).concat([k])});return}
@@ -2699,7 +2787,9 @@ document.addEventListener("change",e=>{
   if(act==="kbdone"){kbFilter.done=t.checked;render();return}
   if(act==="review-day"){const v=+t.value;if(S.config.leadership)save("config","leadership",{review_day:v},"Review day");else create("config","leadership",{review_day:v},"Review day");return}
   if(act==="ck"){const id=drawerCtx&&drawerCtx.id;const tk=S.tasks[id];if(!tk)return;const cl=(tk.checklist||[]).map(x=>Object.assign({},x));const x=cl[+t.dataset.i];if(!x)return;x.done=t.checked;save("tasks",id,{checklist:cl},tk.title+" checklist");return}
-  if(act==="who"){me=t.value;ls.set("vt-me",me);if(db&&uid)db.doc("data/users/"+uid+"/profile").set({person:me}).catch(()=>{});render();return}
+  if(act==="who"||act==="iam"){selfMe=t.value;me=selfMe;ls.set("vt-me",selfMe);if(db&&uid)db.doc("data/users/"+uid+"/profile").set({person:selfMe}).catch(()=>{});render();return}
+  if(act==="viewas"){if(!realEdit)return;ls.set("vt-viewas",t.value);render();return}
+  if(act==="roleprev"){if(!realEdit)return;ls.set("vt-roleprev",t.value);applyRolePreview();closeDrawer();render();toast(t.value?"Showing VALFLO as a "+(t.value==="view"?"view-only":"member")+" sees it":"Back to admin");return}
   if(act==="status"){const kind=t.dataset.kind,id=t.dataset.id,v=t.value;
     if(kind==="task"){const cur=S.tasks[id];t.value=cur.status;setTaskStatus(id,v)}
     else if(kind==="step"){const code=t.dataset.code;if(v==="Done"){const why=gateBlock(id,code);if(why){t.value=stepState(id,code).status||"Not Started";toast(why);return}}saveStep(id,code,{status:v})}
@@ -2711,6 +2801,7 @@ document.addEventListener("change",e=>{
   if(act==="fa"){flt[t.dataset.k]=t.value;render();return}
   if(act==="seat"){const id=drawerCtx&&drawerCtx.id;const a=S.access[id];if(!a)return;const seats=(a.seats||[]).map(x=>Object.assign({},x));const x=seats[+t.dataset.i];const old=x.s;x.s=t.value;save("access",id,{seats},bname(a.brand)+" "+a.platform+" logins");accSystemNote(a,id,`${x.p}: ${old} to ${x.s}`);return}
   if(act==="bps"){bpSort=t.value;render();return}
+  if(act==="mcolsel"){mineCols=t.value;ls.set("vt-mcols",mineCols);render();return}
   if(act==="msort"){mineSort=t.value;ls.set("vt-msort",mineSort);render();return}
   if(act==="mvertsel"){mineVert=t.value;render();return}
   if(act==="pf"){if(t.dataset.k==="vert")peopleVert=t.value;else peopleDept=t.value;render();return}
@@ -2743,7 +2834,8 @@ document.addEventListener("dragstart",e=>{const c=e.target.closest&&e.target.clo
 document.addEventListener("dragend",e=>{dragId="";document.querySelectorAll(".kc.dragging,.kcards.over").forEach(x=>x.classList.remove("dragging","over"))});
 document.addEventListener("dragover",e=>{const z=e.target.closest&&e.target.closest(".kcards");if(!z||!dragId)return;e.preventDefault();document.querySelectorAll(".kcards.over").forEach(x=>x!==z&&x.classList.remove("over"));z.classList.add("over")});
 document.addEventListener("drop",e=>{const z=e.target.closest&&e.target.closest(".kcards");if(!z||!dragId)return;e.preventDefault();const id=dragId;dragId="";z.classList.remove("over");
-  moveCard(id,z.dataset.list,z.dataset.id,z.dataset.camp)});
+  if(z.dataset.mst!==undefined){const tk=S.tasks[id];if(!tk||tk.status===z.dataset.mst)return;if(!canChangeTask(tk)){toast("Only the owner, members or a lead can move this card.");return}if(!L("task_status").includes(z.dataset.mst)&&z.dataset.mst!=="Blocked"){toast("Cards can't move to this list.");return}setTaskStatus(id,z.dataset.mst);return}
+  if(z.dataset.list===undefined)return;moveCard(id,z.dataset.list,z.dataset.id,z.dataset.camp)});
 document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.id==="ck-new"){e.preventDefault();const b=document.querySelector("[data-act=ck-add]");if(b)b.click();return}
   if((e.key==="Enter"||e.key===" ")&&e.target.classList&&e.target.classList.contains("kc")){e.preventDefault();e.target.click()}});
 document.addEventListener("submit",e=>{const f=e.target;
@@ -2804,10 +2896,11 @@ parseHash();
   U=await claude.use("user");dl=await claude.use("downloads");
   if(U){try{uid=await U.id()}catch(e){}try{canEdit=!!(await U.canEdit())}catch(e){}try{const w=await U.can("data.write");if(w===false)canWrite=false}catch(e){}}
   if(simple===null)simple=!canEdit;
-  if(uid){try{const p=await db.doc("data/users/"+uid+"/profile").get();if(p.exists&&p.data().person)me=p.data().person}catch(e){}}
+  realEdit=canEdit;realWrite=canWrite;applyRolePreview();
+  if(uid){try{const p=await db.doc("data/users/"+uid+"/profile").get();if(p.exists&&p.data().person){me=p.data().person;selfMe=me}}catch(e){}}
   const sub=(k,c)=>db.collection(c).onSnapshot(snap=>{const o={};snap.docs.forEach(d=>{if(d.exists)o[d.id]=Object.assign({},d.data())});
     if(k==="tasks"){const a={};for(const[i,t]of Object.entries(o))if(t.archived){a[i]=t;delete o[i]}S.tarch=a}S[k]=o;ready[k]=true;epoch++;
-    if(k==="config"&&!me&&U){U.me().then(v=>{if(!me&&v&&v.name){const first=v.name.split(" ")[0].toLowerCase();const hit=activePeople().find(p=>p.toLowerCase()===first);if(hit){me=hit;render()}}}).catch(()=>{})}
+    if(k==="config"&&!me&&U){U.me().then(v=>{if(!me&&v&&v.name){const first=v.name.split(" ")[0].toLowerCase();const hit=activePeople().find(p=>p.toLowerCase()===first);if(hit){me=hit;selfMe=hit;render()}}}).catch(()=>{})}
     scheduleRender()},err=>{if(err&&err.code!=="revoked")toast("Live updates paused. Reload the page.")});
   for(const[k,c]of Object.entries(COLL))sub(k,c);
   db.collection("log").orderBy("date","desc").limit(30).onSnapshot(snap=>{const o={};snap.docs.forEach(d=>{if(d.exists)o[d.id]=d.data()});S.log=o;if(route.v==="changes")render()},()=>{});

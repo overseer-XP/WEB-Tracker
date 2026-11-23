@@ -25,7 +25,7 @@ const check = (area, what, ok, detail = '') => results.push({ area, what, ok: !!
   const ctab = async v => { const b = await p.$(`[data-act=campview][data-v=${v}]`); if (b) { await b.click(); await p.waitForTimeout(150) } };
   const drawerSave = async () => { await p.click('[data-act=dsave]'); await p.waitForTimeout(350) };
   const view = async (k, v) => { const b = await p.$(`[data-act=${k}][data-v="${v}"]`); if (b) { await b.click(); await p.waitForTimeout(200) } };
-  const setMe = async name => { await p.selectOption('#whoSel', name); await p.waitForTimeout(250) };
+  const setMe = async name => { await p.selectOption('[data-act=viewas]', name); await p.waitForTimeout(250) };
 
   // 1. Brand stage to On Hold (MUMUK)
   await go('overview');

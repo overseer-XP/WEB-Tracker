@@ -19,7 +19,7 @@ const build = (role, out) => execFileSync('python3', ['-I', path.join(root, 'tes
   check('A wrong code is refused with a message', (await p.$eval('#g-err', e => e.textContent)).includes('did not work'));
   await p.fill('#g-c', '123 456'); await p.click('#gate button[type=submit]'); await p.waitForTimeout(900);
   check('The right code signs in and the tracker loads', !(await p.$('#gate')) && (await p.$eval('main', e => e.innerText)).length > 50);
-  check('Lead gets Lead / admin rights', (await p.$eval('body', e => e.innerText)).includes('Lead / admin'));
+  check('Lead gets the admin box', !!(await p.$('.admbox')));
   check('Sign out is at the top right', !!(await p.$('.topbar [data-act=signout]')));
   // 2. Live update from someone else
   await p.evaluate(() => { location.hash = 'brand-bespoke' }); await p.waitForTimeout(400);
