@@ -20,6 +20,9 @@ const build = (role, out) => execFileSync('python3', ['-I', path.join(root, 'tes
   await p.fill('#g-c', '123 456'); await p.click('#gate button[type=submit]'); await p.waitForTimeout(900);
   check('The right code signs in and the tracker loads', !(await p.$('#gate')) && (await p.$eval('main', e => e.innerText)).length > 50);
   check('Lead gets the admin box', !!(await p.$('.admbox')));
+  await p.evaluate(() => location.hash = 'org'); await p.waitForTimeout(400);
+  check('Org structure shows access from the live sign-in list', !!(await p.$('table.orgt .oac.ad')));
+  await p.evaluate(() => location.hash = 'overview'); await p.waitForTimeout(300);
   check('Sign out is at the top right', !!(await p.$('.topbar [data-act=signout]')));
   // 2. Live update from someone else
   await p.evaluate(() => { location.hash = 'brand-bespoke' }); await p.waitForTimeout(400);

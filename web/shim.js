@@ -145,6 +145,12 @@
       a.href = URL.createObjectURL(blob); a.download = filename; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove() }, 1000)
     }
   };
-  window.claude = { use: async name => { await ready; return name === "db" ? db : name === "user" ? user : name === "downloads" ? downloads : null } };
+  // the sign-in list, for admins only (the database refuses changes from anyone else)
+  const members = {
+    async list() { const { data, error } = await sb.from("members").select("email,person,role,active"); if (error) throw error; return data || [] },
+    async update(email, patch) { const { error } = await sb.from("members").update(patch).eq("email", email); if (error) throw error },
+    async add(row) { const { error } = await sb.from("members").insert(row); if (error) throw error }
+  };
+  window.claude = { use: async name => { await ready; return name === "db" ? db : name === "user" ? user : name === "downloads" ? downloads : name === "members" ? (member.role === "lead" ? members : null) : null } };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
 })();

@@ -843,6 +843,18 @@ button.bt:hover,.crow:hover{box-shadow:none;background:var(--panel2)}
 .cbb{all:unset;cursor:pointer;display:block;background:var(--panel2);border-radius:7px;padding:7px 10px;font-weight:600;font-size:13px}.cbb:hover{background:color-mix(in srgb,var(--ink) 9%,var(--panel2))}.cbb:focus-visible{outline:2px solid var(--blue)}
 .cbcov{display:flex;gap:5px;flex-wrap:wrap;padding:2px 0}.cbcov button{width:24px;height:18px;border-radius:4px;border:0;cursor:pointer;font-size:10px;background:var(--panel2);color:var(--muted)}.cbcov button.on{outline:2px solid var(--ink);outline-offset:1px}
 @media (max-width:760px){.drawer.cardback{top:0;bottom:0;width:100%;border-radius:0}.drawer.cardback .body{grid-template-columns:1fr!important}}
+
+/* ---- Org structure ---- */
+.orgkey{display:flex;gap:14px;flex-wrap:wrap;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px;font-size:12.5px;color:var(--muted)}.orgkey b{color:var(--ink)}
+.oac{font-size:11px;font-weight:700;border-radius:999px;padding:2px 8px;white-space:nowrap}.oac.ad{background:var(--soft,#E4ECFB);color:var(--blue)}.oac.me{background:var(--okBg);color:var(--ok)}.oac.vi{background:var(--panel2);color:var(--muted)}.oac.no{background:color-mix(in srgb,var(--warn) 14%,var(--panel));color:var(--warn)}
+.orgbar{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}.ochip{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:5px 11px;font:600 13px var(--f-ui);color:var(--ink);cursor:pointer}.ochip.on{background:var(--soft,#E4ECFB);color:var(--blue);border-color:transparent}
+.orgwrap{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:start}
+table.orgt td{vertical-align:top;font-size:13px}table.orgt td small{display:block;color:var(--muted);font-size:12px}table.orgt tr.sel td{background:color-mix(in srgb,var(--blue) 8%,var(--panel))}
+.orgside{width:320px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;position:sticky;top:10px}.orgside h3{margin:0;font-size:17px}
+.of{margin-top:10px}.of>label{display:block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}.of input:not([type=checkbox]),.of select{width:100%;box-sizing:border-box}
+.of>label.ock{display:flex;gap:7px;align-items:center;margin:4px 0;font:500 13px var(--f-ui);text-transform:none;letter-spacing:0;color:var(--ink)}.of input:not([type=checkbox]),.of select{border:1px solid var(--line);border-radius:8px;padding:6px 9px;background:var(--panel);color:var(--ink);font:inherit;font-size:13px}
+.oseg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}.oseg button{flex:1;border:0;background:var(--panel);padding:6px 2px;font:500 12px var(--f-ui);color:var(--ink);cursor:pointer}.oseg button.on{background:var(--soft,#E4ECFB);color:var(--blue);font-weight:700}.oseg button:disabled{cursor:default;opacity:.85}
+@media (max-width:1100px){.orgwrap{grid-template-columns:1fr}.orgside{width:auto;position:static}}
 </style>
 
 <div class="app">
@@ -1610,9 +1622,51 @@ function orgMove(name,patch,label){const ps=people().map(p=>Object.assign({},p))
   if(patch.reports_to&&(patch.reports_to===name||isBelow(name,patch.reports_to,ps))){toast("That would make a loop: "+patch.reports_to+" already reports to "+name+".");return}
   Object.assign(p,patch);savePeople(ps,label||name)}
 /* Org structure: team members and their access, and the team chart (admins only) */
-let orgTab="people";
+let orgTab="people",orgF="team",orgSel="",MEM=null,memApi=null;
+/* VALFLO access per person: live from the website sign-in list; on claude.ai from the last copy saved in config/signin */
+const ACC_ROLES=[["lead","Admin"],["member","Member"],["view","View only"],["none","No sign-in"]];
+function memRow(n){if(!MEM)return null;const p=personOf(n)||{name:n};return MEM.find(m=>m.active!==false&&isPerson(m.person,p.name))||null}
+function roleOf(n){if(MEM){const r=memRow(n);return r?r.role:"none"}const m=(S.config.signin||{}).roles||{};return m[n]||"none"}
+const roleLabel=r=>(ACC_ROLES.find(x=>x[0]===r)||[0,"No sign-in yet"])[1].replace(/^No sign-in$/,"No sign-in yet");
+const roleCls=r=>r==="lead"?"ad":r==="member"?"me":r==="view"?"vi":"no";
+async function syncSigninCopy(){if(!MEM)return;const roles={};for(const m of MEM)if(m.active!==false&&m.person)roles[m.person]=m.role;
+  if(S.config.signin)await save("config","signin",{roles},"Sign-in list copy");else await create("config","signin",{roles},"Sign-in list copy")}
+async function setRole(name,role){if(!memApi){toast("Change access on the website. On claude.ai, access comes from the page's Share menu.");return}
+  const row=memRow(name);
+  if(role==="none"){if(!row)return;await memApi.update(row.email,{active:false})}
+  else if(row)await memApi.update(row.email,{role,active:true});
+  else{formBox("Give "+name+" a sign-in",`<div class="f"><label for="n-em">Work email</label><input id="n-em" name="email" type="email" required placeholder="name@valeriegroup.com"></div><p class="faint" style="margin:0 0 10px;font-size:13px">They sign in with a code sent to this email. Access: ${esc(roleLabel(role))}.</p>`,"Give access",v=>{const em=(v.email||"").trim().toLowerCase();if(!/^\S+@\S+\.\S+$/.test(em)){toast("Type a full email.");return false}
+      memApi.add({email:em,person:name,role,active:true}).then(async()=>{MEM=await memApi.list();await syncSigninCopy();toast(name+" can now sign in");render()}).catch(()=>toast("Could not save. Only website admins can change access."))});return}
+  MEM=await memApi.list();await syncSigninCopy();toast(name+": "+roleLabel(role));render()}
 function vOrg(){const tabs=[["people","Team members and access"],["chart","Team chart"]];
-  return`<h1>Org structure</h1><p class="sub">Who works at Valerie, which team they sit in, who they report to, and what each person can do in VALFLO. Changes apply to everyone straight away.</p><div class="tabs">${tabs.map(([k,l])=>`<button class="${orgTab===k?"on":""}" data-act="orgtab" data-tab="${k}">${esc(l)}</button>`).join("")}</div>`+(orgTab==="chart"?orgChart():vSettings("people",true))}
+  let h=`<h1>Org structure</h1>`;
+  if(orgTab==="chart")return h+`<p class="sub">Who works at Valerie, which team they sit in and who they report to. Drag a person onto a team or onto the person they report to.</p><div class="tabs">${tabs.map(([k,l])=>`<button class="${orgTab===k?"on":""}" data-act="orgtab" data-tab="${k}">${esc(l)}</button>`).join("")}</div>`+orgChart();
+  const ps=people();const grp=p=>p.active===false?"inactive":p.kind==="unconfirmed"?"unconfirmed":p.kind==="external"||p.kind==="group"?"external":"team";
+  const team=ps.filter(p=>grp(p)==="team");const signin=team.filter(p=>roleOf(p.name)!=="none").length;
+  const order=L("org_team");const rows=ps.map((p,i)=>({p,i})).filter(x=>grp(x.p)===orgF).sort((a,b)=>{const x=order.indexOf(a.p.team),y=order.indexOf(b.p.team);return(x<0?99:x)-(y<0?99:y)||a.p.name.localeCompare(b.p.name)});
+  const cnt=k=>ps.filter(p=>grp(p)===k).length;const M=s=>`<span class="faint">${s}</span>`;
+  h+=`<p class="sub">Who works at Valerie, which team they sit in, who they report to, and what each person can do in VALFLO. Click a person to change any of it. ${team.length} team members; ${signin} of them can sign in${MEM?" to the website":""}.</p>
+   <div class="tabs">${tabs.map(([k,l])=>`<button class="${orgTab===k?"on":""}" data-act="orgtab" data-tab="${k}">${esc(l)}</button>`).join("")}</div>
+   <div class="orgkey"><b>Access in VALFLO:</b><span><span class="oac ad">Admin</span> changes settings, steps and people</span><span><span class="oac me">Member</span> edits work</span><span><span class="oac vi">View only</span> reads</span><span><span class="oac no">No sign-in yet</span> not on the website sign-in list</span>${MEM?"":`<span class="faint">On claude.ai this shows the website list as last copied; claude.ai access itself comes from the page's Share menu.</span>`}</div>
+   <div class="orgbar">${[["team","Team members"],["external","External and groups"],["unconfirmed","Names to sort"],["inactive","Inactive"]].map(([k,l])=>`<button class="ochip ${orgF===k?"on":""}" data-act="orgf" data-v="${k}">${l} ${cnt(k)}</button>`).join("")}<span class="grow"></span>${canWrite?`<button class="btn pri" data-act="add-person">Add person</button>`:""}</div>
+   <div class="orgwrap"><div class="tw"><table class="orgt"><thead><tr><th>Name</th><th>Title</th><th>Team</th><th>Reports to</th><th>Location</th><th>Access in VALFLO</th><th>Extra rights</th></tr></thead><tbody>`;
+  for(const{p,i}of rows){const r=roleOf(p.name);const ex=[["leadership","Leadership page"],["log","Change log"],["escalate","Can escalate"]].filter(([k])=>p[k]).map(x=>x[1]);
+    h+=`<tr class="click ${orgSel===p.name?"sel":""}" data-act="org-pick" data-name="${esc(p.name)}"><td><b>${esc(p.name)}</b>${p.full_name?`<small>${esc(p.full_name)}</small>`:""}</td><td>${p.title?esc(p.title):M("Not set")}</td><td>${p.team?esc(p.team):M("Not set")}</td><td>${p.reports_to?esc(p.reports_to):M("Nobody")}</td><td>${p.location?esc(p.location):M("Not set")}</td><td><span class="oac ${roleCls(r)}">${esc(roleLabel(r))}</span></td><td>${ex.length?esc(ex.join(" · ")):M("None")}</td></tr>`}
+  if(!rows.length)h+=`<tr><td colspan="7"><div class="empty">Nobody here.</div></td></tr>`;
+  h+=`</tbody></table></div>`;
+  const sp=ps.findIndex(p=>p.name===orgSel);
+  if(sp>=0){const p=ps[sp];const r=roleOf(p.name);const ed=canEdit&&canWrite;const dis=ed?"":"disabled";const F=(l,inner)=>`<div class="of"><label>${l}</label>${inner}</div>`;
+    const ti=(f,ph)=>`<input data-act="person" data-i="${sp}" data-f="${f}" value="${esc(p[f]||"")}" placeholder="${esc(ph||"")}" ${dis} aria-label="${esc(f)}">`;
+    const ck=(f,l)=>`<label class="ock"><input type="checkbox" data-act="person" data-i="${sp}" data-f="${f}" ${p[f]?"checked":""} ${dis}> ${l}</label>`;
+    h+=`<aside class="orgside"><div class="row" style="justify-content:space-between"><h3>${esc(p.name)}</h3><button class="btn sm quiet" data-act="org-pick" data-name="" aria-label="Close">✕</button></div>${p.full_name?`<div class="faint">${esc(p.full_name)}</div>`:""}
+      ${F("Full name",ti("full_name",""))}${F("Title",ti("title",""))}${F("Team",`<select data-act="person" data-i="${sp}" data-f="team" ${dis} aria-label="Team">${opts(L("org_team"),p.team||"")}</select>`)}
+      ${F("Reports to",`<select data-act="person" data-i="${sp}" data-f="reports_to" ${dis} aria-label="Reports to">${opts(activePeople().filter(n=>n!==p.name),p.reports_to||"")}</select>`)}${F("Location",ti("location","For example: India (Delhi)"))}
+      ${F("Access in VALFLO",`<div class="oseg">${ACC_ROLES.map(([k,l])=>`<button type="button" class="${r===k?"on":""}" data-act="org-role" data-name="${esc(p.name)}" data-v="${k}" ${ed&&memApi?"":"disabled"}>${l}</button>`).join("")}</div><div class="faint" style="font-size:12px;margin-top:4px">${memApi?"Changes the website sign-in list straight away.":"Change this on the website. claude.ai access comes from the page's Share menu."}</div>`)}
+      ${F("Extra rights",ck("leadership","Opens the Leadership page")+ck("log","Sees the change log")+ck("escalate","Can send items straight to leadership"))}
+      ${F("Other spellings",`<input data-act="person" data-i="${sp}" data-f="aliases" value="${esc((p.aliases||[]).join(", "))}" placeholder="Separated by commas" ${dis} aria-label="Other spellings">`)}
+      ${F("Type",`<select data-act="person" data-i="${sp}" data-f="kind" ${dis} aria-label="Type">${opts(["team","external","group","unconfirmed"],p.kind||"team",false)}</select>`)}
+      ${F("Status",ck("active","Active (shows in name lists)"))}</aside>`}
+  return h+`</div>`}
 
 /* ---------- search ---------- */
 let searchQ="";
@@ -2601,7 +2655,7 @@ document.addEventListener("click",e=>{
   else if(act==="del-comment"){const id=a.dataset.id;confirmBox("Delete this comment?","Delete",()=>remove("comments",id,"Comment"))}
   else if(act==="tpl-del"){const i=+a.dataset.i;confirmBox("Delete this template?","Delete",()=>{const list=TEMPLATES().filter((_,j)=>j!==i);saveTemplates(list)})}
   else if(act==="search-go"){const r=searchResults(searchQ)[+a.dataset.i];searchQ="";$("#q").value="";renderSearch();if(!r)return;
-    if(r.go)go(r.go);else if(r.person){if(canEdit){orgTab="people";go("org")}else go("mine")}else if(r.task){const t=S.tasks[r.task];if(t){brandTab="tasks";if(t.status==="Complete")kbFilter.done=true;focusItem={sel:`.kc[data-id="${CSS.escape(r.task)}"]`};go(campHash(t.brand,campsOf(t.brand).length?campOf(t):""))}else{setTab="nobrand";go("settings")}}
+    if(r.go)go(r.go);else if(r.person){if(canEdit){orgTab="people";orgF="team";orgSel=r.person;go("org")}else go("mine")}else if(r.task){const t=S.tasks[r.task];if(t){brandTab="tasks";if(t.status==="Complete")kbFilter.done=true;focusItem={sel:`.kc[data-id="${CSS.escape(r.task)}"]`};go(campHash(t.brand,campsOf(t.brand).length?campOf(t):""))}else{setTab="nobrand";go("settings")}}
     else if(r.step){setTab="steps";go("settings")}}
   else if(act==="bpdot"){if(pop&&pop.btn===a.getAttribute("aria-label")){closePop();return}openPop(a)}
   else if(act==="bpset"){if(!pop)return;const{id,sec}=pop;const d=S.bps[id];closePop();if(!d)return;const v=a.dataset.v;if(((d.sections||{})[sec]||"Not Started")!==v)save("bps",id,{sections:Object.assign({},d.sections||{},{[sec]:v})},"BPs "+bname(id)+" "+sec);
@@ -2680,6 +2734,9 @@ document.addEventListener("click",e=>{
   else if(act==="bpgroup"){const g=a.dataset.g;bpOpenG=g==="*"||g===""?g:(bpOpenG===g?"":g);render()}
   else if(act==="tmore"){const tb=a.closest(".topbar");const o=!tb.classList.contains("open");tb.classList.toggle("open",o);a.setAttribute("aria-expanded",String(o))}
   else if(act==="orgtab"){orgTab=a.dataset.tab==="chart"?"chart":"people";render()}
+  else if(act==="orgf"){orgF=a.dataset.v;orgSel="";render()}
+  else if(act==="org-pick"){orgSel=orgSel===a.dataset.name?"":a.dataset.name;render()}
+  else if(act==="org-role"){setRole(a.dataset.name,a.dataset.v)}
   else if(act==="org-edit"){const n=a.dataset.org;const p=people().find(x=>x.name===n);if(!p)return;const ed=canEdit&&canWrite;const dis=ed?"":"disabled";const yn=(k,l)=>`<div class="f"><label for="o-${k}">${l}</label><select id="o-${k}" name="${k}" ${dis}><option value="No">No</option><option value="Yes" ${p[k]?"selected":""}>Yes</option></select></div>`;
     const others=orgPeople().map(x=>x.name).filter(x=>x!==n&&!isBelow(n,x,people()));
     formBox(p.full_name||p.name,`<div class="f"><label for="o-full_name">Full name</label><input id="o-full_name" name="full_name" value="${esc(p.full_name||"")}" ${dis}></div><div class="f"><label for="o-title">Title</label><input id="o-title" name="title" value="${esc(p.title||"")}" ${dis}></div>
@@ -2877,7 +2934,7 @@ parseHash();
   if(typeof window.claude==="undefined"||!window.claude.use){$("#main").innerHTML=`<h1>Open this tracker from its claude.ai link</h1><p class="sub">The live team data is stored with the claude.ai page. Ask the owner for the link.</p>`;return}
   db=await claude.use("db");
   if(!db){$("#main").innerHTML=`<h1>Tracker unavailable here</h1><p class="sub">Open the page from claude.ai while signed in to your Valerie account.</p>`;return}
-  U=await claude.use("user");dl=await claude.use("downloads");
+  U=await claude.use("user");dl=await claude.use("downloads");try{memApi=await claude.use("members");if(memApi)MEM=await memApi.list()}catch(e){memApi=null;MEM=null}
   if(U){try{uid=await U.id()}catch(e){}try{canEdit=!!(await U.canEdit())}catch(e){}try{const w=await U.can("data.write");if(w===false)canWrite=false}catch(e){}}
   if(simple===null)simple=!canEdit;
   realEdit=canEdit;realWrite=canWrite;applyRolePreview();
