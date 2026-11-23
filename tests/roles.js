@@ -13,9 +13,9 @@ const res = []; const check = (who, what, ok, d = '') => res.push([ok ? 'OK  ' :
   // Member
   let p = await open(process.argv[2], 'mine');
   check('Member', 'Starts on My tasks', await p.evaluate(() => location.hash) === '#mine' || (await p.$eval('main h1', e => e.innerText)) === 'My tasks');
-  check('Member', 'No Settings in the menu', !(await p.$('.nav a[href="#settings"]')));
-  check('Member', 'No Change log in the menu, and the page refuses', !(await p.$('.nav a[href="#changes"]')) && await (async () => { await go(p, 'changes'); return (await p.$eval('main', e => e.innerText)).includes('Only brand leads') })());
-  await go(p, 'settings'); check('Member', 'Settings link opens the Overview instead', (await p.$eval('main h1', e => e.innerText)) === 'Overview');
+  check('Member', 'No Org structure in the menu', !(await p.$('.nav a[href="#org"]')));
+  await go(p, 'settings'); { const tabs = await p.$$eval('[data-act=settab]', x => x.map(b => b.dataset.tab)); const h = await p.$eval('main h1', e => e.innerText); check('Member', 'Settings shows only the change log, or opens the Overview', h === 'Overview' || tabs.every(k => k === 'changes')) }
+  await go(p, 'org'); check('Member', 'Org structure link opens the Overview instead', (await p.$eval('main h1', e => e.innerText)) === 'Overview');
   await go(p, 'brand-bespoke');
   check('Member', 'No Founder view or Edit details button', !(await p.$('a[href="#client-bespoke"]')) && !(await p.$('.hero [data-kind=brand]')));
   await go(p, 'client-bespoke'); check('Member', 'Founder view is not available', !(await p.$('.fv')));

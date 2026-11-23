@@ -1008,7 +1008,9 @@ function parseHash(){const h=location.hash.replace(/^#/,"");
   else if(h.startsWith("client-"))route={v:"client",id:h.slice(7)};
   else if(h.startsWith("leadership/"))route={v:"leadership",id:h.slice(11)};
   else if(h.startsWith("overview/"))route={v:"overview",id:h.slice(9)};
-  else if(["mine","leadership","overview","access","sow","bp","settings","stepsadmin","people","changes"].includes(h))route={v:h,id:""};
+  else if(h==="stepsadmin"||h==="changes"){setTab=h==="stepsadmin"?"steps":"changes";route={v:"settings",id:""}}
+  else if(h==="people")route={v:"org",id:""};
+  else if(["mine","leadership","overview","access","sow","bp","settings","org"].includes(h))route={v:h,id:""};
   else route={v:"",id:""};
   $("#rail").classList.remove("open");closeDrawer();render();$("#main").scrollTop=0}
 window.addEventListener("hashchange",()=>{parseHash();const h=$("#main h1");if(h&&!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest("#drawer,#modal"))){h.tabIndex=-1;h.focus({preventScroll:true})}});
@@ -1040,7 +1042,7 @@ const LOGO=`<svg class="logo" viewBox="0 0 124 94.3" aria-hidden="true"><path d=
 const NI={stepsadmin:'<rect x="2" y="2.5" width="3.5" height="11" rx="1"/><rect x="6.25" y="2.5" width="3.5" height="7" rx="1"/><rect x="10.5" y="2.5" width="3.5" height="9" rx="1"/>',mine:'<path d="M3 4h10M3 8h10M3 12h6"/>',leadership:'<path d="M2 13l3-8 3 5 3-6 3 9z"/>',overview:'<rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/>',
   people:'<circle cx="6" cy="5.5" r="2.5"/><path d="M1.5 14c.6-3 2.4-4.5 4.5-4.5S9.9 11 10.5 14M11 3.2a2.4 2.4 0 010 4.6M12.5 9.8c1.2.6 1.8 2 2 4.2"/>',sow:'<path d="M4 1.8h6l3 3V14H4zM10 1.8V5h3M6 8h5M6 10.5h5"/>',
   access:'<rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/>',bp:'<path d="M8 1.8l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.6l-3.8 2 .7-4.3-3.1-3 4.3-.6z"/>',changes:'<path d="M8 3.5V8l3 1.8"/><circle cx="8" cy="8" r="6"/>',settings:'<circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4"/>'};
-const nicon=k=>`<svg class="ni" viewBox="0 0 16 16" aria-hidden="true">${NI[k]||""}</svg>`;
+const nicon=k=>`<svg class="ni" viewBox="0 0 16 16" aria-hidden="true">${NI[k==="org"?"people":k]||""}</svg>`;
 const CHEV=`<svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5L10.5 8 6 12.5"/></svg>`;
 let railOff=ls.get("vt-railoff")==="1";let railBrand=null,railSeen="";
 let railShut=new Set();try{railShut=new Set(JSON.parse(ls.get("vt-railshut")||"[]"))}catch(e){}
@@ -1048,10 +1050,10 @@ function renderRail(){
   if(route.v==="brand"&&route.id!==railSeen){railBrand=route.id;railSeen=route.id}if(route.v!=="brand")railSeen="";
   const mine=myItems().length;
   const work=[["mine","My tasks",mine||""]];if(isLeader(me))work.push(["leadership","Leadership",leaderCount()||""]);
-  const across=[["overview","Overview",""],["people","People",""],["sow","SOW tracker",""],["access","Platform access",""],["bp","Best Practices",""]];
+  const across=[["overview","Overview",""],["sow","SOW tracker",""],["access","Platform access",""],["bp","Best Practices",""]];
   const item=([k,l,n])=>`<a href="#${k}" class="${route.v===k?"on":""}" ${route.v===k?`aria-current="page"`:""}>${nicon(k)}<span class="nl">${esc(l)}</span><span class="n">${n}</span></a>`;
   let h=`<a class="mark" href="#overview" aria-label="VALFLO home">${LOGO}<span class="mk">VALFLO</span></a>
-   <nav class="nav" aria-label="Main"><div class="rsec">My work</div>${work.map(item).join("")}<div class="rsec">Across brands</div>${across.map(item).join("")}${canSeeLog()?item(["changes","Change log",""]):""}${canEdit?item(["stepsadmin","SOW steps",""]):""}${canEdit?item(["settings","Settings",""]):""}</nav><div class="rbrands"><div class="rsec">Brands</div>`;
+   <nav class="nav" aria-label="Main"><div class="rsec">My work</div>${work.map(item).join("")}<div class="rsec">Across brands</div>${across.map(item).join("")}${canEdit||canSeeLog()?`<div class="rsec">Admin</div>`:""}${canEdit?item(["org","Org structure",""]):""}${canEdit||canSeeLog()?item(["settings","Settings",""]):""}</nav><div class="rbrands"><div class="rsec">Brands</div>`;
   const groups={};for(const b of brandList())(groups[b.stage||"Qualification"]=groups[b.stage||"Qualification"]||[]).push(b);
   for(const st of STAGE_ORDER()){if(!groups[st])continue;const cur=route.v==="brand"&&groups[st].some(b=>b.id===route.id);const open=!railShut.has(st);
     h+=`<h3 class="rgh"><button data-act="rgrp" data-k="${esc(st)}" aria-expanded="${open}"><span class="rgl">${esc(st)}</span><span class="n">${groups[st].length}</span>${CHEV}</button></h3>`;
@@ -1068,7 +1070,7 @@ function renderRail(){
 }
 // Leadership view is a role: leads tick Leadership for a person in Settings > People.
 const isLeader=name=>!!name&&people().some(p=>p.name===name&&p.leadership);
-const TOPNAME={changes:"Change log",mine:"My tasks",leadership:"Leadership",overview:"Overview",people:"People",sow:"SOW tracker",access:"Platform access",bp:"Best Practices",settings:"Settings",stepsadmin:"SOW steps"};
+const TOPNAME={org:"Org structure",changes:"Change log",mine:"My tasks",leadership:"Leadership",overview:"Overview",people:"People",sow:"SOW tracker",access:"Platform access",bp:"Best Practices",settings:"Settings",stepsadmin:"SOW steps"};
 function crumbsOf(){
   if(route.v==="brand"&&S.brands[route.id]){const b=S.brands[route.id];const id=route.id;const out=[{l:b.name,href:"#"+brandHash(id,"home")}];
     if(brandTab!=="home"){const cid=campSel.bid===id?campSel.id:"";const deep=brandTab==="tasks"&&cid&&(cid===NOCAMP||S.camps[cid]);
@@ -1106,10 +1108,10 @@ function renderMain(){
   if(!ready.brands||!ready.config){m.innerHTML=`<h1>VALFLO</h1><p class="sub">Loading brands, tasks and steps.</p>`;return}
   if(!Object.keys(S.brands).length){m.innerHTML=`<h1>No brands yet</h1><p class="sub">${canEdit?"Use Add brand in the left menu to add the first one.":"Ask a lead to add brands."}</p>`;return}
   let v=route.v;if(!v)v=isLeader(me)?"leadership":canEdit?"overview":"mine";if(v==="leadership"&&!isLeader(me))v="overview";
-  if((v==="settings"||v==="stepsadmin")&&!canEdit)v="overview";
+  if(v==="org"&&!canEdit)v="overview";if(v==="settings"&&!canEdit&&!canSeeLog())v="overview";
   const ro=canWrite?"":`<div class="notice info">You can view this tracker but not change it. Ask a lead for edit access.</div>`;
   if(focusItem&&v==="brand")setTimeout(()=>{const f=focusItem;focusItem=null;let el=document.querySelector("#main "+f.sel);if(!el)return;if(f.up)el=el.closest(f.up)||el;const mm=$("#main"),r=el.getBoundingClientRect(),mr=mm.getBoundingClientRect();mm.scrollTop+=r.top-mr.top-mm.clientHeight/2+r.height/2;el.classList.add("flash");setTimeout(()=>el.classList.remove("flash"),2600)},40);
-  m.innerHTML=ro+(v==="leadership"?vLeadership():v==="brand"?vBrand(route.id):v==="mine"?vMine():v==="sow"?vSow():v==="access"?vAccess():v==="bp"?vBp():v==="settings"?vSettings():v==="stepsadmin"?vStepsAdmin():v==="changes"?vChanges():v==="people"?vPeople():v==="client"?(canEdit?vClient(route.id):vOverview()):vOverview());
+  m.innerHTML=ro+(v==="leadership"?vLeadership():v==="brand"?vBrand(route.id):v==="mine"?vMine():v==="sow"?vSow():v==="access"?vAccess():v==="bp"?vBp():v==="settings"?vSettings():v==="org"?vOrg():v==="client"?(canEdit?vClient(route.id):vOverview()):vOverview());
 }
 function canChangeTask(t){if(!canWrite)return false;if(canEdit)return true;return isPerson(t.owner,me)||(t.support||[]).some(x=>isPerson(x,me))}
 function statusSel(kind,id,val,list,enabled,extra){return`<select class="ps ${cls(val)}" data-act="status" data-kind="${kind}" data-id="${esc(id)}" ${extra||""} ${enabled?"":"disabled"} aria-label="Status">${opts(list,val,false)}</select>`}
@@ -1607,32 +1609,10 @@ function orgChart(){const ps=orgPeople();const ed=canEdit&&canWrite;const teams=
 function orgMove(name,patch,label){const ps=people().map(p=>Object.assign({},p));const p=ps.find(x=>x.name===name);if(!p)return;
   if(patch.reports_to&&(patch.reports_to===name||isBelow(name,patch.reports_to,ps))){toast("That would make a loop: "+patch.reports_to+" already reports to "+name+".");return}
   Object.assign(p,patch);savePeople(ps,label||name)}
-function vPeople(){
-  if(peopleView==="org")return`<h1>People</h1>`+viewSeg("pview","org",[["work","Workload"],["org","Team structure"]])+orgChart();
-  let h=`<h1>People</h1>`+viewSeg("pview","work",[["work","Workload"],["org","Team structure"]])+`<p class="sub">Who is carrying what across every brand. Open work per person, how much is late or blocked, and what has no date. Click a name to see their list.</p>`+guide("people");
-  const open=withId(S.tasks).filter(t=>t.title&&t.status!=="Complete"&&!holdOf(t.brand)&&(!peopleVert||vertOf(t)===peopleVert)&&(!peopleDept||depOf(t)===peopleDept));
-  h+=`<div class="filters"><select data-act="pf" data-k="dept" aria-label="Team"><option value="">All teams</option>${DEPTS().map(d=>`<option ${peopleDept===d?"selected":""}>${esc(d)}</option>`).join("")}</select>
-   <select data-act="pf" data-k="vert" aria-label="Vertical"><option value="">All verticals</option>${VERTS().map(v=>`<option ${peopleVert===v?"selected":""}>${esc(v)}</option>`).join("")}</select></div>`;
-  const ppl={};const add=(n,t,role)=>{if(!n)return;const p=ppl[n]=ppl[n]||{name:n,own:[],sup:[],brands:new Set()};p[role].push(t);p.brands.add(t.brand)};
-  for(const t of open){add(t.owner,t,"own");for(const s of t.support||[])add(s,t,"sup")}
-  const rows=Object.values(ppl).map(p=>{const o=p.own;return Object.assign(p,{n:o.length,blocked:o.filter(t=>t.status==="Blocked").length,late:o.filter(t=>dueFlag(t.deadline,false)==="Overdue").length,
-    week:o.filter(t=>{const n=dayDiff(t.deadline);return n!==null&&n>=0&&n<=7}).length,nodate:o.filter(t=>!t.deadline).length})}).sort((a,b)=>b.n-a.n||b.sup.length-a.sup.length);
-  const max=Math.max(1,...rows.map(r=>r.n));const un=open.filter(t=>!t.owner);
-  h+=strip([IB.box("s4 tint-a",IB.head("Open work","Across every brand")+IB.hero(open.length,"open tasks")+IB.rows([["No owner",un.length,un.length?"warn":""],["People carrying work",rows.filter(r=>r.n).length,""]])),
-    IB.box("s8 tint-c",IB.head("Who carries the most","Open tasks each person owns")+IB.bars(rows.slice(0,8).map(r=>({l:(personOf(r.name)||{}).full_name?r.name:r.name,n:r.n}))))]);
-  h+=`<div class="tw"><table class="sortless"><thead><tr><th>Person</th><th>Owns</th><th class="num">Blocked</th><th class="num">Late</th><th class="num">Due in 7 days</th><th class="num">No date</th><th class="num">Supports</th><th class="num">Brands</th></tr></thead><tbody>`;
-  for(const r of rows){const pp=personOf(r.name)||{};h+=`<tr class="click ${peopleSel===r.name?"sel":""}" data-act="person-pick" data-name="${esc(r.name)}"><td><b>${esc(pp.full_name||r.name)}</b>${pp.title||pp.team?`<div class="faint" style="font-size:12px">${esc([pp.title,pp.team].filter(Boolean).join(" · "))}</div>`:""}</td><td><span class="load"><i style="width:${Math.round(r.n/max*100)}%"></i></span> ${r.n}</td>
-    <td class="num">${r.blocked?`<span class="hot">${r.blocked}</span>`:0}</td><td class="num">${r.late?`<span class="hot">${r.late}</span>`:0}</td><td class="num">${r.week}</td><td class="num">${r.nodate?`<span class="faint">${r.nodate}</span>`:0}</td><td class="num">${r.sup.length}</td><td class="num">${r.brands.size}</td></tr>`}
-  if(un.length)h+=`<tr class="click ${peopleSel==="__none"?"sel":""}" data-act="person-pick" data-name="__none"><td><b>No owner</b></td><td><span class="load warn"><i style="width:${Math.round(un.length/max*100)}%"></i></span> ${un.length}</td><td class="num">${un.filter(t=>t.status==="Blocked").length}</td><td class="num">${un.filter(t=>dueFlag(t.deadline,false)==="Overdue").length}</td><td class="num">-</td><td class="num">${un.filter(t=>!t.deadline).length}</td><td class="num">-</td><td class="num">${new Set(un.map(t=>t.brand)).size}</td></tr>`;
-  if(!rows.length&&!un.length)h+=`<tr><td colspan="8"><div class="empty">No open tasks for these filters.</div></td></tr>`;
-  h+=`</tbody></table></div>`;
-  const org=L("org_team").map(t=>[t,people().filter(p=>p.active!==false&&p.team===t)]).filter(x=>x[1].length);
-  if(org.length)h+=`<details class="recent"><summary>Team directory (${org.reduce((a,x)=>a+x[1].length,0)})</summary><div class="orgd">${org.map(([t,ps])=>`<div class="orgt"><h3>${esc(t)}</h3>${ps.map(p=>`<button class="linkb orgp" data-act="person-pick" data-name="${esc(p.name)}"><b>${esc(p.full_name||p.name)}</b><span class="faint">${esc([p.title,p.location].filter(Boolean).join(" · "))}</span></button>`).join("")}</div>`).join("")}</div></details>`;
-  if(peopleSel){const list=peopleSel==="__none"?un:open.filter(t=>isPerson(t.owner,peopleSel)||(t.support||[]).some(x=>isPerson(x,peopleSel)));
-    const its=list.map(t=>({kind:"task",id:t._id,brand:t.brand,title:t.title,status:t.status,due:t.deadline,flag:dueFlag(t.deadline,false),blocked:t.status==="Blocked",blocker:t.blocker,priority:t.priority,role:isPerson(t.owner,peopleSel)?"Owner":peopleSel==="__none"?"No owner":"Support"}))
-      .sort((a,b)=>(a.blocked?0:a.flag==="Overdue"?1:2)-(b.blocked?0:b.flag==="Overdue"?1:2)||String(a.due||"9").localeCompare(String(b.due||"9")));
-    h+=`<h2>${peopleSel==="__none"?"Tasks with no owner":esc(peopleSel)+"'s open tasks"} <span class="count">${its.length}</span></h2>${its.map(it=>itemHtml(it,it.blocked?"blocked":it.flag==="Overdue"?"late":"")).join("")}`}
-  return h}
+/* Org structure: team members and their access, and the team chart (admins only) */
+let orgTab="people";
+function vOrg(){const tabs=[["people","Team members and access"],["chart","Team chart"]];
+  return`<h1>Org structure</h1><p class="sub">Who works at Valerie, which team they sit in, who they report to, and what each person can do in VALFLO. Changes apply to everyone straight away.</p><div class="tabs">${tabs.map(([k,l])=>`<button class="${orgTab===k?"on":""}" data-act="orgtab" data-tab="${k}">${esc(l)}</button>`).join("")}</div>`+(orgTab==="chart"?orgChart():vSettings("people",true))}
 
 /* ---------- search ---------- */
 let searchQ="";
@@ -2401,16 +2381,21 @@ function vChanges(){
   for(const e of rows.slice(0,400)){const d=day(e.at);if(d!==last){h+=`<h3 class="logday">${esc(d)}</h3>`;last=d}
     h+=`<div class="logrow"><span class="faint">${esc(new Date(e.at).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}))}</span><span>${esc(e.person||"Someone")}</span><span>${esc(e.label||e.what)}: <b>${esc(e.field)}</b> ${esc(e.old)} → ${esc(e.new)}</span></div>`}
   return h+`</div>`}
-function vSettings(){
-  const tabs=[["people","People"],["lists","Lists"],["steps","Step list"],["templates","Task templates"],["access","Access setup"],["nobrand","Needs a brand"],["export","Export and backup"]];
-  let h=`<h1>Settings</h1><p class="sub">For leads and admins. Changes here apply to everyone.</p><div class="tabs">${tabs.map(([k,l])=>`<button class="${setTab===k?"on":""}" data-act="settab" data-tab="${k}">${esc(l)}</button>`).join("")}</div>`;
+function vSettings(only,bare){
+  let tabs=[["steps","SOW steps"],["changes","Change log"],["lists","Lists"],["templates","Task templates"],["access","Access setup"],["nobrand","Needs a brand"],["export","Export and backup"]];
+  if(!canEdit)tabs=tabs.filter(x=>x[0]==="changes");
+  if(!only&&!tabs.some(x=>x[0]===setTab))setTab=tabs[0][0];
+  const setTab0=setTab;if(only)setTab=only;
+  let h=bare?"":`<h1>Settings</h1><p class="sub">How VALFLO is set up: the onboarding steps, the full change history, the lists in every dropdown, task templates, access rules and backups. Changes here apply to everyone.</p><div class="tabs">${tabs.map(([k,l])=>`<button class="${setTab===k?"on":""}" data-act="settab" data-tab="${k}">${esc(l)}</button>`).join("")}</div>`;
+  if(setTab==="steps"){h+=vStepsAdmin().replace('<h1 style="margin:0">SOW steps</h1>','<h2 style="margin:0;font-size:18px">SOW steps</h2>')}
+  else if(setTab==="changes"){h+=vChanges().replace(/^<h1>[^<]*<\/h1>/,"")}
+  else 
   if(setTab==="people"){const ps=people();
     h+=`<div class="row" style="margin-bottom:10px"><button class="btn pri" data-act="add-person">Add person</button><span class="muted">Unconfirmed names came from the Excel. Mark each as team, external or group. Aliases let one person match other spellings.</span></div>
     <div class="tw"><table class="ppl"><thead><tr><th>Name</th><th>Full name</th><th>Title</th><th>Team</th><th>Location</th><th>Type</th><th>Other spellings</th><th>Active</th><th title="Can open the Leadership page">Leadership</th><th title="Can open the change log. Brand leads always can">Change log</th><th title="Can send items straight to leadership">Can escalate</th><th>Open tasks</th></tr></thead><tbody>${ps.map((p,i)=>{const ti=(f,ph)=>`<input data-act="person" data-i="${i}" data-f="${f}" value="${esc(p[f]||"")}" placeholder="${ph}" aria-label="${esc(f.replace("_"," ")+" for "+p.name)}" class="pin">`;const n=Object.values(S.tasks).filter(t=>t.status!=="Complete"&&(isPerson(t.owner,p.name)||(t.support||[]).some(x=>isPerson(x,p.name)))).length;
       return`<tr><td><b>${esc(p.name)}</b></td><td>${ti("full_name","")}</td><td>${ti("title","")}</td><td><select data-act="person" data-i="${i}" data-f="team" aria-label="Team for ${esc(p.name)}">${opts(L("org_team"),p.team||"")}</select></td><td>${ti("location","")}</td><td><select data-act="person" data-i="${i}" data-f="kind" aria-label="Type">${opts(["team","external","group","unconfirmed"],p.kind||"team",false)}</select></td><td><input data-act="person" data-i="${i}" data-f="aliases" value="${esc((p.aliases||[]).join(", "))}" placeholder="e.g. Noops" aria-label="Other spellings" style="border:1px solid var(--line2);border-radius:6px;padding:4px 6px;width:100%;background:var(--panel)"></td><td><input type="checkbox" data-act="person" data-i="${i}" data-f="active" ${p.active!==false?"checked":""} aria-label="Active"></td><td><input type="checkbox" data-act="person" data-i="${i}" data-f="leadership" ${p.leadership?"checked":""} aria-label="Leadership access for ${esc(p.name)}"></td><td><input type="checkbox" data-act="person" data-i="${i}" data-f="log" ${p.log?"checked":""} aria-label="Change log access for ${esc(p.name)}"></td><td><input type="checkbox" data-act="person" data-i="${i}" data-f="escalate" ${p.escalate?"checked":""} aria-label="Can escalate: ${esc(p.name)}"></td><td class="num">${n}</td></tr>`}).join("")}</tbody></table></div>`}
   else if(setTab==="lists"){const labels={vertical:"Verticals",task_status:"Task status",priority:"Priority",stage:"Brand stage",platform:"Platforms",access_level:"Access level",access_status:"Access status",sow_stage:"SOW stage",checklist:"Step status",bp_section:"BP sections",bp_status:"BP status",department:"Teams (task groups)",org_team:"Org chart teams",esc_priority:"Escalation priority",task_label:"Card labels",campaign_status:"Campaign status",dependency_kind:"Dependency kinds",sow_docs:"SOW documents (one kind per line)",clock_zones:"World clock (label | time zone | short name)"};
     h+=`<div class="notice">Renaming a value does not change rows that already use the old one. Add new values at the end.</div><div class="cols2">${Object.keys(labels).map(k=>`<div class="card"><label for="ls-${k}"><b>${esc(labels[k])}</b></label><textarea id="ls-${k}" data-list="${k}">${esc(L(k).join("\n"))}</textarea></div>`).join("")}</div><div class="row" style="margin-top:12px"><button class="btn pri" data-act="save-lists">Save lists</button></div>`}
-  else if(setTab==="steps"){h+=`<div class="card"><h3 style="margin-top:0">Steps now live on their own board</h3><p class="muted">Reorder, rename, add, archive and set RACI for every SOW onboarding step on the SOW steps board. Changes are a draft until you publish them, then the SOW tracker, brand pages, My tasks and the Founder view all update.</p><a class="btn pri" href="#stepsadmin">Open SOW steps</a></div>`}
   else if(setTab==="nobrand"){const rows=withId(S.tasks).filter(t=>!t.brand);
     h+=rows.length?`<p class="muted">Completed rows from the old sheet have no brand. Pick one for each.</p><div class="tw"><table><thead><tr><th>Task</th><th>Owner</th><th>Deadline</th><th>Notes</th><th>Brand</th></tr></thead><tbody>${rows.map(t=>`<tr><td><b>${esc(t.title)}</b></td><td>${esc(t.owner)}</td><td>${esc(fmtD(t.deadline))}</td><td class="muted">${esc(t.notes)}</td><td><select data-act="setbrand" data-id="${esc(t._id)}" aria-label="Brand"><option value="">Pick a brand</option>${brandList().map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join("")}</select></td></tr>`).join("")}</tbody></table></div>`:`<div class="tw"><div class="empty">Every task has a brand.</div></div>`}
   else if(setTab==="access"){const cfg=ACCESS_SETUP();const teams=cfg.teams||[];const help=cfg.help||{};const bm=cfg.bp_map||{};
@@ -2426,7 +2411,7 @@ function vSettings(){
     h+=`<form id="tform" class="card" style="margin-top:14px;max-width:640px"><h3 style="margin-top:0">New template</h3><div class="f"><label for="t-name">Name</label><input id="t-name" name="name" required placeholder="UGC kickoff"></div><div class="f"><label for="t-vert">Vertical</label><select id="t-vert" name="vertical">${opts(VERTS(),"")}</select></div><div class="f"><label for="t-lines">Tasks</label><textarea id="t-lines" name="lines" rows="6" required placeholder="Shortlist creators | Creator Partnerships | 5&#10;Send brief to creators | Creator Partnerships | 7"></textarea></div><button class="btn pri" type="submit">Save template</button></form>`}
   else{h+=`<div class="cols2"><div class="card"><h3 style="margin-top:0">Excel export</h3><p class="muted">Same sheets as the COE tracker: Brand Tracker, one tab per brand, Platform Access, SOW Tracker, BP Tracker, Onboarding Steps, Completed Archive and Lists.</p><button class="btn pri" data-act="export-xlsx">Download Excel</button></div>
     <div class="card"><h3 style="margin-top:0">Full backup</h3><p class="muted">Every record as one JSON file. Keep it with the weekly export. Restore from backup comes in a later stage.</p><button class="btn" data-act="export-json">Download backup</button></div></div>`}
-  return h}
+  setTab=setTab0;return h}
 
 /* ---------- drawer ---------- */
 function field(l,inner,wide,hint){const m=/\bid="([^"]+)"/.exec(inner);return`<div class="f ${wide?"w":""}"><label${m?` for="${m[1]}"`:""}>${esc(l)}</label>${inner}${hint?`<span class="hint">${esc(hint)}</span>`:""}</div>`}
@@ -2607,7 +2592,6 @@ document.addEventListener("click",e=>{
     else{phaseSel={bid:id,p:(S.steps[code]||{}).phase||""};focusItem={sel:`select[data-code="${CSS.escape(code)}"]`,up:".step"};go(brandHash(id,"steps"))}}
   else if(act==="sort"){const k=a.dataset.k;ovSort=ovSort.k===k?{k,dir:-ovSort.dir}:{k,dir:1};render()}
   else if(act==="att-go"){go(brandHash(a.dataset.id,a.dataset.tab||"tasks"))}
-  else if(act==="person-pick"){peopleSel=peopleSel===a.dataset.name?"":a.dataset.name;render()}
   else if(act==="mvert"){mineVert=a.dataset.v;render()}
   else if(act==="men-go"&&a.dataset.task&&S.tasks[a.dataset.task]){const tk=S.tasks[a.dataset.task];brandTab="tasks";go(campHash(tk.brand,campsOf(tk.brand).length?campOf(tk):""));setTimeout(()=>openDrawer("task",a.dataset.task),60)}
   else if(act==="men-go"&&a.dataset.acc){accBrand=(S.access[a.dataset.acc]||{}).brand||accBrand;go("access");setTimeout(()=>openDrawer("access",a.dataset.acc),60)}
@@ -2617,7 +2601,7 @@ document.addEventListener("click",e=>{
   else if(act==="del-comment"){const id=a.dataset.id;confirmBox("Delete this comment?","Delete",()=>remove("comments",id,"Comment"))}
   else if(act==="tpl-del"){const i=+a.dataset.i;confirmBox("Delete this template?","Delete",()=>{const list=TEMPLATES().filter((_,j)=>j!==i);saveTemplates(list)})}
   else if(act==="search-go"){const r=searchResults(searchQ)[+a.dataset.i];searchQ="";$("#q").value="";renderSearch();if(!r)return;
-    if(r.go)go(r.go);else if(r.person){peopleSel=r.person;go("people")}else if(r.task){const t=S.tasks[r.task];if(t){brandTab="tasks";if(t.status==="Complete")kbFilter.done=true;focusItem={sel:`.kc[data-id="${CSS.escape(r.task)}"]`};go(campHash(t.brand,campsOf(t.brand).length?campOf(t):""))}else{setTab="nobrand";go("settings")}}
+    if(r.go)go(r.go);else if(r.person){if(canEdit){orgTab="people";go("org")}else go("mine")}else if(r.task){const t=S.tasks[r.task];if(t){brandTab="tasks";if(t.status==="Complete")kbFilter.done=true;focusItem={sel:`.kc[data-id="${CSS.escape(r.task)}"]`};go(campHash(t.brand,campsOf(t.brand).length?campOf(t):""))}else{setTab="nobrand";go("settings")}}
     else if(r.step){setTab="steps";go("settings")}}
   else if(act==="bpdot"){if(pop&&pop.btn===a.getAttribute("aria-label")){closePop();return}openPop(a)}
   else if(act==="bpset"){if(!pop)return;const{id,sec}=pop;const d=S.bps[id];closePop();if(!d)return;const v=a.dataset.v;if(((d.sections||{})[sec]||"Not Started")!==v)save("bps",id,{sections:Object.assign({},d.sections||{},{[sec]:v})},"BPs "+bname(id)+" "+sec);
@@ -2695,7 +2679,7 @@ document.addEventListener("click",e=>{
   else if(act==="pgp"){const k=a.dataset.k;(pager[k]||(pager[k]={})).page=+a.dataset.v;render();const m=$("#main");if(m)m.scrollTop=0}
   else if(act==="bpgroup"){const g=a.dataset.g;bpOpenG=g==="*"||g===""?g:(bpOpenG===g?"":g);render()}
   else if(act==="tmore"){const tb=a.closest(".topbar");const o=!tb.classList.contains("open");tb.classList.toggle("open",o);a.setAttribute("aria-expanded",String(o))}
-  else if(act==="pview"){peopleView=a.dataset.v==="org"?"org":"work";render()}
+  else if(act==="orgtab"){orgTab=a.dataset.tab==="chart"?"chart":"people";render()}
   else if(act==="org-edit"){const n=a.dataset.org;const p=people().find(x=>x.name===n);if(!p)return;const ed=canEdit&&canWrite;const dis=ed?"":"disabled";const yn=(k,l)=>`<div class="f"><label for="o-${k}">${l}</label><select id="o-${k}" name="${k}" ${dis}><option value="No">No</option><option value="Yes" ${p[k]?"selected":""}>Yes</option></select></div>`;
     const others=orgPeople().map(x=>x.name).filter(x=>x!==n&&!isBelow(n,x,people()));
     formBox(p.full_name||p.name,`<div class="f"><label for="o-full_name">Full name</label><input id="o-full_name" name="full_name" value="${esc(p.full_name||"")}" ${dis}></div><div class="f"><label for="o-title">Title</label><input id="o-title" name="title" value="${esc(p.title||"")}" ${dis}></div>
@@ -2851,7 +2835,7 @@ document.addEventListener("submit",e=>{const f=e.target;
 let logT=0;
 let tqT=0;
 document.addEventListener("input",e=>{if(e.target.classList&&e.target.classList.contains("tfind")){const k=e.target.dataset.k;tq[k]=e.target.value;if(pager[k])pager[k].page=1;clearTimeout(tqT);tqT=setTimeout(()=>{const m=$("#main");if(!m)return;renderMain();const n=document.getElementById("tq-"+k);if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length)}},200);return}
-  if(e.target.id==="log-q"){logQ=e.target.value;clearTimeout(logT);logT=setTimeout(()=>{const m=$("#main");if(route.v!=="changes"||!m)return;m.innerHTML=vChanges();const n=$("#log-q");if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length)}},200);return}
+  if(e.target.id==="log-q"){logQ=e.target.value;clearTimeout(logT);logT=setTimeout(()=>{const m=$("#main");if(route.v!=="settings"||setTab!=="changes"||!m)return;m.innerHTML=vSettings();const n=$("#log-q");if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length)}},200);return}
 if(e.target.form&&e.target.form.id==="dform"&&e.target.name)drawerDirty[e.target.name]=e.target.value;if(e.target.id==="q"){searchQ=e.target.value;renderSearch()}if(e.target.id==="kb-q"){kbFilter.q=e.target.value;const q=kbFilter.q.trim().toLowerCase();document.querySelectorAll("main .kc").forEach(c=>c.hidden=!!q&&!(c.querySelector(".kt")||c).innerText.toLowerCase().includes(q))}if(e.target.id==="acc-find"){const q=e.target.value.trim().toLowerCase();document.querySelectorAll(".accb").forEach(b=>b.hidden=!!q&&!b.dataset.n.includes(q))}});
 document.addEventListener("focusout",e=>{if(e.target.id==="q")setTimeout(()=>{if(!$(".search")||!$(".search").contains(document.activeElement)){const b=$("#sres");if(b)b.hidden=true;renderTop()}},150)});
 document.addEventListener("keydown",e=>{if(e.key==="/"&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||"")){const q=$("#q");if(q){e.preventDefault();q.focus()}}
