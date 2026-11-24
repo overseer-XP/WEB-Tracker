@@ -791,7 +791,7 @@ button.bt:hover,.crow:hover{box-shadow:none;background:var(--panel2)}
 .vcrumb b{color:var(--ink);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.vcrumb .sep{color:var(--faint)}
 .app.railoff{grid-template-columns:0 minmax(0,1fr)}.app.railoff .rail{visibility:hidden;padding:0;border:0}
 @media (max-width:900px){.vcrumb{display:none}.topbar{flex-wrap:wrap;padding:10px 16px}.topbar .search{flex:1 1 200px;margin-left:0}.app.railoff .rail{visibility:visible}}
-.logday{font-size:13px;margin:14px 0 4px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.logday:first-child{margin-top:0}
+.logday{font-size:13px;font-weight:700;margin:14px 0 4px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.logday:first-child{margin-top:0}
 .tlbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 10px}
 .gteam2{background:var(--panel2)}.gteam2 .gl b{display:flex;align-items:center;gap:6px}.gteam2 .chev{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.8;transition:transform .15s}.gteam2[aria-expanded=true] .chev{transform:rotate(90deg)}
 .gteam2 .lt{color:var(--warn)}.gteam2 .bk{color:var(--bad)}
@@ -1026,6 +1026,8 @@ textarea{border:1px solid var(--line2)!important;border-radius:8px!important;pad
 .toolbar,.kbbar{gap:10px 18px!important}
 .sgl li{grid-template-columns:22px minmax(0,1fr) 92px 110px!important}
 .admbox select{max-width:190px!important;min-height:28px;font-size:12.5px!important;padding:0 26px 0 8px!important;background-position:right 8px center}
+
+.vcrumb a,.lmore a,.allx,.bsname{display:inline-flex;align-items:center;min-height:24px}
 </style>
 
 <div class="app">
@@ -1037,8 +1039,8 @@ textarea{border:1px solid var(--line2)!important;border-radius:8px!important;pad
   </div>
 </div>
 <div class="scrim" id="scrim" hidden></div>
-<aside class="drawer" id="drawer" hidden aria-label="Edit"></aside>
-<div class="modal" id="modal" hidden></div>
+<aside class="drawer" id="drawer" hidden role="dialog" aria-modal="true" aria-label="Edit"></aside>
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true"></div>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
@@ -2629,7 +2631,7 @@ function vChanges(){
    <div class="toolbar"><label class="tl" for="log-q">Find</label><input id="log-q" type="search" data-act="log-q" placeholder="Brand, person, field or value" value="${esc(logQ)}" style="max-width:340px"><span class="muted">${rows.length} change${rows.length===1?"":"s"}</span></div>`;
   if(!rows.length)return h+`<div class="tw"><div class="empty">${all.length?"No changes match.":"No changes yet. Every edit made in the tracker is listed here."}</div></div>`;
   let last="";h+=`<div class="card">`;
-  for(const e of rows.slice(0,400)){const d=day(e.at);if(d!==last){h+=`<h3 class="logday">${esc(d)}</h3>`;last=d}
+  for(const e of rows.slice(0,400)){const d=day(e.at);if(d!==last){h+=`<h2 class="logday">${esc(d)}</h2>`;last=d}
     h+=`<div class="logrow"><span class="faint">${esc(new Date(e.at).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}))}</span><span>${esc(e.person||"Someone")}</span><span>${esc(e.label||e.what)}: <b>${esc(e.field)}</b> ${esc(e.old)} → ${esc(e.new)}</span></div>`}
   return h+`</div>`}
 function vSettings(only,bare){
@@ -3163,5 +3165,20 @@ parseHash();
   for(const[k,c]of Object.entries(COLL))sub(k,c);
   db.collection("log").orderBy("date","desc").limit(30).onSnapshot(snap=>{const o={};snap.docs.forEach(d=>{if(d.exists)o[d.id]=d.data()});S.log=o;if(route.v==="changes")render()},()=>{});
 })();
+})();
+
+/* popups: name them, keep Tab inside, give focus back when they close; long names that are cut off get a hover tip */
+(function(){const back={};let lastOut=null;document.addEventListener("focusin",e=>{const x=e.target;if(!x.closest||x.closest("#modal,#drawer"))return;lastOut=x},true);
+ document.addEventListener("pointerdown",e=>{const x=e.target.closest&&e.target.closest("[data-act],button,a[href]");if(x&&!x.closest("#modal,#drawer"))lastOut=x},true);const top=()=>{const m=document.getElementById("modal"),d=document.getElementById("drawer");return m&&!m.hidden?m:d&&!d.hidden?d:null};
+ const watch=el=>new MutationObserver(()=>{const id=el.id;if(!el.hidden){if(back[id]===undefined)back[id]=lastOut;
+   const h=el.querySelector("h1,h2,h3,.cbtitle");const n=h?(h.value||h.textContent||"").trim():"";if(n)el.setAttribute("aria-label",n.slice(0,80))}
+  else if(back[id]!==undefined){const a=back[id];back[id]=undefined;if(!a)return;const k=a.dataset&&a.dataset.id,ac=a.dataset&&a.dataset.act;
+   setTimeout(()=>{if(top())return;let f=a.isConnected?a:null;if(!f&&k)f=[...document.querySelectorAll("[data-id]")].find(x=>x.dataset.id===k&&(!ac||x.dataset.act===ac));try{if(f)f.focus()}catch(e){}},60)}}).observe(el,{attributes:true,attributeFilter:["hidden"],childList:true});
+ ["modal","drawer"].forEach(id=>{const el=document.getElementById(id);if(el)watch(el)});
+ document.addEventListener("keydown",e=>{if(e.key!=="Tab")return;const el=top();if(!el)return;
+  const f=[...el.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]):not([type=hidden]),select:not([disabled]),textarea:not([disabled]),summary,[tabindex]:not([tabindex="-1"])')].filter(x=>x.getClientRects().length);if(!f.length)return;
+  const a=f[0],z=f[f.length-1];if(!el.contains(document.activeElement)){e.preventDefault();a.focus()}else if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus()}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus()}});
+ let q=0;const tip=()=>{q=0;document.querySelectorAll(".bname,.kt,.kname").forEach(x=>{if(x.scrollWidth>x.clientWidth+1){if(!x.title)x.title=x.textContent.trim()}})};
+ const mn=document.getElementById("main");if(mn)new MutationObserver(()=>{if(!q)q=requestAnimationFrame(tip)}).observe(mn,{childList:true,subtree:true});addEventListener("resize",()=>{if(!q)q=requestAnimationFrame(tip)});
 })();
 </script>
