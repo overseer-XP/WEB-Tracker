@@ -40,7 +40,7 @@ const measure = () => {
 
 (async () => {
   const b = await chromium.launch(); const all = {}; const errs = [];
-  const pages = [['overview'], ['mine'], ['leadership'], ['people'], ['sow'], ['access'], ['bp'], ['settings'], ['brand-bespoke'], ['brand-bespoke/sow'], ['brand-bespoke', 'campaigns'], ['brand-bespoke', 'campaign'], ['brand-bespoke', 'card'], ['brand-bespoke', 'steps'], ['brand-celf', 'board'], ['overview/attention'], ['overview/pipeline'], ['overview/plan'], ['overview/all'], ['leadership/attention'], ['leadership/decisions'], ['leadership/onboarding'], ['leadership/live'], ['leadership/launches'], ['leadership/week'], ['leadership/all'], ['brand-bespoke', 'board'], ['brand-bespoke', 'timeline'], ['changes'], ['client-bespoke']];
+  const pages = [['overview'], ['mine'], ['leadership'], ['org'], ['sow'], ['access'], ['bp'], ['settings'], ['brand-bespoke'], ['brand-bespoke/sow'], ['brand-bespoke', 'campaigns'], ['brand-bespoke', 'campaign'], ['brand-bespoke', 'card'], ['brand-bespoke', 'steps'], ['brand-celf', 'board'], ['overview/attention'], ['overview/pipeline'], ['overview/plan'], ['overview/all'], ['leadership/attention'], ['leadership/decisions'], ['leadership/onboarding'], ['leadership/live'], ['leadership/launches'], ['leadership/week'], ['leadership/all'], ['brand-bespoke', 'board'], ['brand-bespoke', 'timeline'], ['changes'], ['settings'], ['client-bespoke']];
   for (const [w, wl] of [[1440, 'desktop'], [375, 'phone']]) for (const theme of ['light', 'dark']) {
     const p = await b.newPage({ viewport: { width: w, height: 900 } }); p.on('pageerror', e => errs.push(e.message));
     await p.goto(url + '#overview'); await p.waitForTimeout(600);
