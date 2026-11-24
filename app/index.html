@@ -870,24 +870,24 @@ table.orgt td{vertical-align:top;font-size:13px}table.orgt td small{display:bloc
 .phs{display:flex;align-items:center;gap:7px;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--g);border-radius:9px;padding:5px 10px;font-size:12.5px;color:var(--muted)}.phs b{font-size:16px;color:var(--ink)}
 .sstrip.one{grid-template-columns:1fr!important}.sstrip.one .it.s7{grid-column:1/-1!important}
 .sstrip.one .sgl li{padding:4px 8px}
-.board td{border-bottom:0!important}.board td.gs{border-left:0!important}.board tbody tr:hover td{background:color-mix(in srgb,var(--blue) 4%,var(--panel))}
+.board tbody tr:hover td{background:color-mix(in srgb,var(--blue) 4%,var(--panel))}
 .board th.num,.board td.num{width:70px;min-width:70px;text-align:right;padding-right:14px}
 .board td.bblk{min-width:190px;max-width:220px;font-size:12.5px}.board td.bdocs{min-width:110px;max-width:160px}.board td.bdocs .dchips{flex-wrap:nowrap}
 
 .sstrip.two{grid-template-columns:repeat(12,minmax(0,1fr))!important}.sstrip.two .it.s7{grid-column:span 7!important;position:relative;background:var(--panel)!important}.sstrip.two .it.s5{grid-column:span 5!important;background:var(--panel)!important}
 .sghide{position:absolute;right:12px;bottom:10px}
-.sgn .sgl li{grid-template-columns:22px 150px 74px 96px auto!important;justify-content:start;gap:10px!important;padding:5px 8px!important}.bdl.bd-not{background:transparent!important;border:1px solid var(--line2)}
+.sgn .sgl li{grid-template-columns:22px 150px 74px 96px auto!important;justify-content:start;gap:10px!important;padding:5px 8px!important}
 .sgn .sgl li .sgn-d{color:var(--muted);font-size:12.5px}.sgn .sgl li .sgn-r{min-width:82px}
 .sgw .sgwh b{display:block;font-size:15px}.sgw .sgwh span{color:var(--muted);font-size:12.5px}
 .dn{display:flex;align-items:center;gap:16px;margin-top:6px}.dnl{list-style:none;margin:0;padding:0;flex:1;display:grid;gap:3px}.dnl li{display:grid;grid-template-columns:10px 1fr auto;gap:8px;align-items:center;font-size:12.5px}.dnl li i{width:10px;height:10px;border-radius:3px}.dnl li.z{opacity:.45}.dnl li.sig{border-top:1px solid var(--line);padding-top:4px;margin-top:2px}.dnl li.sig i{background:var(--ok)}
 .sgfold{display:none;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin-bottom:10px;font-size:13px}.sgfold .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin:0 3px 0 6px}.sgfold button{margin-left:auto}
 .sgwrap.folded .sgfold{display:flex}.sgwrap.folded .sstrip{display:none}
 /* calmer board: neutral headers with a thin phase line, quiet To do */
-.board th.gh{background:var(--panel2)!important;border-top:3px solid var(--g)!important;border-bottom:0!important;color:var(--ink)}
-.board th.pc{background:var(--panel2)!important;border-bottom:1px solid var(--line)!important}
-.board th.pc.gs,.board th.gh+th{border-left:0!important}
-.bd.bd-not{background:transparent!important;border:1px solid var(--line2)!important;color:var(--muted)!important}
-.bd.bd-na{background:transparent!important;color:var(--muted)!important}
+
+
+
+
+
 
 /* round 3: one colour for the signing list, quiet stage chips, even column spacing */
 .sgn .sgl li .sgn-i,.sgn .sgl li.late .sgn-i{background:var(--panel2)!important;color:var(--muted)!important}
@@ -951,6 +951,16 @@ table.sowl .ps{background:transparent!important;border:1px solid var(--line2)!im
 .lfB td.bblk .nt.open{display:block!important;-webkit-line-clamp:unset!important;overflow:visible}
 .lfB .ntmore{all:unset;cursor:pointer;color:var(--blue)!important;font-size:12px;font-weight:600;margin-top:2px}
 table.board td.bblk button.ntmore{color:var(--blue)!important;font-weight:600}
+.board th.gh.gfold .ghf{white-space:nowrap}.board th.pc.pcf{min-width:132px!important;max-width:none!important}
+
+/* compact rows: one-line note, links beside it */
+.lfB td.bblk{padding-top:6px!important;padding-bottom:6px!important;min-width:360px!important;max-width:380px!important}
+.nlr{display:flex;align-items:center;gap:12px}.ntw{flex:1;min-width:0;display:flex;align-items:baseline;gap:6px}.lfB td.bblk .nt.open{white-space:normal}.lfB .bcard .bname{white-space:nowrap}
+.lfB td.bblk .nt{display:block!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}
+.lfB td.bblk .ntmore{margin:0;flex:none}
+.lfB td.bblk .dslots{border-top:0!important;padding-top:0!important;margin-top:0!important;flex:none}
+.lfB .rts{flex-direction:row;align-items:baseline;gap:5px}.lfB .rts small{display:inline}
+.lfB td.gc{padding-top:6px!important;padding-bottom:6px!important}
 </style>
 
 <div class="app">
@@ -2379,9 +2389,9 @@ function sowBoard(){
   <div class="legend">${["Done","In progress","Not done","N/A"].map(v=>`<span><span class="bdl ${BOARD_CLS[v]}">${BOARD_MARK[v]||""}</span>${esc(v)}</span>`).join("")}</div>`+`
   <div class="tbar">${findBox("sow",all.length)}<span class="grow"></span><button class="btn sm quiet" data-act="sow-foldall" data-v="open">Open every phase</button><button class="btn sm quiet" data-act="sow-foldall" data-v="closed">Fold every phase</button></div>
   <div class="tw tpin"><table class="grid board lfB"><thead><tr><th class="stick" rowspan="2">Brand</th><th rowspan="2" class="num" title="Road to SOW: share of required steps done">Road to SOW</th><th rowspan="2">Notes and links</th>${G.map(x=>`<th colspan="${x.closed?1:x.g.cols.length}" class="gh g${x.i%7} ${x.closed?"gfold":""}"><button class="ghf" data-act="sow-fold" data-v="${esc(x.g.name)}" data-c="${x.closed?"open":"closed"}" aria-expanded="${!x.closed}" title="${x.closed?"Open":"Fold"} ${esc(x.g.name)}"><svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M4 2.5 7.5 6 4 9.5"/></svg>${esc(x.g.name)}</button></th>`).join("")}</tr>
-  <tr>${G.map(x=>x.closed?`<th class="pc g${x.i%7} gs"><span>${x.g.cols.length} steps</span></th>`:x.g.cols.map((c,ci)=>`<th class="pc g${x.i%7} ${ci===0?"gs":""}" title="${esc(c.label)}"><span>${esc(colLabel(c))}</span></th>`).join("")).join("")}</tr></thead><tbody>`;
+  <tr>${G.map(x=>x.closed?`<th class="pc pcf g${x.i%7} gs"><span>${x.g.cols.length} steps</span></th>`:x.g.cols.map((c,ci)=>`<th class="pc g${x.i%7} ${ci===0?"gs":""}" title="${esc(c.label)}"><span>${esc(colLabel(c))}</span></th>`).join("")).join("")}</tr></thead><tbody>`;
   for(const{b,pct}of pg.rows){const s=S.sow[b.id]||{};const hold=onHold(b);
-    h+=`<tr class="${hold?"held":""}"><td class="stick bcard"><a class="bname" href="#${brandHash(b.id,"sow")}">${esc(b.name)}</a>${hold?`<span class="pill s-off">On hold</span>`:""}</td><td class="num">${`<div class="rts"><b>${pct}%</b><small>of steps</small></div>`}</td><td class="bblk">${(s.blocker?`<div class="nt" title="${esc(s.blocker)}">${esc(s.blocker)}</div><button class="ntmore" data-act="nt-more" style="color:var(--blue)" hidden>More</button>`:`<div class="nt none">No notes</div>`)}<div class="dslots">${SOW_DOCS().map(k=>{const u=sowDocs(b.id)[k];const ab=k.split(/\s+/).length>1?k.split(/\s+/).map(w=>w[0]).join("").toUpperCase():k;return u?`<a class="dsl on" href="${esc(u)}" target="_blank" rel="noopener" title="Open ${esc(k)}">↗ ${esc(ab)}</a>`:`<button class="dsl" data-act="sow-doc" data-id="${esc(b.id)}" data-v="${esc(k)}" title="Add the ${esc(k)} link">+ ${esc(ab)}</button>`}).join("")}</div></td>`;
+    h+=`<tr class="${hold?"held":""}"><td class="stick bcard"><a class="bname" href="#${brandHash(b.id,"sow")}">${esc(b.name)}</a>${hold?`<span class="pill s-off">On hold</span>`:""}</td><td class="num">${`<div class="rts"><b>${pct}%</b><small>of steps</small></div>`}</td><td class="bblk"><div class="nlr"><div class="ntw">${(s.blocker?`<div class="nt" title="${esc(s.blocker)}">${esc(s.blocker)}</div><button class="ntmore" data-act="nt-more" style="color:var(--blue)" hidden>More</button>`:`<div class="nt none">No notes</div>`)}</div><div class="dslots">${SOW_DOCS().map(k=>{const u=sowDocs(b.id)[k];const ab=k.split(/\s+/).length>1?k.split(/\s+/).map(w=>w[0]).join("").toUpperCase():k;return u?`<a class="dsl on" href="${esc(u)}" target="_blank" rel="noopener" title="Open ${esc(k)}">↗ ${esc(ab)}</a>`:`<button class="dsl" data-act="sow-doc" data-id="${esc(b.id)}" data-v="${esc(k)}" title="Add the ${esc(k)} link">+ ${esc(ab)}</button>`}).join("")}</div></div></td>`;
     for(const x of G){const gi=groups.indexOf(x.g);
       if(x.closed){const vs=x.g.cols.map(c=>boardCell(b.id,c)).filter(v=>v&&v!=="N/A");const dn=vs.filter(v=>v==="Done").length;const v=!vs.length?"N/A":dn===vs.length?"Done":vs.some(v=>v!=="Not done")?"In progress":"Not done";
         h+=`<td class="gc gs g${x.i%7}"><button class="bd ${BOARD_CLS[v]}" data-act="sow-fold" data-v="${esc(x.g.name)}" data-c="open" title="${esc(x.g.name+": "+dn+" of "+vs.length+" done. Click to open")}">${dn}/${vs.length}</button></td>`;continue}
@@ -3033,7 +3043,7 @@ $("#scrim").onclick=closeDrawer;
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(pop){const l=pop.btn;closePop();const b=document.querySelector(`[aria-label="${CSS.escape(l)}"]`);if(b)b.focus();return}if(!$("#modal").hidden)$("#modal").hidden=true;else closeDrawer()}
   if(pop&&(e.key==="ArrowDown"||e.key==="ArrowUp")){const items=[...document.querySelectorAll("#pop .pi")];const i=items.indexOf(document.activeElement);const n=items[(i+(e.key==="ArrowDown"?1:-1)+items.length)%items.length];if(n){e.preventDefault();n.focus()}}});
 document.addEventListener("scroll",()=>{if(pop)closePop()},true);
-function ntFit(){document.querySelectorAll("table.board .nt").forEach(n=>{const m=n.nextElementSibling;if(m&&m.classList.contains("ntmore")&&!n.classList.contains("open"))m.hidden=n.scrollHeight<=n.clientHeight+2})}
+function ntFit(){document.querySelectorAll("table.board .nt").forEach(n=>{const m=n.nextElementSibling;if(m&&m.classList.contains("ntmore")&&!n.classList.contains("open"))m.hidden=n.scrollHeight<=n.clientHeight+2&&n.scrollWidth<=n.clientWidth+1})}
 function sowPin(){const m=$("#main"),w=$(".sgwrap"),f=$(".sgfold");if(!m||!w||!f||f.classList.contains("man"))return;f.classList.toggle("pin",w.getBoundingClientRect().bottom<m.getBoundingClientRect().top+20)}
 document.addEventListener("scroll",e=>{if(e.target===$("#main"))sowPin()},true);
 setInterval(()=>{const m=$("#clkme");if(m){const z=tzNow();m.textContent=z.tl+" "+z.tz}document.querySelectorAll("[data-clk]").forEach(e=>e.textContent=clockTime(e.dataset.clk))},30000);
