@@ -1042,6 +1042,8 @@ textarea{border:1px solid var(--line2)!important;border-radius:8px!important;pad
 .bq:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.bq.no:hover{border-color:var(--ok)}
 .bq.ok{background:var(--okBg);color:var(--ok)}.bq.bad{background:var(--badBg);color:var(--bad)}.bq.na{color:var(--muted)}.bq.no{border:1.5px solid var(--line2)}
 .bpqnote{font-size:12.5px;margin-top:3px;line-height:1.35}.bpqn{color:var(--muted);font-size:12.5px;margin-top:2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+
+.xp{cursor:pointer}.xp:hover{color:var(--ink)}.xp.open{-webkit-line-clamp:unset!important;display:block!important;overflow:visible!important}.xpm{font-size:12.5px;margin:2px 0 4px;align-self:flex-start}
 </style>
 
 <div class="app">
@@ -1750,7 +1752,7 @@ function vSow(){
     const signed=s.stage==="Signed";
     h+=`<tr><td><a class="bname" href="#${brandHash(b.id,"sow")}" title="Open ${esc(b.name)} Road to SOW">${esc(b.name)}</a>${onHold(b)?` <span class="tag">On hold</span>`:""}<button class="linkb lfe" data-act="open" data-kind="sow" data-id="${esc(b.id)}">Edit</button>${who}</td><td>${statusSel("sow",b.id,s.stage||"Not Started",L("sow_stage"),canEdit&&canWrite)}</td>
      <td class="ldt">${tstep("Draft",s.draft_due,signed)}<div class="tsbar"></div>${tstep("Sign",s.target_sign,signed)}</td>
-     <td class="lns">${nsCell(b.id)}</td><td class="muted lblk"><span class="clamp3" title="${esc(s.blocker||"")}">${esc(s.blocker||"")||'<span class="faint">None</span>'}</span></td><td class="ldocs">${sowDocChips(b.id,true)}</td></tr>`}
+     <td class="lns">${nsCell(b.id)}</td><td class="muted lblk">${s.blocker?`<div class="nsc"><span class="clamp3 xp" tabindex="0" role="button" aria-expanded="false" data-act="xp">${esc(s.blocker)}</span><button class="linkb xpm" data-act="xp" hidden>Show more</button></div>`:'<span class="faint">None</span>'}</td><td class="ldocs">${sowDocChips(b.id,true)}</td></tr>`}
   return h+`</tbody></table></div>`+pgL.html}
 function accStrip(){const all=withId(S.access).filter(a=>a.status!=="Not Needed"&&S.brands[a.brand]&&!holdOf(a.brand));const g=all.filter(accGranted).length;const op=all.filter(accOpen);
   const byP={};for(const a of op)byP[a.platform]=(byP[a.platform]||0)+1;const top=Object.entries(byP).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([l,n])=>({l:l.replace(/ (Ads Manager|Seller Central|Business Manager)$/,""),t:l,n}));
@@ -2505,7 +2507,7 @@ function sowDocChips(bid,add){const d=sowDocs(bid);const ex=(S.sow[bid]||{}).doc
 function nsLog(s){const lg=(s.ns_log||[]).slice();if(s.next_step&&!lg.length)lg.push({t:s.next_step,legacy:true});return lg}
 const nsStamp=e=>e.legacy?"Earlier note":`${fmtD(new Date(e.at).toISOString().slice(0,10))} · ${e.tl||""} ${e.tz||""} · ${e.by||""}`.replace(/\s+/g," ");
 function nsCell(bid){const s=S.sow[bid]||{};const lg=nsLog(s);const last=lg[lg.length-1];const w=canWrite&&S.sow[bid];
-  return`<div class="nsc">${last?`<div class="nse"><span class="nss">${esc(nsStamp(last))}</span><span class="clamp2" title="${esc(last.t)}">${esc(last.t)}</span></div>`:`<span class="faint">None yet</span>`}
+  return`<div class="nsc">${last?`<div class="nse"><span class="nss">${esc(nsStamp(last))}</span><span class="clamp2 xp" tabindex="0" role="button" aria-expanded="false" data-act="xp">${esc(last.t)}</span></div><button class="linkb xpm" data-act="xp" hidden>Show more</button>`:`<span class="faint">None yet</span>`}
    <div class="row" style="gap:8px">${w?`<button class="linkb" data-act="sow-ns" data-id="${esc(bid)}">+ Add</button>`:""}${lg.length>1?`<details class="nsold"><summary>${lg.length-1} earlier</summary>${lg.slice(0,-1).reverse().map(e=>`<div class="nse"><span class="nss">${esc(nsStamp(e))}</span><span>${esc(e.t)}</span></div>`).join("")}</details>`:""}</div></div>`}
 const tzList=()=>[...new Set(clockZones().map(c=>c.zone).concat(Intl.supportedValuesOf?Intl.supportedValuesOf("timeZone"):[]))];
 function nsEntry(text){const z=tzNow();return{t:text,by:me,at:Date.now(),tz:z.tz,tl:z.tl,zone:z.zone}}
@@ -3219,4 +3221,11 @@ parseHash();
  let q=0;const tip=()=>{q=0;document.querySelectorAll(".bname,.kt,.kname").forEach(x=>{if(x.scrollWidth>x.clientWidth+1){if(!x.title)x.title=x.textContent.trim()}})};
  const mn=document.getElementById("main");if(mn)new MutationObserver(()=>{if(!q)q=requestAnimationFrame(tip)}).observe(mn,{childList:true,subtree:true});addEventListener("resize",()=>{if(!q)q=requestAnimationFrame(tip)});
 })();
+
+/* long next steps and blockers: show "Show more" only when the text is cut; clicking the text or the link opens it in full */
+(function(){const fit=()=>document.querySelectorAll(".xp").forEach(x=>{const m=x.closest(".nsc")&&x.closest(".nsc").querySelector(".xpm");if(!m||x.classList.contains("open"))return;m.hidden=x.scrollHeight<=x.clientHeight+2});
+ const mn=document.getElementById("main");let q=0;if(mn)new MutationObserver(()=>{if(!q)q=requestAnimationFrame(()=>{q=0;fit()})}).observe(mn,{childList:true,subtree:true});addEventListener("resize",fit);
+ const tog=el=>{const x=el.classList.contains("xp")?el:el.closest(".nsc").querySelector(".xp");const m=x.closest(".nsc").querySelector(".xpm");const o=!x.classList.contains("open");x.classList.toggle("open",o);x.setAttribute("aria-expanded",o);if(m){m.hidden=false;m.textContent=o?"Show less":"Show more"}};
+ document.addEventListener("click",e=>{const el=e.target.closest("[data-act=xp]");if(el){e.preventDefault();e.stopPropagation();tog(el)}},true);
+ document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches&&e.target.matches(".xp")){e.preventDefault();tog(e.target)}});})();
 </script>
