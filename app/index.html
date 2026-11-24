@@ -855,6 +855,14 @@ table.orgt td{vertical-align:top;font-size:13px}table.orgt td small{display:bloc
 .of>label.ock{display:flex;gap:7px;align-items:center;margin:4px 0;font:500 13px var(--f-ui);text-transform:none;letter-spacing:0;color:var(--ink)}.of input:not([type=checkbox]),.of select{border:1px solid var(--line);border-radius:8px;padding:6px 9px;background:var(--panel);color:var(--ink);font:inherit;font-size:13px}
 .oseg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}.oseg button{flex:1;border:0;background:var(--panel);padding:6px 2px;font:500 12px var(--f-ui);color:var(--ink);cursor:pointer}.oseg button.on{background:var(--soft,#E4ECFB);color:var(--blue);font-weight:700}.oseg button:disabled{cursor:default;opacity:.85}
 @media (max-width:1100px){.orgwrap{grid-template-columns:1fr}.orgside{width:auto;position:static}}
+
+/* ---- Settings > Pages ---- */
+.pgcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:16px}
+.pgh{padding:12px 14px;border-bottom:1px solid var(--line)}.pgh b{font-size:15px}.pgh p{margin:3px 0 0;color:var(--muted);font-size:12.5px}
+.pgrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line)}.pgrow:last-child{border-bottom:0}.pgrow b{display:block}.pgrow small{color:var(--muted)}
+.pgseg{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}.pgseg button{border:0;background:var(--panel);padding:7px 12px;font:500 12.5px var(--f-ui);color:var(--ink);cursor:pointer}.pgseg button+button{border-left:1px solid var(--line)}
+.pgseg button.on{background:var(--soft,#E4ECFB);color:var(--blue);font-weight:700}.pgseg button.on.off{background:var(--badBg);color:var(--bad)}.pglock{color:var(--muted);font-size:12.5px}
+.pgoff{font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:1px 6px;background:rgba(255,255,255,.14);color:#F3B98C;margin-left:6px}
 </style>
 
 <div class="app">
@@ -1061,9 +1069,9 @@ let railShut=new Set();try{railShut=new Set(JSON.parse(ls.get("vt-railshut")||"[
 function renderRail(){
   if(route.v==="brand"&&route.id!==railSeen){railBrand=route.id;railSeen=route.id}if(route.v!=="brand")railSeen="";
   const mine=myItems().length;
-  const work=[["mine","My tasks",mine||""]];if(isLeader(me))work.push(["leadership","Leadership",leaderCount()||""]);
-  const across=[["overview","Overview",""],["sow","SOW tracker",""],["access","Platform access",""],["bp","Best Practices",""]];
-  const item=([k,l,n])=>`<a href="#${k}" class="${route.v===k?"on":""}" ${route.v===k?`aria-current="page"`:""}>${nicon(k)}<span class="nl">${esc(l)}</span><span class="n">${n}</span></a>`;
+  const work=[["mine","My tasks",mine||""]];if(pageOn("menu","leadership")&&(isLeader(me)||canEdit))work.push(["leadership","Leadership",leaderCount()||""]);
+  const across=[["overview","Overview",""],["sow","SOW tracker",""],["access","Platform access",""],["bp","Best Practices",""]].filter(([k])=>pageOn("menu",k));
+  const item=([k,l,n])=>`<a href="#${k}" class="${route.v===k?"on":""}" ${route.v===k?`aria-current="page"`:""}>${nicon(k)}<span class="nl">${esc(l)}</span>${PAGE_MENU.some(x=>x[0]===k)?pageOffTag("menu",k):""}<span class="n">${n}</span></a>`;
   let h=`<a class="mark" href="#overview" aria-label="VALFLO home">${LOGO}<span class="mk">VALFLO</span></a>
    <nav class="nav" aria-label="Main"><div class="rsec">My work</div>${work.map(item).join("")}<div class="rsec">Across brands</div>${across.map(item).join("")}${canEdit||canSeeLog()?`<div class="rsec">Admin</div>`:""}${canEdit?item(["org","Org structure",""]):""}${canEdit||canSeeLog()?item(["settings","Settings",""]):""}</nav><div class="rbrands"><div class="rsec">Brands</div>`;
   const groups={};for(const b of brandList())(groups[b.stage||"Qualification"]=groups[b.stage||"Qualification"]||[]).push(b);
@@ -1073,7 +1081,7 @@ function renderRail(){
     for(const b of groups[st]){const r=roll(b.id);const on=route.v==="brand"&&route.id===b.id;const ex=railBrand===b.id;
       h+=`<a class="blink ${on?"on":""} ${ex?"ex":""}" href="#brand-${esc(b.id)}" data-act="blink" data-id="${esc(b.id)}" aria-expanded="${ex}" title="${esc(r.health)}">${hdot(r.health)}<span class="sr">${esc(r.health)}</span>${esc(b.name)}${b.paused?` <span class="tag">Paused</span>`:""}<span class="n">${r.open||""}</span>${CHEV}</a>`;
       if(ex){const t=on?brandTab:"";const tiles=Object.fromEntries(brandTiles(b.id,r).map(x=>[x[0],x]));
-        const sub=[["home","Overview",""]].concat(["tasks","sow","access","bp","updates"].map(k=>{const x=tiles[k]||[k,SECT[k],"","","off"];const l=k==="tasks"?(campsOf(b.id).length?"Campaigns":"Tasks"):k==="sow"&&isInternal(b)?"Onboarding":SECT[k];
+        const sub=[["home","Overview",""]].concat(["tasks","sow","access","bp","updates"].filter(k=>pageOn("brand",k)).map(k=>{const x=tiles[k]||[k,SECT[k],"","","off"];const l=k==="tasks"?(campsOf(b.id).length?"Campaigns":"Tasks"):k==="sow"&&isInternal(b)?"Onboarding":SECT[k];
           const v=k==="tasks"?String(campsOf(b.id).length||r.open):x[2]==="None"||x[2]==="None yet"||x[2]==="N/A"?"":x[2];return[k,l,v,x[4],x[3]]}));
         h+=`<div class="rsub">${sub.map(([k,l,v,st,why])=>`<a href="#${brandHash(b.id,k)}" data-tab="${k}" class="${t===k?"on":""}" ${t===k?`aria-current="page"`:""} ${why?`title="${esc(l+": "+v+(why?", "+why:""))}"`:""}>${st==="bad"||st==="warn"?`<span class="sig sm sig-${st}">${SHAPE[st]}</span>`:""}<span class="nl">${esc(l)}</span>${v?`<span class="n">${esc(v)}</span>`:""}</a>`).join("")}</div>`}}}
   h+=`</div>`;
@@ -1109,6 +1117,12 @@ function renderTop(){
 </div>${window.__signOut?`<button class="btn sm" data-act="signout">Sign out</button>`:""}`;
 }
 function applyRolePreview(){const r=realEdit?ls.get("vt-roleprev")||"":"";canEdit=realEdit&&!r;canWrite=realWrite&&r!=="view"}
+/* Pages admins can switch per audience (Settings > Pages): saved in config/pages; anything not set is on for everyone (Leadership: leadership tick) */
+const PAGE_MENU=[["leadership","Leadership","Bird's-eye view for leadership",true],["overview","Overview","Every brand: what needs action, where they are, what is next"],["sow","SOW tracker","Signing order and the progress board"],["access","Platform access","Logins and access per brand"],["bp","Best Practices","Best Practices progress per brand"]];
+const PAGE_BRAND=[["sow","Road to SOW","Steps phase by phase"],["tasks","Tasks","Board, campaigns and timeline"],["access","Platform access","This brand's logins"],["bp","Best Practices","This brand's sections"],["updates","Updates","Comments and history"],["founder","Founder view","What the founder sees",false,"admins"]];
+const pageRule=(grp,k)=>{const c=(S.config.pages||{})[grp]||{};const d=grp==="menu"&&k==="leadership"?"leaders":(PAGE_BRAND.find(x=>x[0]===k)||[])[4]||"everyone";return c[k]||d};
+function pageOn(grp,k){const r=pageRule(grp,k);if(canEdit)return true;if(r==="everyone")return true;if(r==="leaders")return isLeader(me);return false}
+const pageOffTag=(grp,k)=>{const r=pageRule(grp,k);return canEdit&&r!=="everyone"&&!(grp==="menu"&&k==="leadership"&&r==="leaders")?`<span class="pgoff">${r==="off"?"Off":r==="admins"?"Admins":"Leaders"}</span>`:""};
 const viewNow=()=>{let v=route.v;if(!v)v=isLeader(me)?"leadership":canEdit?"overview":"mine";return v};
 function iamCard(){return`<div class="iam"><b>Which one is you?</b><span>Pick your name once. VALFLO remembers it for this account.</span><select data-act="iam" aria-label="Your name"><option value="">Pick your name</option>${activePeople().map(p=>`<option>${esc(p)}</option>`).join("")}</select></div>`}
 function renderMain(){
@@ -1119,11 +1133,14 @@ function renderMain(){
   if(!db){return}
   if(!ready.brands||!ready.config){m.innerHTML=`<h1>VALFLO</h1><p class="sub">Loading brands, tasks and steps.</p>`;return}
   if(!Object.keys(S.brands).length){m.innerHTML=`<h1>No brands yet</h1><p class="sub">${canEdit?"Use Add brand in the left menu to add the first one.":"Ask a lead to add brands."}</p>`;return}
-  let v=route.v;if(!v)v=isLeader(me)?"leadership":canEdit?"overview":"mine";if(v==="leadership"&&!isLeader(me))v="overview";
+  let v=route.v;if(!v)v=isLeader(me)&&pageOn("menu","leadership")?"leadership":canEdit?"overview":"mine";if(v==="leadership"&&(!isLeader(me)&&!canEdit||!pageOn("menu","leadership")))v=pageOn("menu","overview")?"overview":"mine";
+  if(PAGE_MENU.some(x=>x[0]===v)&&!pageOn("menu",v))v="mine";
+  if(v==="brand"&&brandTab&&brandTab!=="home"&&!pageOn("brand",brandTab))brandTab="home";
   if(v==="org"&&!canEdit)v="overview";if(v==="settings"&&!canEdit&&!canSeeLog())v="overview";
   const ro=canWrite?"":`<div class="notice info">You can view this tracker but not change it. Ask a lead for edit access.</div>`;
   if(focusItem&&v==="brand")setTimeout(()=>{const f=focusItem;focusItem=null;let el=document.querySelector("#main "+f.sel);if(!el)return;if(f.up)el=el.closest(f.up)||el;const mm=$("#main"),r=el.getBoundingClientRect(),mr=mm.getBoundingClientRect();mm.scrollTop+=r.top-mr.top-mm.clientHeight/2+r.height/2;el.classList.add("flash");setTimeout(()=>el.classList.remove("flash"),2600)},40);
-  m.innerHTML=ro+(v==="leadership"?vLeadership():v==="brand"?vBrand(route.id):v==="mine"?vMine():v==="sow"?vSow():v==="access"?vAccess():v==="bp"?vBp():v==="settings"?vSettings():v==="org"?vOrg():v==="client"?(canEdit?vClient(route.id):vOverview()):vOverview());
+  setTimeout(()=>{if(v!=="brand")return;for(const[k]of PAGE_BRAND)if(!pageOn("brand",k))m.querySelectorAll(`.bt [data-tab="${k}"],.bt[data-tab="${k}"]`).forEach(e=>(e.closest(".bt")||e).remove())},0);
+  m.innerHTML=ro+(v==="leadership"?vLeadership():v==="brand"?vBrand(route.id):v==="mine"?vMine():v==="sow"?vSow():v==="access"?vAccess():v==="bp"?vBp():v==="settings"?vSettings():v==="org"?vOrg():v==="client"?(pageOn("brand","founder")&&(canEdit||pageRule("brand","founder")==="everyone")?vClient(route.id):vMine()):vOverview());
 }
 function canChangeTask(t){if(!canWrite)return false;if(canEdit)return true;return isPerson(t.owner,me)||(t.support||[]).some(x=>isPerson(x,me))}
 function statusSel(kind,id,val,list,enabled,extra){return`<select class="ps ${cls(val)}" data-act="status" data-kind="${kind}" data-id="${esc(id)}" ${extra||""} ${enabled?"":"disabled"} aria-label="Status">${opts(list,val,false)}</select>`}
@@ -1338,7 +1355,7 @@ function brandHome(id,r){
    <h1 class="bh1">${esc(b.name)}</h1>
    <p class="intro">${b.intro?esc(b.intro):ed?`<button class="missing" data-act="open" data-kind="brand" data-id="${esc(id)}">Add a one-line intro: what the brand sells, and to whom</button>`:`<span class="faint">No intro yet.</span>`}</p>
    <div class="people">${person("Founder",b.founder)}${person("Brand lead",b.lead)}</div>
-   <div class="row hact">${b.website?`<a class="btn sm" href="${esc(b.website)}" target="_blank" rel="noopener">Website</a>`:""}${canEdit?`<a class="btn sm" href="#client-${esc(id)}">Founder view</a>`:""}${ed?`<button class="btn sm" data-act="open" data-kind="brand" data-id="${esc(id)}">Edit details</button>`:""}</div></section>
+   <div class="row hact">${b.website?`<a class="btn sm" href="${esc(b.website)}" target="_blank" rel="noopener">Website</a>`:""}${pageOn("brand","founder")&&(canEdit||pageRule("brand","founder")==="everyone")?`<a class="btn sm" href="#client-${esc(id)}">Founder view</a>`:""}${ed?`<button class="btn sm" data-act="open" data-kind="brand" data-id="${esc(id)}">Edit details</button>`:""}</div></section>
   <section class="bt health" aria-label="Health"><span class="btl">Health</span>${sig(hk,hl,true)}
    ${reasons.length?`<ul class="why">${reasons.slice(0,4).map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:`<p class="faint" style="margin:6px 0 0">Nothing blocked or late.</p>`}
    ${b.next_step?`<p class="nxt"><span class="btl">Next step</span><span class="clamp3" title="${esc(b.next_step)}">${esc(b.next_step)}</span></p>`:""}</section>
@@ -2436,13 +2453,21 @@ function vChanges(){
     h+=`<div class="logrow"><span class="faint">${esc(new Date(e.at).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}))}</span><span>${esc(e.person||"Someone")}</span><span>${esc(e.label||e.what)}: <b>${esc(e.field)}</b> ${esc(e.old)} → ${esc(e.new)}</span></div>`}
   return h+`</div>`}
 function vSettings(only,bare){
-  let tabs=[["steps","SOW steps"],["changes","Change log"],["lists","Lists"],["templates","Task templates"],["access","Access setup"],["nobrand","Needs a brand"],["export","Export and backup"]];
+  let tabs=[["steps","SOW steps"],["changes","Change log"],["pages","Pages"],["lists","Lists"],["templates","Task templates"],["access","Access setup"],["nobrand","Needs a brand"],["export","Export and backup"]];
   if(!canEdit)tabs=tabs.filter(x=>x[0]==="changes");
   if(!only&&!tabs.some(x=>x[0]===setTab))setTab=tabs[0][0];
   const setTab0=setTab;if(only)setTab=only;
   let h=bare?"":`<h1>Settings</h1><p class="sub">How VALFLO is set up: the onboarding steps, the full change history, the lists in every dropdown, task templates, access rules and backups. Changes here apply to everyone.</p><div class="tabs">${tabs.map(([k,l])=>`<button class="${setTab===k?"on":""}" data-act="settab" data-tab="${k}">${esc(l)}</button>`).join("")}</div>`;
   if(setTab==="steps"){h+=vStepsAdmin().replace('<h1 style="margin:0">SOW steps</h1>','<h2 style="margin:0;font-size:18px">SOW steps</h2>')}
   else if(setTab==="changes"){h+=vChanges().replace(/^<h1>[^<]*<\/h1>/,"")}
+  else if(setTab==="pages"){const seg=(grp,k,choices)=>{const r=pageRule(grp,k);return`<div class="pgseg" role="group" aria-label="Who sees it">${choices.map(([v,l])=>`<button class="${r===v?(v==="off"?"on off":"on"):""}" data-act="pgset" data-g="${grp}" data-k="${k}" data-v="${v}" aria-pressed="${r===v}">${l}</button>`).join("")}</div>`};
+    const C=[["everyone","Everyone"],["admins","Admins only"],["off","Off"]];
+    const row=(name,desc,ctl)=>`<div class="pgrow"><div><b>${esc(name)}</b><small>${esc(desc)}</small></div>${ctl}</div>`;
+    h+=`<div class="pgcard"><div class="pgh"><b>Menu pages</b><p>Choose who sees each page in the left menu. A page that is off leaves the menu and its link opens My tasks instead. Nothing is deleted; turn it back on any time. Admins always see every page, marked Off or Admins in the menu.</p></div>
+     ${row("My tasks","Each person's own work. It is where everyone lands",`<span class="pglock">Always on for everyone</span>`)}
+     ${PAGE_MENU.map(([k,l,d,lead])=>row(l,d,seg("menu",k,lead?[["everyone","Everyone"],["leaders","Leadership tick only"],["admins","Admins only"],["off","Off"]]:C))).join("")}
+     ${row("Org structure","Team members and access",`<span class="pglock">Admins only, always</span>`)}${row("Settings","This page",`<span class="pglock">Admins only, always (so nobody locks themselves out)</span>`)}</div>
+     <div class="pgcard"><div class="pgh"><b>Brand page sections</b><p>The sections on every brand page. A section that is off is hidden on every brand.</p></div>${PAGE_BRAND.map(([k,l,d])=>row(l,d,seg("brand",k,C))).join("")}</div>`}
   else 
   if(setTab==="people"){const ps=people();
     h+=`<div class="row" style="margin-bottom:10px"><button class="btn pri" data-act="add-person">Add person</button><span class="muted">Unconfirmed names came from the Excel. Mark each as team, external or group. Aliases let one person match other spellings.</span></div>
@@ -2729,6 +2754,8 @@ document.addEventListener("click",e=>{
   else if(act==="mine-add"){const st=a.dataset.st,b0=a.dataset.b;const bs=brandList();formBox("New card",`<div class="f"><label for="n-title">Title</label><input id="n-title" name="title" required></div><div class="f"><label for="n-br">Brand</label><select id="n-br" name="brand">${bs.map(b=>`<option value="${esc(b.id)}" ${b.id===b0?"selected":""}>${esc(b.name)}</option>`).join("")}</select></div><div class="f"><label for="n-dep">Team</label><select id="n-dep" name="department">${opts(DEPTS(),DEPTS()[0],false)}</select></div><div class="f"><label for="n-dl">Due</label><input id="n-dl" name="deadline" type="date"></div>`,"Add card",
     v=>{if(!v.title){toast("Give the card a name.");return false}if(!me){toast("Pick your name first (Which one is you?).");return false}const status=st&&L("task_status").includes(st)&&st!=="Blocked"?st:(L("task_status")[0]||"Not Started");
       create("tasks",null,{brand:v.brand,department:v.department,title:v.title,owner:me,support:[],status,priority:"Medium",start:"",deadline:v.deadline,notes:"",brief_link:"",creative_link:"",blocker:null,campaign:"",list:"",checklist:[],source:"Added in tracker"},v.title)})}
+  else if(act==="pgset"){if(!canEdit)return;const cur=S.config.pages||{};const g=a.dataset.g;const next=Object.assign({},cur,{[g]:Object.assign({},cur[g]||{},{[a.dataset.k]:a.dataset.v})});
+    const label="Pages: "+((g==="menu"?PAGE_MENU:PAGE_BRAND).find(x=>x[0]===a.dataset.k)||[0,a.dataset.k])[1]+" "+a.dataset.v;if(S.config.pages)save("config","pages",{[g]:next[g]},label);else create("config","pages",next,label)}
   else if(act==="pgsize"){ls.set("vt-rows",a.dataset.v);for(const k in pager)pager[k].page=1;render()}
   else if(act==="pgp"){const k=a.dataset.k;(pager[k]||(pager[k]={})).page=+a.dataset.v;render();const m=$("#main");if(m)m.scrollTop=0}
   else if(act==="bpgroup"){const g=a.dataset.g;bpOpenG=g==="*"||g===""?g:(bpOpenG===g?"":g);render()}
