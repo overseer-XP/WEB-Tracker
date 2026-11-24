@@ -988,6 +988,44 @@ table.sowl tbody tr:nth-child(even) td{background:color-mix(in srgb,var(--panel2
 table.sowl tbody tr:hover td{background:color-mix(in srgb,var(--blue) 6%,var(--panel))}
 table.sowl td+td{box-shadow:inset 1px 0 0 color-mix(in srgb,var(--line) 70%,transparent)}
 table.sowl td:first-child .bname{font-size:15px}
+
+/* number cards */
+.mstat{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:2px 0 14px}
+.mst{all:unset;cursor:pointer;display:flex;flex-direction:column;gap:2px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.mst:hover{border-color:var(--accent)}.mst:focus-visible{outline:2px solid var(--accent)}
+.mstl{font-size:12.5px;font-weight:600;color:var(--muted)}.mst b{font-size:26px;line-height:1.1;font-variant-numeric:tabular-nums}.mst small{font-size:12px;color:var(--muted)}
+.mst.m-bad b{color:var(--bad)}.mst.m-warn b{color:var(--warn)}
+@media (max-width:760px){.mstat{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* board columns */
+.mineb .kcol{background:color-mix(in srgb,var(--ct) 9%,#E9EDF5)!important}
+.mineb .kcol header{border-bottom:0!important;margin-bottom:4px}
+.mineb .kcol header::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--ct);flex:none}
+.mineb .kcol header .kn{margin-left:4px!important}
+.khadd{all:unset;cursor:pointer;margin-left:auto;width:26px;height:26px;border-radius:7px;display:grid;place-items:center;color:var(--muted);font-weight:700;font-size:16px}.khadd:hover{background:var(--panel);color:var(--ink)}.khadd:focus-visible{outline:2px solid var(--accent)}
+.mst.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+/* stage tabs */
+.stabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin:10px 0 12px}
+.stabs button{all:unset;cursor:pointer;padding:8px 12px;font:600 13px var(--f-ui);color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.stabs button span{font-size:11.5px;font-weight:700;background:var(--panel2);border-radius:999px;padding:1px 7px;margin-left:4px;color:var(--ink)}
+.stabs button.on{color:var(--ink);border-bottom-color:var(--accent)}.stabs button.on span{background:var(--accent)!important;color:#fff!important}
+/* alert line */
+.salert{display:flex;align-items:center;gap:12px;background:var(--badBg);border:1px solid color-mix(in srgb,var(--bad) 25%,transparent);color:var(--ink);border-radius:12px;padding:10px 14px;margin:6px 0 12px;font-size:13.5px}
+.salert .btn{margin-left:auto}.salert-i{width:22px;height:22px;border-radius:50%;background:var(--bad);color:#fff;display:grid;place-items:center;font-weight:800;flex:none}
+
+/* one look for every control */
+.btn,select:not(.ps),input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=color]):not([type=range]){box-sizing:border-box;min-height:34px;border:1px solid var(--line2)!important;border-radius:8px!important;font:500 13.5px/1.2 var(--f-ui)!important;color:var(--ink);background-color:var(--panel)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 14px!important;font-weight:600!important;box-shadow:0 1px 1px rgb(16 24 40/.05)}
+.btn.sm{min-height:28px;padding:0 10px!important;font-size:12.5px!important;border-radius:7px!important}
+.btn.pri{border-color:var(--accent)!important}.btn.quiet{border-color:transparent!important;box-shadow:none}
+select:not(.ps){appearance:none;-webkit-appearance:none;padding:0 32px 0 12px!important;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2367708A' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center}
+input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=color]):not([type=range]){padding:0 12px!important}
+textarea{border:1px solid var(--line2)!important;border-radius:8px!important;padding:8px 12px!important;font:500 13.5px/1.45 var(--f-ui)!important}
+.btn:hover,select:not(.ps):hover,input:not([type=checkbox]):not([type=radio]):hover{border-color:var(--muted)!important}
+.btn:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.tl{gap:8px!important;font:500 13px var(--f-ui);color:var(--muted)}
+.toolbar,.kbbar{gap:10px 18px!important}
+.sgl li{grid-template-columns:22px minmax(0,1fr) 92px 110px!important}
+.admbox select{max-width:190px!important;min-height:28px;font-size:12.5px!important;padding:0 26px 0 8px!important;background-position:right 8px center}
 </style>
 
 <div class="app">
@@ -1293,11 +1331,12 @@ function vMine(){
   const tabTip=a=>`${a.length} open${nBlk(a)?`, ${nBlk(a)} blocked`:""}${nLate(a)?`, ${nLate(a)} past the due date`:""}`;
   const tabBtn=(k,l,a)=>`<button data-act="minetab" data-v="${k}" class="${mineTab===k?"on":""}" title="${esc(tabTip(a))}">${l}</button>`;
   h+=`<div class="seg viewseg" role="group" aria-label="Which work">${tabBtn("onboarding","Brand onboarding",onb)}${tabBtn("live","Onboarded brands",live)}${tabBtn("all","All my work",items)}</div>`;
-  const list=mineTab==="onboarding"?onb:mineTab==="live"?live:items;
+  const MSTF={"Blocked":i=>i.blocked,"Late":i=>!i.blocked&&i.flag==="Overdue","Due this week":i=>{const n=dayDiff(i.due);return n!==null&&n>=0&&n<=7},"No date":i=>!i.due};
+  const list0=mineTab==="onboarding"?onb:mineTab==="live"?live:items;const mf=MSTF[window.__mst];const list=mf?list0.filter(i=>!holdOf(i.brand)&&mf(i)):list0;
   h+=`<div class="toolbar">
     <label class="tl">Lists <select data-act="mcolsel" id="m-cols">${MINE_COLS.map(([k,l])=>`<option value="${k}" ${mineCols===k?"selected":""}>${l}</option>`).join("")}</select></label>
     <label class="tl">Sort by <select data-act="msort" id="m-sort">${MINE_SORTS.map(([k,l])=>`<option value="${k}" ${mineSort===k?"selected":""}>${l}</option>`).join("")}</select></label>
-    <label class="tl">Vertical <select data-act="mvertsel" id="m-vert"><option value="">All</option>${VERTS().map(v=>`<option ${mineVert===v?"selected":""}>${esc(v)}</option>`).join("")}</select></label></div>`;
+    ${mf?`<button class="lchip on" data-act="mst" data-v="${esc(window.__mst)}" title="Show all cards">Showing: ${esc(window.__mst)} ×</button>`:""}<label class="tl">Vertical <select data-act="mvertsel" id="m-vert"><option value="">All</option>${VERTS().map(v=>`<option ${mineVert===v?"selected":""}>${esc(v)}</option>`).join("")}</select></label></div>`;
   if(!list.length)return h+`<div class="tw"><div class="empty">${mineVert?`Nothing open for ${esc(me)} in ${esc(mineVert)} here.`:mineTab==="onboarding"?`No onboarding work for ${esc(me)} right now.`:mineTab==="live"?`No work on onboarded brands for ${esc(me)} right now.`:`Nothing open for ${esc(me)}. When a task or step is assigned to you it shows here.`}</div></div>`;
   return h+mineBoard(list.slice().sort(mineCmp(mineSort)),mineCols)}
 /* My tasks is a board only. Columns by status, brand or team; cards inside a column follow the sort. */
@@ -1328,11 +1367,13 @@ function mineBoard(items,by){let cols;
   const hint=by==="brand"?"One column per brand, the brands that need you most first. Cards follow the sort, so you can see which to do first for each brand.":by==="team"?"One column per team, plus your onboarding steps and platform access steps. Cards follow the sort.":"One column per status, Blocked first. Change a card's status to move it.";
   const head=c=>{const name=by==="brand"?`<a class="bname" href="#brand-${esc(c.k)}">${esc(c.label)}</a>`:`<b>${esc(c.label)}</b>`;
     const sub=by==="brand"&&holdOf(c.k)?`<span class="pill s-off">On hold</span>`:"";
-    return`<header>${name}<span class="kn">${c.items.length}</span>${sub}</header>`};
+    const tint=by==="status"?({"Blocked":"var(--bad)","In Progress":"var(--blue)","Complete":"var(--ok)"})[c.k]||"var(--line2)":by==="team"?teamColor(c.k):"var(--blue)";
+    const plus=canWrite&&by!=="team"?`<button class="khadd" data-act="mine-add" data-st="${esc(by==="status"?c.k:"")}" data-b="${esc(by==="brand"?c.k:"")}" aria-label="Add a card to ${esc(c.label)}" title="Add a card">+</button>`:"";
+    return`<header>${name}<span class="kn">${c.items.length}</span>${sub}${plus}</header>`};
   const card=it=>it.kind==="task"&&S.tasks[it.id]?kbCard(Object.assign({_id:it.id},S.tasks[it.id]),true,by==="team",by==="brand"):itemCard(it,by);
   const drop=c=>by==="status"&&canWrite?`data-mst="${esc(c.k)}"`:"";
   const add=c=>canWrite&&by!=="team"?`<button class="kadd" data-act="mine-add" data-st="${esc(by==="status"?c.k:"")}" data-b="${esc(by==="brand"?c.k:"")}">+ Add a card</button>`:"";
-  return`<div class="kb mineb tb">${cols.map(c=>`<section class="kcol ${by==="brand"&&holdOf(c.k)?"held":""}" aria-label="${esc(c.label)}">${head(c)}<div class="kcards" ${drop(c)}>${c.items.map(card).join("")||`<span class="kempty">No cards</span>`}</div>${add(c)}</section>`).join("")}</div>`}
+  return`<div class="kb mineb tb">${cols.map(c=>`<section class="kcol ${by==="brand"&&holdOf(c.k)?"held":""}" aria-label="${esc(c.label)}" style="--ct:${by==="status"?({"Blocked":"var(--bad)","In Progress":"var(--blue)","Complete":"var(--ok)"})[c.k]||"var(--line2)":by==="team"?teamColor(c.k):"var(--blue)"}">${head(c)}<div class="kcards" ${drop(c)}>${c.items.map(card).join("")||`<span class="kempty">No cards</span>`}</div>${add(c)}</section>`).join("")}</div>`}
 /* onboarding steps and access steps on My tasks: same card look, they open their own panel */
 function itemCard(it,by){const role=ROLE_SHORT[it.role]||it.role;
   return`<div class="kc tc" data-act="open" data-kind="${it.kind==="access"?"access":"step"}" data-id="${esc(it.id)}" data-code="${esc(it.code||"")}" tabindex="0" role="button" aria-label="${esc(it.title)}">
@@ -1351,8 +1392,9 @@ function mineUpdate(all){const k="vt-seen-"+me;if(sinceTs===null||sinceTs.who!==
   const tag=it=>{if(it.blocked)return`<span class="tgx r">Blocked</span>`;const n=dayDiff(it.due);if(n!==null&&n<0)return`<span class="tgx r">${-n} day${n===-1?"":"s"} late</span>`;if(n!==null)return`<span class="tgx ${n<=7?"a":"b"}">${n===0?"Today":n===1?"Tomorrow":esc(fmtD(it.due,true))}</span>`;return`<span class="tgx a">No date</span>`};
   const since=sinceTs.t?(ch.length||men.length?`Since ${esc(agoText(sinceTs.t))}: ${ch.length?`<b>${ch.length} change${ch.length>1?"s":""}</b> to your work by others`:""}${ch.length&&men.length?", ":""}${men.length?`<b>${men.length} new mention${men.length>1?"s":""}</b>`:""}. `:`Nothing changed since ${esc(agoText(sinceTs.t))}. `):"";
   return`<div class="mupd"><div class="mupdh"><b>Your update</b><span>Refreshed ${esc(when)}, ${esc(z.tl)} ${esc(z.tz)}</span></div>
-   <p class="mupdl">${since}Now: ${blk?`<b class="c-bad">${blk} blocked</b>, `:""}${late?`<b class="c-bad">${late} late</b>, `:""}${wk} due this week, ${nod} with no date.</p>
-   ${top.length?`<div class="mupdk">Do these first</div><ol class="mpri">${top.map((it,i)=>`<li class="${it.blocked||it.flag==="Overdue"?"hot":""}"><span class="mi">${i+1}</span><a href="#brand-${esc(it.brand)}" data-act="goto-item" data-kind="${it.kind}" data-id="${esc(it.id)}" data-code="${esc(it.code||"")}" class="bname">${esc(it.title)}</a><span class="mm">${esc(bname(it.brand))}${it.priority?" · "+esc(it.priority):""}</span>${tag(it)}<span class="mm">${esc(it.blocked&&it.blocker&&it.blocker.person?"Waiting on "+it.blocker.person:ROLE_SHORT[it.role]||it.role)}</span></li>`).join("")}</ol>`:`<p class="faint" style="margin:0">Nothing open for you. New work shows here first.</p>`}</div>`}
+   ${since?`<p class="mupdl">${since}</p>`:""}
+   <div class="mstat">${[["Blocked",blk,"bad","Waiting on someone"],["Late",late,"bad","Past the due date"],["Due this week",wk,"warn","Next 7 days"],["No date",nod,"","Needs a due date"]].map(([l,n,k,s])=>`<button class="mst ${n&&k?"m-"+k:""} ${window.__mst===l?"on":""}" data-act="mst" data-v="${esc(l)}" aria-pressed="${window.__mst===l}"><span class="mstl">${l}</span><b>${n}</b><small>${s}</small></button>`).join("")}</div>
+   ${top.length?"":`<p class="faint" style="margin:0">Nothing open for you. New work shows here first.</p>`}</div>`}
 
 function itemHtml(it,cl,noBrand){
   const brand=`<a href="#brand-${esc(it.brand)}" class="muted">${esc(bname(it.brand))}</a>`;
@@ -1663,7 +1705,7 @@ function sowStrip(bs){const sowTopF=ls.get("vt-sowtop")==="folded";const xs=bs.f
   const late=sig.filter(x=>dayDiff(x.s.target_sign)<0).length;const SGP=5;const sgPages=Math.max(1,Math.ceil(sig.length/SGP));const sgPage=Math.min(sgPages,Math.max(1,(window.__sgp||1)));const show=sig.slice((sgPage-1)*SGP,sgPage*SGP);
   const rel=n=>n<0?`${-n} day${n===-1?"":"s"} late`:n===0?"Today":n===1?"Tomorrow":`In ${n} days`;
   const t1=`<div class="it s7 tint-b sgn">${IB.head("Signing order",`Past target and due this month, earliest first`,sig.length?`${sig.length} to sign${late?` · ${late} late`:""}`:"")}
-   ${show.length?`<ol class="sgl">${show.map((x,k)=>{const n=dayDiff(x.s.target_sign);return`<li class="${n<0?"late":n<=7?"soon":""}"><span class="sgn-i">${(sgPage-1)*SGP+k+1}</span><a class="bname" href="#${brandHash(x.b.id,"sow")}">${esc(x.b.name)}</a><span class="sgn-d">${esc(fmtD(x.s.target_sign,true))}</span><span class="sgn-r">${rel(n)}</span>${pill(x.s.stage||"Not Started")}</li>`}).join("")}</ol>${sgPages>1?`<div class="sgpg"><span class="faint">${(sgPage-1)*SGP+1} to ${Math.min(sig.length,sgPage*SGP)} of ${sig.length}</span><button data-act="sgpg" data-v="${sgPage-1}" aria-label="Previous" ${sgPage<=1?"disabled":""}>‹</button>${Array.from({length:sgPages},(_,i)=>`<button data-act="sgpg" data-v="${i+1}" class="${i+1===sgPage?"on":""}" aria-current="${i+1===sgPage}">${i+1}</button>`).join("")}<button data-act="sgpg" data-v="${sgPage+1}" aria-label="Next" ${sgPage>=sgPages?"disabled":""}>›</button></div>`:""}`:`<span class="itx faint">Nothing due to sign this month.</span>`}</div>`;
+   ${show.length?`<ol class="sgl">${show.map((x,k)=>{const n=dayDiff(x.s.target_sign);return`<li class="${n<0?"late":n<=7?"soon":""}"><span class="sgn-i">${(sgPage-1)*SGP+k+1}</span><a class="bname" href="#${brandHash(x.b.id,"sow")}">${esc(x.b.name)}</a><span class="sgn-d">${esc(fmtD(x.s.target_sign,true))}</span><span class="sgn-r">${rel(n)}</span></li>`}).join("")}</ol>${sgPages>1?`<div class="sgpg"><span class="faint">${(sgPage-1)*SGP+1} to ${Math.min(sig.length,sgPage*SGP)} of ${sig.length}</span><button data-act="sgpg" data-v="${sgPage-1}" aria-label="Previous" ${sgPage<=1?"disabled":""}>‹</button>${Array.from({length:sgPages},(_,i)=>`<button data-act="sgpg" data-v="${i+1}" class="${i+1===sgPage?"on":""}" aria-current="${i+1===sgPage}">${i+1}</button>`).join("")}<button data-act="sgpg" data-v="${sgPage+1}" aria-label="Next" ${sgPage>=sgPages?"disabled":""}>›</button></div>`:""}`:`<span class="itx faint">Nothing due to sign this month.</span>`}</div>`;
   const ps=phases();const far=bid=>{let k=-1;ps.forEach((p,i)=>{if(p.steps.some(s=>{const v=stepState(bid,s.code).status;return v==="Done"||v==="In Progress"}))k=i});return k};
   const cnt=ps.map((p,i)=>({p,i,n:xs.filter(b=>far(b.id)===i).length}));const signed=xs.filter(b=>(S.sow[b.id]||{}).stage==="Signed").length;const mx=Math.max(1,...cnt.map(x=>x.n));
   const t2=`<div class="phstrip" role="group" aria-label="Where brands are"><span class="phl">Where brands are <small>furthest phase reached</small></span>${cnt.map(x=>`<span class="phs g${x.i%7}" title="${esc((x.i+1)+" "+(x.p.name||"")+": "+x.n+" brands")}"><b>${x.n}</b>${x.i+1} ${esc(x.p.name||"")}</span>`).join("")}<span class="phl r">${signed} signed</span></div>`;
@@ -1676,12 +1718,15 @@ function sowStrip(bs){const sowTopF=ls.get("vt-sowtop")==="folded";const xs=bs.f
 function vSow(){
   const bs=brandList().filter(b=>!isInternal(b));
   const rows=bs.map(b=>({b,s:Object.assign({brand:b.id},S.sow[b.id]||{})})).sort((x,y)=>(onHold(x.b)?1:0)-(onHold(y.b)?1:0)||String(x.s.target_sign||"9999").localeCompare(String(y.s.target_sign||"9999")));
-  let h=`<h1>SOW tracker</h1>`+sowStrip(bs)+viewSeg("sowview",sowView,[["board","Progress board"],["list","Sign dates and blockers"]]);
+  const lateN=bs.filter(b=>!onHold(b)&&(S.sow[b.id]||{}).stage!=="Signed"&&dayDiff((S.sow[b.id]||{}).target_sign)<0).length;
+  let h=`<h1>SOW tracker</h1>`+(lateN?`<div class="salert"><span class="salert-i" aria-hidden="true">!</span><span><b>${lateN} SOW${lateN>1?"s are":" is"} past the target sign date.</b> Check the dates and next steps for each.</span><button class="btn sm" data-act="sowview" data-v="list">See the list</button></div>`:"")+sowStrip(bs)+viewSeg("sowview",sowView,[["board","Progress board"],["list","Sign dates and blockers"]]);
   if(sowView==="board")return h+sowBoard();
-  h+=`<div class="sowkey">Dates: <b class="dc ok">green</b> on time <b class="dc warn">amber</b> due within 7 days <b class="dc bad">red</b> past the date</div><div class="tw"><table class="sowl"><thead><tr><th>Brand and founder</th><th>Stage</th><th>Sign dates</th><th>Next steps</th><th>Blocker</th><th>Documents</th></tr></thead><tbody>`;
+  const stg=window.__stg||"";const cnt=k=>rows.filter(r=>(r.s.stage||"Not Started")===k).length;
+  h+=`<div class="stabs" role="tablist">${[["","All",rows.length]].concat(L("sow_stage").map(k=>[k,k,cnt(k)]).filter(x=>x[2])).map(([v,l,n])=>`<button class="${stg===v?"on":""}" data-act="stg" data-v="${esc(v)}">${esc(l)} <span>${n}</span></button>`).join("")}</div>`;
+  h+=`<div class="tw"><table class="sowl"><thead><tr><th>Brand and founder</th><th>Stage</th><th>Sign dates</th><th>Next steps</th><th>Blocker</th><th>Documents</th></tr></thead><tbody>`;
   const tstep=(lab,d,done)=>{if(!d)return`<div class="tsl"><span class="tsd none"></span><span class="faint">${lab} not set</span></div>`;const n=dayDiff(d);const k=done?"done":n<0?"bad":n<=7?"warn":"ok";
     const g=done?(lab==="Sign"?"Signed":"Done"):n<0?`${-n} day${n===-1?"":"s"} late`:n===0?"today":`${n} day${n===1?"":"s"} left`;return`<div class="tsl"><span class="tsd ${k}"></span><span>${lab} ${esc(fmtD(d,true))}</span><small class="dc ${k}">${g}</small></div>`};
-  const pgL=paged("sowl",rows);for(const{b,s}of pgL.rows){const fz=b.founder_zone||"";const fc=b.founder_country||"";
+  const pgL=paged("sowl",(window.__stg||"")?rows.filter(r=>(r.s.stage||"Not Started")===window.__stg):rows);for(const{b,s}of pgL.rows){const fz=b.founder_zone||"";const fc=b.founder_country||"";
     const who=b.founder?`<div class="lfd"><span class="lfk">Founder</span>${esc(b.founder)}</div>${fc?`<div class="lfd"><span class="lfk">Country</span>${esc(fc)}</div>`:""}${fz?`<div class="lfd"><span class="lfk">Their time</span>${esc(clockTime(fz))} ${esc(tzAbbr(fz))}</div>`:""}${!fc&&!fz?`<div class="lfd"><button class="linkb" data-act="founder-geo" data-id="${esc(b.id)}">+ Country and time zone</button></div>`:""}`:`<div class="lfd faint">No founder set</div>`;
     const signed=s.stage==="Signed";
     h+=`<tr><td><a class="bname" href="#${brandHash(b.id,"sow")}" title="Open ${esc(b.name)} Road to SOW">${esc(b.name)}</a>${onHold(b)?` <span class="tag">On hold</span>`:""}<button class="linkb lfe" data-act="open" data-kind="sow" data-id="${esc(b.id)}">Edit</button>${who}</td><td>${statusSel("sow",b.id,s.stage||"Not Started",L("sow_stage"),canEdit&&canWrite)}</td>
@@ -2896,6 +2941,8 @@ document.addEventListener("click",e=>{
   else if(act==="founder-geo"){const id=a.dataset.id;const b=S.brands[id];if(!b)return;
     formBox("Founder location · "+b.name,`<div class="f"><label for="n-fc">Country</label><input id="n-fc" name="country" value="${esc(b.founder_country||"")}" placeholder="For example: United Kingdom"></div><div class="f"><label for="n-fz">Time zone</label><select id="n-fz" name="zone"><option value="">Pick a time zone</option>${tzList().map(z=>`<option ${z===b.founder_zone?"selected":""}>${esc(z)}</option>`).join("")}</select></div>`,"Save",v=>{save("brands",id,{founder_country:(v.country||"").trim(),founder_zone:v.zone||""},b.name+" founder location")})}
   else if(act==="nt-more"){const n=a.previousElementSibling;if(n){n.classList.toggle("open");a.textContent=n.classList.contains("open")?"Less":"More"}}
+  else if(act==="mst"){window.__mst=window.__mst===a.dataset.v?"":a.dataset.v;render()}
+  else if(act==="stg"){window.__stg=a.dataset.v;for(const k in pager)pager[k].page=1;render()}
   else if(act==="pgsize"){ls.set("vt-rows",a.dataset.v);for(const k in pager)pager[k].page=1;render()}
   else if(act==="pgp"){const k=a.dataset.k;(pager[k]||(pager[k]={})).page=+a.dataset.v;render();const m=$("#main");if(m)m.scrollTop=0}
   else if(act==="bpgroup"){const g=a.dataset.g;bpOpenG=g==="*"||g===""?g:(bpOpenG===g?"":g);render()}
