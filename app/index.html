@@ -938,24 +938,16 @@ table.sowl .ps{background:transparent!important;border:1px solid var(--line2)!im
 .dslots{display:flex;gap:5px;flex-wrap:nowrap}
 .dsl{all:unset;cursor:pointer;font:600 11.5px var(--f-ui);padding:3px 8px;border-radius:7px;border:1px dashed var(--line2);color:var(--muted);white-space:nowrap}
 .dsl.on{border:1px solid var(--line);background:var(--panel2);color:var(--ink)}.dsl:hover{border-color:var(--blue);color:var(--blue)}
-.board th.gh .ghf{white-space:normal;line-height:1.2}
 
 /* spacing and type pass */
-.lfB thead th{font-size:12.5px!important;font-weight:600!important;color:var(--muted)!important;text-transform:none!important;letter-spacing:0!important;vertical-align:bottom!important;padding-bottom:10px!important}
+.lfB thead th[rowspan]{font-size:12.5px!important;font-weight:600!important;color:var(--muted)!important;text-transform:none!important;letter-spacing:0!important;vertical-align:bottom!important;padding-bottom:10px!important}
 .lfB thead th[rowspan]{vertical-align:bottom!important}
 .lfB .bcard{min-width:150px!important;max-width:170px!important;padding-left:16px!important}.lfB .bcard .bname{font-size:14.5px;font-weight:700;margin:0}
 .lfB th.num,.lfB td.num{text-align:left!important;width:96px!important;min-width:96px!important;padding-left:8px!important;padding-right:20px!important}
 .lfB .rts{align-items:flex-start}.lfB .rts b{font-size:15px}
 .lfB td.bblk{padding-left:4px!important;padding-right:20px!important;min-width:280px!important;max-width:300px!important}.lfB .nt{font-size:13px!important}
-.lfB th.gh{text-align:left!important;padding:10px 12px 2px!important;font-size:13px!important;color:var(--ink)!important}
-.lfB th.gh .ghf{white-space:normal;line-height:1.25;font-size:13px;text-transform:none;letter-spacing:0}
-.lfB th.pc{text-align:left!important;padding:0 12px 10px!important;font-weight:500!important}
-.lfB th.gh,.lfB th.pc,.lfB td.gc{min-width:128px!important}
-.lfB td.gc{text-align:left!important;padding-left:12px!important}
 
 .lfB thead th[rowspan]{font-size:14px!important;font-weight:700!important;color:var(--ink)!important}
-.lfB th.gh,.lfB th.gh .ghf{font-size:14px!important;font-weight:700!important}
-.lfB th.pc{font-size:12.5px!important}
 .lfB td.bblk .nt.open{display:block!important;-webkit-line-clamp:unset!important;overflow:visible}
 .lfB .ntmore{all:unset;cursor:pointer;color:var(--blue)!important;font-size:12px;font-weight:600;margin-top:2px}
 table.board td.bblk button.ntmore{color:var(--blue)!important;font-weight:600}
