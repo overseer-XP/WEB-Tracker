@@ -961,6 +961,7 @@ table.board td.bblk button.ntmore{color:var(--blue)!important;font-weight:600}
 .lfB td.bblk .dslots{border-top:0!important;padding-top:0!important;margin-top:0!important;flex:none}
 .lfB .rts{flex-direction:row;align-items:baseline;gap:5px}.lfB .rts small{display:inline}
 .lfB td.gc{padding-top:6px!important;padding-bottom:6px!important}
+.board td.v46d{min-width:200px}.board td.v46d .dslots{flex-wrap:nowrap}
 </style>
 
 <div class="app">
@@ -2385,20 +2386,19 @@ function sowBoard(){
   const doneAll=g=>live.length&&live.every(r=>g.cols.every(c=>{const v=boardCell(r.b.id,c);return v==="Done"||v==="N/A"||v===""}));
   const G=groups.map((g,i)=>{const auto=doneAll(g);const f=sowFold[g.name];return{g,i,auto,closed:f==="closed"||(f!=="open"&&auto)}});
   const ncol=G.reduce((n,x)=>n+(x.closed?1:x.g.cols.length),0);
-  let h=`
-  <div class="legend">${["Done","In progress","Not done","N/A"].map(v=>`<span><span class="bdl ${BOARD_CLS[v]}">${BOARD_MARK[v]||""}</span>${esc(v)}</span>`).join("")}</div>`+`
+  let h=`<div class="legend">${["Done","In progress","Not done","N/A"].map(v=>`<span><span class="bdl ${BOARD_CLS[v]}">${BOARD_MARK[v]||""}</span>${esc(v)}</span>`).join("")}</div>`+`
   <div class="tbar">${findBox("sow",all.length)}<span class="grow"></span><button class="btn sm quiet" data-act="sow-foldall" data-v="open">Open every phase</button><button class="btn sm quiet" data-act="sow-foldall" data-v="closed">Fold every phase</button></div>
-  <div class="tw tpin"><table class="grid board lfB"><thead><tr><th class="stick" rowspan="2">Brand</th><th rowspan="2" class="num" title="Road to SOW: share of required steps done">Road to SOW</th><th rowspan="2">Notes and links</th>${G.map(x=>`<th colspan="${x.closed?1:x.g.cols.length}" class="gh g${x.i%7} ${x.closed?"gfold":""}"><button class="ghf" data-act="sow-fold" data-v="${esc(x.g.name)}" data-c="${x.closed?"open":"closed"}" aria-expanded="${!x.closed}" title="${x.closed?"Open":"Fold"} ${esc(x.g.name)}"><svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M4 2.5 7.5 6 4 9.5"/></svg>${esc(x.g.name)}</button></th>`).join("")}</tr>
-  <tr>${G.map(x=>x.closed?`<th class="pc pcf g${x.i%7} gs"><span>${x.g.cols.length} steps</span></th>`:x.g.cols.map((c,ci)=>`<th class="pc g${x.i%7} ${ci===0?"gs":""}" title="${esc(c.label)}"><span>${esc(colLabel(c))}</span></th>`).join("")).join("")}</tr></thead><tbody>`;
+  <div class="tw tpin"><table class="grid board"><thead><tr><th class="stick" rowspan="2">Brand</th><th rowspan="2">SOW stage</th><th rowspan="2" class="num" title="Road to SOW: share of required steps done">Road to SOW</th>${G.map(x=>`<th colspan="${x.closed?1:x.g.cols.length}" class="gh g${x.i%7} ${x.closed?"gfold":""}"><button class="ghf" data-act="sow-fold" data-v="${esc(x.g.name)}" data-c="${x.closed?"open":"closed"}" aria-expanded="${!x.closed}" title="${x.closed?"Open":"Fold"} ${esc(x.g.name)}"><svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M4 2.5 7.5 6 4 9.5"/></svg>${esc(x.g.name)}${x.auto?` <span class="gdone">done</span>`:""}</button></th>`).join("")}</tr>
+  <tr>${G.map(x=>x.closed?`<th class="pc g${x.i%7} gs"><span>${x.g.cols.length} steps</span></th>`:x.g.cols.map((c,ci)=>`<th class="pc g${x.i%7} ${ci===0?"gs":""}" title="${esc(c.label)}"><span>${esc(colLabel(c))}</span></th>`).join("")).join("")}</tr></thead><tbody>`;
   for(const{b,pct}of pg.rows){const s=S.sow[b.id]||{};const hold=onHold(b);
-    h+=`<tr class="${hold?"held":""}"><td class="stick bcard"><a class="bname" href="#${brandHash(b.id,"sow")}">${esc(b.name)}</a>${hold?`<span class="pill s-off">On hold</span>`:""}</td><td class="num">${`<div class="rts"><b>${pct}%</b><small>of steps</small></div>`}</td><td class="bblk"><div class="nlr"><div class="ntw">${(s.blocker?`<div class="nt" title="${esc(s.blocker)}">${esc(s.blocker)}</div><button class="ntmore" data-act="nt-more" style="color:var(--blue)" hidden>More</button>`:`<div class="nt none">No notes</div>`)}</div><div class="dslots">${SOW_DOCS().map(k=>{const u=sowDocs(b.id)[k];const ab=k.split(/\s+/).length>1?k.split(/\s+/).map(w=>w[0]).join("").toUpperCase():k;return u?`<a class="dsl on" href="${esc(u)}" target="_blank" rel="noopener" title="Open ${esc(k)}">↗ ${esc(ab)}</a>`:`<button class="dsl" data-act="sow-doc" data-id="${esc(b.id)}" data-v="${esc(k)}" title="Add the ${esc(k)} link">+ ${esc(ab)}</button>`}).join("")}</div></div></td>`;
+    h+=`<tr class="${hold?"held":""}"><td class="stick"><a class="bname" href="#${brandHash(b.id,"sow")}" title="Open ${esc(b.name)} Road to SOW">${esc(b.name)}</a></td><td>${hold?`<span class="pill s-off">On hold</span>`:pill(s.stage||"Not Started")}</td><td class="num"><b>${pct}%</b></td>`;
     for(const x of G){const gi=groups.indexOf(x.g);
       if(x.closed){const vs=x.g.cols.map(c=>boardCell(b.id,c)).filter(v=>v&&v!=="N/A");const dn=vs.filter(v=>v==="Done").length;const v=!vs.length?"N/A":dn===vs.length?"Done":vs.some(v=>v!=="Not done")?"In progress":"Not done";
         h+=`<td class="gc gs g${x.i%7}"><button class="bd ${BOARD_CLS[v]}" data-act="sow-fold" data-v="${esc(x.g.name)}" data-c="open" title="${esc(x.g.name+": "+dn+" of "+vs.length+" done. Click to open")}">${dn}/${vs.length}</button></td>`;continue}
       x.g.cols.forEach((c,ci)=>{const v=boardCell(b.id,c);
       h+=`<td class="gc ${ci===0?"gs g"+(x.i%7):""}"><button class="bd ${BOARD_CLS[v]}" data-act="board" data-b="${esc(b.id)}" data-c="${gi}.${ci}" title="${esc(colLabel(c)+": "+(v||"No steps linked"))}">${esc(BOARD_WORD[v]||"")}<span class="sr">${esc(colLabel(c)+" "+v)}</span></button></td>`})}
     h+=`</tr>`}
-  if(!rows.length)h+=`<tr><td colspan="${ncol+5}"><div class="empty">${tq.sow?"No brand matches that name.":"No brands yet."}</div></td></tr>`;
+  if(!rows.length)h+=`<tr><td colspan="${ncol+3}"><div class="empty">${tq.sow?"No brand matches that name.":"No brands yet."}</div></td></tr>`;
   return h+`</tbody></table></div>`+pg.html}
 /* SOW documents: the kinds come from Settings > Lists (SOW documents); each brand keeps a link per kind, plus any others */
 const SOW_DOCS=()=>L("sow_docs");
