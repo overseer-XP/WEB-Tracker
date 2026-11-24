@@ -863,6 +863,63 @@ table.orgt td{vertical-align:top;font-size:13px}table.orgt td small{display:bloc
 .pgseg{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}.pgseg button{border:0;background:var(--panel);padding:7px 12px;font:500 12.5px var(--f-ui);color:var(--ink);cursor:pointer}.pgseg button+button{border-left:1px solid var(--line)}
 .pgseg button.on{background:var(--soft,#E4ECFB);color:var(--blue);font-weight:700}.pgseg button.on.off{background:var(--badBg);color:var(--bad)}.pglock{color:var(--muted);font-size:12.5px}
 .pgoff{font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:1px 6px;background:rgba(255,255,255,.14);color:#F3B98C;margin-left:6px}
+
+/* ---- SOW tracker refresh ---- */
+.phstrip{display:flex;align-items:stretch;gap:6px;flex-wrap:wrap;margin:4px 0 12px}
+.phstrip .phl{display:flex;flex-direction:column;justify-content:center;font-weight:700;font-size:13.5px;padding-right:6px}.phstrip .phl small{font-weight:500;color:var(--muted);font-size:12px}.phstrip .phl.r{margin-left:auto;font-weight:600;color:var(--muted)}
+.phs{display:flex;align-items:center;gap:7px;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--g);border-radius:9px;padding:5px 10px;font-size:12.5px;color:var(--muted)}.phs b{font-size:16px;color:var(--ink)}
+.sstrip.one{grid-template-columns:1fr!important}.sstrip.one .it.s7{grid-column:1/-1!important}
+.sstrip.one .sgl li{padding:4px 8px}
+.board td{border-bottom:0!important}.board td.gs{border-left:0!important}.board tbody tr:hover td{background:color-mix(in srgb,var(--blue) 4%,var(--panel))}
+.board th.num,.board td.num{width:70px;min-width:70px;text-align:right;padding-right:14px}
+.board td.bblk{min-width:190px;max-width:220px;font-size:12.5px}.board td.bdocs{min-width:110px;max-width:160px}.board td.bdocs .dchips{flex-wrap:nowrap}
+
+.sstrip.two{grid-template-columns:repeat(12,minmax(0,1fr))!important}.sstrip.two .it.s7{grid-column:span 7!important;position:relative;background:var(--panel)!important}.sstrip.two .it.s5{grid-column:span 5!important;background:var(--panel)!important}
+.sghide{position:absolute;right:12px;bottom:10px}
+.sgn .sgl li{grid-template-columns:22px 150px 74px 96px auto!important;justify-content:start;gap:10px!important;padding:5px 8px!important}.bdl.bd-not{background:transparent!important;border:1px solid var(--line2)}
+.sgn .sgl li .sgn-d{color:var(--muted);font-size:12.5px}.sgn .sgl li .sgn-r{min-width:82px}
+.sgw .sgwh b{display:block;font-size:15px}.sgw .sgwh span{color:var(--muted);font-size:12.5px}
+.dn{display:flex;align-items:center;gap:16px;margin-top:6px}.dnl{list-style:none;margin:0;padding:0;flex:1;display:grid;gap:3px}.dnl li{display:grid;grid-template-columns:10px 1fr auto;gap:8px;align-items:center;font-size:12.5px}.dnl li i{width:10px;height:10px;border-radius:3px}.dnl li.z{opacity:.45}.dnl li.sig{border-top:1px solid var(--line);padding-top:4px;margin-top:2px}.dnl li.sig i{background:var(--ok)}
+.sgfold{display:none;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin-bottom:10px;font-size:13px}.sgfold .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin:0 3px 0 6px}.sgfold button{margin-left:auto}
+.sgwrap.folded .sgfold{display:flex}.sgwrap.folded .sstrip{display:none}
+/* calmer board: neutral headers with a thin phase line, quiet To do */
+.board th.gh{background:var(--panel2)!important;border-top:3px solid var(--g)!important;border-bottom:0!important;color:var(--ink)}
+.board th.pc{background:var(--panel2)!important;border-bottom:1px solid var(--line)!important}
+.board th.pc.gs,.board th.gh+th{border-left:0!important}
+.bd.bd-not{background:transparent!important;border:1px solid var(--line2)!important;color:var(--muted)!important}
+.bd.bd-na{background:transparent!important;color:var(--muted)!important}
+
+/* round 3: one colour for the signing list, quiet stage chips, even column spacing */
+.sgn .sgl li .sgn-i,.sgn .sgl li.late .sgn-i{background:var(--panel2)!important;color:var(--muted)!important}
+.sgn .sgl li .sgn-r,.sgn .sgl li.late .sgn-r,.sgn .sgl li.soon .sgn-r{color:var(--ink)!important;font-weight:500!important}
+.sgn .sgl li .sgn-d{color:var(--muted)}
+.sgn .sgl li .pill,.board td .pill{background:transparent!important;border:1px solid var(--line2);color:var(--ink)!important;font-weight:500}
+.sgn{padding-top:14px}.sgn .itc{margin-right:30px}.sgfoldbtn{position:absolute;top:14px;right:12px;width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--muted);cursor:pointer;font-size:13px;line-height:1}
+.sgpg{display:flex;align-items:center;gap:4px;margin-top:8px;font-size:12.5px}.sgpg button{min-width:28px;height:26px;border:1px solid var(--line);background:var(--panel);border-radius:7px;font:600 12px var(--f-ui);color:var(--ink);cursor:pointer}.sgpg button.on{background:var(--soft,#E4ECFB);color:var(--blue);border-color:transparent}.sgpg button:disabled{opacity:.4}
+.board{table-layout:auto}.board th.stick,.board td.stick{width:150px;min-width:150px;max-width:150px}
+.board thead tr:first-child th:nth-child(2),.board tbody td:nth-child(2){width:120px;min-width:120px}
+.board th.num,.board td.num{width:64px!important;min-width:64px!important;padding-left:4px;padding-right:12px}
+.board td.bblk,.board thead tr:first-child th:nth-child(4){width:210px;min-width:210px;max-width:210px;padding-left:8px}
+.board td.bdocs,.board thead tr:first-child th:nth-child(5){width:90px;min-width:90px;max-width:90px}
+
+.sgone{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:18px;gap:0!important;padding:0!important;overflow:hidden}
+.sgone>.it{background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0!important}
+.sgone>.it.s5{border-left:1px solid var(--line)!important}
+.sgone .sgfoldbtn{top:14px;right:14px;z-index:2}.sgone .sgn .itc{margin-right:0}.sgone .sgw .sgwh{padding-right:34px}
+.sgpg{gap:6px}.sgpg .faint{margin-right:8px}
+
+table.sowl td{border-bottom:0!important;padding-top:12px;padding-bottom:12px}table.sowl tbody tr:hover td{background:color-mix(in srgb,var(--blue) 4%,var(--panel))}
+.lfe{font-size:12px;margin-left:8px;color:var(--muted)}table.sowl td:first-child{min-width:250px}.lfk{display:inline-block;width:70px;color:var(--faint,#9AA3BE);font-size:11.5px}.lfd{white-space:nowrap;font-size:12.5px;color:var(--muted);margin:2px 0}.lfd .linkb{font-size:12.5px}
+.ldt div{display:flex;gap:8px;align-items:baseline;white-space:nowrap}.ldt .dk{width:38px;color:var(--muted);font-size:12px}
+table.sowl td.lns{width:300px;max-width:300px}table.sowl td.lns .clamp2{white-space:normal;overflow-wrap:anywhere}table.sowl td.ldocs{min-width:150px}table.sowl td.lblk{max-width:200px;min-width:170px}table.sowl td.lblk .clamp3{white-space:normal;display:-webkit-box}.dc.ok{color:var(--ok)}.dc.warn{color:var(--warn)}.dc.bad{color:var(--bad)}
+table.sowl .ps{background:transparent!important;border:1px solid var(--line2)!important;color:var(--ink)!important}
+.sowkey{display:flex;gap:14px;font-size:12.5px;color:var(--muted);margin:0 0 8px}.sowkey b{font-weight:600}
+
+.sgfold.man{display:flex}.sgwrap.folded{display:none}
+.sgfold.pin{display:flex;position:sticky;top:0;z-index:6;margin-bottom:-50px;box-shadow:0 4px 14px rgb(16 24 64/.14)}
+.ldt{min-width:200px}.tsl{display:flex;align-items:center;gap:7px;white-space:nowrap;font-size:13px}.tsl small{font-size:12px}
+.tsd{width:10px;height:10px;border-radius:50%;flex:none}.tsd.bad{background:var(--bad)}.tsd.warn{background:#D99A1E}.tsd.ok{background:var(--ok)}.tsd.done{background:var(--faint,#9AA3BE)}.tsd.none{border:2px solid var(--faint,#9AA3BE);background:transparent;width:8px;height:8px}
+.tsbar{width:2px;height:10px;background:var(--line2);margin:2px 0 2px 4px}.dc.done{color:var(--muted)}
 </style>
 
 <div class="app">
@@ -1043,7 +1100,7 @@ function editing(){const a=document.activeElement;return a&&(a.tagName==="TEXTAR
 // Numbers per brand are worked out once per draw and reused by every part of the page.
 let epoch=0;const memoStore=new Map();function memo(k,fn){const e=memoStore.get(k);if(e&&e.ep===epoch)return e.v;const v=fn();memoStore.set(k,{ep:epoch,v});return v}
 let rq=0;function scheduleRender(){if(rq)return;rq=requestAnimationFrame(()=>{rq=0;render()})}
-function render(){me=realEdit&&ls.get("vt-viewas")?ls.get("vt-viewas"):selfMe;epoch++;if(pop&&!document.activeElement?.closest?.("#pop"))closePop();if(editing()){pend=true;return}pend=false;renderRail();renderTop();renderMain();if(drawerCtx&&!$("#drawer").hidden)openDrawer(drawerCtx.kind,drawerCtx.id,drawerCtx.extra,true)}
+function render(){me=realEdit&&ls.get("vt-viewas")?ls.get("vt-viewas"):selfMe;epoch++;if(pop&&!document.activeElement?.closest?.("#pop"))closePop();if(editing()){pend=true;return}pend=false;renderRail();renderTop();renderMain();setTimeout(sowPin,0);if(drawerCtx&&!$("#drawer").hidden)openDrawer(drawerCtx.kind,drawerCtx.id,drawerCtx.extra,true)}
 document.addEventListener("focusout",()=>setTimeout(()=>{if(pend&&!editing())render()},0));
 
 const STAGE_ORDER=()=>{const st=L("stage");const main=st.filter(s=>!["On Hold","Internal"].includes(s)).reverse();return main.concat(st.filter(s=>["On Hold","Internal"].includes(s)))};
@@ -1110,7 +1167,7 @@ function renderTop(){
   $("#topbar").innerHTML=`${tog("")}<nav class="crumb vcrumb" aria-label="You are here" title="${esc(cr.map(c=>c.l).join(" › "))}">${up?`<a class="vx" href="${up.href||"#"}" ${up.act||""} aria-label="Back to ${esc(up.l)}">×</a>`:""}${cr.map((c,i)=>i===cr.length-1?`<b>${esc(c.l)}</b>`:c.act?`<button class="linkb" ${c.act}>${esc(c.l)}</button>`:`<a href="${c.href}">${esc(c.l)}</a>`).join(`<span class="sep" aria-hidden="true">›</span>`)}</nav><div class="search"><label for="q" class="sr">Search brands, tasks, people and steps</label><input id="q" type="search" placeholder="Search brands, tasks, people" autocomplete="off" value="${esc(searchQ)}"><div id="sres" class="sres" hidden></div></div>
    <button class="tclk" data-act="clock" aria-expanded="false" title="World clock"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.5"/><path d="M10 5.5V10l3 2"/></svg><span id="clkme">${esc(tzNow().tl+" "+tzNow().tz)}</span></button>
    <button class="tmore" data-act="tmore" aria-expanded="false" aria-controls="tctl" aria-label="View settings: detail, your name, colours"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.8"/><circle cx="10" cy="10" r="1.8"/><circle cx="16" cy="10" r="1.8"/></svg></button>
-   <div class="tctl" id="tctl">${viewNow()==="mine"?"":`<div class="seg" role="group" aria-label="Detail"><button data-act="simple" data-v="1" class="${simple?"on":""}" title="Fewer columns and fields">Simple</button><button data-act="simple" data-v="0" class="${simple?"":"on"}" title="Every column and field">Full</button></div>`}
+   <div class="tctl" id="tctl">${["mine","sow"].includes(viewNow())?"":`<div class="seg" role="group" aria-label="Detail"><button data-act="simple" data-v="1" class="${simple?"on":""}" title="Fewer columns and fields">Simple</button><button data-act="simple" data-v="0" class="${simple?"":"on"}" title="Every column and field">Full</button></div>`}
    ${!selfMe&&ready.config?`<label class="who iamtop">Which one is you? <select data-act="iam"><option value="">Pick your name</option>${ppl.map(p=>`<option>${esc(p)}</option>`).join("")}</select></label>`:""}
    ${realEdit?`<span class="admbox" role="group" aria-label="Admin preview"><b>Admin</b><label>View as <select data-act="viewas" aria-label="View as"><option value="">Myself${selfMe?" ("+esc(selfMe)+")":""}</option>${ppl.map(p=>`<option ${p===ls.get("vt-viewas")?"selected":""}>${esc(p)}</option>`).join("")}</select></label><label>Role <select data-act="roleprev" aria-label="Role preview">${[["","Admin"],["member","Member"],["view","View only"]].map(([v,l])=>`<option value="${v}" ${(ls.get("vt-roleprev")||"")===v?"selected":""}>${l}</option>`).join("")}</select></label></span>`:""}
    <div class="seg" role="group" aria-label="Colours"><button data-act="theme" data-v="light" class="${theme==="light"?"on":""}">Light</button><button data-act="theme" data-v="dark" class="${theme==="dark"?"on":""}">Dark</button></div>
@@ -1532,26 +1589,36 @@ function openPop(btn){closePop();const id=btn.dataset.id,sec=btn.dataset.sec;con
   el.style.left=Math.max(8,Math.min(innerWidth-w-8,r.left+r.width/2-w/2))+"px";el.style.top=(r.bottom+hh+8>innerHeight?r.top-hh-6:r.bottom+6)+"px";
   pop={id,sec,btn:btn.getAttribute("aria-label")};const f=el.querySelector(".pi.on")||el.querySelector(".pi");if(f)f.focus()}
 function closePop(){const el=$("#pop");if(el)el.remove();pop=null}
-function sowStrip(bs){const xs=bs.filter(b=>!onHold(b));
+function sowStrip(bs){const sowTopF=ls.get("vt-sowtop")==="folded";const xs=bs.filter(b=>!onHold(b));
   const m1=new Date(today().getFullYear(),today().getMonth()+1,1);
   const sig=xs.map(b=>({b,s:S.sow[b.id]||{}})).filter(x=>x.s.stage!=="Signed"&&parseD(x.s.target_sign)&&parseD(x.s.target_sign)<m1).sort((x,y)=>String(x.s.target_sign).localeCompare(String(y.s.target_sign)));
-  const late=sig.filter(x=>dayDiff(x.s.target_sign)<0).length;const show=sig.slice(0,8);
+  const late=sig.filter(x=>dayDiff(x.s.target_sign)<0).length;const SGP=5;const sgPages=Math.max(1,Math.ceil(sig.length/SGP));const sgPage=Math.min(sgPages,Math.max(1,(window.__sgp||1)));const show=sig.slice((sgPage-1)*SGP,sgPage*SGP);
   const rel=n=>n<0?`${-n} day${n===-1?"":"s"} late`:n===0?"Today":n===1?"Tomorrow":`In ${n} days`;
   const t1=`<div class="it s7 tint-b sgn">${IB.head("Signing order",`Past target and due this month, earliest first`,sig.length?`${sig.length} to sign${late?` · ${late} late`:""}`:"")}
-   ${show.length?`<ol class="sgl">${show.map((x,k)=>{const n=dayDiff(x.s.target_sign);return`<li class="${n<0?"late":n<=7?"soon":""}"><span class="sgn-i">${k+1}</span><a class="bname" href="#${brandHash(x.b.id,"sow")}">${esc(x.b.name)}</a><span class="sgn-d">${esc(fmtD(x.s.target_sign,true))}</span><span class="sgn-r">${rel(n)}</span>${pill(x.s.stage||"Not Started")}</li>`}).join("")}</ol>${sig.length>show.length?`<button class="linkb" data-act="sowview" data-v="list">${sig.length-show.length} more in Sign dates and blockers ›</button>`:""}`:`<span class="itx faint">Nothing due to sign this month.</span>`}</div>`;
+   ${show.length?`<ol class="sgl">${show.map((x,k)=>{const n=dayDiff(x.s.target_sign);return`<li class="${n<0?"late":n<=7?"soon":""}"><span class="sgn-i">${(sgPage-1)*SGP+k+1}</span><a class="bname" href="#${brandHash(x.b.id,"sow")}">${esc(x.b.name)}</a><span class="sgn-d">${esc(fmtD(x.s.target_sign,true))}</span><span class="sgn-r">${rel(n)}</span>${pill(x.s.stage||"Not Started")}</li>`}).join("")}</ol>${sgPages>1?`<div class="sgpg"><span class="faint">${(sgPage-1)*SGP+1} to ${Math.min(sig.length,sgPage*SGP)} of ${sig.length}</span><button data-act="sgpg" data-v="${sgPage-1}" aria-label="Previous" ${sgPage<=1?"disabled":""}>‹</button>${Array.from({length:sgPages},(_,i)=>`<button data-act="sgpg" data-v="${i+1}" class="${i+1===sgPage?"on":""}" aria-current="${i+1===sgPage}">${i+1}</button>`).join("")}<button data-act="sgpg" data-v="${sgPage+1}" aria-label="Next" ${sgPage>=sgPages?"disabled":""}>›</button></div>`:""}`:`<span class="itx faint">Nothing due to sign this month.</span>`}</div>`;
   const ps=phases();const far=bid=>{let k=-1;ps.forEach((p,i)=>{if(p.steps.some(s=>{const v=stepState(bid,s.code).status;return v==="Done"||v==="In Progress"}))k=i});return k};
   const cnt=ps.map((p,i)=>({p,i,n:xs.filter(b=>far(b.id)===i).length}));const signed=xs.filter(b=>(S.sow[b.id]||{}).stage==="Signed").length;const mx=Math.max(1,...cnt.map(x=>x.n));
-  const t2=`<div class="it s5 tint-c">${IB.head("Where brands are","Furthest phase each brand has reached",`${signed} signed`)}<span class="phb">${cnt.map(x=>`<span class="g${x.i%7}" title="${esc((x.i+1)+" "+(x.p.name||"")+": "+x.n+" brands")}"><em>${x.n}</em><i style="height:${Math.max(4,Math.round(x.n/mx*110))}px"></i><small>${x.i+1} ${esc(x.p.name||"")}</small></span>`).join("")}</span></div>`;
-  return`<div class="ib strip sstrip">${t1}${t2}</div>`}
+  const t2=`<div class="phstrip" role="group" aria-label="Where brands are"><span class="phl">Where brands are <small>furthest phase reached</small></span>${cnt.map(x=>`<span class="phs g${x.i%7}" title="${esc((x.i+1)+" "+(x.p.name||"")+": "+x.n+" brands")}"><b>${x.n}</b>${x.i+1} ${esc(x.p.name||"")}</span>`).join("")}<span class="phl r">${signed} signed</span></div>`;
+  const tot=cnt.reduce((a,x)=>a+x.n,0)||1;let acc=0;const R=52,C=2*Math.PI*R;
+  const arcs=cnt.filter(x=>x.n).map(x=>{const len=x.n/tot*C;const s=`<circle r="${R}" cx="70" cy="70" fill="none" stroke="var(--g${x.i%7})" stroke-width="22" stroke-dasharray="${Math.max(0,len-2)} ${C}" stroke-dashoffset="${-acc}" transform="rotate(-90 70 70)"><title>${esc((x.i+1)+" "+(x.p.name||"")+": "+x.n)}</title></circle>`;acc+=len;return s}).join("");
+  const donut=`<div class="it s5 sgw"><div class="sgwh"><b>Where brands are</b><span>Furthest onboarding phase each brand has reached</span></div><div class="dn"><svg viewBox="0 0 140 140" width="150" height="150" role="img" aria-label="Brands by phase">${arcs}<text x="70" y="66" text-anchor="middle" font-size="24" font-weight="700" fill="var(--ink)">${tot}</text><text x="70" y="86" text-anchor="middle" font-size="11" fill="var(--muted)">active brands</text></svg>
+   <ul class="dnl">${cnt.map(x=>`<li class="${x.n?"":"z"}"><i style="background:var(--g${x.i%7})"></i><span>${x.i+1} ${esc(x.p.name||"")}</span><b>${x.n}</b></li>`).join("")}<li class="sig"><i></i><span>Signed</span><b>${signed}</b></li></ul></div></div>`;
+  const one=`<div class="sgfold${sowTopF?" man":""}"><b>Signing order</b> ${sig.length} to sign, ${late} late · <b>Where brands are</b> ${cnt.map(x=>`<span class="dot" style="background:var(--g${x.i%7})"></span>${x.n}`).join(" ")}<button class="btn sm quiet" data-act="sowtop" data-v="">Show ▾</button></div>`;
+  return one+`<div class="sgwrap${sowTopF?" folded":""}"><div class="ib strip sstrip two sgone"><button class="sgfoldbtn" data-act="sowtop" data-v="folded" title="Fold" aria-label="Fold signing order and where brands are">⌃</button>${t1.replace('<div class="it s7 tint-b sgn">','<div class="it s7 sgn">')}${donut}</div></div>`}
 function vSow(){
   const bs=brandList().filter(b=>!isInternal(b));
   const rows=bs.map(b=>({b,s:Object.assign({brand:b.id},S.sow[b.id]||{})})).sort((x,y)=>(onHold(x.b)?1:0)-(onHold(y.b)?1:0)||String(x.s.target_sign||"9999").localeCompare(String(y.s.target_sign||"9999")));
   let h=`<h1>SOW tracker</h1>`+sowStrip(bs)+viewSeg("sowview",sowView,[["board","Progress board"],["list","Sign dates and blockers"]]);
   if(sowView==="board")return h+sowBoard();
-  h+=`<p class="sub">One SOW per brand, sorted by target sign date. Brands on hold are at the bottom. Next steps keep a running log: each entry shows who wrote it, when, and in which time zone.</p><div class="tw"><table class="sowl"><thead><tr><th>Brand</th><th>Stage</th><th>Target sign</th><th>Draft due</th>${simple?"":"<th>Batch</th>"}<th>Documents</th><th>Blocker</th><th>Next steps</th></tr></thead><tbody>`;
-  for(const{b,s}of rows){h+=`<tr><td><a class="bname" href="#${brandHash(b.id,"sow")}" title="Open ${esc(b.name)} Road to SOW">${esc(b.name)}</a>${onHold(b)?` <span class="tag">Brand on hold</span>`:""}<div><button class="linkb faint" data-act="open" data-kind="sow" data-id="${esc(b.id)}">Edit</button></div></td><td>${statusSel("sow",b.id,s.stage||"Not Started",L("sow_stage"),canEdit&&canWrite)}</td><td>${targetHtml(s)}</td>
-   <td>${dueHtml(s.draft_due,false)||esc(fmtD(s.draft_due))}</td>${simple?"":`<td class="muted">${esc(s.batch)}</td>`}<td class="ldocs">${sowDocChips(b.id,true)}</td>
-   <td class="muted lblk"><span class="clamp3" title="${esc(s.blocker||"")}">${esc(s.blocker||"")}</span></td><td class="lns">${nsCell(b.id)}</td></tr>`}
+  h+=`<div class="sowkey">Dates: <b class="dc ok">green</b> on time <b class="dc warn">amber</b> due within 7 days <b class="dc bad">red</b> past the date</div><div class="tw"><table class="sowl"><thead><tr><th>Brand and founder</th><th>Stage</th><th>Sign dates</th><th>Next steps</th><th>Blocker</th><th>Documents</th></tr></thead><tbody>`;
+  const tstep=(lab,d,done)=>{if(!d)return`<div class="tsl"><span class="tsd none"></span><span class="faint">${lab} not set</span></div>`;const n=dayDiff(d);const k=done?"done":n<0?"bad":n<=7?"warn":"ok";
+    const g=done?(lab==="Sign"?"Signed":"Done"):n<0?`${-n} day${n===-1?"":"s"} late`:n===0?"today":`${n} day${n===1?"":"s"} left`;return`<div class="tsl"><span class="tsd ${k}"></span><span>${lab} ${esc(fmtD(d,true))}</span><small class="dc ${k}">${g}</small></div>`};
+  for(const{b,s}of rows){const fz=b.founder_zone||"";const fc=b.founder_country||"";
+    const who=b.founder?`<div class="lfd"><span class="lfk">Founder</span>${esc(b.founder)}</div>${fc?`<div class="lfd"><span class="lfk">Country</span>${esc(fc)}</div>`:""}${fz?`<div class="lfd"><span class="lfk">Their time</span>${esc(clockTime(fz))} ${esc(tzAbbr(fz))}</div>`:""}${!fc&&!fz?`<div class="lfd"><button class="linkb" data-act="founder-geo" data-id="${esc(b.id)}">+ Country and time zone</button></div>`:""}`:`<div class="lfd faint">No founder set</div>`;
+    const signed=s.stage==="Signed";
+    h+=`<tr><td><a class="bname" href="#${brandHash(b.id,"sow")}" title="Open ${esc(b.name)} Road to SOW">${esc(b.name)}</a>${onHold(b)?` <span class="tag">On hold</span>`:""}<button class="linkb lfe" data-act="open" data-kind="sow" data-id="${esc(b.id)}">Edit</button>${who}</td><td>${statusSel("sow",b.id,s.stage||"Not Started",L("sow_stage"),canEdit&&canWrite)}</td>
+     <td class="ldt">${tstep("Draft",s.draft_due,signed)}<div class="tsbar"></div>${tstep("Sign",s.target_sign,signed)}</td>
+     <td class="lns">${nsCell(b.id)}</td><td class="muted lblk"><span class="clamp3" title="${esc(s.blocker||"")}">${esc(s.blocker||"")||'<span class="faint">None</span>'}</span></td><td class="ldocs">${sowDocChips(b.id,true)}</td></tr>`}
   return h+`</tbody></table></div>`}
 function accStrip(){const all=withId(S.access).filter(a=>a.status!=="Not Needed"&&S.brands[a.brand]&&!holdOf(a.brand));const g=all.filter(accGranted).length;const op=all.filter(accOpen);
   const byP={};for(const a of op)byP[a.platform]=(byP[a.platform]||0)+1;const top=Object.entries(byP).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([l,n])=>({l:l.replace(/ (Ads Manager|Seller Central|Business Manager)$/,""),t:l,n}));
@@ -2277,19 +2344,19 @@ function sowBoard(){
   const doneAll=g=>live.length&&live.every(r=>g.cols.every(c=>{const v=boardCell(r.b.id,c);return v==="Done"||v==="N/A"||v===""}));
   const G=groups.map((g,i)=>{const auto=doneAll(g);const f=sowFold[g.name];return{g,i,auto,closed:f==="closed"||(f!=="open"&&auto)}});
   const ncol=G.reduce((n,x)=>n+(x.closed?1:x.g.cols.length),0);
-  let h=`<p class="sub">Every brand's onboarding, phase by phase. Click a square to see and change its steps. Click a phase name to fold it; a phase folds itself once every brand here has finished it.</p>
-  <div class="legend">${["Done","In progress","Not done","N/A"].map(v=>`<span><span class="bdl ${BOARD_CLS[v]}">${BOARD_MARK[v]||""}</span>${esc(v)}</span>`).join("")}</div>`+guide("sow")+`
+  let h=`
+  <div class="legend">${["Done","In progress","Not done","N/A"].map(v=>`<span><span class="bdl ${BOARD_CLS[v]}">${BOARD_MARK[v]||""}</span>${esc(v)}</span>`).join("")}</div>`+`
   <div class="tbar">${findBox("sow",all.length)}<span class="grow"></span><button class="btn sm quiet" data-act="sow-foldall" data-v="open">Open every phase</button><button class="btn sm quiet" data-act="sow-foldall" data-v="closed">Fold every phase</button></div>
-  <div class="tw tpin"><table class="grid board"><thead><tr><th class="stick" rowspan="2">Brand</th><th rowspan="2">SOW stage</th><th rowspan="2" class="num" title="Road to SOW: share of required steps done">Road to SOW</th>${G.map(x=>`<th colspan="${x.closed?1:x.g.cols.length}" class="gh g${x.i%7} ${x.closed?"gfold":""}"><button class="ghf" data-act="sow-fold" data-v="${esc(x.g.name)}" data-c="${x.closed?"open":"closed"}" aria-expanded="${!x.closed}" title="${x.closed?"Open":"Fold"} ${esc(x.g.name)}"><svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M4 2.5 7.5 6 4 9.5"/></svg>${esc(x.g.name)}${x.auto?` <span class="gdone">done</span>`:""}</button></th>`).join("")}${simple?"":`<th rowspan="2">Blocker</th>`}<th rowspan="2">Docs</th></tr>
+  <div class="tw tpin"><table class="grid board"><thead><tr><th class="stick" rowspan="2">Brand</th><th rowspan="2">SOW stage</th><th rowspan="2" class="num" title="Road to SOW: share of required steps done">Road to SOW</th><th rowspan="2">Notes</th><th rowspan="2">Links</th>${G.map(x=>`<th colspan="${x.closed?1:x.g.cols.length}" class="gh g${x.i%7} ${x.closed?"gfold":""}"><button class="ghf" data-act="sow-fold" data-v="${esc(x.g.name)}" data-c="${x.closed?"open":"closed"}" aria-expanded="${!x.closed}" title="${x.closed?"Open":"Fold"} ${esc(x.g.name)}"><svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M4 2.5 7.5 6 4 9.5"/></svg>${esc(x.g.name)}</button></th>`).join("")}</tr>
   <tr>${G.map(x=>x.closed?`<th class="pc g${x.i%7} gs"><span>${x.g.cols.length} steps</span></th>`:x.g.cols.map((c,ci)=>`<th class="pc g${x.i%7} ${ci===0?"gs":""}" title="${esc(c.label)}"><span>${esc(colLabel(c))}</span></th>`).join("")).join("")}</tr></thead><tbody>`;
   for(const{b,pct}of pg.rows){const s=S.sow[b.id]||{};const hold=onHold(b);
-    h+=`<tr class="${hold?"held":""}"><td class="stick"><a class="bname" href="#${brandHash(b.id,"sow")}" title="Open ${esc(b.name)} Road to SOW">${esc(b.name)}</a></td><td>${hold?`<span class="pill s-off">On hold</span>`:pill(s.stage||"Not Started")}</td><td class="num"><b>${pct}%</b></td>`;
+    h+=`<tr class="${hold?"held":""}"><td class="stick"><a class="bname" href="#${brandHash(b.id,"sow")}" title="Open ${esc(b.name)} Road to SOW">${esc(b.name)}</a></td><td>${hold?`<span class="pill s-off">On hold</span>`:pill(s.stage||"Not Started")}</td><td class="num"><b>${pct}%</b></td><td class="muted bblk"><div class="clamp2" title="${esc(s.blocker||"")}">${esc(s.blocker||"")||'<span class="faint">None</span>'}</div></td><td class="bdocs">${sowDocChips(b.id,false)}</td>`;
     for(const x of G){const gi=groups.indexOf(x.g);
       if(x.closed){const vs=x.g.cols.map(c=>boardCell(b.id,c)).filter(v=>v&&v!=="N/A");const dn=vs.filter(v=>v==="Done").length;const v=!vs.length?"N/A":dn===vs.length?"Done":vs.some(v=>v!=="Not done")?"In progress":"Not done";
         h+=`<td class="gc gs g${x.i%7}"><button class="bd ${BOARD_CLS[v]}" data-act="sow-fold" data-v="${esc(x.g.name)}" data-c="open" title="${esc(x.g.name+": "+dn+" of "+vs.length+" done. Click to open")}">${dn}/${vs.length}</button></td>`;continue}
       x.g.cols.forEach((c,ci)=>{const v=boardCell(b.id,c);
       h+=`<td class="gc ${ci===0?"gs g"+(x.i%7):""}"><button class="bd ${BOARD_CLS[v]}" data-act="board" data-b="${esc(b.id)}" data-c="${gi}.${ci}" title="${esc(colLabel(c)+": "+(v||"No steps linked"))}">${esc(BOARD_WORD[v]||"")}<span class="sr">${esc(colLabel(c)+" "+v)}</span></button></td>`})}
-    h+=`${simple?"":`<td class="muted bblk"><div class="clamp2" title="${esc(s.blocker||"")}">${esc(s.blocker||"")}</div></td>`}<td class="bdocs">${sowDocChips(b.id,false)}</td></tr>`}
+    h+=`</tr>`}
   if(!rows.length)h+=`<tr><td colspan="${ncol+5}"><div class="empty">${tq.sow?"No brand matches that name.":"No brands yet."}</div></td></tr>`;
   return h+`</tbody></table></div>`+pg.html}
 /* SOW documents: the kinds come from Settings > Lists (SOW documents); each brand keeps a link per kind, plus any others */
@@ -2304,6 +2371,7 @@ const nsStamp=e=>e.legacy?"Earlier note":`${fmtD(new Date(e.at).toISOString().sl
 function nsCell(bid){const s=S.sow[bid]||{};const lg=nsLog(s);const last=lg[lg.length-1];const w=canWrite&&S.sow[bid];
   return`<div class="nsc">${last?`<div class="nse"><span class="nss">${esc(nsStamp(last))}</span><span class="clamp2" title="${esc(last.t)}">${esc(last.t)}</span></div>`:`<span class="faint">None yet</span>`}
    <div class="row" style="gap:8px">${w?`<button class="linkb" data-act="sow-ns" data-id="${esc(bid)}">+ Add</button>`:""}${lg.length>1?`<details class="nsold"><summary>${lg.length-1} earlier</summary>${lg.slice(0,-1).reverse().map(e=>`<div class="nse"><span class="nss">${esc(nsStamp(e))}</span><span>${esc(e.t)}</span></div>`).join("")}</details>`:""}</div></div>`}
+const tzList=()=>[...new Set(clockZones().map(c=>c.zone).concat(Intl.supportedValuesOf?Intl.supportedValuesOf("timeZone"):[]))];
 function nsEntry(text){const z=tzNow();return{t:text,by:me,at:Date.now(),tz:z.tz,tl:z.tl,zone:z.zone}}
 async function addNs(bid,text){const s=S.sow[bid];if(!s)return;if(!me){toast("Pick your name at the top first, so the update shows who wrote it.");return}
   await save("sow",bid,{ns_log:nsLog(s).concat([nsEntry(text)])},"SOW next steps "+bname(bid))}
@@ -2523,7 +2591,7 @@ function openDrawer(kind,id,extra,refresh){
      <div class="cbl">Actions</div>${sb("cb-jump","➜ Move",'data-v="d-status"')}${sb("cb-copy","⧉ Copy",`data-id="${esc(id)}"`)}${t.brand&&S.brands[t.brand]?escButton("task",id).replace('class="btn"','class="cbb"'):""}${canChangeTask(t)?sb("archive","🗄 Archive",`data-id="${esc(id)}"`):""}${canEdit&&canWrite?sb("del","Delete",`data-kind="task" data-id="${esc(id)}"`):""}`;
     body=`<div class="cbmain">${main}</div><aside class="cbside">${ro?"":side}</aside>`;foot="cardback"}
   else if(kind==="brand"){const b=S.brands[id];if(!b){closeDrawer();return}ro=!(canEdit&&canWrite);title=b.name;
-    body=field("Name",inp("name",b.name))+field("Stage",sel("stage",L("stage"),b.stage,false))+field("Brand lead",sel("lead",activePeople(),b.lead))+field("Founder",inp("founder",b.founder))+field("Website",inp("website",b.website,"url"),1)
+    body=field("Name",inp("name",b.name))+field("Stage",sel("stage",L("stage"),b.stage,false))+field("Brand lead",sel("lead",activePeople(),b.lead))+field("Founder",inp("founder",b.founder))+field("Founder country",inp("founder_country",b.founder_country||""))+field("Founder time zone",sel("founder_zone",tzList(),b.founder_zone||""),0,"Shows the founder's local time on the SOW tracker")+field("Website",inp("website",b.website,"url"),1)
      +field("Brand colours on this page",`<select name="theme_on" id="d-theme_on">${opts(["No","Yes"],b.theme_on?"Yes":"No",false)}</select>`,0,"A soft background in the brand's colour")+field("Brand colour",inp("color",b.color||"#2A3337","color"),0,"Used for the brand name")+field("Background colour",inp("tint",b.tint||"#DCE6EE","color"),0,"Shown behind the top of the page")
      +field("Sprint",inp("sprint_label",b.sprint_label),1)+field("Next step",area("next_step",b.next_step),1)
      +field("On hold (paused)",`<select name="paused" id="d-paused">${opts(["No","Yes"],b.paused?"Yes":"No",false)}</select>`)+field("Restricted",`<select name="restricted" id="d-restricted">${opts(["No","Yes"],b.restricted?"Yes":"No",false)}</select>`,0,"Marks the brand as sensitive. Access limits come with the full build")}
@@ -2589,7 +2657,7 @@ async function drawerSave(keep){
     else if(fd.list){const cid=campOf(t)===NOCAMP?"":campOf(t);const bl=boardLists(t.brand,cid,withId(S.tasks).filter(x=>x.brand===t.brand&&x.title&&campOf(x)===campOf(t)));const cur=listOf(Object.assign({_id:id},t),bl);const l=bl.find(x=>x.id===fd.list);
       if(l&&cur&&l.id!==cur.id){next.list=l.id;if(l.team)next.department=l.team;movedTo=l.name}}
     const p=diff(t,next);if(Object.keys(p).length){await save("tasks",id,p,t.title);if(p.status)taskNote(t,id,`Moved from ${t.status||"Not Started"} to ${p.status}`);if(movedTo)taskNote(t,id,`Moved to ${movedTo}`)}}
-  else if(kind==="brand"){const b=S.brands[id];const next={name:fd.name,stage:fd.stage,lead:fd.lead,founder:fd.founder,website:fd.website,theme_on:fd.theme_on==="Yes",color:fd.color||"",tint:fd.tint||"",sprint_label:fd.sprint_label,next_step:fd.next_step,paused:fd.paused==="Yes",restricted:fd.restricted==="Yes"};
+  else if(kind==="brand"){const b=S.brands[id];const next={name:fd.name,stage:fd.stage,lead:fd.lead,founder:fd.founder,website:fd.website,theme_on:fd.theme_on==="Yes",color:fd.color||"",tint:fd.tint||"",sprint_label:fd.sprint_label,next_step:fd.next_step,founder_country:fd.founder_country||"",founder_zone:fd.founder_zone||"",paused:fd.paused==="Yes",restricted:fd.restricted==="Yes"};
     if(!next.name){toast("A brand needs a name.");return}const p=diff(b,next);if(Object.keys(p).length)await save("brands",id,p,b.name)}
   else if(kind==="step"){const st=stepState(id,extra);
     if(fd.status==="Done"&&st.status!=="Done"){const why=gateBlock(id,extra);if(why){toast(why);return}}
@@ -2756,6 +2824,10 @@ document.addEventListener("click",e=>{
       create("tasks",null,{brand:v.brand,department:v.department,title:v.title,owner:me,support:[],status,priority:"Medium",start:"",deadline:v.deadline,notes:"",brief_link:"",creative_link:"",blocker:null,campaign:"",list:"",checklist:[],source:"Added in tracker"},v.title)})}
   else if(act==="pgset"){if(!canEdit)return;const cur=S.config.pages||{};const g=a.dataset.g;const next=Object.assign({},cur,{[g]:Object.assign({},cur[g]||{},{[a.dataset.k]:a.dataset.v})});
     const label="Pages: "+((g==="menu"?PAGE_MENU:PAGE_BRAND).find(x=>x[0]===a.dataset.k)||[0,a.dataset.k])[1]+" "+a.dataset.v;if(S.config.pages)save("config","pages",{[g]:next[g]},label);else create("config","pages",next,label)}
+  else if(act==="sowtop"){ls.set("vt-sowtop",a.dataset.v);const m=$("#main");if(!a.dataset.v&&m&&$(".sgfold.pin"))m.scrollTop=0;render()}
+  else if(act==="sgpg"){window.__sgp=+a.dataset.v;render()}
+  else if(act==="founder-geo"){const id=a.dataset.id;const b=S.brands[id];if(!b)return;
+    formBox("Founder location · "+b.name,`<div class="f"><label for="n-fc">Country</label><input id="n-fc" name="country" value="${esc(b.founder_country||"")}" placeholder="For example: United Kingdom"></div><div class="f"><label for="n-fz">Time zone</label><select id="n-fz" name="zone"><option value="">Pick a time zone</option>${tzList().map(z=>`<option ${z===b.founder_zone?"selected":""}>${esc(z)}</option>`).join("")}</select></div>`,"Save",v=>{save("brands",id,{founder_country:(v.country||"").trim(),founder_zone:v.zone||""},b.name+" founder location")})}
   else if(act==="pgsize"){ls.set("vt-rows",a.dataset.v);for(const k in pager)pager[k].page=1;render()}
   else if(act==="pgp"){const k=a.dataset.k;(pager[k]||(pager[k]={})).page=+a.dataset.v;render();const m=$("#main");if(m)m.scrollTop=0}
   else if(act==="bpgroup"){const g=a.dataset.g;bpOpenG=g==="*"||g===""?g:(bpOpenG===g?"":g);render()}
@@ -2929,6 +3001,8 @@ $("#scrim").onclick=closeDrawer;
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(pop){const l=pop.btn;closePop();const b=document.querySelector(`[aria-label="${CSS.escape(l)}"]`);if(b)b.focus();return}if(!$("#modal").hidden)$("#modal").hidden=true;else closeDrawer()}
   if(pop&&(e.key==="ArrowDown"||e.key==="ArrowUp")){const items=[...document.querySelectorAll("#pop .pi")];const i=items.indexOf(document.activeElement);const n=items[(i+(e.key==="ArrowDown"?1:-1)+items.length)%items.length];if(n){e.preventDefault();n.focus()}}});
 document.addEventListener("scroll",()=>{if(pop)closePop()},true);
+function sowPin(){const m=$("#main"),w=$(".sgwrap"),f=$(".sgfold");if(!m||!w||!f||f.classList.contains("man"))return;f.classList.toggle("pin",w.getBoundingClientRect().bottom<m.getBoundingClientRect().top+20)}
+document.addEventListener("scroll",e=>{if(e.target===$("#main"))sowPin()},true);
 setInterval(()=>{const m=$("#clkme");if(m){const z=tzNow();m.textContent=z.tl+" "+z.tz}document.querySelectorAll("[data-clk]").forEach(e=>e.textContent=clockTime(e.dataset.clk))},30000);
 document.addEventListener("click",e=>{const p=$("#clkpop");if(p&&!p.contains(e.target)&&!e.target.closest("[data-act=clock]"))p.remove()});
 
