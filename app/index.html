@@ -849,7 +849,7 @@ button.bt:hover,.crow:hover{box-shadow:none;background:var(--panel2)}
 .oac{font-size:11px;font-weight:700;border-radius:999px;padding:2px 8px;white-space:nowrap}.oac.ad{background:var(--soft,#E4ECFB);color:var(--blue)}.oac.me{background:var(--okBg);color:var(--ok)}.oac.vi{background:var(--panel2);color:var(--muted)}.oac.no{background:color-mix(in srgb,var(--warn) 14%,var(--panel));color:var(--warn)}
 .orgbar{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}.ochip{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:5px 11px;font:600 13px var(--f-ui);color:var(--ink);cursor:pointer}.ochip.on{background:var(--soft,#E4ECFB);color:var(--blue);border-color:transparent}
 .orgwrap{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:start}
-table.orgt td{vertical-align:top;font-size:13px}table.orgt td small{display:block;color:var(--muted);font-size:12px}table.orgt tr.sel td{background:color-mix(in srgb,var(--blue) 8%,var(--panel))}
+table.orgtable td{vertical-align:top;font-size:13px}table.orgtable td small{display:block;color:var(--muted);font-size:12px}table.orgtable tr.sel td{background:color-mix(in srgb,var(--blue) 8%,var(--panel))}
 .orgside{width:320px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;position:sticky;top:10px}.orgside h3{margin:0;font-size:17px}
 .of{margin-top:10px}.of>label{display:block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}.of input:not([type=checkbox]),.of select{width:100%;box-sizing:border-box}
 .of>label.ock{display:flex;gap:7px;align-items:center;margin:4px 0;font:500 13px var(--f-ui);text-transform:none;letter-spacing:0;color:var(--ink)}.of input:not([type=checkbox]),.of select{border:1px solid var(--line);border-radius:8px;padding:6px 9px;background:var(--panel);color:var(--ink);font:inherit;font-size:13px}
@@ -951,7 +951,7 @@ table.sowl .ps{background:transparent!important;border:1px solid var(--line2)!im
 .lfB td.bblk .nt.open{display:block!important;-webkit-line-clamp:unset!important;overflow:visible}
 .lfB .ntmore{all:unset;cursor:pointer;color:var(--blue)!important;font-size:12px;font-weight:600;margin-top:2px}
 table.board td.bblk button.ntmore{color:var(--blue)!important;font-weight:600}
-.board th.gh.gfold .ghf{white-space:nowrap}.board th.pc.pcf{min-width:132px!important;max-width:none!important}
+.board th.gh.gfold{min-width:120px}.board th.gh.gfold .ghf{white-space:normal;text-align:left;line-height:1.25}.board th.pc.pcf{min-width:132px!important;max-width:none!important}
 
 /* compact rows: one-line note, links beside it */
 .lfB td.bblk{padding-top:6px!important;padding-bottom:6px!important;min-width:360px!important;max-width:380px!important}
@@ -1028,6 +1028,10 @@ textarea{border:1px solid var(--line2)!important;border-radius:8px!important;pad
 .admbox select{max-width:190px!important;min-height:28px;font-size:12.5px!important;padding:0 26px 0 8px!important;background-position:right 8px center}
 
 .vcrumb a,.lmore a,.allx,.bsname{display:inline-flex;align-items:center;min-height:24px}
+
+/* readable tags and selected chips in both themes */
+.oac.ad,.ochip.on,.sgpg button.on,.tgx.b{background:color-mix(in srgb,var(--accent) 16%,var(--panel))!important;color:var(--accent)!important;border-color:transparent}
+.oac{font-size:12px}.tgx{font-size:12px}.admbox b{font-size:12px}
 </style>
 
 <div class="app">
@@ -1853,7 +1857,7 @@ function vOrg(){const tabs=[["people","Team members and access"],["chart","Team 
    <div class="tabs">${tabs.map(([k,l])=>`<button class="${orgTab===k?"on":""}" data-act="orgtab" data-tab="${k}">${esc(l)}</button>`).join("")}</div>
    <div class="orgkey"><b>Access in VALFLO:</b><span><span class="oac ad">Admin</span> changes settings, steps and people</span><span><span class="oac me">Member</span> edits work</span><span><span class="oac vi">View only</span> reads</span><span><span class="oac no">No sign-in yet</span> not on the website sign-in list</span>${MEM?"":`<span class="faint">On claude.ai this shows the website list as last copied; claude.ai access itself comes from the page's Share menu.</span>`}</div>
    <div class="orgbar">${[["team","Team members"],["external","External and groups"],["unconfirmed","Names to sort"],["inactive","Inactive"]].map(([k,l])=>`<button class="ochip ${orgF===k?"on":""}" data-act="orgf" data-v="${k}">${l} ${cnt(k)}</button>`).join("")}<span class="grow"></span>${canWrite?`<button class="btn pri" data-act="add-person">Add person</button>`:""}</div>
-   <div class="orgwrap"><div class="tw"><table class="orgt"><thead><tr><th>Name</th><th>Title</th><th>Team</th><th>Reports to</th><th>Location</th><th>Access in VALFLO</th><th>Extra rights</th></tr></thead><tbody>`;
+   <div class="orgwrap"><div class="tw"><table class="orgtable"><thead><tr><th>Name</th><th>Title</th><th>Team</th><th>Reports to</th><th>Location</th><th>Access in VALFLO</th><th>Extra rights</th></tr></thead><tbody>`;
   for(const{p,i}of rows){const r=roleOf(p.name);const ex=[["leadership","Leadership page"],["log","Change log"],["escalate","Can escalate"]].filter(([k])=>p[k]).map(x=>x[1]);
     h+=`<tr class="click ${orgSel===p.name?"sel":""}" data-act="org-pick" data-name="${esc(p.name)}"><td><b>${esc(p.name)}</b>${p.full_name?`<small>${esc(p.full_name)}</small>`:""}</td><td>${p.title?esc(p.title):M("Not set")}</td><td>${p.team?esc(p.team):M("Not set")}</td><td>${p.reports_to?esc(p.reports_to):M("Nobody")}</td><td>${p.location?esc(p.location):M("Not set")}</td><td><span class="oac ${roleCls(r)}">${esc(roleLabel(r))}</span></td><td>${ex.length?esc(ex.join(" · ")):M("None")}</td></tr>`}
   if(!rows.length)h+=`<tr><td colspan="7"><div class="empty">Nobody here.</div></td></tr>`;
