@@ -10,3 +10,6 @@ web/dist/
 .live_v4
 .live_v5
 .live_v6
+
+# audit report page: embeds screenshots of company data, kept out of git (published on claude.ai)
+docs/valflo-audit.html
