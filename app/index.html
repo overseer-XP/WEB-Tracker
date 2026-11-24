@@ -1099,7 +1099,9 @@ const brandList=()=>Object.entries(S.brands).map(([id,b])=>Object.assign({id},b)
 const bname=id=>(S.brands[id]&&S.brands[id].name)||"";
 const isInternal=b=>(b&&b.stage)==="Internal";
 /* on hold = brand stage On Hold or the Paused flag. Every screen uses this one test. */
-const onHold=b=>!!b&&(b.stage==="On Hold"||!!b.paused);
+/* stages that sit outside active work (Settings > Lists > inactive_stage; On Hold when the list is not set) */
+const isOutStage=s=>s==="On Hold"||L("inactive_stage").includes(s);
+const onHold=b=>!!b&&(isOutStage(b.stage)||!!b.paused);
 const holdOf=bid=>onHold(S.brands[bid]);
 const stepBlocks=bid=>Object.values((S.bsteps[bid]&&S.bsteps[bid].s)||{}).filter(x=>x&&x.blocker&&x.blocker.text&&!["Done","N/A"].includes(x.status)).length;
 const stepsSorted=()=>Object.entries(S.steps).filter(([,s])=>!s.archived).map(([id,s])=>Object.assign({id},s)).sort((a,b)=>a.order-b.order);
@@ -1211,7 +1213,7 @@ let rq=0;function scheduleRender(){if(rq)return;rq=requestAnimationFrame(()=>{rq
 function render(){me=realEdit&&ls.get("vt-viewas")?ls.get("vt-viewas"):selfMe;epoch++;if(pop&&!document.activeElement?.closest?.("#pop"))closePop();if(editing()){pend=true;return}pend=false;renderRail();renderTop();renderMain();setTimeout(()=>{sowPin();ntFit()},0);if(drawerCtx&&!$("#drawer").hidden)openDrawer(drawerCtx.kind,drawerCtx.id,drawerCtx.extra,true)}
 document.addEventListener("focusout",()=>setTimeout(()=>{if(pend&&!editing())render()},0));
 
-const STAGE_ORDER=()=>{const st=L("stage");const main=st.filter(s=>!["On Hold","Internal"].includes(s)).reverse();return main.concat(st.filter(s=>["On Hold","Internal"].includes(s)))};
+const STAGE_ORDER=()=>{const st=L("stage");const out=s=>isOutStage(s)||s==="Internal";const main=st.filter(s=>!out(s)).reverse();return main.concat(st.filter(out))};
 function myItems(){return memo("mine:"+me,myItemsNow)}
 function myItemsNow(){
   if(!me)return[];const out=[];
@@ -1437,7 +1439,7 @@ function vOverview(){
   if(sub)return h+`<h2 class="sr">${esc(OV_SECTIONS[sub])} details</h2>`+P[sub];
   const act=bs.filter(b=>!onHold(b)&&!isInternal(b));const hc={ok:0,warn:0,bad:0};for(const b of act){const x=R[b.id].health;hc[x==="Blocked"?"bad":x==="At Risk"||x==="Has blockers"?"warn":"ok"]++}
   const seg=(v,k,w)=>v?`<i class="${k}" style="flex:${v}" title="${v} ${w}"></i>`:"";
-  const stages=L("stage").filter(x=>x!=="Internal"&&x!=="On Hold");const sc=stages.map(st=>({st,n:act.filter(b=>b.stage===st).length}));const smax=Math.max(1,...sc.map(x=>x.n));
+  const stages=L("stage").filter(x=>x!=="Internal"&&!isOutStage(x));const sc=stages.map(st=>({st,n:act.filter(b=>b.stage===st).length}));const smax=Math.max(1,...sc.map(x=>x.n));
   const ws=weekStart(today());const wk2=new Date(ws);wk2.setDate(wk2.getDate()+14);const plan=bs.filter(b=>{const s=S.sow[b.id]||{};const d=parseD(s.target_sign);return!onHold(b)&&!isInternal(b)&&s.stage!=="Signed"&&d});
   const past=plan.filter(b=>parseD(S.sow[b.id].target_sign)<today()).length,soon=plan.filter(b=>{const d=parseD(S.sow[b.id].target_sign);return d>=today()&&d<wk2}).length;
   const open=withId(S.tasks).filter(t=>t.title&&t.status!=="Complete"&&!holdOf(t.brand));const lateT=open.filter(t=>dueFlag(t.deadline,false)==="Overdue").length,blkT=open.filter(t=>t.status==="Blocked").length;
@@ -1458,7 +1460,7 @@ function targetHtml(s){const hold=s&&holdOf(s.brand);
   if(!s||!s.target_sign)return hold?`<span class="tag">On hold</span>`:s&&s.stage!=="Signed"?`<span class="faint">No date</span>`:"";const blocked=s.stage==="Blocked";
   return`<span class="row" style="gap:6px;flex-wrap:nowrap;white-space:nowrap"><span${hold?` class="faint"`:""}>${esc(fmtD(s.target_sign,true))}</span>${hold?`<span class="tag">On hold</span>`:blocked?`<span class="tag bad">Blocked</span>`:dueHtml(s.target_sign,s.stage==="Signed")?`<span class="pill ${cls(sowDue(s))}">${esc(sowDue(s))}</span>`:""}</span>`}
 function pipeline(bs,R){
-  const stages=L("stage").filter(x=>x!=="Internal");const col=st=>bs.filter(b=>!isInternal(b)&&(st==="On Hold"?onHold(b):!onHold(b)&&b.stage===st));
+  const stages=L("stage").filter(x=>x!=="Internal"&&(x==="On Hold"||!isOutStage(x)));const col=st=>bs.filter(b=>!isInternal(b)&&(st==="On Hold"?onHold(b):!onHold(b)&&b.stage===st));
   return`<div class="pipe">${stages.map(st=>{const list=col(st);return`<div class="pcol ${st==="On Hold"?"held":""}"><div class="ph"><b>${list.length}</b><span>${esc(st)}</span></div>${list.map(b=>{const d=stageDays(b);return`<a class="pb" href="#brand-${esc(b.id)}" title="${esc(R[b.id].health)}">${hdot(R[b.id].health)}<span>${esc(b.name)}</span>${d!==null?`<i class="days">${d}d</i>`:""}</a>`}).join("")||`<span class="faint" style="font-size:12px">None</span>`}</div>`}).join("")}</div>`}
 function sowPlan(bs,R){
   const buckets={};const nodate=[];const held=[];
