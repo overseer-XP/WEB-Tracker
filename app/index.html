@@ -1032,6 +1032,16 @@ textarea{border:1px solid var(--line2)!important;border-radius:8px!important;pad
 /* readable tags and selected chips in both themes */
 .oac.ad,.ochip.on,.sgpg button.on,.tgx.b{background:color-mix(in srgb,var(--accent) 16%,var(--panel))!important;color:var(--accent)!important;border-color:transparent}
 .oac{font-size:12px}.tgx{font-size:12px}.admbox b{font-size:12px}
+
+.logv{color:var(--muted);font-size:13px;margin-left:4px}
+
+.bpq th,.bpq td{padding:9px 10px;vertical-align:middle}.bpq .bpqb{min-width:160px;max-width:220px}.bpq th.bpqg{text-align:center;font-size:12px;border-left:1px solid var(--line)}
+.bpq th.bpqs{font-size:12px;font-weight:600;color:var(--muted);text-align:left;vertical-align:bottom;width:44px;min-width:44px;padding:10px 4px;height:150px}.bpq th.bpqs span{writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;display:inline-block;margin:0 auto}
+.bpq td.bpqc{padding:8px 4px;text-align:center}.bpq .gs{border-left:1px solid var(--line)}.bpq td.bpqd{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.bq{all:unset;box-sizing:border-box;display:inline-grid;place-items:center;width:24px;height:24px;border-radius:6px;font-weight:800;font-size:13px;cursor:pointer}.bq:disabled{cursor:default}
+.bq:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.bq.no:hover{border-color:var(--ok)}
+.bq.ok{background:var(--okBg);color:var(--ok)}.bq.bad{background:var(--badBg);color:var(--bad)}.bq.na{color:var(--muted)}.bq.no{border:1.5px solid var(--line2)}
+.bpqnote{font-size:12.5px;margin-top:3px;line-height:1.35}.bpqn{color:var(--muted);font-size:12.5px;margin-top:2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 </style>
 
 <div class="app">
@@ -1132,6 +1142,9 @@ function accessRoll(bid){const rows=Object.values(S.access).filter(a=>a.brand===
 const sowDue=s=>!s||s.stage==="Signed"?"":dueFlag(s.target_sign||s.draft_due,false);
 /* Road to SOW: the one progress number for a brand, used on every screen and in the export.
    Required steps only (optional steps never hold a brand back); Done or N/A counts as done, so 100% means every phase is done. */
+/* one rule for a late SOW, used by every page: active brand, SOW not signed, target date passed */
+const sowIsLate=b=>{const s=S.sow[b.id]||{};const d=parseD(s.target_sign);return!!b&&!onHold(b)&&!isInternal(b)&&s.stage!=="Signed"&&!!d&&d<today()};
+const sowLate=()=>brandList().filter(sowIsLate);
 function journeyCount(bid){let total=0,done=0;for(const s of stepsSorted()){if(s.is_optional)continue;total++;if(["Done","N/A"].includes(stepState(bid,s.code).status))done++}return{done,total}}
 function onboarding(bid){const c=journeyCount(bid);return c.total?c.done/c.total:0}
 function roll(bid){return memo("roll:"+bid,()=>rollNow(bid))}
@@ -1150,10 +1163,11 @@ function rollNow(bid){
   if(bp&&bp.overall==="Blocked")reason("Best Practices blocked","bp");
   for(const st of stepsSorted())if(st.is_gate){const x=stepState(bid,st.code);if(x.blocker&&x.blocker.text&&!["Done","N/A"].includes(x.status))reason("Gate step blocked: "+st.name,"steps")}
   for(const t of ts)if(t.status==="Blocked"&&["High","Urgent"].includes(t.priority))reason(t.title+(t.blocker&&t.blocker.text?": "+t.blocker.text:""),"tasks");
+  const sowLateNow=sowIsLate(Object.assign({id:bid},b));
   let health="On Track";
   if(onHold(b))health="On Hold";
   else if(why.length)health="Blocked";
-  else if(overdue>0)health="At Risk";else if(blocked>0)health="Has blockers";else if(sow==="Signed")health="Live";
+  else if(overdue>0||sowLateNow)health="At Risk";else if(blocked>0)health="Has blockers";else if(sow==="Signed")health="Live";
   return{open,blocked,overdue,acc,sow,sowRow:s||{},bp,pct,health,why,whyTab,hold:onHold(b),stepBlocked:stepBlocks(bid)}}
 
 /* ---------- writes + change log ---------- */
@@ -1445,7 +1459,7 @@ function vOverview(){
   const seg=(v,k,w)=>v?`<i class="${k}" style="flex:${v}" title="${v} ${w}"></i>`:"";
   const stages=L("stage").filter(x=>x!=="Internal"&&!isOutStage(x));const sc=stages.map(st=>({st,n:act.filter(b=>b.stage===st).length}));const smax=Math.max(1,...sc.map(x=>x.n));
   const ws=weekStart(today());const wk2=new Date(ws);wk2.setDate(wk2.getDate()+14);const plan=bs.filter(b=>{const s=S.sow[b.id]||{};const d=parseD(s.target_sign);return!onHold(b)&&!isInternal(b)&&s.stage!=="Signed"&&d});
-  const past=plan.filter(b=>parseD(S.sow[b.id].target_sign)<today()).length,soon=plan.filter(b=>{const d=parseD(S.sow[b.id].target_sign);return d>=today()&&d<wk2}).length;
+  const past=sowLate().length,soon=plan.filter(b=>{const d=parseD(S.sow[b.id].target_sign);return d>=today()&&d<wk2}).length;
   const open=withId(S.tasks).filter(t=>t.title&&t.status!=="Complete"&&!holdOf(t.brand));const lateT=open.filter(t=>dueFlag(t.deadline,false)==="Overdue").length,blkT=open.filter(t=>t.status==="Blocked").length;
   const kc={};for(const x of att)kc[x.kind]=(kc[x.kind]||0)+1;const pct=act.length?Math.round(hc.ok/act.length*100):0;
   const hyAll=hygiene();
@@ -1526,7 +1540,7 @@ function brandHome(id,r){
   const reasons=[];if(r.blocked)reasons.push(`${r.blocked} task${r.blocked>1?"s":""} blocked`);if(r.overdue)reasons.push(`${r.overdue} task${r.overdue>1?"s":""} late`);
   if(r.stepBlocked)reasons.push(`${r.stepBlocked} onboarding step${r.stepBlocked>1?"s":""} blocked`);if(!isInternal(b)&&due==="Overdue"&&r.sow!=="Signed")reasons.push("SOW past its target date");if(ch)reasons.push(`${ch} platform${ch>1?"s":""} to chase with the founder`);
   const person=(role,name)=>`<div class="who2"><span class="av big">${esc(ini(name)||"?")}</span><span><span class="faint">${esc(role)}</span><b>${name?esc(name):`<span class="faint">Not set</span>`}</b></span></div>`;
-  const ps=phases();const cur=ps.find(p=>phaseOpen(id,p));
+  const ps=phases();const cur=curPhase(id);
   const cs=campsOf(id);const nc=Object.values(S.comments).filter(c=>c.brand===id&&c.kind!=="system").sort((a,b2)=>b2.at-a.at);
   let h=`<div class="bento">
   <section class="bt hero" aria-label="About ${esc(b.name)}"><div class="row" style="gap:8px">${pill(b.stage)}${stageDays(b)!==null?`<span class="faint">for ${stageDays(b)} days</span>`:""}${b.restricted?`<span class="tag warn">Restricted</span>`:""}</div>
@@ -1556,7 +1570,7 @@ function brandHome(id,r){
 function journey(bid,ps,cur){return`<div class="jbar">${ps.map(p=>{const req=p.steps.filter(s=>!s.is_optional);const d=req.filter(s=>["Done","N/A"].includes(stepState(bid,s.code).status)).length;const pct=req.length?d/req.length:1;const done=!phaseOpen(bid,p);
   return`<button class="jseg ${done?"done":p===cur?"now":""}" style="flex:${Math.max(1,req.length)}" data-act="phase-go" data-id="${esc(bid)}" data-p="${esc(p.code)}" title="${esc(p.code+" "+p.name+": "+d+" of "+req.length+" done")}"><span class="jtrack"><i style="width:${Math.round(pct*100)}%"></i></span><span class="jl"><b>${esc(p.code)}</b> ${esc(p.name)}</span><span class="faint jc">${done?"Done":d+" of "+req.length}</span></button>`}).join("")}</div>`}
 /* Road to SOW: onboarding steps are the work, the SOW document is the outcome. One page for both. */
-function roadPage(bid){const b=S.brands[bid];const r=roll(bid);const sw=S.sow[bid]||{};const due=sowDue(sw);const ps=phases();const cur=ps.find(p=>phaseOpen(bid,p));
+function roadPage(bid){const b=S.brands[bid];const r=roll(bid);const sw=S.sow[bid]||{};const due=sowDue(sw);const ps=phases();const cur=curPhase(bid);
   const jc=journeyCount(bid);const p=Math.round(r.pct*100);
   const top=`<section class="road"><div class="rdl"><span class="btl">${isInternal(b)?"Onboarding":"Road to a signed SOW"}</span><span class="btbig">${p}%</span><span class="faint">${jc.done} of ${jc.total} required steps done</span></div>
    <div class="rdm"><span class="bar wide sowbar"><i style="width:${p}%"></i></span>
@@ -1578,7 +1592,7 @@ function campRows(bid,all){
 let phaseSel={bid:"",p:""};
 function stepsTrack(bid){
   const ps=phases();if(!ps.length)return`<div class="tw"><div class="empty">No step list loaded. An admin can add steps in Settings.</div></div>`;
-  const cur=ps.find(p=>phaseOpen(bid,p))||ps[ps.length-1];const sel=(phaseSel.bid===bid&&ps.find(p=>p.code===phaseSel.p))||cur;
+  const cur=curPhase(bid)||ps[ps.length-1];const sel=(phaseSel.bid===bid&&ps.find(p=>p.code===phaseSel.p))||cur;
   let h=`<div class="ptrack" role="tablist" aria-label="Onboarding phases">${ps.map((p,i)=>{const req=p.steps.filter(s=>!s.is_optional);const d=req.filter(s=>["Done","N/A"].includes(stepState(bid,s.code).status)).length;const done=!phaseOpen(bid,p);
     return`<button role="tab" aria-selected="${p===sel}" class="pnode ${done?"done":p===cur?"now":""} ${p===sel?"on":""}" data-act="phase-go" data-id="${esc(bid)}" data-p="${esc(p.code)}"><span class="pdot">${done?ICON.check:esc(String(i+1))}</span><span class="pname">${esc(p.name)}</span><span class="faint pcount">${done?"Done":d+" of "+req.length}</span></button>`}).join("")}</div>`;
   const req=sel.steps.filter(s=>!s.is_optional);const d=req.filter(s=>["Done","N/A"].includes(stepState(bid,s.code).status)).length;const complete=!phaseOpen(bid,sel);
@@ -1660,34 +1674,28 @@ function bpStrip(){const bs=brandList().filter(b=>S.bps[b.id]&&!onHold(b));if(!b
   return strip([IB.box("s3 tint-a",IB.head("Sections complete","Average across brands")+IB.hero(avg+"%","")+IB.meter(rr.filter(r=>r.overall==="Complete").length,rr.filter(r=>r.overall!=="Complete").length,"brands complete","in progress")),
     IB.box("s5 tint-c",IB.head("Where brands are","Overall Best Practices status")+IB.bars([["Not Started","d-todo"],["In Progress","d-prog"],["In QA","d-rev"],["Blocked","d-blk"],["Complete","d-done"]].map(([l,k])=>({l,k,n:ov[l]||0})))),
     IB.box("s4 tint-b",IB.head("Ready to work","Platform access in place")+IB.rows([["Ready",ready,"ok"],["Waiting on access",bs.length-ready,bs.length-ready?"warn":""]]))])}
+/* Best Practices: one audit sheet per brand. Each section is done, blocked or not done yet; a note says why when blocked; one link to the sheet. */
 function vBp(){
-  const groups=BPGROUPS();const secs=groups.flatMap(g=>g.sections);
-  const tracked=brandList().filter(b=>S.bps[b.id]);let rows=tracked.filter(b=>tqMatch("bp",b));const others=brandList().filter(b=>!S.bps[b.id]&&!isInternal(b));
-  let h=`<h1>Best Practices</h1>${bpStrip()}<p class="sub">One row per brand. Section groups are folded into one bar each; click a group name to open its sections, then click a dot to set a section.</p>
-  <div class="slegend" role="note" aria-label="How to read Best Practices"><b>Sections</b>${["Not Started","Foundations","Tactics In","In QA","Complete","Blocked","N/A"].map(v=>`<span><span class="bpd bp-${key(v)}" aria-hidden="true">${esc(BPMARK[v]??"")}</span>${esc(v)}</span>`).join("")}<span class="lsep"></span><span><span class="bpd bp-Locked" aria-hidden="true">${LOCK}</span>Waiting on access</span><span><span class="bpd bp-NotStarted bp-Ready" aria-hidden="true"></span>Ready to start</span></div>
-  <div class="toolbar">${findBox("bp",tracked.length)}<div class="seg" role="group" aria-label="Show"><button data-act="bpf" data-v="all" class="${bpFilter==="all"?"on":""}">All</button><button data-act="bpf" data-v="open" class="${bpFilter==="open"?"on":""}">Not complete</button><button data-act="bpf" data-v="blocked" class="${bpFilter==="blocked"?"on":""}">Blocked</button></div>
-   <label class="tl">Sort by <select data-act="bps" id="bp-sort"><option value="progress" ${bpSort==="progress"?"selected":""}>Needs work first</option><option value="name" ${bpSort==="name"?"selected":""}>Brand A to Z</option><option value="due" ${bpSort==="due"?"selected":""}>Due date</option></select></label>
+  const groups=BPGROUPS();const tracked=brandList().filter(b=>S.bps[b.id]);let rows=tracked.filter(b=>tqMatch("bp",b));const others=brandList().filter(b=>!S.bps[b.id]&&!isInternal(b));
+  const R={};tracked.forEach(b=>R[b.id]=bpRoll(b.id));
+  let h=`<h1>Best Practices</h1><p class="sub">One Best Practices sheet per brand. Click a box to mark a section done; click again to mark it blocked and say why.</p>
+  <div class="toolbar">${findBox("bp",tracked.length)}<div class="seg" role="group" aria-label="Show">${[["all","All"],["open","Not done"],["blocked","Blocked"]].map(([k,l])=>`<button data-act="bpf" data-v="${k}" class="${bpFilter===k?"on":""}" aria-pressed="${bpFilter===k}">${l}</button>`).join("")}</div>
    ${canWrite&&others.length?`<select data-act="bp-add" aria-label="Start tracking a brand" class="btn"><option value="">Start tracking a brand...</option>${others.map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join("")}</select>`:""}</div>`;
-  if(!rows.length)return h+`<div class="tw"><div class="empty">No brands tracked yet. Pick one above to start.</div></div>`;
-  const R={};rows.forEach(b=>R[b.id]=bpRoll(b.id));const isOpen=g=>bpOpenG==="*"||bpOpenG===g.name;
+  if(!tracked.length)return h+`<div class="tw"><div class="empty">No brands tracked yet. Pick one above to start.</div></div>`;
   if(bpFilter==="open")rows=rows.filter(b=>R[b.id].overall!=="Complete");if(bpFilter==="blocked")rows=rows.filter(b=>R[b.id].overall==="Blocked");
   const ord={Blocked:0,"In QA":1,"In Progress":2,"Not Started":3,Complete:4};
-  rows.sort(bpSort==="name"?(a,b)=>a.name.localeCompare(b.name):bpSort==="due"?(a,b)=>String(S.bps[a.id].due_date||"9999").localeCompare(String(S.bps[b.id].due_date||"9999")):(a,b)=>(ord[R[a.id].overall]??5)-(ord[R[b.id].overall]??5)||R[a.id].progress-R[b.id].progress);
-  const ordered=rows;const pg=paged("bp",ordered);rows=pg.rows;
-  h+=`<div class="row" style="margin:-4px 0 8px;gap:8px"><span class="faint">Groups</span><button class="chipbtn ${bpOpenG==="*"?"on":""}" data-act="bpgroup" data-g="*" aria-pressed="${bpOpenG==="*"}">Open all</button><button class="chipbtn ${!bpOpenG?"on":""}" data-act="bpgroup" data-g="" aria-pressed="${!bpOpenG}">Fold all</button></div>
-  <div class="tw tpin"><table class="grid bpg"><thead>
-   <tr><th class="stick" rowspan="2">Brand</th><th rowspan="2">Progress</th><th rowspan="2">Overall</th>${groups.map((g,i)=>`<th colspan="${isOpen(g)?g.sections.length:1}" class="gh g${i%6}"><button class="ghb" data-act="bpgroup" data-g="${esc(g.name)}" aria-expanded="${isOpen(g)}">${CHEV}${esc(g.name)}</button></th>`).join("")}${simple?"":`<th rowspan="2">Owner</th><th rowspan="2">Due</th>`}<th rowspan="2"><span class="sr">Edit</span></th><th rowspan="2">Link</th></tr>
-   <tr class="r2">${groups.map((g,i)=>isOpen(g)?g.sections.map(x=>`<th class="pc g${i%6}" title="${esc(x)}"><span>${esc(x)}</span></th>`).join(""):`<th class="pc g${i%6} gfold"><span>${g.sections.length} section${g.sections.length===1?"":"s"}</span></th>`).join("")}</tr></thead><tbody>`;
-  for(const b of rows){const d=S.bps[b.id];const r=R[b.id];
-    h+=`<tr class="${onHold(b)?"held":""}"><td class="stick"><a class="bname" href="#${brandHash(b.id,"bp")}" title="Open ${esc(b.name)} Best Practices">${esc(b.name)}</a>${(()=>{const g=bpReady(b.id);return g.locked.length?`<div class="bpr2 warn">${g.locked.length} waiting on access</div>`:g.ready.length&&!g.unchecked.length?`<div class="bpr2 ok">Access ready</div>`:""})()}</td><td class="nowrap"><span class="bar"><i style="width:${Math.round(r.progress*100)}%"></i></span> <span class="faint">${r.done}/${r.total}</span></td><td>${pill(r.overall)}</td>${groups.map(g=>{if(!isOpen(g)){const vs=g.sections.map(x=>(d.sections||{})[x]||"Not Started");const live=vs.filter(v=>v!=="N/A");const dn=live.filter(v=>v==="Complete").length;const bl=vs.includes("Blocked");const lk=g.sections.filter(x=>((d.sections||{})[x]||"Not Started")==="Not Started"&&(bpAccess(b.id,x)||{}).state==="locked").length;
-        return`<td class="gc gsumc"><button class="gsb" data-act="bpgroup" data-g="${esc(g.name)}" title="${esc(g.name+": "+dn+" of "+live.length+" complete"+(bl?", something blocked":"")+(lk?", "+lk+" waiting on access":""))}"><span class="pm"><i style="width:${live.length?Math.round(dn/live.length*100):0}%"></i></span><span class="gsn">${dn}/${live.length}${bl?` <b class="c-bad">!</b>`:""}${lk?` <span class="faint">${LOCK}${lk}</span>`:""}</span></button></td>`}
-      return g.sections.map(x=>{const v=(d.sections||{})[x]||"Not Started";
-      const ax=v==="Not Started"?bpAccess(b.id,x):null;const lk=ax&&ax.state==="locked";const rd=ax&&ax.state==="ready";
-      return`<td class="gc"><button class="bpd bp-${lk?"Locked":key(v)}${rd?" bp-Ready":""}" data-act="bpdot" data-id="${esc(b.id)}" data-sec="${esc(x)}" title="${esc(x+": "+v+(lk?"\nWaiting on access: "+ax.missing.join(", "):rd?"\nAccess is in place. Ready to start":""))}" aria-label="${esc(b.name+", "+x+": "+v+(lk?", waiting on access":rd?", ready to start":""))}" ${canWrite?"":"disabled"}>${lk?LOCK:esc(BPMARK[v]??"")}</button></td>`}).join("")}).join("")}
-      ${simple?"":`<td class="nowrap">${esc(d.owner)||`<span class="faint">Not set</span>`}</td><td class="nowrap">${dueHtml(d.due_date,r.progress===1)||`<span class="faint">No date</span>`}</td>`}
-      <td><button class="btn sm quiet" data-act="open" data-kind="bp" data-id="${esc(b.id)}">Edit</button></td>
-      <td class="nowrap">${d.doc_link?`<a class="btn sm quiet" href="${esc(d.doc_link)}" target="_blank" rel="noopener" title="${esc(d.doc_link)}">Open</a>`:""}${canWrite?`<button class="btn sm quiet" data-act="bp-link" data-id="${esc(b.id)}" aria-label="${esc((d.doc_link?"Change":"Add")+" the Best Practices link for "+b.name)}">${d.doc_link?"Change":"Add link"}</button>`:d.doc_link?"":`<span class="faint">None</span>`}</td></tr>`}
-  if(!rows.length)h+=`<tr><td colspan="${secs.length+7}"><div class="empty">No brands match this filter.</div></td></tr>`;
+  rows.sort((a,b)=>(onHold(a)?1:0)-(onHold(b)?1:0)||(ord[R[a.id].overall]??5)-(ord[R[b.id].overall]??5)||a.name.localeCompare(b.name));
+  const pg=paged("bp",rows);rows=pg.rows;
+  h+=`<div class="tw tpin"><table class="bpq"><thead><tr><th rowspan="2" class="bpqb stick">Brand</th><th rowspan="2" class="bpqd">Done</th><th rowspan="2">Sheet</th>${groups.map(g=>`<th colspan="${g.sections.length}" class="bpqg">${esc(g.name)}</th>`).join("")}</tr>
+   <tr>${groups.map(g=>g.sections.map((x,k)=>`<th class="bpqs ${k===0?"gs":""}" title="${esc(x)}"><span>${esc(x)}</span></th>`).join("")).join("")}</tr></thead><tbody>`;
+  for(const b of rows){const d=S.bps[b.id];let dn=0,tot=0;const bl=[];
+    const cells=groups.map(g=>g.sections.map((x,k)=>{const v=(d.sections||{})[x]||"Not Started";if(v!=="N/A")tot++;if(v==="Complete")dn++;if(v==="Blocked")bl.push(x);
+      const word=v==="Complete"?"Done":v==="Blocked"?"Blocked":v==="N/A"?"Not needed":"Not done yet";
+      return`<td class="bpqc ${k===0?"gs":""}"><button class="bq ${v==="Complete"?"ok":v==="Blocked"?"bad":v==="N/A"?"na":"no"}" data-act="bpq" data-id="${esc(b.id)}" data-sec="${esc(x)}" title="${esc(x+": "+word)}" aria-label="${esc(b.name+", "+x+": "+word)}" ${canWrite?"":"disabled"}>${v==="Complete"?"✓":v==="Blocked"?"!":v==="N/A"?"–":""}</button></td>`}).join("")).join("");
+    const note=bl.length?`<div class="bpqnote"><span class="c-bad">Blocked: ${esc(bl.join(", "))}</span>${d.blocker?`<div class="bpqn" title="${esc(d.blocker)}">${esc(d.blocker)}</div>`:""}</div>`:"";
+    h+=`<tr class="${onHold(b)?"held":""}"><td class="bpqb stick"><a class="bname" href="#${brandHash(b.id,"bp")}">${esc(b.name)}</a>${note}</td><td class="bpqd"><b>${dn}</b><span class="faint">/${tot}</span></td>
+     <td class="nowrap">${d.doc_link?`<a class="btn sm" href="${esc(d.doc_link)}" target="_blank" rel="noopener">Open sheet</a>`:""}${canWrite?`<button class="btn sm quiet" data-act="bp-link" data-id="${esc(b.id)}" aria-label="${esc((d.doc_link?"Change":"Add")+" the Best Practices sheet link for "+b.name)}">${d.doc_link?"Change":"+ Link"}</button>`:d.doc_link?"":`<span class="faint">None</span>`}</td>${cells}</tr>`}
+  if(!rows.length)h+=`<tr><td colspan="${3+groups.reduce((a,g)=>a+g.sections.length,0)}"><div class="empty">No brands match this filter.</div></td></tr>`;
   return h+`</tbody></table></div>`+pg.html}
 function bpReady(bid){const d=S.bps[bid]||{sections:{}};const out={ready:[],locked:[],unchecked:[]};
   for(const x of L("bp_section")){const v=(d.sections||{})[x]||"Not Started";if(v==="N/A"||v==="Complete")continue;const ax=bpAccess(bid,x);if(!ax)continue;
@@ -1917,7 +1925,7 @@ function founderModel(bid){const b=S.brands[bid]||{};const s=S.sow[bid]||{};
   const st=founderStages().map(g=>{const codes=(g.steps||[]).filter(c=>S.steps[c]&&!S.steps[c].is_optional);const v=codes.map(c=>stepState(bid,c).status||"Not Started");const live=v.filter(x=>x!=="N/A");
     const done=live.filter(x=>x==="Done").length;const state=!live.length?(codes.length?"Done":"Not started"):done===live.length?"Done":live.some(x=>x==="Done"||x==="In Progress")?"In progress":"Not started";
     return{name:g.name,desc:g.desc||"",state,done,total:live.length}});
-  let cur=st.findIndex(x=>x.state!=="Done");if(cur<0)cur=st.length-1;
+  let far=-1;st.forEach((x,i)=>{if(x.state!=="Not started")far=i});let cur=far<0?0:st[far].state!=="Done"?far:st.findIndex((x,i)=>i>far&&x.state!=="Done");if(cur<0)cur=st.findIndex(x=>x.state!=="Done");if(cur<0)cur=st.length-1;
   const need=withId(S.access).filter(a=>a.brand===bid&&ACC_FOUNDER.includes(a.status)).map(a=>a.platform).filter(Boolean);
   return{name:b.name,hold:onHold(b),stages:st,cur,doneCount:st.filter(x=>x.state==="Done").length,target:s.target_sign||"",signed:s.stage==="Signed",need:[...new Set(need)],date:isoToday()}}
 const fvLogo=()=>LOGO.replace('class="logo"','class="fvlogo"');
@@ -2014,7 +2022,7 @@ function accBrands(){const all=withId(S.access);const by={};for(const a of all)i
   return Object.keys(by).filter(b=>S.brands[b]).sort((x,y)=>(holdOf(x)?1:0)-(holdOf(y)?1:0)||(by[y].some(needsChase)?1:0)-(by[x].some(needsChase)?1:0)||bname(x).localeCompare(bname(y))).map(b=>{const mine=all.filter(a=>a.brand===b&&a.status!=="Not Needed");
     return{b,n:by[b].length,ok:mine.filter(accGranted).length,total:mine.length,chase:by[b].filter(needsChase).length,founder:by[b].filter(a=>ACC_FOUNDER.includes(a.status)).length}})}
 function accFull(bid){
-  if(!bid){const list=accBrands();const chips=`<div class="chips">${accQueues().map(([k,l])=>{const n=withId(S.access).filter(a=>inQueue(a,k)).length;return`<button class="chipbtn ${accQueue===k?"on":""}" data-act="accq" data-v="${esc(k)}">${esc(l)} <span>${n}</span></button>`}).join("")}</div>`;
+  if(!bid){const list=accBrands();const chips=`<div class="chips">${accQueues().map(([k,l])=>{const n=withId(S.access).filter(a=>S.brands[a.brand]&&!holdOf(a.brand)&&inQueue(a,k)).length;return`<button class="chipbtn ${accQueue===k?"on":""}" data-act="accq" data-v="${esc(k)}">${esc(l)} <span>${n}</span></button>`}).join("")}</div>`;
     if(!list.length)return chips+`<div class="tw"><div class="empty">Nothing in this list.</div></div>`;
     const cur=list.some(x=>x.b===accBrand)?accBrand:list[0].b;
     const side=`<div class="acclist" role="list" aria-label="Brands"><input id="acc-find" type="search" placeholder="Find a brand (${list.length})" aria-label="Find a brand"><div class="accbs">${list.map(x=>`<button role="listitem" class="accb ${x.b===cur?"on":""}" data-act="accb" data-id="${esc(x.b)}" data-n="${esc(bname(x.b).toLowerCase())}" aria-current="${x.b===cur}"><span class="an">${esc(bname(x.b))}</span><span class="am"><span class="bar"><i style="width:${x.total?Math.round(x.ok/x.total*100):0}%"></i></span> ${x.ok}/${x.total}</span><span class="aw ${x.chase?"bad":x.founder?"warn":x.ok===x.total&&x.total?"ok":"off"}">${x.chase?`${smark("blk","")} ${x.chase} to chase`:x.founder?`${x.founder} with founder`:x.ok===x.total&&x.total?`${smark("done","")} All granted`:"Open"}</span></button>`).join("")}</div></div>`;
@@ -2054,7 +2062,7 @@ function accDrawer(id){const a=S.access[id];const th=accThread(id);const team=ac
 
 /* ---------- brand sections: one tile per area, each shows its own state ---------- */
 function brandTiles(id,r){
-  const b=S.brands[id]||{};const cs=campsOf(id);const ps=phases();const cur=ps.find(p=>phaseOpen(id,p));
+  const b=S.brands[id]||{};const cs=campsOf(id);const ps=phases();const cur=curPhase(id);
   const ar=withId(S.access).filter(a=>a.brand===id&&a.status!=="Not Needed");const g=ar.filter(accGranted).length;const wf=ar.filter(a=>ACC_FOUNDER.includes(a.status)).length;const ch=ar.filter(needsChase).length;
   const s=r.sowRow;const due=sowDue(s);const bp=r.bp;const locked=bp?L("bp_section").filter(x=>((S.bps[id].sections||{})[x]||"Not Started")==="Not Started"&&(bpAccess(id,x)||{}).state==="locked").length:0;
   const nc=Object.values(S.comments).filter(c=>c.brand===id&&c.kind!=="system").length;
@@ -2294,7 +2302,7 @@ function leadBento(d){const{bs,R,n,prev,onb,live,dueMonth,riskCamps,gates,escs,a
   const soon=launches.filter(x=>x.when!=="late"&&x.days<=14);const late=launches.filter(x=>x.when==="late");
   const accAll=withId(S.access).filter(a=>a.status!=="Not Needed"&&!holdOf(a.brand)&&S.brands[a.brand]);const accG=accAll.filter(accGranted).length;const accF=accAll.filter(a=>ACC_FOUNDER.includes(a.status)).length;const accC=accAll.filter(needsChase).length;
   const bpb=bs.filter(b=>S.bps[b.id]&&!onHold(b)&&(bpRoll(b.id)||{}).overall!=="Complete");const bpw=bpb.map(b=>({b,g:bpReady(b.id)})).filter(x=>x.g.locked.length||x.g.unchecked.length);
-  const past=onb.filter(b=>{const d=parseD((S.sow[b.id]||{}).target_sign);return d&&d<today()}).length;
+  const past=sowLate().length;
   const nextSign=onb.map(b=>({b,d:parseD((S.sow[b.id]||{}).target_sign)})).filter(x=>x.d&&x.d>=today()).sort((a,c)=>a.d-c.d)[0];
   const dec=gates.length+escs.length;const pct=act.length?Math.round(hc.ok/act.length*100):0;
   const lc=liveCampaigns(bs);const wk=weekAheadItems(bs);
@@ -2312,7 +2320,10 @@ function leadBento(d){const{bs,R,n,prev,onb,live,dueMonth,riskCamps,gates,escs,a
   h+=`</div><div class="lmore"><a href="#leadership/all">All brands table ›</a></div>`;
   return h}
 const inOnboarding=b=>!!b&&!isInternal(b)&&b.stage!=="Live"&&(S.sow[b.id]||{}).stage!=="Signed";
-function curPhase(bid){return phases().find(p=>phaseOpen(bid,p))||null}
+/* the phase a brand is in now: the furthest phase with any step done or in progress (earlier open steps are catch-ups) */
+const phaseStarted=(bid,p)=>p.steps.some(s=>["Done","In Progress"].includes(stepState(bid,s.code).status));
+function curPhase(bid){const ps=phases();let far=-1;ps.forEach((p,i)=>{if(phaseStarted(bid,p))far=i});
+  if(far<0)return ps.find(p=>phaseOpen(bid,p))||null;if(phaseOpen(bid,ps[far]))return ps[far];return ps.slice(far+1).find(p=>phaseOpen(bid,p))||ps.find(p=>phaseOpen(bid,p))||null}
 function phaseDays(bid,p){let last="";for(const s of p.steps){const v=stepState(bid,s.code).since;if(v&&v>last)last=v}const d=parseD(last);return d?Math.max(0,Math.round((today()-d)/DAY)):null}
 function phaseLane(list,R){const ps=phases();if(!ps.length)return`<div class="tw"><div class="empty">No SOW steps set up yet.</div></div>`;
   const by=new Map(ps.map(p=>[p.code,[]]));const done=[];for(const b of list){const p=curPhase(b.id);if(p)by.get(p.code).push(b);else done.push(b)}
@@ -2484,7 +2495,9 @@ function sowBoard(){
   return h+`</tbody></table></div>`+pg.html}
 /* SOW documents: the kinds come from Settings > Lists (SOW documents); each brand keeps a link per kind, plus any others */
 const SOW_DOCS=()=>L("sow_docs");
-function sowDocs(bid){const s=S.sow[bid]||{};return Object.assign({},s.docs||{})}
+/* the Best Practices slot (the sow_docs entry that names Best Practices or BP) shows the brand's Best Practices sheet link */
+const bpSlot=()=>SOW_DOCS().find(k=>/best\s*practice|^bps?$/i.test(k));
+function sowDocs(bid){const s=S.sow[bid]||{};const d=Object.assign({},s.docs||{});const k=bpSlot();const l=(S.bps[bid]||{}).doc_link;if(k&&l)d[k]=l;return d}
 function sowDocChips(bid,add){const d=sowDocs(bid);const ex=(S.sow[bid]||{}).docs_extra||[];const w=add&&canWrite&&S.sow[bid];
   const ks=SOW_DOCS().filter(k=>d[k]);const miss=SOW_DOCS().filter(k=>!d[k]);
   return`<span class="dchips">${ks.map(k=>`<a class="dchip" href="${esc(d[k])}" target="_blank" rel="noopener">${esc(k)}</a>`).join("")}${ex.map(x=>`<a class="dchip" href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.label)}</a>`).join("")}${w?`<button class="dchip add" data-act="sow-doc" data-id="${esc(bid)}" title="${esc(miss.length?"Missing: "+miss.join(", "):"Add another document")}">+ Add${miss.length?` <span class="dmiss">${miss.length} missing</span>`:""}</button>`:""}${!ks.length&&!ex.length&&!w?`<span class="faint">None</span>`:""}</span>`}
@@ -2640,9 +2653,21 @@ function vChanges(){
    <div class="toolbar"><label class="tl" for="log-q">Find</label><input id="log-q" type="search" data-act="log-q" placeholder="Brand, person, field or value" value="${esc(logQ)}" style="max-width:340px"><span class="muted">${rows.length} change${rows.length===1?"":"s"}</span></div>`;
   if(!rows.length)return h+`<div class="tw"><div class="empty">${all.length?"No changes match.":"No changes yet. Every edit made in the tracker is listed here."}</div></div>`;
   let last="";h+=`<div class="card">`;
-  for(const e of rows.slice(0,400)){const d=day(e.at);if(d!==last){h+=`<h2 class="logday">${esc(d)}</h2>`;last=d}
-    h+=`<div class="logrow"><span class="faint">${esc(new Date(e.at).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}))}</span><span>${esc(e.person||"Someone")}</span><span>${esc(e.label||e.what)}: <b>${esc(e.field)}</b> ${esc(e.old)} → ${esc(e.new)}</span></div>`}
-  return h+`</div>`}
+  const plain=v=>{const x=String(v==null?"":v);return x.length<=80&&!/^[\[{]/.test(x.trim())};const pgC=paged("log",rows);
+  for(const e of pgC.rows){const d=day(e.at);if(d!==last){h+=`<h2 class="logday">${esc(d)}</h2>`;last=d}
+    h+=`<div class="logrow"><span class="faint">${esc(new Date(e.at).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}))}</span><span>${esc(e.person||"Someone")}</span><span>${logLine(e,plain)}</span></div>`}
+  return h+`</div>`+pgC.html}
+/* change log: one plain sentence per change: brand, the thing, the field, old → new (raw data and links never shown) */
+const LOG_FIELD={status:"",owner:"owner",due:"due date",deadline:"due date",since:"date",next_step:"next step",gf_link:"GF link",sow_link:"SOW link",stage:"stage",blocker:"blocker",notes:"notes",founder:"founder",founder_country:"founder country",founder_zone:"founder time zone",priority:"priority",ns_log:"next steps log",target_sign:"target sign date",draft_due:"draft due",title:"name",support:"support team",lead:"brand lead",approved_by:"signed off by",approved_at:"signed off on",updated_by:"by"};
+function logLine(e,plain){const bn=(S.brands[e.id]||{}).name;let lab=String(e.label||"");
+  if(bn&&lab.startsWith(e.id+":"))lab=bn+lab.slice(e.id.length);
+  let code=S.steps[e.field]?e.field:"";if(!code&&e.what==="brand_steps"){const m=lab.match(/(\S+)$/);if(m&&S.steps[m[1]])code=m[1]}
+  if(code){const st=S.steps[code];const who=bn||lab.replace(/[: ].*$/,"");const f=S.steps[e.field]?"":(e.field in LOG_FIELD?LOG_FIELD[e.field]:e.field);
+    return`${esc(who)} · <b>${esc((st.no?st.no+" ":"")+st.name)}</b>${f?" "+esc(f):""}${plain(e.old)&&plain(e.new)?` <span class="logv">${esc(e.old||"(blank)")} → ${esc(e.new||"(blank)")}</span>`:""}`}
+  if(/_link$/.test(e.field))return`${esc(lab.replace(/:.*$/,""))} · ${esc(LOG_FIELD[e.field])} ${e.new?"updated":"removed"}`;
+  lab=lab.replace(/ \(blank\) → .*$| [^ ]+ → .*$/,"");
+  const f=e.field in LOG_FIELD?LOG_FIELD[e.field]:"";const has=f&&lab.toLowerCase().includes(f.toLowerCase());
+  return`${esc(lab||e.what)}${f&&!has?" · "+esc(f):""}${plain(e.old)&&plain(e.new)&&(e.old!==""||e.new!=="")?` <span class="logv">${esc(e.old||"(blank)")} → ${esc(e.new||"(blank)")}</span>`:""}`}
 function vSettings(only,bare){
   let tabs=[["steps","SOW steps"],["changes","Change log"],["pages","Pages"],["lists","Lists"],["templates","Task templates"],["access","Access setup"],["nobrand","Needs a brand"],["export","Export and backup"]];
   if(!canEdit)tabs=tabs.filter(x=>x[0]==="changes");
@@ -2877,6 +2902,10 @@ document.addEventListener("click",e=>{
   else if(act==="bpset"){if(!pop)return;const{id,sec}=pop;const d=S.bps[id];closePop();if(!d)return;const v=a.dataset.v;if(((d.sections||{})[sec]||"Not Started")!==v)save("bps",id,{sections:Object.assign({},d.sections||{},{[sec]:v})},"BPs "+bname(id)+" "+sec);
     setTimeout(()=>{const b=document.querySelector(`[data-act=bpdot][data-id="${CSS.escape(id)}"][data-sec="${CSS.escape(sec)}"]`);if(b)b.focus()},30)}
   else if(act==="bpf"){bpFilter=a.dataset.v;render()}
+   else if(act==="bpq"){const id=a.dataset.id,sec=a.dataset.sec;const d=S.bps[id];if(!d)return;const v=(d.sections||{})[sec]||"Not Started";
+     const nx=v==="Complete"?"Blocked":v==="Blocked"||v==="N/A"?"Not Started":"Complete";const secs=Object.assign({},d.sections||{},{[sec]:nx});
+     if(nx==="Blocked"){formBox("Why is "+sec+" blocked? · "+bname(id),`<div class="f"><label for="n-bpn">Note</label><textarea id="n-bpn" name="note" rows="3" placeholder="For example: waiting on Amazon access">${esc(d.blocker||"")}</textarea></div>`,"Mark blocked",f=>{save("bps",id,{sections:secs,blocker:f.note},"BPs "+bname(id)+" "+sec)});return}
+     const still=Object.values(secs).includes("Blocked");save("bps",id,Object.assign({sections:secs},still?{}:{blocker:""}),"BPs "+bname(id)+" "+sec)}
   else if(act==="accq"){accQueue=a.dataset.v;render()}
   else if(act==="fm-open"){e.stopPropagation();openFounderMessage(a.dataset.id)}
   else if(act==="fm-copy")copyText($("#fm-text").value);

@@ -33,6 +33,7 @@ const res = []; const check = (who, what, ok, d = '') => res.push([ok ? 'OK  ' :
   // View only: writes are refused by the database
   p = await open(process.argv[3], 'overview');
   await go(p, 'brand-ora'); await p.click('.rsub [data-tab=sow]'); await p.waitForTimeout(150);
+  await p.click('.pnode').catch(() => {}); await p.waitForTimeout(150); // first phase: its steps have nothing earlier to wait for
   const code = await p.$$eval('select[data-code]', els => { const e = els.find(x => x.checkVisibility() && x.value !== 'Done'); return e && e.dataset.code });
   // The website knows the role at sign-in and locks controls from the start; claude.ai finds out on the first refused write.
   if (await p.$eval(`select[data-code="${code}"]`, e => e.disabled)) {
