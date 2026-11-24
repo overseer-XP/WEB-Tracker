@@ -1044,6 +1044,15 @@ textarea{border:1px solid var(--line2)!important;border-radius:8px!important;pad
 .bpqnote{font-size:12.5px;margin-top:3px;line-height:1.35}.bpqn{color:var(--muted);font-size:12.5px;margin-top:2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 
 .xp{cursor:pointer}.xp:hover{color:var(--ink)}.xp.open{-webkit-line-clamp:unset!important;display:block!important;overflow:visible!important}.xpm{font-size:12.5px;margin:2px 0 4px;align-self:flex-start}
+
+/* fit at every screen size */
+.board th.gh.gfold .ghf{flex-wrap:wrap;row-gap:2px;max-width:100%}.board th.gh .gdone{white-space:nowrap}.board th.gh{overflow:hidden}
+.bpq{table-layout:fixed;width:100%;min-width:1180px}.bpq th.bpqb{width:250px}.bpq th.bpqd{width:72px}.bpq th.bpqk{width:150px}.bpq th.bpqs{width:auto;min-width:0}
+.sawrap.sanone{grid-template-columns:minmax(0,1fr)}.sawrap.sanone .saedit{order:-1;position:static;display:flex;gap:6px 18px;flex-wrap:wrap;align-items:baseline;padding:10px 14px}.sawrap.sanone .saedit h3{font-size:14px}.sawrap.sanone .saedit p{margin:0}
+.saboard{scrollbar-gutter:stable}
+.topbar{flex-wrap:wrap;row-gap:6px}
+@media (max-width:1499px){.admbox label{font-size:0;gap:0}.admbox label select{font-size:12.5px!important}.tclk span{display:none}}
+@media (max-width:1359px){.topbar .vcrumb{max-width:24vw}.topbar .search{flex:0 1 180px;min-width:110px}.topbar .seg[aria-label=Colours] button.on,.topbar .seg[aria-label=Detail] button.on{display:none}.topbar .seg[aria-label=Colours] button,.topbar .seg[aria-label=Detail] button{border-radius:8px}}
 </style>
 
 <div class="app">
@@ -1688,7 +1697,7 @@ function vBp(){
   const ord={Blocked:0,"In QA":1,"In Progress":2,"Not Started":3,Complete:4};
   rows.sort((a,b)=>(onHold(a)?1:0)-(onHold(b)?1:0)||(ord[R[a.id].overall]??5)-(ord[R[b.id].overall]??5)||a.name.localeCompare(b.name));
   const pg=paged("bp",rows);rows=pg.rows;
-  h+=`<div class="tw tpin"><table class="bpq"><thead><tr><th rowspan="2" class="bpqb stick">Brand</th><th rowspan="2" class="bpqd">Done</th><th rowspan="2">Sheet</th>${groups.map(g=>`<th colspan="${g.sections.length}" class="bpqg">${esc(g.name)}</th>`).join("")}</tr>
+  h+=`<div class="tw tpin"><table class="bpq"><thead><tr><th rowspan="2" class="bpqb stick">Brand</th><th rowspan="2" class="bpqd">Done</th><th rowspan="2" class="bpqk">Sheet</th>${groups.map(g=>`<th colspan="${g.sections.length}" class="bpqg">${esc(g.name)}</th>`).join("")}</tr>
    <tr>${groups.map(g=>g.sections.map((x,k)=>`<th class="bpqs ${k===0?"gs":""}" title="${esc(x)}"><span>${esc(x)}</span></th>`).join("")).join("")}</tr></thead><tbody>`;
   for(const b of rows){const d=S.bps[b.id];let dn=0,tot=0;const bl=[];
     const cells=groups.map(g=>g.sections.map((x,k)=>{const v=(d.sections||{})[x]||"Not Started";if(v!=="N/A")tot++;if(v==="Complete")dn++;if(v==="Blocked")bl.push(x);
@@ -2584,7 +2593,7 @@ function vStepsAdmin(){
   let h=`<div class="row" style="gap:10px;align-items:center;margin-bottom:4px"><h1 style="margin:0">SOW steps</h1><span class="tag sadm">Admins only</span>${changes.length?`<span class="tag sadraft">Draft · ${changes.length} change${changes.length>1?"s":""} not published</span>`:`<span class="tag">Matches what the team sees</span>`}<span class="grow"></span>
     ${S.config.steps_draft&&S.config.steps_draft.steps?`<button class="btn" data-act="sa-discard">Discard draft</button>`:""}<button class="btn" data-act="sa-arch-tog" aria-pressed="${saShowArch}">${saShowArch?"Hide archived":"Show archived"}</button><button class="btn pri" data-act="sa-pub" ${changes.length?"":"disabled"}>Review and publish</button></div>
     <p class="sub">Drag a card to reorder it or move it to another phase, or use Move up and Move down. Numbers update themselves. Nothing changes for the team until you publish.</p>`;
-  h+=`<div class="sawrap"><div class="saboard">${d.phases.map((p,pi)=>{const list=saPhaseSteps(d,p.code,saShowArch);return`<section class="sacol" data-saph="${esc(p.code)}" aria-label="${esc(p.name)}"><div class="sach"><b>${pi+1} ${esc(p.name)}</b><span class="cnt">${list.filter(([,s])=>!s.archived).length}</span></div>
+  h+=`<div class="sawrap ${S.steps[saSel]||saSel?"":"sanone"}"><div class="saboard">${d.phases.map((p,pi)=>{const list=saPhaseSteps(d,p.code,saShowArch);return`<section class="sacol" data-saph="${esc(p.code)}" aria-label="${esc(p.name)}"><div class="sach"><b>${pi+1} ${esc(p.name)}</b><span class="cnt">${list.filter(([,s])=>!s.archived).length}</span></div>
     <div class="sabody">${list.map(card).join("")}</div><button class="saadd" data-act="sa-add" data-ph="${esc(p.code)}">+ Add step</button></section>`}).join("")}
     <section class="sacol saphadd"><button class="saadd" data-act="sa-addph">+ Add phase</button></section></div>`;
   const s=saSel&&d.steps[saSel];
