@@ -1358,6 +1358,8 @@ function mineCmp(k){const due=(a,b)=>String(a.due||"9999").localeCompare(String(
 const teamOf=it=>it.kind==="step"?"Onboarding steps":it.kind==="access"?"Platform access":depOf(S.tasks[it.id]||{});
 function ctlOf(it){return it.kind==="access"?statusSel("access",it.id,it.status,L("access_status"),canWrite):it.kind==="task"?statusSel("task",it.id,it.status,L("task_status"),canChangeTask(S.tasks[it.id]||{}))
   :statusSel("step",it.id,it.status,L("checklist"),canWrite,`data-code="${esc(it.code)}"`)}
+/* sort keys on each My tasks card, so the order can be checked */
+const cardData=(it,h)=>h.replace(/<div class="kc/,`<div data-brand="${esc(bname(it.brand))}" data-due="${esc(it.due||"")}" data-pri="${priIdx(it)}" data-held="${holdOf(it.brand)?1:0}" class="kc`);
 function mineBoard(items,by){let cols;
   const urg=c=>c.items.filter(i=>i.blocked||i.flag==="Overdue").length;
   if(by==="brand"){const m=new Map();items.forEach(i=>{if(!m.has(i.brand))m.set(i.brand,[]);m.get(i.brand).push(i)});
@@ -1372,7 +1374,8 @@ function mineBoard(items,by){let cols;
     const tint=by==="status"?({"Blocked":"var(--bad)","In Progress":"var(--blue)","Complete":"var(--ok)"})[c.k]||"var(--line2)":by==="team"?teamColor(c.k):"var(--blue)";
     const plus=canWrite&&by!=="team"?`<button class="khadd" data-act="mine-add" data-st="${esc(by==="status"?c.k:"")}" data-b="${esc(by==="brand"?c.k:"")}" aria-label="Add a card to ${esc(c.label)}" title="Add a card">+</button>`:"";
     return`<header>${name}<span class="kn">${c.items.length}</span>${sub}${plus}</header>`};
-  const card=it=>it.kind==="task"&&S.tasks[it.id]?kbCard(Object.assign({_id:it.id},S.tasks[it.id]),true,by==="team",by==="brand"):itemCard(it,by);
+  const card=it=>cardData(it,card0(it));
+  const card0=it=>it.kind==="task"&&S.tasks[it.id]?kbCard(Object.assign({_id:it.id},S.tasks[it.id]),true,by==="team",by==="brand"):itemCard(it,by);
   const drop=c=>by==="status"&&canWrite?`data-mst="${esc(c.k)}"`:"";
   const add=c=>canWrite&&by!=="team"?`<button class="kadd" data-act="mine-add" data-st="${esc(by==="status"?c.k:"")}" data-b="${esc(by==="brand"?c.k:"")}">+ Add a card</button>`:"";
   return`<div class="kb mineb tb">${cols.map(c=>`<section class="kcol ${by==="brand"&&holdOf(c.k)?"held":""}" aria-label="${esc(c.label)}" style="--ct:${by==="status"?({"Blocked":"var(--bad)","In Progress":"var(--blue)","Complete":"var(--ok)"})[c.k]||"var(--line2)":by==="team"?teamColor(c.k):"var(--blue)"}">${head(c)}<div class="kcards" ${drop(c)}>${c.items.map(card).join("")||`<span class="kempty">No cards</span>`}</div>${add(c)}</section>`).join("")}</div>`}
