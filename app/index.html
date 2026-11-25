@@ -1175,6 +1175,13 @@ main[data-page=sow] table.board thead th.pc,main[data-page=sow] table.board thea
 /* brands outside active work: a quiet remark with their stage */
 .outtag{margin-left:8px;font-size:11px;font-weight:600;color:var(--muted);background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:1px 8px;vertical-align:middle;white-space:nowrap}
 .accb .outtag{margin:4px 0 0;display:inline-block;width:max-content}
+
+/* next steps keep their shape */
+.nf{display:block}.nf .nfh{display:block;font-weight:700;color:var(--ink);margin:6px 0 2px}.nf .nfh:first-child{margin-top:0}
+.nf .nfl{margin:0 0 2px;padding-left:16px}.nf .nfl li{margin:1px 0;line-height:1.4}.nf .nfl li::marker{color:var(--muted)}
+.xp.clamp2 .nf,.xp.clamp3 .nf{display:inline}
+.xp:not(.open) .nf .nfh{display:inline;margin:0 4px 0 0}.xp:not(.open) .nf .nfl,.xp:not(.open) .nf .nfl li{display:inline;padding:0;margin:0}
+.xp:not(.open) .nf .nfl li+li::before{content:" · "}.xp:not(.open) .nf .nfl+.nfh::before{content:" "}
 </style>
 
 <div class="app">
@@ -2645,13 +2652,20 @@ function sowDocChips(bid,add){const d=sowDocs(bid);const ex=(S.sow[bid]||{}).doc
 /* next steps: a running log; each entry is stamped with who wrote it, when, and their time zone */
 function nsLog(s){const lg=(s.ns_log||[]).slice();if(s.next_step&&!lg.length)lg.push({t:s.next_step,legacy:true});return lg}
 const nsStamp=e=>e.legacy?"Imported note":`${fmtD(new Date(e.at).toISOString().slice(0,10))} · ${e.tl||""} ${e.tz||""} · ${e.by||""}`.replace(/\s+/g," ");
+/* a typed note keeps its shape: headings, bullets, line breaks */
+const nsImp=e=>!!e&&(!!e.legacy||!e.by||/import/i.test(e.by||""));
+function nsFmt(s,imp){s=String(s||"");if(imp)s=s.replace(/\s+\/(?=\s|$)/g,"\n");const lines=s.split(/\r?\n/).map(x=>x.trim());const ne=lines.filter(Boolean);if(ne.length<2)return esc(s.trim());
+  const isHead=(x,i)=>x&&x.length<=40&&!/[.!?:;,]$/.test(x)&&!/^[-•*]\s/.test(x)&&lines.slice(i+1).some(Boolean);
+  let out="",inList=false;const close=()=>{if(inList){out+="</ul>";inList=false}};
+  lines.forEach((x,i)=>{if(!x)return;if(isHead(x,i)){close();out+=`<b class="nfh">${esc(x)}</b>`;return}
+    if(!inList){out+=`<ul class="nfl">`;inList=true}out+=`<li>${esc(x.replace(/^[-•*]\s+/,""))}</li>`});close();return`<span class="nf">${out}</span>`}
 function nsCell(bid){const s=S.sow[bid]||{};const lg=nsLog(s);const w=canWrite&&S.sow[bid];
   const all=lg.map((e,i)=>({e,i}));const lastE=all[all.length-1];const cur=lastE&&!lastE.e.done?lastE:null;/* the newest entry is the live one; older entries are history */const rest=all.filter(x=>!cur||x.i!==cur.i).reverse();
   const doneStamp=e=>e.done?`Done${e.done.by?" by "+e.done.by:""} · ${fmtD(new Date(e.done.at).toISOString().slice(0,10))}`:"";
   const xk=`data-act="xp" data-xk="ns:${esc(bid)}" role="button" aria-expanded="false"`;
-  const head=cur?`<div class="nse"><span class="nss">${esc(nsStamp(cur.e))}</span><span class="clamp2 xp" ${xk}>${esc(cur.e.t)}</span></div>`
+  const head=cur?`<div class="nse"><span class="nss">${esc(nsStamp(cur.e))}</span><span class="clamp2 xp" ${xk}>${nsFmt(cur.e.t,nsImp(cur.e))}</span></div>`
     :lg.length?`<span class="nsall xp" ${xk}>✓ All next steps done</span>`:`<span class="faint">None yet</span>`;
-  const hist=rest.length?`<button class="linkb nsmorec" data-act="xp" data-t="+${rest.length} earlier note${rest.length>1?"s":""}">+${rest.length} earlier note${rest.length>1?"s":""}</button><div class="nshist" hidden>${rest.map(({e})=>`<div class="nse${e.done?" isdone":""}"><span class="nss">${esc(nsStamp(e))}${e.done?` · ${esc(doneStamp(e))}`:""}</span><span>${e.done?"✓ ":""}${esc(e.t)}</span></div>`).join("")}</div>`:"";
+  const hist=rest.length?`<button class="linkb nsmorec" data-act="xp" data-t="+${rest.length} earlier note${rest.length>1?"s":""}">+${rest.length} earlier note${rest.length>1?"s":""}</button><div class="nshist" hidden>${rest.map(({e})=>`<div class="nse${e.done?" isdone":""}"><span class="nss">${esc(nsStamp(e))}${e.done?` · ${esc(doneStamp(e))}`:""}</span><span>${e.done?"✓ ":""}${nsFmt(e.t,nsImp(e))}</span></div>`).join("")}</div>`:"";
   return`<div class="nsc">${head}${hist}
    <div class="row nsact">${w?`<button class="linkb" data-act="sow-ns" data-id="${esc(bid)}">+ Add</button>`:""}${w&&cur?`<button class="linkb nsdn" data-act="ns-done" data-id="${esc(bid)}" data-i="${cur.i}" title="Mark this next step done">✓ Done</button>`:""}</div></div>`}
 const tzList=()=>[...new Set(clockZones().map(c=>c.zone).concat(Intl.supportedValuesOf?Intl.supportedValuesOf("timeZone"):[]))];
@@ -2907,8 +2921,8 @@ function openDrawer(kind,id,extra,refresh){
      <h4 class="dh">Blocker</h4>${field("Blocker or dependency",area("blocker",s.blocker),1)}`;
     const right=`<h4 class="dh">Documents</h4><div class="sg2">${SOW_DOCS().map((k,i)=>field(k,`<input name="doc_${i}" id="d-doc_${i}" type="url" value="${esc(sowDocs(id)[k]||"")}" placeholder="https://...">`)).join("")}</div>
      ${field("Other documents",area("docs_extra",(s.docs_extra||[]).map(x=>x.label+" | "+x.url).join("\n")),1,"One per line: name | link. Links only.")}
-     <h4 class="dh">Next steps</h4><div class="nslog">${lg.map((e,i)=>({e,i})).reverse().map(({e,i})=>`<div class="nse"><span class="nss">${esc(nsStamp(e))}${e.edited?` · edited by ${esc(e.edited.by||"")}`:""}${e.done?` · done by ${esc(e.done.by||"")}`:""}</span><span>${e.done?"✓ ":""}${esc(e.t)}</span>${ro?"":`<span class="nsacts"><button type="button" class="linkb" data-act="ns-edit" data-id="${esc(id)}" data-i="${i}">Edit</button><button type="button" class="linkb" data-act="${e.done?"ns-reopen":"ns-done"}" data-id="${esc(id)}" data-i="${i}">${e.done?"Reopen":"✓ Done"}</button><button type="button" class="linkb nsrm" data-act="ns-del" data-id="${esc(id)}" data-i="${i}">Remove</button></span>`}</div>`).join("")||`<span class="faint">None yet</span>`}</div>
-     ${ro?"":field("Add an update",area("ns_new",""),1,"Your name, the date, time and time zone are added for you. Use Edit on an entry to correct it.")}`;
+     <h4 class="dh">Next steps</h4><div class="nslog">${lg.map((e,i)=>({e,i})).reverse().map(({e,i})=>`<div class="nse"><span class="nss">${esc(nsStamp(e))}${e.edited?` · edited by ${esc(e.edited.by||"")}`:""}${e.done?` · done by ${esc(e.done.by||"")}`:""}</span><span>${e.done?"✓ ":""}${nsFmt(e.t,nsImp(e))}</span>${ro?"":`<span class="nsacts"><button type="button" class="linkb" data-act="ns-edit" data-id="${esc(id)}" data-i="${i}">Edit</button><button type="button" class="linkb" data-act="${e.done?"ns-reopen":"ns-done"}" data-id="${esc(id)}" data-i="${i}">${e.done?"Reopen":"✓ Done"}</button><button type="button" class="linkb nsrm" data-act="ns-del" data-id="${esc(id)}" data-i="${i}">Remove</button></span>`}</div>`).join("")||`<span class="faint">None yet</span>`}</div>
+     ${ro?"":field("Add an update",area("ns_new",""),1,"Your name, the date, time and time zone are added for you. A short line on its own becomes a heading; the lines under it become bullets. Use Edit on an entry to correct it.")}`;
     body=`<p class="sowto"><a href="#${brandHash(id,"sow")}" data-act="close-go">Open the ${esc(bname(id))} brand page →</a></p><div class="sowgrid"><div>${left}</div><div>${right}</div></div>`}
   else if(kind==="camp"){const c=S.camps[id];if(!c){closeDrawer();return}title=c.name;
     body=field("Campaign name",inp("name",c.name),1)+field("Status",sel("status",L("campaign_status"),c.status))+field("Owner",sel("owner",activePeople(),c.owner))+field("Start",inp("start",c.start,"date"))+field("Launch or end",inp("end",c.end,"date"))

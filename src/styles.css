@@ -1171,3 +1171,10 @@ main[data-page=sow] table.board thead th.pc,main[data-page=sow] table.board thea
 /* brands outside active work: a quiet remark with their stage */
 .outtag{margin-left:8px;font-size:11px;font-weight:600;color:var(--muted);background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:1px 8px;vertical-align:middle;white-space:nowrap}
 .accb .outtag{margin:4px 0 0;display:inline-block;width:max-content}
+
+/* next steps keep their shape */
+.nf{display:block}.nf .nfh{display:block;font-weight:700;color:var(--ink);margin:6px 0 2px}.nf .nfh:first-child{margin-top:0}
+.nf .nfl{margin:0 0 2px;padding-left:16px}.nf .nfl li{margin:1px 0;line-height:1.4}.nf .nfl li::marker{color:var(--muted)}
+.xp.clamp2 .nf,.xp.clamp3 .nf{display:inline}
+.xp:not(.open) .nf .nfh{display:inline;margin:0 4px 0 0}.xp:not(.open) .nf .nfl,.xp:not(.open) .nf .nfl li{display:inline;padding:0;margin:0}
+.xp:not(.open) .nf .nfl li+li::before{content:" · "}.xp:not(.open) .nf .nfl+.nfh::before{content:" "}

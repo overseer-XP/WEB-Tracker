@@ -67,13 +67,20 @@ function sowDocChips(bid,add){const d=sowDocs(bid);const ex=(S.sow[bid]||{}).doc
 /* next steps: a running log; each entry is stamped with who wrote it, when, and their time zone */
 function nsLog(s){const lg=(s.ns_log||[]).slice();if(s.next_step&&!lg.length)lg.push({t:s.next_step,legacy:true});return lg}
 const nsStamp=e=>e.legacy?"Imported note":`${fmtD(new Date(e.at).toISOString().slice(0,10))} · ${e.tl||""} ${e.tz||""} · ${e.by||""}`.replace(/\s+/g," ");
+/* a typed note keeps its shape: headings, bullets, line breaks */
+const nsImp=e=>!!e&&(!!e.legacy||!e.by||/import/i.test(e.by||""));
+function nsFmt(s,imp){s=String(s||"");if(imp)s=s.replace(/\s+\/(?=\s|$)/g,"\n");const lines=s.split(/\r?\n/).map(x=>x.trim());const ne=lines.filter(Boolean);if(ne.length<2)return esc(s.trim());
+  const isHead=(x,i)=>x&&x.length<=40&&!/[.!?:;,]$/.test(x)&&!/^[-•*]\s/.test(x)&&lines.slice(i+1).some(Boolean);
+  let out="",inList=false;const close=()=>{if(inList){out+="</ul>";inList=false}};
+  lines.forEach((x,i)=>{if(!x)return;if(isHead(x,i)){close();out+=`<b class="nfh">${esc(x)}</b>`;return}
+    if(!inList){out+=`<ul class="nfl">`;inList=true}out+=`<li>${esc(x.replace(/^[-•*]\s+/,""))}</li>`});close();return`<span class="nf">${out}</span>`}
 function nsCell(bid){const s=S.sow[bid]||{};const lg=nsLog(s);const w=canWrite&&S.sow[bid];
   const all=lg.map((e,i)=>({e,i}));const lastE=all[all.length-1];const cur=lastE&&!lastE.e.done?lastE:null;/* the newest entry is the live one; older entries are history */const rest=all.filter(x=>!cur||x.i!==cur.i).reverse();
   const doneStamp=e=>e.done?`Done${e.done.by?" by "+e.done.by:""} · ${fmtD(new Date(e.done.at).toISOString().slice(0,10))}`:"";
   const xk=`data-act="xp" data-xk="ns:${esc(bid)}" role="button" aria-expanded="false"`;
-  const head=cur?`<div class="nse"><span class="nss">${esc(nsStamp(cur.e))}</span><span class="clamp2 xp" ${xk}>${esc(cur.e.t)}</span></div>`
+  const head=cur?`<div class="nse"><span class="nss">${esc(nsStamp(cur.e))}</span><span class="clamp2 xp" ${xk}>${nsFmt(cur.e.t,nsImp(cur.e))}</span></div>`
     :lg.length?`<span class="nsall xp" ${xk}>✓ All next steps done</span>`:`<span class="faint">None yet</span>`;
-  const hist=rest.length?`<button class="linkb nsmorec" data-act="xp" data-t="+${rest.length} earlier note${rest.length>1?"s":""}">+${rest.length} earlier note${rest.length>1?"s":""}</button><div class="nshist" hidden>${rest.map(({e})=>`<div class="nse${e.done?" isdone":""}"><span class="nss">${esc(nsStamp(e))}${e.done?` · ${esc(doneStamp(e))}`:""}</span><span>${e.done?"✓ ":""}${esc(e.t)}</span></div>`).join("")}</div>`:"";
+  const hist=rest.length?`<button class="linkb nsmorec" data-act="xp" data-t="+${rest.length} earlier note${rest.length>1?"s":""}">+${rest.length} earlier note${rest.length>1?"s":""}</button><div class="nshist" hidden>${rest.map(({e})=>`<div class="nse${e.done?" isdone":""}"><span class="nss">${esc(nsStamp(e))}${e.done?` · ${esc(doneStamp(e))}`:""}</span><span>${e.done?"✓ ":""}${nsFmt(e.t,nsImp(e))}</span></div>`).join("")}</div>`:"";
   return`<div class="nsc">${head}${hist}
    <div class="row nsact">${w?`<button class="linkb" data-act="sow-ns" data-id="${esc(bid)}">+ Add</button>`:""}${w&&cur?`<button class="linkb nsdn" data-act="ns-done" data-id="${esc(bid)}" data-i="${cur.i}" title="Mark this next step done">✓ Done</button>`:""}</div></div>`}
 const tzList=()=>[...new Set(clockZones().map(c=>c.zone).concat(Intl.supportedValuesOf?Intl.supportedValuesOf("timeZone"):[]))];
