@@ -1,0 +1,101 @@
+/* ---------- Best Practices: sections grouped (config/bp_groups), one click per section ---------- */
+function BPGROUPS(){const secs=L("bp_section");const cfg=(S.config.bp_groups&&S.config.bp_groups.groups)||[];const used=new Set();
+  const gs=cfg.map(g=>({name:g.name,sections:(g.sections||[]).filter(x=>secs.includes(x)&&!used.has(x)&&used.add(x))})).filter(g=>g.sections.length);
+  const rest=secs.filter(x=>!used.has(x));if(rest.length)gs.push({name:gs.length?"Other":"",sections:rest});return gs}
+let bpFilter="all",bpSort="progress",pop=null;
+function bpStrip(){const bs=brandList().filter(b=>S.bps[b.id]&&!onHold(b));if(!bs.length)return"";const rr=bs.map(b=>bpRoll(b.id));const ready=bs.filter(b=>{const g=bpReady(b.id);return!g.locked.length&&!g.unchecked.length}).length;
+  const ov={};for(const r of rr)ov[r.overall]=(ov[r.overall]||0)+1;const avg=Math.round(rr.reduce((a,r)=>a+r.progress,0)/rr.length*100);
+  return strip([IB.box("s3 tint-a",IB.head("Sections complete","Average across brands")+IB.hero(avg+"%","")+IB.meter(rr.filter(r=>r.overall==="Complete").length,rr.filter(r=>r.overall!=="Complete").length,"brands complete","in progress")),
+    IB.box("s5 tint-c",IB.head("Where brands are","Overall Best Practices status")+IB.bars([["Not Started","d-todo"],["In Progress","d-prog"],["In QA","d-rev"],["Blocked","d-blk"],["Complete","d-done"]].map(([l,k])=>({l,k,n:ov[l]||0})))),
+    IB.box("s4 tint-b",IB.head("Ready to work","Platform access in place")+IB.rows([["Ready",ready,"ok"],["Waiting on access",bs.length-ready,bs.length-ready?"warn":""]]))])}
+/* Best Practices: one audit sheet per brand. Each section is done, blocked or not done yet; a note says why when blocked; one link to the sheet. */
+function vBp(){
+  const groups=BPGROUPS();const tracked=brandList().filter(b=>S.bps[b.id]);let rows=tracked.filter(b=>tqMatch("bp",b));const others=brandList().filter(b=>!S.bps[b.id]&&!isInternal(b));
+  const R={};tracked.forEach(b=>R[b.id]=bpRoll(b.id));
+  let h=`<h1>Best Practices</h1><p class="sub">One Best Practices sheet per brand. Click a box to mark a section done; click again to mark it blocked and say why.</p>
+  <div class="toolbar">${findBox("bp",tracked.length)}<div class="seg" role="group" aria-label="Show">${[["all","All"],["open","Not done"],["blocked","Blocked"]].map(([k,l])=>`<button data-act="bpf" data-v="${k}" class="${bpFilter===k?"on":""}" aria-pressed="${bpFilter===k}">${l}</button>`).join("")}</div>
+   ${canWrite&&others.length?`<select data-act="bp-add" aria-label="Start tracking a brand" class="btn"><option value="">Start tracking a brand...</option>${others.map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join("")}</select>`:""}</div>`;
+  if(!tracked.length)return h+`<div class="tw"><div class="empty">No brands tracked yet. Pick one above to start.</div></div>`;
+  if(bpFilter==="open")rows=rows.filter(b=>R[b.id].overall!=="Complete");if(bpFilter==="blocked")rows=rows.filter(b=>R[b.id].overall==="Blocked");
+  const ord={Blocked:0,"In QA":1,"In Progress":2,"Not Started":3,Complete:4};
+  rows.sort((a,b)=>(onHold(a)?1:0)-(onHold(b)?1:0)||(ord[R[a.id].overall]??5)-(ord[R[b.id].overall]??5)||a.name.localeCompare(b.name));
+  const pg=paged("bp",rows);rows=pg.rows;
+  h+=`<div class="tw tpin"><table class="bpq"><thead><tr><th rowspan="2" class="bpqb stick">Brand</th><th rowspan="2" class="bpqd">Done</th><th rowspan="2" class="bpqk">Sheet</th><th rowspan="2" class="bpqnh">Notes</th>${groups.map(g=>`<th colspan="${g.sections.length}" class="bpqg">${esc(g.name)}</th>`).join("")}</tr>
+   <tr>${groups.map(g=>g.sections.map((x,k)=>`<th class="bpqs ${k===0?"gs":""}" title="${esc(x)}"><span>${esc(x)}</span></th>`).join("")).join("")}</tr></thead><tbody>`;
+  for(const b of rows){const d=S.bps[b.id];let dn=0,tot=0;const bl=[];
+    const cells=groups.map(g=>g.sections.map((x,k)=>{const v=(d.sections||{})[x]||"Not Started";if(v!=="N/A")tot++;if(v==="Complete")dn++;if(v==="Blocked")bl.push(x);
+      const word=v==="Complete"?"Done":v==="Blocked"?"Blocked":v==="N/A"?"Not needed":"Not done yet";
+      return`<td class="bpqc ${k===0?"gs":""}"><button class="bq ${v==="Complete"?"ok":v==="Blocked"?"bad":v==="N/A"?"na":"no"}" data-act="bpq" data-id="${esc(b.id)}" data-sec="${esc(x)}" title="${esc(x+": "+word)}" aria-label="${esc(b.name+", "+x+": "+word)}" ${canWrite?"":"disabled"}>${v==="Complete"?"✓":v==="Blocked"?"!":v==="N/A"?"–":""}</button></td>`}).join("")).join("");
+    
+    h+=`<tr class="${onHold(b)?"held":""}"><td class="bpqb stick"><a class="bname" href="#${brandHash(b.id,"bp")}">${esc(b.name)}</a></td><td class="bpqd"><b>${dn}</b><span class="faint">/${tot}</span></td>
+     <td class="nowrap">${d.doc_link?`<a class="btn sm" href="${esc(d.doc_link)}" target="_blank" rel="noopener">Open sheet</a>`:""}${canWrite?`<button class="btn sm quiet" data-act="bp-link" data-id="${esc(b.id)}" aria-label="${esc((d.doc_link?"Change":"Add")+" the Best Practices sheet link for "+b.name)}">${d.doc_link?"Change":"+ Link"}</button>`:d.doc_link?"":`<span class="faint">None</span>`}</td><td class="bpqnc">${bl.length?`<div class="nsc"><span class="c-bad bpqbl">Blocked: ${esc(bl.join(", "))}</span>${d.blocker?`<span class="clamp2 xp" tabindex="0" role="button" aria-expanded="false" data-act="xp">${esc(d.blocker)}</span><button class="linkb xpm" data-act="xp" hidden>Show more</button>`:""}</div>`:`<span class="faint">–</span>`}</td>${cells}</tr>`}
+  if(!rows.length)h+=`<tr><td colspan="${4+groups.reduce((a,g)=>a+g.sections.length,0)}"><div class="empty">No brands match this filter.</div></td></tr>`;
+  return h+`</tbody></table></div>`+pg.html}
+function bpReady(bid){const d=S.bps[bid]||{sections:{}};const out={ready:[],locked:[],unchecked:[]};
+  for(const x of L("bp_section")){const v=(d.sections||{})[x]||"Not Started";if(v==="N/A"||v==="Complete")continue;const ax=bpAccess(bid,x);if(!ax)continue;
+    if(ax.state==="locked")out.locked.push({sec:x,missing:ax.missing});else if(ax.state==="untracked")out.unchecked.push({sec:x,need:ax.need});else out.ready.push(x)}return out}
+function bpGate(bid){const g=bpReady(bid);if(!g.ready.length&&!g.locked.length&&!g.unchecked.length)return"";const ok=!g.locked.length&&!g.unchecked.length;
+  return`<div class="bpgate ${ok?"ok":g.locked.length?"warn":"info"}"><b>${ok?"Ready for Best Practices: every section has the access it needs":g.locked.length?"Ready except "+g.locked.length+" section"+(g.locked.length>1?"s":""):"Access not checked for "+g.unchecked.length+" section"+(g.unchecked.length>1?"s":"")}</b>
+   ${g.locked.map(x=>`<div class="bgr"><span>${LOCK} <b>${esc(x.sec)}</b> waiting on ${esc(x.missing.join(", "))}</span>${canWrite?`<button class="btn sm quiet" data-act="bp-na" data-id="${esc(bid)}" data-sec="${esc(x.sec)}" title="The brand will not give this access: leave the section out">Leave out (N/A)</button>`:""}</div>`).join("")}
+   ${g.unchecked.length?`<div class="bgr"><span class="faint">Not in Platform access yet: ${g.unchecked.map(x=>esc(x.sec)+" ("+esc(x.need.join(", "))+")").join("; ")}</span></div>`:""}
+   <a class="allx" href="#${brandHash(bid,"access")}">Open platform access ›</a></div>`}
+function bpCard(bid){
+  const d=S.bps[bid];if(!d)return`<div class="tw"><div class="empty">Best Practices not started for this brand. ${canWrite?`<button class="btn sm" data-act="add-bp" data-id="${esc(bid)}">Start tracking</button>`:""}</div></div>`;
+  const r=bpRoll(bid);
+  return bpGate(bid)+`<div class="row" style="margin-bottom:10px">${pill(r.overall)}<span class="muted">${r.done} of ${r.total} sections complete</span>${d.due_date?dueHtml(d.due_date,r.progress===1):""}${d.doc_link?`<a class="btn sm quiet" href="${esc(d.doc_link)}" target="_blank" rel="noopener">Open Best Practices document</a>`:""}${canWrite?`<button class="btn sm quiet" data-act="bp-link" data-id="${esc(bid)}">${d.doc_link?"Change link":"Add document link"}</button>`:""}<span class="grow"></span>${canWrite?`<button class="btn" data-act="open" data-kind="bp" data-id="${esc(bid)}">Edit owner, due date and notes</button>`:""}</div>
+   <div class="bpcards">${BPGROUPS().map((g,i)=>`<div class="bpc g${i%6}"><h3>${esc(g.name||"Sections")}</h3>${g.sections.map(x=>{const v=(d.sections||{})[x]||"Not Started";const ax=v==="Not Started"?bpAccess(bid,x):null;return`<div class="bpr"><span>${esc(x)}${ax&&ax.state==="locked"?`<span class="lockt">${LOCK} Waiting on ${esc(ax.missing.join(", "))}</span>`:ax&&ax.state==="ready"?`<span class="readyt">Ready to start</span>`:""}</span>${canWrite?`<select class="ps ${cls(v)}" data-act="bpsec" data-id="${esc(bid)}" data-sec="${esc(x)}" aria-label="${esc(x)}">${opts(L("bp_status"),v,false)}</select>`:pill(v)}</div>`}).join("")}</div>`).join("")}</div>
+   <div class="next"><label>Owner</label><div>${esc(d.owner)||`<span class="faint">Not set</span>`}</div></div><div class="next"><label>Blocker</label><div>${esc(d.blocker)||`<span class="faint">None</span>`}</div></div>${simple?"":`<div class="next"><label>Notes</label><div>${esc(d.notes)||`<span class="faint">None</span>`}</div></div>`}`}
+function openPop(btn){closePop();const id=btn.dataset.id,sec=btn.dataset.sec;const cur=((S.bps[id]||{}).sections||{})[sec]||"Not Started";
+  const el=document.createElement("div");el.id="pop";el.className="pop";el.setAttribute("role","menu");
+  el.innerHTML=`<div class="pt">${esc(bname(id))}<b>${esc(sec)}</b></div>`+L("bp_status").map(v=>`<button role="menuitemradio" aria-checked="${v===cur}" class="pi ${v===cur?"on":""}" data-act="bpset" data-v="${esc(v)}"><span class="bpd bp-${key(v)}">${esc(BPMARK[v]??"")}</span>${esc(v)}</button>`).join("");
+  document.body.appendChild(el);const r=btn.getBoundingClientRect();const w=el.offsetWidth,hh=el.offsetHeight;
+  el.style.left=Math.max(8,Math.min(innerWidth-w-8,r.left+r.width/2-w/2))+"px";el.style.top=(r.bottom+hh+8>innerHeight?r.top-hh-6:r.bottom+6)+"px";
+  pop={id,sec,btn:btn.getAttribute("aria-label")};const f=el.querySelector(".pi.on")||el.querySelector(".pi");if(f)f.focus()}
+function closePop(){const el=$("#pop");if(el)el.remove();pop=null}
+function sowStrip(bs){const sowTopF=ls.get("vt-sowtop")==="folded";const xs=bs.filter(b=>!onHold(b));
+  const m1=new Date(today().getFullYear(),today().getMonth()+1,1);
+  const sig=xs.map(b=>({b,s:S.sow[b.id]||{}})).filter(x=>x.s.stage!=="Signed"&&parseD(x.s.target_sign)&&parseD(x.s.target_sign)<m1).sort((x,y)=>String(x.s.target_sign).localeCompare(String(y.s.target_sign)));
+  const late=sig.filter(x=>dayDiff(x.s.target_sign)<0).length;const SGP=5;const sgPages=Math.max(1,Math.ceil(sig.length/SGP));const sgPage=Math.min(sgPages,Math.max(1,(window.__sgp||1)));const show=sig.slice((sgPage-1)*SGP,sgPage*SGP);
+  const rel=n=>n<0?`${-n} day${n===-1?"":"s"} late`:n===0?"Today":n===1?"Tomorrow":`In ${n} days`;
+  const t1=`<div class="it s7 tint-b sgn">${IB.head("Signing order",`Past target and due this month, earliest first`,sig.length?`${sig.length} to sign${late?` · ${late} late`:""}`:"")}
+   ${show.length?`<ol class="sgl">${show.map((x,k)=>{const n=dayDiff(x.s.target_sign);return`<li class="${n<0?"late":n<=7?"soon":""}"><span class="sgn-i">${(sgPage-1)*SGP+k+1}</span><a class="bname" href="#${brandHash(x.b.id,"sow")}">${esc(x.b.name)}</a><span class="sgn-d">${esc(fmtD(x.s.target_sign,true))}</span><span class="sgn-r">${rel(n)}</span></li>`}).join("")}</ol>${sgPages>1?`<div class="sgpg"><span class="faint">${(sgPage-1)*SGP+1} to ${Math.min(sig.length,sgPage*SGP)} of ${sig.length}</span><button data-act="sgpg" data-v="${sgPage-1}" aria-label="Previous" ${sgPage<=1?"disabled":""}>‹</button>${Array.from({length:sgPages},(_,i)=>`<button data-act="sgpg" data-v="${i+1}" class="${i+1===sgPage?"on":""}" aria-current="${i+1===sgPage}">${i+1}</button>`).join("")}<button data-act="sgpg" data-v="${sgPage+1}" aria-label="Next" ${sgPage>=sgPages?"disabled":""}>›</button></div>`:""}`:`<span class="itx faint">Nothing due to sign this month.</span>`}</div>`;
+  const ps=phases();const far=bid=>{let k=-1;ps.forEach((p,i)=>{if(p.steps.some(s=>{const v=stepState(bid,s.code).status;return v==="Done"||v==="In Progress"}))k=i});return k};
+  const cnt=ps.map((p,i)=>({p,i,n:xs.filter(b=>far(b.id)===i).length}));const signed=xs.filter(b=>(S.sow[b.id]||{}).stage==="Signed").length;const mx=Math.max(1,...cnt.map(x=>x.n));
+  const t2=`<div class="phstrip" role="group" aria-label="Where brands are"><span class="phl">Where brands are <small>furthest phase reached</small></span>${cnt.map(x=>`<span class="phs g${x.i%7}" title="${esc((x.i+1)+" "+(x.p.name||"")+": "+x.n+" brands")}"><b>${x.n}</b>${x.i+1} ${esc(x.p.name||"")}</span>`).join("")}<span class="phl r">${signed} signed</span></div>`;
+  const tot=cnt.reduce((a,x)=>a+x.n,0)||1;let acc=0;const R=52,C=2*Math.PI*R;
+  const arcs=cnt.filter(x=>x.n).map(x=>{const len=x.n/tot*C;const s=`<circle r="${R}" cx="70" cy="70" fill="none" stroke="var(--g${x.i%7})" stroke-width="22" stroke-dasharray="${Math.max(0,len-2)} ${C}" stroke-dashoffset="${-acc}" transform="rotate(-90 70 70)"><title>${esc((x.i+1)+" "+(x.p.name||"")+": "+x.n)}</title></circle>`;acc+=len;return s}).join("");
+  const donut=`<div class="it s5 sgw"><div class="sgwh"><b>Where brands are</b><span>Furthest onboarding phase each brand has reached</span></div><div class="dn"><svg viewBox="0 0 140 140" width="150" height="150" role="img" aria-label="Brands by phase">${arcs}<text x="70" y="66" text-anchor="middle" font-size="24" font-weight="700" fill="var(--ink)">${tot}</text><text x="70" y="86" text-anchor="middle" font-size="11" fill="var(--muted)">active brands</text></svg>
+   <ul class="dnl">${cnt.map(x=>`<li class="${x.n?"":"z"}"><i style="background:var(--g${x.i%7})"></i><span>${x.i+1} ${esc(x.p.name||"")}</span><b>${x.n}</b></li>`).join("")}<li class="sig"><i></i><span>Signed</span><b>${signed}</b></li></ul></div></div>`;
+  const one=`<div class="sgfold${sowTopF?" man":""}"><b>Signing order</b> ${sig.length} to sign, ${late} late · <b>Where brands are</b> ${cnt.map(x=>`<span class="dot" style="background:var(--g${x.i%7})"></span>${x.n}`).join(" ")}<button class="btn sm quiet" data-act="sowtop" data-v="">Show ▾</button></div>`;
+  return one+`<div class="sgwrap${sowTopF?" folded":""}"><div class="ib strip sstrip two sgone"><button class="sgfoldbtn" data-act="sowtop" data-v="folded" title="Fold" aria-label="Fold signing order and where brands are">⌃</button>${t1.replace('<div class="it s7 tint-b sgn">','<div class="it s7 sgn">')}${donut}</div></div>`}
+function vSow(){
+  const bs=brandList().filter(b=>!isInternal(b));
+  const rows=bs.map(b=>({b,s:Object.assign({brand:b.id},S.sow[b.id]||{})})).sort((x,y)=>(onHold(x.b)?1:0)-(onHold(y.b)?1:0)||String(x.s.target_sign||"9999").localeCompare(String(y.s.target_sign||"9999")));
+  let h=`<h1>SOW tracker</h1>`+sowStrip(bs)+viewSeg("sowview",sowView,[["board","Progress board"],["list","Sign dates and blockers"]]);
+  if(sowView==="board")return h+sowBoard();
+  const stg=window.__stg||"";const cnt=k=>rows.filter(r=>(r.s.stage||"Not Started")===k).length;
+  h+=`<div class="stabs" role="tablist">${[["","All",rows.length]].concat(L("sow_stage").map(k=>[k,k,cnt(k)]).filter(x=>x[2])).map(([v,l,n])=>`<button class="${stg===v?"on":""}" data-act="stg" data-v="${esc(v)}">${esc(l)} <span>${n}</span></button>`).join("")}</div>`;
+  h+=`<div class="tw"><table class="sowl"><thead><tr>${sortTh("sowl","brand","Brand and founder")}${sortTh("sowl","pri","Priority","lpri")}${sortTh("sowl","stage","Stage")}${sortTh("sowl","sign","Sign dates")}<th>Next steps</th><th>Blocker</th><th>Documents</th></tr></thead><tbody>`;
+  const tstep=(lab,d,done)=>{if(!d)return`<div class="tsl"><span class="tsd none"></span><span class="faint">${lab} not set</span></div>`;const n=dayDiff(d);const k=done?"done":n<0?"bad":n<=7?"warn":"ok";
+    const g=done?(lab==="Sign"?"Signed":"Done"):n<0?`${-n} day${n===-1?"":"s"} late`:n===0?"today":`${n} day${n===1?"":"s"} left`;return`<div class="tsl"><span class="tsd ${k}"></span><span>${lab} ${esc(fmtD(d,true))}</span><small class="dc ${k}">${g}</small></div>`};
+  const pgL=paged("sowl",tsortRows("sowl",(window.__stg||"")?rows.filter(r=>(r.s.stage||"Not Started")===window.__stg):rows,{brand:r=>r.b.name,pri:r=>Number(r.s.priority)||9,stage:r=>L("sow_stage").indexOf(r.s.stage||"Not Started"),sign:r=>r.s.target_sign||"9999"}));for(const{b,s}of pgL.rows){const fz=b.founder_zone||"";const fc=b.founder_country||"";
+    const who=b.founder?`<div class="lfd"><span class="lfk">Founder</span>${esc(b.founder)}</div>${fc?`<div class="lfd"><span class="lfk">Country</span>${esc(fc)}</div>`:""}${fz?`<div class="lfd"><span class="lfk">Their time</span>${esc(clockTime(fz))} ${esc(tzAbbr(fz))}</div>`:""}${!fc&&!fz?`<div class="lfd"><button class="linkb" data-act="founder-geo" data-id="${esc(b.id)}">+ Country and time zone</button></div>`:""}`:`<div class="lfd faint">No founder set</div>`;
+    const signed=s.stage==="Signed";
+    h+=`<tr><td><a class="bname" href="#${brandHash(b.id,"sow")}" title="Open ${esc(b.name)} Road to SOW">${esc(b.name)}</a>${onHold(b)?` <span class="tag">On hold</span>`:""}<button class="linkb lfe" data-act="open" data-kind="sow" data-id="${esc(b.id)}">Edit</button>${who}</td><td class="lpri">${s.priority?`<span class="prib p${esc(String(s.priority))}">P${esc(String(s.priority))}</span>`:`<span class="faint">–</span>`}</td><td>${statusSel("sow",b.id,s.stage||"Not Started",L("sow_stage"),canEdit&&canWrite)}</td>
+     <td class="ldt">${tstep("Draft",s.draft_due,signed)}<div class="tsbar"></div>${tstep("Sign",s.target_sign,signed)}</td>
+     <td class="lns">${nsCell(b.id)}</td><td class="muted lblk">${s.blocker?`<div class="nsc"><span class="clamp3 xp" tabindex="0" role="button" aria-expanded="false" data-act="xp">${esc(s.blocker)}</span><button class="linkb xpm" data-act="xp" hidden>Show more</button></div>`:'<span class="faint">None</span>'}</td><td class="ldocs">${sowDocChips(b.id,true)}</td></tr>`}
+  return h+`</tbody></table></div>`+pgL.html}
+function accStrip(){const all=withId(S.access).filter(a=>a.status!=="Not Needed"&&S.brands[a.brand]&&!holdOf(a.brand));const g=all.filter(accGranted).length;const op=all.filter(accOpen);
+  const byP={};for(const a of op)byP[a.platform]=(byP[a.platform]||0)+1;const top=Object.entries(byP).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([l,n])=>({l:l.replace(/ (Ads Manager|Seller Central|Business Manager)$/,""),t:l,n}));
+  const noLogin=all.filter(a=>accGranted(a)&&!(a.seats||[]).length).length;
+  return strip([IB.box("s4 tint-a",IB.head("Access granted","Every platform every brand needs")+IB.meter(g,all.length-g,"granted","still open")+IB.rows([["Waiting on founders",op.filter(a=>ACC_FOUNDER.includes(a.status)).length,"warn"],["To chase now",op.filter(needsChase).length,"bad"]])),
+    IB.box("s5 tint-c",IB.head("Most missing","Open requests by platform")+IB.bars(top)),
+    IB.box("s3 tint-b",IB.head("Team logins","Granted, but nobody listed")+IB.hero(noLogin,"platforms"))])}
+function vAccess(){
+  const all=withId(S.access).filter(a=>a.status!=="Not Needed"&&S.brands[a.brand]&&!holdOf(a.brand));const g=all.filter(accGranted).length;const op=all.filter(accOpen);const nl=all.filter(a=>accGranted(a)&&!(a.seats||[]).length).length;
+  const card=(k,l,n,cls,s)=>`<button class="mst ${cls&&+String(n).split(" ")[0]?"m-"+cls:""} ${accQueue===k?"on":""}" data-act="accq" data-v="${k}" aria-pressed="${accQueue===k}"><span class="mstl">${l}</span><b>${n}</b><small>${s}</small></button>`;
+  const head=`<h1>Platform access</h1><p class="sub">Who has access to what, per brand. Click a number to show those platforms.</p><div class="mstat">${card("open","Granted",g+" of "+all.length,"","Open shows every platform still to do")}${card("founder","Waiting on founder",op.filter(a=>ACC_FOUNDER.includes(a.status)).length,"warn","Asked, not given yet")}${card("chase","To chase now",op.filter(needsChase).length,"bad","Asked a while ago")}${card("logins","Team logins missing",nl,"","Granted, nobody listed")}</div>`;
+  if(simple)return head+accessGrid();
+  return head+accFull("");
+}
+

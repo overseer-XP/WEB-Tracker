@@ -5,6 +5,8 @@ Interim build (release 0). It runs as a claude.ai page with its own shared datab
 | Path | What |
 | --- | --- |
 | `app/index.html` | The whole web app. Published to claude.ai with the `db`, `user` and `downloads` capabilities |
+| `src/` | The same app split into parts for editing: `styles.css`, one file per script section in `src/js/`, and the HTML shell. Edit here, then `python3 -I tools/app_parts.py build` writes `app/index.html` |
+| `tools/app_parts.py` | `split` (app file to parts), `build` (parts to app file), `check` (fails if the two differ). Joining is plain concatenation, so the output is byte-for-byte the same |
 | `migration/build_seed.py` | Turns the two Excel files plus `decisions.json` and `step_extras.json` into database records and a report |
 | `migration/compare_excel.py` | Three-way compare: old team Excel, new team Excel, live tracker. Writes `proposal.json` |
 | `migration/apply_excel_update.py` | Turns `proposal.json`, the paid channels sheet and a decisions file into pinned database batches and `report.json` |
