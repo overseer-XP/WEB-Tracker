@@ -1083,6 +1083,15 @@ button:disabled,.btn:disabled,select:disabled{cursor:not-allowed}
 .itl>span>span{flex:1 1 auto}.itl .pillx,.itl .pill{flex:none}
 /* timeline: the Today marker sits above month names */
 .rmtl{z-index:2}
+
+/* SOW edit as a wide centred window */
+.drawer.sowd{top:50%;left:50%;right:auto;bottom:auto;transform:translate(-50%,-50%);width:min(1080px,94vw);max-height:90vh;border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh-3)}
+.drawer.sowd .body{overflow:auto;display:block;padding:18px 24px 24px}.sowgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px 28px}
+.sowgrid .dh{margin:14px 0 6px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}.sowgrid>div>.dh:first-child{margin-top:0}
+.sg3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 12px}.sg2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}.sgspan2{grid-column:span 2}
+.sowd .f{margin-bottom:8px}.sowd .nslog{max-height:260px}.nsed{font-size:12px;margin-left:6px}
+@media (max-width:860px){.sowgrid{grid-template-columns:1fr}.sg3{grid-template-columns:1fr 1fr}}
+.stabs .tfind{margin:4px 0 4px auto;max-width:240px}
 </style>
 
 <div class="app">
@@ -1735,7 +1744,7 @@ function vBp(){
       return`<td class="bpqc ${k===0?"gs":""}"><button class="bq ${v==="Complete"?"ok":v==="Blocked"?"bad":v==="N/A"?"na":"no"}" data-act="bpq" data-id="${esc(b.id)}" data-sec="${esc(x)}" title="${esc(x+": "+word)}" aria-label="${esc(b.name+", "+x+": "+word)}" ${canWrite?"":"disabled"}>${v==="Complete"?"✓":v==="Blocked"?"!":v==="N/A"?"–":""}</button></td>`}).join("")).join("");
     
     h+=`<tr class="${onHold(b)?"held":""}"><td class="bpqb stick"><a class="bname" href="#${brandHash(b.id,"bp")}">${esc(b.name)}</a></td><td class="bpqd"><b>${dn}</b><span class="faint">/${tot}</span></td>
-     <td class="nowrap">${d.doc_link?`<a class="btn sm" href="${esc(d.doc_link)}" target="_blank" rel="noopener">Open sheet</a>`:""}${canWrite?`<button class="btn sm quiet" data-act="bp-link" data-id="${esc(b.id)}" aria-label="${esc((d.doc_link?"Change":"Add")+" the Best Practices sheet link for "+b.name)}">${d.doc_link?"Change":"+ Link"}</button>`:d.doc_link?"":`<span class="faint">None</span>`}</td><td class="bpqnc">${bl.length?`<div class="nsc"><span class="c-bad bpqbl">Blocked: ${esc(bl.join(", "))}</span>${d.blocker?`<span class="clamp2 xp" tabindex="0" role="button" aria-expanded="false" data-act="xp">${esc(d.blocker)}</span><button class="linkb xpm" data-act="xp" hidden>Show more</button>`:""}</div>`:`<span class="faint">–</span>`}</td>${cells}</tr>`}
+     <td class="nowrap">${d.doc_link?`<a class="btn sm" href="${esc(d.doc_link)}" target="_blank" rel="noopener">Open sheet</a>`:""}${canWrite?`<button class="btn sm quiet" data-act="bp-link" data-id="${esc(b.id)}" aria-label="${esc((d.doc_link?"Change":"Add")+" the Best Practices sheet link for "+b.name)}">${d.doc_link?"Change":"+ Link"}</button>`:d.doc_link?"":`<span class="faint">None</span>`}</td><td class="bpqnc">${bl.length?`<div class="nsc"><span class="c-bad bpqbl">Blocked: ${esc(bl.join(", "))}</span>${d.blocker?`<span class="clamp2 xp" tabindex="0" role="button" aria-expanded="false" data-act="xp" data-xk="bp:${esc(b.id)}">${esc(d.blocker)}</span><button class="linkb xpm" data-act="xp" hidden>Show more</button>`:""}</div>`:`<span class="faint">–</span>`}</td>${cells}</tr>`}
   if(!rows.length)h+=`<tr><td colspan="${4+groups.reduce((a,g)=>a+g.sections.length,0)}"><div class="empty">No brands match this filter.</div></td></tr>`;
   return h+`</tbody></table></div>`+pg.html}
 function bpReady(bid){const d=S.bps[bid]||{sections:{}};const out={ready:[],locked:[],unchecked:[]};
@@ -1777,11 +1786,11 @@ function sowStrip(bs){const sowTopF=ls.get("vt-sowtop")==="folded";const xs=bs.f
   return one+`<div class="sgwrap${sowTopF?" folded":""}"><div class="ib strip sstrip two sgone"><button class="sgfoldbtn" data-act="sowtop" data-v="folded" title="Fold" aria-label="Fold signing order and where brands are">⌃</button>${t1.replace('<div class="it s7 tint-b sgn">','<div class="it s7 sgn">')}${donut}</div></div>`}
 function vSow(){
   const bs=brandList().filter(b=>!isInternal(b));
-  const rows=bs.map(b=>({b,s:Object.assign({brand:b.id},S.sow[b.id]||{})})).sort((x,y)=>(onHold(x.b)?1:0)-(onHold(y.b)?1:0)||String(x.s.target_sign||"9999").localeCompare(String(y.s.target_sign||"9999")));
+  const rows=bs.filter(b=>tqMatch("sowl",b)).map(b=>({b,s:Object.assign({brand:b.id},S.sow[b.id]||{})})).sort((x,y)=>(onHold(x.b)?1:0)-(onHold(y.b)?1:0)||String(x.s.target_sign||"9999").localeCompare(String(y.s.target_sign||"9999")));
   let h=`<h1>SOW tracker</h1>`+sowStrip(bs)+viewSeg("sowview",sowView,[["board","Progress board"],["list","Sign dates and blockers"]]);
   if(sowView==="board")return h+sowBoard();
   const stg=window.__stg||"";const cnt=k=>rows.filter(r=>(r.s.stage||"Not Started")===k).length;
-  h+=`<div class="stabs" role="tablist">${[["","All",rows.length]].concat(L("sow_stage").map(k=>[k,k,cnt(k)]).filter(x=>x[2])).map(([v,l,n])=>`<button class="${stg===v?"on":""}" data-act="stg" data-v="${esc(v)}">${esc(l)} <span>${n}</span></button>`).join("")}</div>`;
+  h+=`<div class="stabs" role="tablist">${[["","All",rows.length]].concat(L("sow_stage").map(k=>[k,k,cnt(k)]).filter(x=>x[2])).map(([v,l,n])=>`<button class="${stg===v?"on":""}" data-act="stg" data-v="${esc(v)}">${esc(l)} <span>${n}</span></button>`).join("")}<span class="grow"></span>${findBox("sowl",rows.length)}</div>`;
   h+=`<div class="tw"><table class="sowl"><thead><tr>${sortTh("sowl","brand","Brand and founder")}${sortTh("sowl","pri","Priority","lpri")}${sortTh("sowl","stage","Stage")}${sortTh("sowl","sign","Sign dates")}<th>Next steps</th><th>Blocker</th><th>Documents</th></tr></thead><tbody>`;
   const tstep=(lab,d,done)=>{if(!d)return`<div class="tsl"><span class="tsd none"></span><span class="faint">${lab} not set</span></div>`;const n=dayDiff(d);const k=done?"done":n<0?"bad":n<=7?"warn":"ok";
     const g=done?(lab==="Sign"?"Signed":"Done"):n<0?`${-n} day${n===-1?"":"s"} late`:n===0?"today":`${n} day${n===1?"":"s"} left`;return`<div class="tsl"><span class="tsd ${k}"></span><span>${lab} ${esc(fmtD(d,true))}</span><small class="dc ${k}">${g}</small></div>`};
@@ -1790,7 +1799,7 @@ function vSow(){
     const signed=s.stage==="Signed";
     h+=`<tr><td><a class="bname" href="#${brandHash(b.id,"sow")}" title="Open ${esc(b.name)} Road to SOW">${esc(b.name)}</a>${onHold(b)?` <span class="tag">On hold</span>`:""}<button class="linkb lfe" data-act="open" data-kind="sow" data-id="${esc(b.id)}">Edit</button>${who}</td><td class="lpri">${s.priority?`<span class="prib p${esc(String(s.priority))}">P${esc(String(s.priority))}</span>`:`<span class="faint">–</span>`}</td><td>${statusSel("sow",b.id,s.stage||"Not Started",L("sow_stage"),canEdit&&canWrite)}</td>
      <td class="ldt">${tstep("Draft",s.draft_due,signed)}<div class="tsbar"></div>${tstep("Sign",s.target_sign,signed)}</td>
-     <td class="lns">${nsCell(b.id)}</td><td class="muted lblk">${s.blocker?`<div class="nsc"><span class="clamp3 xp" tabindex="0" role="button" aria-expanded="false" data-act="xp">${esc(s.blocker)}</span><button class="linkb xpm" data-act="xp" hidden>Show more</button></div>`:'<span class="faint">None</span>'}</td><td class="ldocs">${sowDocChips(b.id,true)}</td></tr>`}
+     <td class="lns">${nsCell(b.id)}</td><td class="muted lblk">${s.blocker?`<div class="nsc"><span class="clamp3 xp" tabindex="0" role="button" aria-expanded="false" data-act="xp" data-xk="blk:${esc(b.id)}">${esc(s.blocker)}</span><button class="linkb xpm" data-act="xp" hidden>Show more</button></div>`:'<span class="faint">None</span>'}</td><td class="ldocs">${sowDocChips(b.id,true)}</td></tr>`}
   return h+`</tbody></table></div>`+pgL.html}
 function accStrip(){const all=withId(S.access).filter(a=>a.status!=="Not Needed"&&S.brands[a.brand]&&!holdOf(a.brand));const g=all.filter(accGranted).length;const op=all.filter(accOpen);
   const byP={};for(const a of op)byP[a.platform]=(byP[a.platform]||0)+1;const top=Object.entries(byP).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([l,n])=>({l:l.replace(/ (Ads Manager|Seller Central|Business Manager)$/,""),t:l,n}));
@@ -2551,7 +2560,7 @@ function sowDocChips(bid,add){const d=sowDocs(bid);const ex=(S.sow[bid]||{}).doc
 function nsLog(s){const lg=(s.ns_log||[]).slice();if(s.next_step&&!lg.length)lg.push({t:s.next_step,legacy:true});return lg}
 const nsStamp=e=>e.legacy?"Earlier note":`${fmtD(new Date(e.at).toISOString().slice(0,10))} · ${e.tl||""} ${e.tz||""} · ${e.by||""}`.replace(/\s+/g," ");
 function nsCell(bid){const s=S.sow[bid]||{};const lg=nsLog(s);const last=lg[lg.length-1];const w=canWrite&&S.sow[bid];
-  return`<div class="nsc">${last?`<div class="nse"><span class="nss">${esc(nsStamp(last))}</span><span class="clamp2 xp" tabindex="0" role="button" aria-expanded="false" data-act="xp">${esc(last.t)}</span></div><button class="linkb xpm" data-act="xp" hidden>Show more</button>`:`<span class="faint">None yet</span>`}
+  return`<div class="nsc">${last?`<div class="nse"><span class="nss">${esc(nsStamp(last))}</span><span class="clamp2 xp" tabindex="0" role="button" aria-expanded="false" data-act="xp" data-xk="ns:${esc(bid)}">${esc(last.t)}</span></div><button class="linkb xpm" data-act="xp" hidden>Show more</button>`:`<span class="faint">None yet</span>`}
    <div class="row" style="gap:8px">${w?`<button class="linkb" data-act="sow-ns" data-id="${esc(bid)}">+ Add</button>`:""}${lg.length>1?`<details class="nsold"><summary>${lg.length-1} earlier</summary>${lg.slice(0,-1).reverse().map(e=>`<div class="nse"><span class="nss">${esc(nsStamp(e))}</span><span>${esc(e.t)}</span></div>`).join("")}</details>`:""}</div></div>`}
 const tzList=()=>[...new Set(clockZones().map(c=>c.zone).concat(Intl.supportedValuesOf?Intl.supportedValuesOf("timeZone"):[]))];
 function nsEntry(text){const z=tzNow();return{t:text,by:me,at:Date.now(),tz:z.tz,tl:z.tl,zone:z.zone}}
@@ -2798,12 +2807,17 @@ function openDrawer(kind,id,extra,refresh){
     body=accDrawer(id).replace("<!--platform-->",field("Platform",sel("platform",L("platform"),a.platform)));
     if(canEdit&&canWrite)foot=`<button class="btn danger" data-act="del" data-kind="access" data-id="${esc(id)}">Delete row</button>`}
   else if(kind==="sow"){const s=S.sow[id]||{};title="SOW · "+bname(id);ro=!canWrite;
-    body=field("Stage",sel("stage",L("sow_stage"),s.stage||"Not Started",false))+field("Owner",sel("owner",activePeople(),s.owner))+field("Priority",`<input name="priority" id="d-priority" type="number" min="1" max="9" value="${esc(s.priority||"")}" placeholder="1 is highest">`,0,"1 is the highest")+field("Target sign",inp("target_sign",s.target_sign,"date"))+field("Draft due",inp("draft_due",s.draft_due,"date"))
-     +field("Start date",inp("start_date",s.start_date,"date"))+field("Batch",inp("batch",s.batch))+field("Support team",inp("support",(s.support||[]).join(", ")),1,"Names separated by commas")
-     +SOW_DOCS().map((k,i)=>field(k+" link",`<input name="doc_${i}" id="d-doc_${i}" type="url" value="${esc(sowDocs(id)[k]||"")}" placeholder="https://...">`,1,i?"":"Links only. Never paste contract text.")).join("")
-     +field("Other documents",area("docs_extra",(s.docs_extra||[]).map(x=>x.label+" | "+x.url).join("\n")),1,"One per line: name | link")+field("GF status",inp("gf_status",s.gf_status),1,"For example: V1 completed, WIP, Pending")
-     +field("GF updated",`<select name="gf_updated" id="d-gf_updated">${opts(["No","Yes"],s.gf_updated?"Yes":"No",false)}</select>`)+field("Blocker / dependency",area("blocker",s.blocker),1)
-     +field("Next steps",`<div class="nslog">${nsLog(s).slice().reverse().map(e=>`<div class="nse"><span class="nss">${esc(nsStamp(e))}</span><span>${esc(e.t)}</span></div>`).join("")||`<span class="faint">None yet</span>`}</div>`+(ro?"":area("ns_new","")),1,ro?"":"Add an update. Your name, the date, time and your time zone are added for you; earlier entries cannot be changed.")}
+    const lg=nsLog(s);
+    const left=`<h4 class="dh">Status</h4><div class="sg3">${field("Stage",sel("stage",L("sow_stage"),s.stage||"Not Started",false))+field("Owner",sel("owner",activePeople(),s.owner))+field("Priority",`<input name="priority" id="d-priority" type="number" min="1" max="9" value="${esc(s.priority||"")}" placeholder="1 is highest">`)}</div>
+     <h4 class="dh">Dates</h4><div class="sg3">${field("Target sign",inp("target_sign",s.target_sign,"date"))+field("Draft due",inp("draft_due",s.draft_due,"date"))+field("Start date",inp("start_date",s.start_date,"date"))}</div>
+     <h4 class="dh">Team</h4><div class="sg3">${field("Batch",inp("batch",s.batch))}<div class="sgspan2">${field("Support team",inp("support",(s.support||[]).join(", ")),1,"Names separated by commas")}</div></div>
+     <h4 class="dh">Growth forecast</h4><div class="sg3">${field("GF status",inp("gf_status",s.gf_status),0,"V1 completed, WIP, Pending")+field("GF updated",`<select name="gf_updated" id="d-gf_updated">${opts(["No","Yes"],s.gf_updated?"Yes":"No",false)}</select>`)}</div>
+     <h4 class="dh">Blocker</h4>${field("Blocker or dependency",area("blocker",s.blocker),1)}`;
+    const right=`<h4 class="dh">Documents</h4><div class="sg2">${SOW_DOCS().map((k,i)=>field(k,`<input name="doc_${i}" id="d-doc_${i}" type="url" value="${esc(sowDocs(id)[k]||"")}" placeholder="https://...">`)).join("")}</div>
+     ${field("Other documents",area("docs_extra",(s.docs_extra||[]).map(x=>x.label+" | "+x.url).join("\n")),1,"One per line: name | link. Links only.")}
+     <h4 class="dh">Next steps</h4><div class="nslog">${lg.map((e,i)=>({e,i})).reverse().map(({e,i})=>`<div class="nse"><span class="nss">${esc(nsStamp(e))}${e.edited?` · edited by ${esc(e.edited.by||"")}`:""}${ro?"":` <button type="button" class="linkb nsed" data-act="ns-edit" data-id="${esc(id)}" data-i="${i}">Edit</button>`}</span><span>${esc(e.t)}</span></div>`).join("")||`<span class="faint">None yet</span>`}</div>
+     ${ro?"":field("Add an update",area("ns_new",""),1,"Your name, the date, time and time zone are added for you. Use Edit on an entry to correct it.")}`;
+    body=`<div class="sowgrid"><div>${left}</div><div>${right}</div></div>`}
   else if(kind==="camp"){const c=S.camps[id];if(!c){closeDrawer();return}title=c.name;
     body=field("Campaign name",inp("name",c.name),1)+field("Status",sel("status",L("campaign_status"),c.status))+field("Owner",sel("owner",activePeople(),c.owner))+field("Start",inp("start",c.start,"date"))+field("Launch or end",inp("end",c.end,"date"))
      +field("What it is for",area("purpose",c.purpose),1,"One or two lines: the product, the goal, the audience")+field("Success looks like",inp("goal",c.goal),1,"For example: 40 creator posts and 2x ROAS in launch month")+field("Brief or plan link",inp("link",c.link,"url"),1);
@@ -2818,7 +2832,7 @@ function openDrawer(kind,id,extra,refresh){
   const ae=document.activeElement;if(refresh&&dr.contains(ae)&&(ae.tagName==="TEXTAREA"||ae.tagName==="INPUT"&&!/checkbox|radio|button|submit/.test(ae.type)))return;
   const keepFocus=refresh&&dr.contains(ae)?(ae.id||(ae.dataset&&ae.dataset.act?`[data-act="${ae.dataset.act}"]${ae.dataset.i!==undefined?`[data-i="${ae.dataset.i}"]`:""}`:"")):"";
   const sc=refresh?(dr.querySelector(".body")||{}).scrollTop||0:0;
-  dr.classList.toggle("cardback",foot==="cardback");
+  dr.classList.toggle("cardback",foot==="cardback");dr.classList.toggle("sowd",kind==="sow");
   dr.innerHTML=foot==="cardback"?`<header><h3 class="sr">${esc(title)}</h3><span class="grow"></span><button class="btn sm quiet" data-act="close" aria-label="Close">✕</button></header><form class="body" id="dform">${body}</form><footer><span class="muted">${ro?"You can view this card but not change it.":"Changes save as you go."}</span></footer>`:`<header><h3>${esc(title)}</h3><button class="btn sm quiet" data-act="close">Close</button></header><form class="body" id="dform">${body}</form>
    <footer>${foot==="board"?`<span class="muted">Changes save straight away.</span><span class="grow"></span><button class="btn" data-act="nav-steps" data-id="${esc(id)}">All steps for this brand</button>`:(ro?`<span class="muted">You can view this but not change it.</span>`:`<button class="btn pri" data-act="dsave">Save</button><button class="btn" data-act="close">Cancel</button>`)+`<span class="grow"></span>${foot}`}</footer>`;
   if(foot==="cardback")dr.querySelector("form").addEventListener("submit",e=>e.preventDefault());
@@ -2829,7 +2843,7 @@ function openDrawer(kind,id,extra,refresh){
   dr.hidden=false;$("#scrim").hidden=false;if(!refresh){const f=foot==="cardback"?dr.querySelector("[data-act=close]"):dr.querySelector("input,select");if(f)f.focus()}
 }
 let drawerDirty={};
-function closeDrawer(){drawerCtx=null;drawerDirty={};$("#drawer").hidden=true;$("#drawer").classList.remove("cardback");$("#scrim").hidden=true}
+function closeDrawer(){drawerCtx=null;drawerDirty={};$("#drawer").hidden=true;$("#drawer").classList.remove("cardback","sowd");$("#scrim").hidden=true}
 /* members: tag or untag people on a card; saves straight away */
 function memEditor(t){const sup=t.support||[];const ed=canChangeTask(t);
   return`<div class="mems">${sup.map((p,i)=>`<span class="mem"><span class="av sup" aria-hidden="true">${esc(ini(p))}</span>${esc(p)}${ed?`<button type="button" class="memx" data-act="mem-del" data-i="${i}" aria-label="Remove ${esc(p)}">×</button>`:""}</span>`).join("")||`<span class="faint">No one tagged yet</span>`}</div>`
@@ -3009,6 +3023,9 @@ document.addEventListener("click",e=>{
     formBox("Add a document · "+bname(id),`<div class="f"><label for="n-dk">Document</label><select id="n-dk" name="kind">${kinds.map(x=>`<option value="${esc(x)}" ${x===first?"selected":""}>${esc(x)}${d0[x]?" (replace link)":""}</option>`).join("")}<option value="" ${first?"":"selected"}>Other</option></select></div><div class="f"><label for="n-dl">Name, for Other</label><input id="n-dl" name="label" placeholder="For example: Investor deck"></div><div class="f"><label for="n-du">Paste the link</label><input id="n-du" name="url" type="url" placeholder="https://..."></div><p class="faint" style="margin:0 0 10px;font-size:13px">Links only. Never paste contract text.</p>`,"Save link",v=>{const k=v.kind;
       if(!/^https?:\/\/\S+$/i.test(v.url||"")){toast("Paste a full link that starts with https://");return false}
       if(k)save("sow",id,{docs:Object.assign({},s.docs||{},{[k]:v.url})},k+" link "+bname(id));else{if(!v.label){toast("Give the document a name.");return false}save("sow",id,{docs_extra:(s.docs_extra||[]).concat([{label:v.label,url:v.url}])},"Document link "+bname(id))}})}
+  else if(act==="ns-edit"){const id=a.dataset.id,i=+a.dataset.i;const s=S.sow[id];if(!s||!canWrite)return;if(!me){toast("Pick your name at the top first.");return}const lg=nsLog(s).slice();const e=lg[i];if(!e)return;
+    formBox("Edit next step · "+bname(id),`<div class="f"><label for="n-nse">${esc(nsStamp(e))}</label><textarea id="n-nse" name="text" rows="5">${esc(e.t)}</textarea></div><p class="faint" style="margin:0 0 10px;font-size:13px">The entry keeps its original date and author and is marked edited by ${esc(me)}.</p>`,"Save",v=>{const tx=(v.text||"").trim();if(!tx){toast("The entry can't be empty.");return false}
+      lg[i]=Object.assign({},e,{t:tx,edited:{by:me,at:Date.now()}});delete lg[i].legacy;save("sow",id,{ns_log:lg},"SOW next steps edited "+bname(id)).then(()=>{if(drawerCtx&&drawerCtx.kind==="sow")openDrawer("sow",id,null,true)})})}
   else if(act==="sow-ns"){const id=a.dataset.id;if(!me){toast("Pick your name at the top first, so the update shows who wrote it.");return}const z=tzNow();
     formBox("Next steps · "+bname(id),`<div class="f"><label for="n-ns">What happens next</label><textarea id="n-ns" name="text" rows="4"></textarea></div><p class="faint" style="margin:0 0 10px;font-size:13px">Saved as: ${esc(fmtD(isoToday()))} · ${esc(z.tl)} ${esc(z.tz)} · ${esc(me)}. Earlier entries stay as they are.</p>`,"Add",v=>{if(!(v.text||"").trim()){toast("Write the next step.");return false}addNs(id,v.text.trim())})}
   else if(act==="clock"){const ex=$("#clkpop");if(ex){ex.remove();a.setAttribute("aria-expanded","false");return}const el=document.createElement("div");el.id="clkpop";el.className="pop clkpop";el.innerHTML=clockHtml();document.body.appendChild(el);a.setAttribute("aria-expanded","true");
@@ -3205,7 +3222,7 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(pop){const l=pop
   if(pop&&(e.key==="ArrowDown"||e.key==="ArrowUp")){const items=[...document.querySelectorAll("#pop .pi")];const i=items.indexOf(document.activeElement);const n=items[(i+(e.key==="ArrowDown"?1:-1)+items.length)%items.length];if(n){e.preventDefault();n.focus()}}});
 document.addEventListener("scroll",()=>{if(pop)closePop()},true);
 function ntFit(){document.querySelectorAll("table.board .nt").forEach(n=>{const m=n.nextElementSibling;if(m&&m.classList.contains("ntmore")&&!n.classList.contains("open"))m.hidden=n.scrollHeight<=n.clientHeight+2&&n.scrollWidth<=n.clientWidth+1})}
-function sowPin(){const m=$("#main"),w=$(".sgwrap"),f=$(".sgfold");if(!m||!w||!f||f.classList.contains("man"))return;f.classList.toggle("pin",w.getBoundingClientRect().bottom<m.getBoundingClientRect().top+20)}
+function sowPin(){} /* the folded summary no longer floats over the table while scrolling */
 document.addEventListener("scroll",e=>{if(e.target===$("#main"))sowPin()},true);
 setInterval(()=>{const m=$("#clkme");if(m){const z=tzNow();m.textContent=z.tl+" "+z.tz}document.querySelectorAll("[data-clk]").forEach(e=>e.textContent=clockTime(e.dataset.clk))},30000);
 document.addEventListener("click",e=>{const p=$("#clkpop");if(p&&!p.contains(e.target)&&!e.target.closest("[data-act=clock]"))p.remove()});
@@ -3269,9 +3286,9 @@ parseHash();
 })();
 
 /* long next steps and blockers: show "Show more" only when the text is cut; clicking the text or the link opens it in full */
-(function(){const fit=()=>document.querySelectorAll(".xp").forEach(x=>{const m=x.closest(".nsc")&&x.closest(".nsc").querySelector(".xpm");if(!m||x.classList.contains("open"))return;m.hidden=x.scrollHeight<=x.clientHeight+2});
+(function(){const XO=window.__xpOpen=window.__xpOpen||new Set();const fit=()=>document.querySelectorAll(".xp").forEach(x=>{if(x.dataset.xk&&XO.has(x.dataset.xk)&&!x.classList.contains("open")){x.classList.add("open");x.setAttribute("aria-expanded","true");const mm=x.closest(".nsc")&&x.closest(".nsc").querySelector(".xpm");if(mm){mm.hidden=false;mm.textContent="Show less"}return}const m=x.closest(".nsc")&&x.closest(".nsc").querySelector(".xpm");if(!m||x.classList.contains("open"))return;m.hidden=x.scrollHeight<=x.clientHeight+2});
  const mn=document.getElementById("main");let q=0;if(mn)new MutationObserver(()=>{if(!q)q=requestAnimationFrame(()=>{q=0;fit()})}).observe(mn,{childList:true,subtree:true});addEventListener("resize",fit);
- const tog=el=>{const x=el.classList.contains("xp")?el:el.closest(".nsc").querySelector(".xp");const m=x.closest(".nsc").querySelector(".xpm");const o=!x.classList.contains("open");x.classList.toggle("open",o);x.setAttribute("aria-expanded",o);if(m){m.hidden=false;m.textContent=o?"Show less":"Show more"}};
+ const tog=el=>{const x=el.classList.contains("xp")?el:el.closest(".nsc").querySelector(".xp");const m=x.closest(".nsc").querySelector(".xpm");const o=!x.classList.contains("open");x.classList.toggle("open",o);x.setAttribute("aria-expanded",o);if(x.dataset.xk){if(o)XO.add(x.dataset.xk);else XO.delete(x.dataset.xk)}if(m){m.hidden=false;m.textContent=o?"Show less":"Show more"}};
  document.addEventListener("click",e=>{const el=e.target.closest("[data-act=xp]");if(el){e.preventDefault();e.stopPropagation();tog(el)}},true);
  document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches&&e.target.matches(".xp")){e.preventDefault();tog(e.target)}});})();
 

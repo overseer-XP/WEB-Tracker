@@ -42,12 +42,17 @@ function openDrawer(kind,id,extra,refresh){
     body=accDrawer(id).replace("<!--platform-->",field("Platform",sel("platform",L("platform"),a.platform)));
     if(canEdit&&canWrite)foot=`<button class="btn danger" data-act="del" data-kind="access" data-id="${esc(id)}">Delete row</button>`}
   else if(kind==="sow"){const s=S.sow[id]||{};title="SOW · "+bname(id);ro=!canWrite;
-    body=field("Stage",sel("stage",L("sow_stage"),s.stage||"Not Started",false))+field("Owner",sel("owner",activePeople(),s.owner))+field("Priority",`<input name="priority" id="d-priority" type="number" min="1" max="9" value="${esc(s.priority||"")}" placeholder="1 is highest">`,0,"1 is the highest")+field("Target sign",inp("target_sign",s.target_sign,"date"))+field("Draft due",inp("draft_due",s.draft_due,"date"))
-     +field("Start date",inp("start_date",s.start_date,"date"))+field("Batch",inp("batch",s.batch))+field("Support team",inp("support",(s.support||[]).join(", ")),1,"Names separated by commas")
-     +SOW_DOCS().map((k,i)=>field(k+" link",`<input name="doc_${i}" id="d-doc_${i}" type="url" value="${esc(sowDocs(id)[k]||"")}" placeholder="https://...">`,1,i?"":"Links only. Never paste contract text.")).join("")
-     +field("Other documents",area("docs_extra",(s.docs_extra||[]).map(x=>x.label+" | "+x.url).join("\n")),1,"One per line: name | link")+field("GF status",inp("gf_status",s.gf_status),1,"For example: V1 completed, WIP, Pending")
-     +field("GF updated",`<select name="gf_updated" id="d-gf_updated">${opts(["No","Yes"],s.gf_updated?"Yes":"No",false)}</select>`)+field("Blocker / dependency",area("blocker",s.blocker),1)
-     +field("Next steps",`<div class="nslog">${nsLog(s).slice().reverse().map(e=>`<div class="nse"><span class="nss">${esc(nsStamp(e))}</span><span>${esc(e.t)}</span></div>`).join("")||`<span class="faint">None yet</span>`}</div>`+(ro?"":area("ns_new","")),1,ro?"":"Add an update. Your name, the date, time and your time zone are added for you; earlier entries cannot be changed.")}
+    const lg=nsLog(s);
+    const left=`<h4 class="dh">Status</h4><div class="sg3">${field("Stage",sel("stage",L("sow_stage"),s.stage||"Not Started",false))+field("Owner",sel("owner",activePeople(),s.owner))+field("Priority",`<input name="priority" id="d-priority" type="number" min="1" max="9" value="${esc(s.priority||"")}" placeholder="1 is highest">`)}</div>
+     <h4 class="dh">Dates</h4><div class="sg3">${field("Target sign",inp("target_sign",s.target_sign,"date"))+field("Draft due",inp("draft_due",s.draft_due,"date"))+field("Start date",inp("start_date",s.start_date,"date"))}</div>
+     <h4 class="dh">Team</h4><div class="sg3">${field("Batch",inp("batch",s.batch))}<div class="sgspan2">${field("Support team",inp("support",(s.support||[]).join(", ")),1,"Names separated by commas")}</div></div>
+     <h4 class="dh">Growth forecast</h4><div class="sg3">${field("GF status",inp("gf_status",s.gf_status),0,"V1 completed, WIP, Pending")+field("GF updated",`<select name="gf_updated" id="d-gf_updated">${opts(["No","Yes"],s.gf_updated?"Yes":"No",false)}</select>`)}</div>
+     <h4 class="dh">Blocker</h4>${field("Blocker or dependency",area("blocker",s.blocker),1)}`;
+    const right=`<h4 class="dh">Documents</h4><div class="sg2">${SOW_DOCS().map((k,i)=>field(k,`<input name="doc_${i}" id="d-doc_${i}" type="url" value="${esc(sowDocs(id)[k]||"")}" placeholder="https://...">`)).join("")}</div>
+     ${field("Other documents",area("docs_extra",(s.docs_extra||[]).map(x=>x.label+" | "+x.url).join("\n")),1,"One per line: name | link. Links only.")}
+     <h4 class="dh">Next steps</h4><div class="nslog">${lg.map((e,i)=>({e,i})).reverse().map(({e,i})=>`<div class="nse"><span class="nss">${esc(nsStamp(e))}${e.edited?` · edited by ${esc(e.edited.by||"")}`:""}${ro?"":` <button type="button" class="linkb nsed" data-act="ns-edit" data-id="${esc(id)}" data-i="${i}">Edit</button>`}</span><span>${esc(e.t)}</span></div>`).join("")||`<span class="faint">None yet</span>`}</div>
+     ${ro?"":field("Add an update",area("ns_new",""),1,"Your name, the date, time and time zone are added for you. Use Edit on an entry to correct it.")}`;
+    body=`<div class="sowgrid"><div>${left}</div><div>${right}</div></div>`}
   else if(kind==="camp"){const c=S.camps[id];if(!c){closeDrawer();return}title=c.name;
     body=field("Campaign name",inp("name",c.name),1)+field("Status",sel("status",L("campaign_status"),c.status))+field("Owner",sel("owner",activePeople(),c.owner))+field("Start",inp("start",c.start,"date"))+field("Launch or end",inp("end",c.end,"date"))
      +field("What it is for",area("purpose",c.purpose),1,"One or two lines: the product, the goal, the audience")+field("Success looks like",inp("goal",c.goal),1,"For example: 40 creator posts and 2x ROAS in launch month")+field("Brief or plan link",inp("link",c.link,"url"),1);
@@ -62,7 +67,7 @@ function openDrawer(kind,id,extra,refresh){
   const ae=document.activeElement;if(refresh&&dr.contains(ae)&&(ae.tagName==="TEXTAREA"||ae.tagName==="INPUT"&&!/checkbox|radio|button|submit/.test(ae.type)))return;
   const keepFocus=refresh&&dr.contains(ae)?(ae.id||(ae.dataset&&ae.dataset.act?`[data-act="${ae.dataset.act}"]${ae.dataset.i!==undefined?`[data-i="${ae.dataset.i}"]`:""}`:"")):"";
   const sc=refresh?(dr.querySelector(".body")||{}).scrollTop||0:0;
-  dr.classList.toggle("cardback",foot==="cardback");
+  dr.classList.toggle("cardback",foot==="cardback");dr.classList.toggle("sowd",kind==="sow");
   dr.innerHTML=foot==="cardback"?`<header><h3 class="sr">${esc(title)}</h3><span class="grow"></span><button class="btn sm quiet" data-act="close" aria-label="Close">✕</button></header><form class="body" id="dform">${body}</form><footer><span class="muted">${ro?"You can view this card but not change it.":"Changes save as you go."}</span></footer>`:`<header><h3>${esc(title)}</h3><button class="btn sm quiet" data-act="close">Close</button></header><form class="body" id="dform">${body}</form>
    <footer>${foot==="board"?`<span class="muted">Changes save straight away.</span><span class="grow"></span><button class="btn" data-act="nav-steps" data-id="${esc(id)}">All steps for this brand</button>`:(ro?`<span class="muted">You can view this but not change it.</span>`:`<button class="btn pri" data-act="dsave">Save</button><button class="btn" data-act="close">Cancel</button>`)+`<span class="grow"></span>${foot}`}</footer>`;
   if(foot==="cardback")dr.querySelector("form").addEventListener("submit",e=>e.preventDefault());
@@ -73,7 +78,7 @@ function openDrawer(kind,id,extra,refresh){
   dr.hidden=false;$("#scrim").hidden=false;if(!refresh){const f=foot==="cardback"?dr.querySelector("[data-act=close]"):dr.querySelector("input,select");if(f)f.focus()}
 }
 let drawerDirty={};
-function closeDrawer(){drawerCtx=null;drawerDirty={};$("#drawer").hidden=true;$("#drawer").classList.remove("cardback");$("#scrim").hidden=true}
+function closeDrawer(){drawerCtx=null;drawerDirty={};$("#drawer").hidden=true;$("#drawer").classList.remove("cardback","sowd");$("#scrim").hidden=true}
 /* members: tag or untag people on a card; saves straight away */
 function memEditor(t){const sup=t.support||[];const ed=canChangeTask(t);
   return`<div class="mems">${sup.map((p,i)=>`<span class="mem"><span class="av sup" aria-hidden="true">${esc(ini(p))}</span>${esc(p)}${ed?`<button type="button" class="memx" data-act="mem-del" data-i="${i}" aria-label="Remove ${esc(p)}">×</button>`:""}</span>`).join("")||`<span class="faint">No one tagged yet</span>`}</div>`

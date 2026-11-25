@@ -1079,3 +1079,12 @@ button:disabled,.btn:disabled,select:disabled{cursor:not-allowed}
 .itl>span>span{flex:1 1 auto}.itl .pillx,.itl .pill{flex:none}
 /* timeline: the Today marker sits above month names */
 .rmtl{z-index:2}
+
+/* SOW edit as a wide centred window */
+.drawer.sowd{top:50%;left:50%;right:auto;bottom:auto;transform:translate(-50%,-50%);width:min(1080px,94vw);max-height:90vh;border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh-3)}
+.drawer.sowd .body{overflow:auto;display:block;padding:18px 24px 24px}.sowgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px 28px}
+.sowgrid .dh{margin:14px 0 6px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}.sowgrid>div>.dh:first-child{margin-top:0}
+.sg3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 12px}.sg2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}.sgspan2{grid-column:span 2}
+.sowd .f{margin-bottom:8px}.sowd .nslog{max-height:260px}.nsed{font-size:12px;margin-left:6px}
+@media (max-width:860px){.sowgrid{grid-template-columns:1fr}.sg3{grid-template-columns:1fr 1fr}}
+.stabs .tfind{margin:4px 0 4px auto;max-width:240px}
