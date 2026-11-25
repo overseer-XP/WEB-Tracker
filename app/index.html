@@ -1090,6 +1090,11 @@ a:focus-visible,button:focus-visible,select:focus-visible,summary:focus-visible,
 .chipbtn:hover,.ochip:not(.on):hover,.lchip:hover,.sachip:hover,.dchip:hover,.tabs button:not(.on):hover,.ctabs button:not(.on):hover,.mtabs button:not(.on):hover,.seg button:not(.on):hover,.oseg button:not(.on):hover,.pgseg button:not(.on):hover,.stabs button:not(.on):hover,.sgpg button:not(.on):not(:disabled):hover,.pg button:not(.on):not(:disabled):hover,.sgfoldbtn:hover,.pgcard:hover{background:color-mix(in srgb,var(--accent) 8%,var(--panel))!important;color:var(--ink)}
 .kc:hover,.mst:hover,.accb:hover{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
 button:disabled,.btn:disabled,select:disabled{cursor:not-allowed}
+
+/* list rows: text shrinks, the tag never does */
+.itl>span>span{flex:1 1 auto}.itl .pillx,.itl .pill{flex:none}
+/* timeline: the Today marker sits above month names */
+.rmtl{z-index:2}
 </style>
 
 <div class="app">
@@ -3281,4 +3286,8 @@ parseHash();
  const tog=el=>{const x=el.classList.contains("xp")?el:el.closest(".nsc").querySelector(".xp");const m=x.closest(".nsc").querySelector(".xpm");const o=!x.classList.contains("open");x.classList.toggle("open",o);x.setAttribute("aria-expanded",o);if(m){m.hidden=false;m.textContent=o?"Show less":"Show more"}};
  document.addEventListener("click",e=>{const el=e.target.closest("[data-act=xp]");if(el){e.preventDefault();e.stopPropagation();tog(el)}},true);
  document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches&&e.target.matches(".xp")){e.preventDefault();tog(e.target)}});})();
+
+/* timeline: a month name that would run under the Today marker is hidden */
+(function(){const fix=()=>document.querySelectorAll(".rmt").forEach(r=>{const td=r.querySelector(".rmtl");r.querySelectorAll(".rmm").forEach(m=>{m.style.visibility="";if(!td||!td.offsetParent)return;const a=td.getBoundingClientRect(),b=m.getBoundingClientRect();if(b.right>a.left-4&&b.left<a.right+4)m.style.visibility="hidden"})});
+ const mn=document.getElementById("main");let q=0;if(mn)new MutationObserver(()=>{if(!q)q=requestAnimationFrame(()=>{q=0;fix()})}).observe(mn,{childList:true,subtree:true});addEventListener("resize",fix)})();
 </script>
