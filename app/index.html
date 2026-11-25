@@ -1092,6 +1092,14 @@ button:disabled,.btn:disabled,select:disabled{cursor:not-allowed}
 .sowd .f{margin-bottom:8px}.sowd .nslog{max-height:260px}.nsed{font-size:12px;margin-left:6px}
 @media (max-width:860px){.sowgrid{grid-template-columns:1fr}.sg3{grid-template-columns:1fr 1fr}}
 .stabs .tfind{margin:4px 0 4px auto;max-width:240px}
+
+/* SOW list: the brand cell is one big edit button */
+table.sowl td.lbc{cursor:pointer;position:relative}table.sowl td.lbc:hover,table.sowl td.lbc:focus-visible{background:var(--hover,rgba(37,99,235,.06))}
+table.sowl td.lbc .bname{font-weight:600}table.sowl td.lbc .lfe{color:var(--accent);opacity:.55;font-size:12px;margin-left:8px}table.sowl td.lbc:hover .lfe,table.sowl td.lbc:focus-visible .lfe{opacity:1}
+table.sowl tr:hover td.lbc .bname{text-decoration:underline;text-underline-offset:3px}
+/* next steps: done and remove */
+.nsact{gap:10px}.nsdn{color:var(--ok,#2f7a4f)}.nsall{color:var(--ok,#2f7a4f);font-weight:600;font-size:13px}.nse.isdone>span:nth-child(2){color:var(--muted)}.nsrm{color:var(--bad,#b03a3a)}
+.sowto{margin:0 0 10px;font-size:13px}.nsacts{display:flex;gap:14px;font-size:12px;margin:2px 0 6px}.nslog .nse{padding-bottom:6px;border-bottom:1px solid var(--line)}
 </style>
 
 <div class="app">
@@ -1797,7 +1805,7 @@ function vSow(){
   const pgL=paged("sowl",tsortRows("sowl",(window.__stg||"")?rows.filter(r=>(r.s.stage||"Not Started")===window.__stg):rows,{brand:r=>r.b.name,pri:r=>Number(r.s.priority)||9,stage:r=>L("sow_stage").indexOf(r.s.stage||"Not Started"),sign:r=>r.s.target_sign||"9999"}));for(const{b,s}of pgL.rows){const fz=b.founder_zone||"";const fc=b.founder_country||"";
     const who=b.founder?`<div class="lfd"><span class="lfk">Founder</span>${esc(b.founder)}</div>${fc?`<div class="lfd"><span class="lfk">Country</span>${esc(fc)}</div>`:""}${fz?`<div class="lfd"><span class="lfk">Their time</span>${esc(clockTime(fz))} ${esc(tzAbbr(fz))}</div>`:""}${!fc&&!fz?`<div class="lfd"><button class="linkb" data-act="founder-geo" data-id="${esc(b.id)}">+ Country and time zone</button></div>`:""}`:`<div class="lfd faint">No founder set</div>`;
     const signed=s.stage==="Signed";
-    h+=`<tr><td><a class="bname" href="#${brandHash(b.id,"sow")}" title="Open ${esc(b.name)} Road to SOW">${esc(b.name)}</a>${onHold(b)?` <span class="tag">On hold</span>`:""}<button class="linkb lfe" data-act="open" data-kind="sow" data-id="${esc(b.id)}">Edit</button>${who}</td><td class="lpri">${s.priority?`<span class="prib p${esc(String(s.priority))}">P${esc(String(s.priority))}</span>`:`<span class="faint">–</span>`}</td><td>${statusSel("sow",b.id,s.stage||"Not Started",L("sow_stage"),canEdit&&canWrite)}</td>
+    h+=`<tr><td class="lbc" data-act="open" data-kind="sow" data-id="${esc(b.id)}" tabindex="0" role="button" aria-label="Edit ${esc(b.name)} SOW details" title="Click to edit ${esc(b.name)}"><span class="bname">${esc(b.name)}</span>${onHold(b)?` <span class="tag">On hold</span>`:""}<span class="lfe" aria-hidden="true">✎ Edit</span>${who}</td><td class="lpri">${s.priority?`<span class="prib p${esc(String(s.priority))}">P${esc(String(s.priority))}</span>`:`<span class="faint">–</span>`}</td><td>${statusSel("sow",b.id,s.stage||"Not Started",L("sow_stage"),canEdit&&canWrite)}</td>
      <td class="ldt">${tstep("Draft",s.draft_due,signed)}<div class="tsbar"></div>${tstep("Sign",s.target_sign,signed)}</td>
      <td class="lns">${nsCell(b.id)}</td><td class="muted lblk">${s.blocker?`<div class="nsc"><span class="clamp3 xp" tabindex="0" role="button" aria-expanded="false" data-act="xp" data-xk="blk:${esc(b.id)}">${esc(s.blocker)}</span><button class="linkb xpm" data-act="xp" hidden>Show more</button></div>`:'<span class="faint">None</span>'}</td><td class="ldocs">${sowDocChips(b.id,true)}</td></tr>`}
   return h+`</tbody></table></div>`+pgL.html}
@@ -2559,9 +2567,13 @@ function sowDocChips(bid,add){const d=sowDocs(bid);const ex=(S.sow[bid]||{}).doc
 /* next steps: a running log; each entry is stamped with who wrote it, when, and their time zone */
 function nsLog(s){const lg=(s.ns_log||[]).slice();if(s.next_step&&!lg.length)lg.push({t:s.next_step,legacy:true});return lg}
 const nsStamp=e=>e.legacy?"Earlier note":`${fmtD(new Date(e.at).toISOString().slice(0,10))} · ${e.tl||""} ${e.tz||""} · ${e.by||""}`.replace(/\s+/g," ");
-function nsCell(bid){const s=S.sow[bid]||{};const lg=nsLog(s);const last=lg[lg.length-1];const w=canWrite&&S.sow[bid];
-  return`<div class="nsc">${last?`<div class="nse"><span class="nss">${esc(nsStamp(last))}</span><span class="clamp2 xp" tabindex="0" role="button" aria-expanded="false" data-act="xp" data-xk="ns:${esc(bid)}">${esc(last.t)}</span></div><button class="linkb xpm" data-act="xp" hidden>Show more</button>`:`<span class="faint">None yet</span>`}
-   <div class="row" style="gap:8px">${w?`<button class="linkb" data-act="sow-ns" data-id="${esc(bid)}">+ Add</button>`:""}${lg.length>1?`<details class="nsold"><summary>${lg.length-1} earlier</summary>${lg.slice(0,-1).reverse().map(e=>`<div class="nse"><span class="nss">${esc(nsStamp(e))}</span><span>${esc(e.t)}</span></div>`).join("")}</details>`:""}</div></div>`}
+function nsCell(bid){const s=S.sow[bid]||{};const lg=nsLog(s);const w=canWrite&&S.sow[bid];
+  const all=lg.map((e,i)=>({e,i}));const lastE=all[all.length-1];const cur=lastE&&!lastE.e.done?lastE:null;/* the newest entry is the live one; older entries are history */const rest=all.filter(x=>!cur||x.i!==cur.i).reverse();
+  const doneStamp=e=>e.done?`Done${e.done.by?" by "+e.done.by:""} · ${fmtD(new Date(e.done.at).toISOString().slice(0,10))}`:"";
+  const head=cur?`<div class="nse"><span class="nss">${esc(nsStamp(cur.e))}</span><span class="clamp2 xp" tabindex="0" role="button" aria-expanded="false" data-act="xp" data-xk="ns:${esc(bid)}">${esc(cur.e.t)}</span></div><button class="linkb xpm" data-act="xp" hidden>Show more</button>`
+    :lg.length?`<span class="nsall">✓ All next steps done</span>`:`<span class="faint">None yet</span>`;
+  return`<div class="nsc">${head}
+   <div class="row nsact">${w?`<button class="linkb" data-act="sow-ns" data-id="${esc(bid)}">+ Add</button>`:""}${w&&cur?`<button class="linkb nsdn" data-act="ns-done" data-id="${esc(bid)}" data-i="${cur.i}" title="Mark this next step done">✓ Done</button>`:""}${rest.length?`<details class="nsold"><summary>${rest.length} earlier</summary>${rest.map(({e})=>`<div class="nse${e.done?" isdone":""}"><span class="nss">${esc(nsStamp(e))}</span><span>${e.done?"✓ ":""}${esc(e.t)}</span>${e.done?`<span class="nss">${esc(doneStamp(e))}</span>`:""}</div>`).join("")}</details>`:""}</div></div>`}
 const tzList=()=>[...new Set(clockZones().map(c=>c.zone).concat(Intl.supportedValuesOf?Intl.supportedValuesOf("timeZone"):[]))];
 function nsEntry(text){const z=tzNow();return{t:text,by:me,at:Date.now(),tz:z.tz,tl:z.tl,zone:z.zone}}
 async function addNs(bid,text){const s=S.sow[bid];if(!s)return;if(!me){toast("Pick your name at the top first, so the update shows who wrote it.");return}
@@ -2815,9 +2827,9 @@ function openDrawer(kind,id,extra,refresh){
      <h4 class="dh">Blocker</h4>${field("Blocker or dependency",area("blocker",s.blocker),1)}`;
     const right=`<h4 class="dh">Documents</h4><div class="sg2">${SOW_DOCS().map((k,i)=>field(k,`<input name="doc_${i}" id="d-doc_${i}" type="url" value="${esc(sowDocs(id)[k]||"")}" placeholder="https://...">`)).join("")}</div>
      ${field("Other documents",area("docs_extra",(s.docs_extra||[]).map(x=>x.label+" | "+x.url).join("\n")),1,"One per line: name | link. Links only.")}
-     <h4 class="dh">Next steps</h4><div class="nslog">${lg.map((e,i)=>({e,i})).reverse().map(({e,i})=>`<div class="nse"><span class="nss">${esc(nsStamp(e))}${e.edited?` · edited by ${esc(e.edited.by||"")}`:""}${ro?"":` <button type="button" class="linkb nsed" data-act="ns-edit" data-id="${esc(id)}" data-i="${i}">Edit</button>`}</span><span>${esc(e.t)}</span></div>`).join("")||`<span class="faint">None yet</span>`}</div>
+     <h4 class="dh">Next steps</h4><div class="nslog">${lg.map((e,i)=>({e,i})).reverse().map(({e,i})=>`<div class="nse"><span class="nss">${esc(nsStamp(e))}${e.edited?` · edited by ${esc(e.edited.by||"")}`:""}${e.done?` · done by ${esc(e.done.by||"")}`:""}</span><span>${e.done?"✓ ":""}${esc(e.t)}</span>${ro?"":`<span class="nsacts"><button type="button" class="linkb" data-act="ns-edit" data-id="${esc(id)}" data-i="${i}">Edit</button><button type="button" class="linkb" data-act="${e.done?"ns-reopen":"ns-done"}" data-id="${esc(id)}" data-i="${i}">${e.done?"Reopen":"✓ Done"}</button><button type="button" class="linkb nsrm" data-act="ns-del" data-id="${esc(id)}" data-i="${i}">Remove</button></span>`}</div>`).join("")||`<span class="faint">None yet</span>`}</div>
      ${ro?"":field("Add an update",area("ns_new",""),1,"Your name, the date, time and time zone are added for you. Use Edit on an entry to correct it.")}`;
-    body=`<div class="sowgrid"><div>${left}</div><div>${right}</div></div>`}
+    body=`<p class="sowto"><a href="#${brandHash(id,"sow")}" data-act="close-go">Open the ${esc(bname(id))} brand page →</a></p><div class="sowgrid"><div>${left}</div><div>${right}</div></div>`}
   else if(kind==="camp"){const c=S.camps[id];if(!c){closeDrawer();return}title=c.name;
     body=field("Campaign name",inp("name",c.name),1)+field("Status",sel("status",L("campaign_status"),c.status))+field("Owner",sel("owner",activePeople(),c.owner))+field("Start",inp("start",c.start,"date"))+field("Launch or end",inp("end",c.end,"date"))
      +field("What it is for",area("purpose",c.purpose),1,"One or two lines: the product, the goal, the audience")+field("Success looks like",inp("goal",c.goal),1,"For example: 40 creator posts and 2x ROAS in launch month")+field("Brief or plan link",inp("link",c.link,"url"),1);
@@ -3023,6 +3035,12 @@ document.addEventListener("click",e=>{
     formBox("Add a document · "+bname(id),`<div class="f"><label for="n-dk">Document</label><select id="n-dk" name="kind">${kinds.map(x=>`<option value="${esc(x)}" ${x===first?"selected":""}>${esc(x)}${d0[x]?" (replace link)":""}</option>`).join("")}<option value="" ${first?"":"selected"}>Other</option></select></div><div class="f"><label for="n-dl">Name, for Other</label><input id="n-dl" name="label" placeholder="For example: Investor deck"></div><div class="f"><label for="n-du">Paste the link</label><input id="n-du" name="url" type="url" placeholder="https://..."></div><p class="faint" style="margin:0 0 10px;font-size:13px">Links only. Never paste contract text.</p>`,"Save link",v=>{const k=v.kind;
       if(!/^https?:\/\/\S+$/i.test(v.url||"")){toast("Paste a full link that starts with https://");return false}
       if(k)save("sow",id,{docs:Object.assign({},s.docs||{},{[k]:v.url})},k+" link "+bname(id));else{if(!v.label){toast("Give the document a name.");return false}save("sow",id,{docs_extra:(s.docs_extra||[]).concat([{label:v.label,url:v.url}])},"Document link "+bname(id))}})}
+  else if(act==="ns-done"||act==="ns-reopen"||act==="ns-del"){const id=a.dataset.id,i=+a.dataset.i;const s=S.sow[id];if(!s||!canWrite)return;if(!me){toast("Pick your name at the top first.");return}const lg=nsLog(s).slice();const e=lg[i];if(!e)return;
+    const after=()=>{if(drawerCtx&&drawerCtx.kind==="sow"&&drawerCtx.id===id)openDrawer("sow",id,null,true)};
+    if(act==="ns-del"){confirmBox(`Remove this next step? "${e.t.slice(0,140)}${e.t.length>140?"...":""}" The change log keeps a record that it was removed.`,"Remove",()=>{lg.splice(i,1);save("sow",id,{ns_log:lg,next_step:lg.length?lg[lg.length-1].t:""},"SOW next step removed "+bname(id)+": "+e.t.slice(0,80)).then(after)});return}
+    lg[i]=Object.assign({},e);delete lg[i].legacy;if(act==="ns-done")lg[i].done={by:me,at:Date.now()};else delete lg[i].done;
+    save("sow",id,{ns_log:lg},(act==="ns-done"?"SOW next step done ":"SOW next step reopened ")+bname(id)).then(after)}
+  else if(act==="close-go"){e.preventDefault();closeDrawer();go(a.getAttribute("href").slice(1))}
   else if(act==="ns-edit"){const id=a.dataset.id,i=+a.dataset.i;const s=S.sow[id];if(!s||!canWrite)return;if(!me){toast("Pick your name at the top first.");return}const lg=nsLog(s).slice();const e=lg[i];if(!e)return;
     formBox("Edit next step · "+bname(id),`<div class="f"><label for="n-nse">${esc(nsStamp(e))}</label><textarea id="n-nse" name="text" rows="5">${esc(e.t)}</textarea></div><p class="faint" style="margin:0 0 10px;font-size:13px">The entry keeps its original date and author and is marked edited by ${esc(me)}.</p>`,"Save",v=>{const tx=(v.text||"").trim();if(!tx){toast("The entry can't be empty.");return false}
       lg[i]=Object.assign({},e,{t:tx,edited:{by:me,at:Date.now()}});delete lg[i].legacy;save("sow",id,{ns_log:lg},"SOW next steps edited "+bname(id)).then(()=>{if(drawerCtx&&drawerCtx.kind==="sow")openDrawer("sow",id,null,true)})})}

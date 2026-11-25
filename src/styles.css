@@ -1088,3 +1088,11 @@ button:disabled,.btn:disabled,select:disabled{cursor:not-allowed}
 .sowd .f{margin-bottom:8px}.sowd .nslog{max-height:260px}.nsed{font-size:12px;margin-left:6px}
 @media (max-width:860px){.sowgrid{grid-template-columns:1fr}.sg3{grid-template-columns:1fr 1fr}}
 .stabs .tfind{margin:4px 0 4px auto;max-width:240px}
+
+/* SOW list: the brand cell is one big edit button */
+table.sowl td.lbc{cursor:pointer;position:relative}table.sowl td.lbc:hover,table.sowl td.lbc:focus-visible{background:var(--hover,rgba(37,99,235,.06))}
+table.sowl td.lbc .bname{font-weight:600}table.sowl td.lbc .lfe{color:var(--accent);opacity:.55;font-size:12px;margin-left:8px}table.sowl td.lbc:hover .lfe,table.sowl td.lbc:focus-visible .lfe{opacity:1}
+table.sowl tr:hover td.lbc .bname{text-decoration:underline;text-underline-offset:3px}
+/* next steps: done and remove */
+.nsact{gap:10px}.nsdn{color:var(--ok,#2f7a4f)}.nsall{color:var(--ok,#2f7a4f);font-weight:600;font-size:13px}.nse.isdone>span:nth-child(2){color:var(--muted)}.nsrm{color:var(--bad,#b03a3a)}
+.sowto{margin:0 0 10px;font-size:13px}.nsacts{display:flex;gap:14px;font-size:12px;margin:2px 0 6px}.nslog .nse{padding-bottom:6px;border-bottom:1px solid var(--line)}

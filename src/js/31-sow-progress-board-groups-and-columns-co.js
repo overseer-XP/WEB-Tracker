@@ -67,9 +67,13 @@ function sowDocChips(bid,add){const d=sowDocs(bid);const ex=(S.sow[bid]||{}).doc
 /* next steps: a running log; each entry is stamped with who wrote it, when, and their time zone */
 function nsLog(s){const lg=(s.ns_log||[]).slice();if(s.next_step&&!lg.length)lg.push({t:s.next_step,legacy:true});return lg}
 const nsStamp=e=>e.legacy?"Earlier note":`${fmtD(new Date(e.at).toISOString().slice(0,10))} · ${e.tl||""} ${e.tz||""} · ${e.by||""}`.replace(/\s+/g," ");
-function nsCell(bid){const s=S.sow[bid]||{};const lg=nsLog(s);const last=lg[lg.length-1];const w=canWrite&&S.sow[bid];
-  return`<div class="nsc">${last?`<div class="nse"><span class="nss">${esc(nsStamp(last))}</span><span class="clamp2 xp" tabindex="0" role="button" aria-expanded="false" data-act="xp" data-xk="ns:${esc(bid)}">${esc(last.t)}</span></div><button class="linkb xpm" data-act="xp" hidden>Show more</button>`:`<span class="faint">None yet</span>`}
-   <div class="row" style="gap:8px">${w?`<button class="linkb" data-act="sow-ns" data-id="${esc(bid)}">+ Add</button>`:""}${lg.length>1?`<details class="nsold"><summary>${lg.length-1} earlier</summary>${lg.slice(0,-1).reverse().map(e=>`<div class="nse"><span class="nss">${esc(nsStamp(e))}</span><span>${esc(e.t)}</span></div>`).join("")}</details>`:""}</div></div>`}
+function nsCell(bid){const s=S.sow[bid]||{};const lg=nsLog(s);const w=canWrite&&S.sow[bid];
+  const all=lg.map((e,i)=>({e,i}));const lastE=all[all.length-1];const cur=lastE&&!lastE.e.done?lastE:null;/* the newest entry is the live one; older entries are history */const rest=all.filter(x=>!cur||x.i!==cur.i).reverse();
+  const doneStamp=e=>e.done?`Done${e.done.by?" by "+e.done.by:""} · ${fmtD(new Date(e.done.at).toISOString().slice(0,10))}`:"";
+  const head=cur?`<div class="nse"><span class="nss">${esc(nsStamp(cur.e))}</span><span class="clamp2 xp" tabindex="0" role="button" aria-expanded="false" data-act="xp" data-xk="ns:${esc(bid)}">${esc(cur.e.t)}</span></div><button class="linkb xpm" data-act="xp" hidden>Show more</button>`
+    :lg.length?`<span class="nsall">✓ All next steps done</span>`:`<span class="faint">None yet</span>`;
+  return`<div class="nsc">${head}
+   <div class="row nsact">${w?`<button class="linkb" data-act="sow-ns" data-id="${esc(bid)}">+ Add</button>`:""}${w&&cur?`<button class="linkb nsdn" data-act="ns-done" data-id="${esc(bid)}" data-i="${cur.i}" title="Mark this next step done">✓ Done</button>`:""}${rest.length?`<details class="nsold"><summary>${rest.length} earlier</summary>${rest.map(({e})=>`<div class="nse${e.done?" isdone":""}"><span class="nss">${esc(nsStamp(e))}</span><span>${e.done?"✓ ":""}${esc(e.t)}</span>${e.done?`<span class="nss">${esc(doneStamp(e))}</span>`:""}</div>`).join("")}</details>`:""}</div></div>`}
 const tzList=()=>[...new Set(clockZones().map(c=>c.zone).concat(Intl.supportedValuesOf?Intl.supportedValuesOf("timeZone"):[]))];
 function nsEntry(text){const z=tzNow();return{t:text,by:me,at:Date.now(),tz:z.tz,tl:z.tl,zone:z.zone}}
 async function addNs(bid,text){const s=S.sow[bid];if(!s)return;if(!me){toast("Pick your name at the top first, so the update shows who wrote it.");return}
