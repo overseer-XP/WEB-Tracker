@@ -11,7 +11,7 @@
 const path = require('path'), fs = require('fs');
 const { chromium } = require('/opt/node-tools/node_modules/playwright');
 const PAGES = ['mine', 'leadership', 'overview', 'sow', 'sow:list', 'access', 'bp', 'org', 'settings', 'brand'];
-const SIZES = [[1280, 720], [1440, 900], [1920, 1080]];
+const SIZES = process.env.SIZES ? JSON.parse(process.env.SIZES) : [[1280, 720], [1366, 768], [1440, 900], [1920, 1080], [2560, 1440], [3840, 2160]];
 const THEMES = ['light', 'dark'];
 const FILM = process.env.FILM === '1';
 
@@ -45,6 +45,30 @@ const DETECT = () => {
   }
   // 3. page scrolls sideways
   const de = document.documentElement; if (de.scrollWidth > innerWidth + 1) out.push({ kind: 'page scrolls sideways', px: de.scrollWidth - innerWidth, el: 'page', text: '' });
+  return out;
+};
+
+// two pieces of text drawn on top of each other
+const OVERLAP = () => {
+  const out = []; const seen = new Set();
+  const own = e => [...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim());
+  const els = [...document.querySelectorAll('main *, #drawer:not([hidden]) *, #modal:not([hidden]) *')].filter(e => {
+    if (!own(e) || e.closest('.sr,svg,option,select')) return false; const r = e.getBoundingClientRect(); const s = getComputedStyle(e);
+    return r.width > 2 && r.height > 2 && r.bottom > 0 && r.top < innerHeight && s.visibility !== 'hidden' && s.opacity !== '0';
+  }).slice(0, 700);
+  const R = els.map(e => e.getBoundingClientRect());
+  const clip = e => { let p = e.parentElement; while (p && p !== document.body) { if (/(hidden|auto|scroll|clip)/.test(getComputedStyle(p).overflow)) return p.getBoundingClientRect(); p = p.parentElement; } return null; };
+  for (let i = 0; i < els.length; i++) for (let j = i + 1; j < els.length; j++) {
+    const a = R[i], b = R[j]; const ix = Math.min(a.right, b.right) - Math.max(a.left, b.left), iy = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+    if (ix < 4 || iy < 4) continue; if (els[i].contains(els[j]) || els[j].contains(els[i])) continue;
+    const x = Math.max(a.left, b.left) + ix / 2, y = Math.max(a.top, b.top) + iy / 2; const top = document.elementFromPoint(x, y);
+    if (!top || !(els[i].contains(top) || els[j].contains(top) || top.contains(els[i]) || top.contains(els[j]))) continue;
+    const ca = clip(els[i]), cb = clip(els[j]); if (ca && (y < ca.top || y > ca.bottom)) continue; if (cb && (y < cb.top || y > cb.bottom)) continue;
+    if (ix * iy < 0.2 * Math.min(a.width * a.height, b.width * b.height)) continue;
+    const nm = e => e.tagName.toLowerCase() + (e.className && typeof e.className === 'string' ? '.' + e.className.split(' ')[0] : '');
+    const k = nm(els[i]) + '+' + nm(els[j]); if (seen.has(k)) continue; seen.add(k);
+    out.push({ kind: 'text on top of text', el: nm(els[i]) + ' / ' + nm(els[j]), text: (els[i].innerText || '').slice(0, 30) + ' | ' + (els[j].innerText || '').slice(0, 30), rect: [Math.min(a.left, b.left), Math.min(a.top, b.top), Math.max(a.right, b.right) - Math.min(a.left, b.left), Math.max(a.bottom, b.bottom) - Math.min(a.top, b.top)].map(Math.round) });
+  }
   return out;
 };
 
@@ -85,7 +109,7 @@ const COVER = () => {
           const key = [pg, step, f.kind, f.el, f.box || f.bar || ''].join('|');
           if (all.find(x => x.key === key)) { all.find(x => x.key === key).where.push(`${w}x${h} ${theme}`); continue; }
           let img = '';
-          if (f.rect && shot < 80) {
+          if (f.rect && shot < 150) {
             img = `${outdir}/${String(++shot).padStart(2, '0')}-${pg.replace(':', '-')}-${f.kind.replace(/\W+/g, '-')}.png`;
             await p.evaluate(r => { const d = document.createElement('div'); d.id = '__mark'; d.style.cssText = `position:fixed;left:${r[0] - 3}px;top:${r[1] - 3}px;width:${r[2] + 6}px;height:${r[3] + 6}px;border:3px solid red;z-index:99999;pointer-events:none`; document.body.appendChild(d); }, f.rect);
             await p.screenshot({ path: img }); await p.evaluate(() => document.getElementById('__mark')?.remove());
@@ -93,7 +117,21 @@ const COVER = () => {
           all.push(Object.assign({ key, page: pg, step, where: [`${w}x${h} ${theme}`], img }, f));
         }
       };
-      await log('at rest', await p.evaluate(DETECT));
+      await log('at rest', await p.evaluate(DETECT)); await log('at rest', await p.evaluate(OVERLAP));
+      // every tab and view switch on the page
+      const TABS = 'main [role=tab], main .rsub [data-tab], main [data-act=settab], main [data-act=sowview], main [data-act=campview], main .stabs button, main .seg button, #topbar [data-act=simple]';
+      const nt = await p.$$eval(TABS, es => es.filter(e => e.offsetParent).length);
+      for (let i = 0; i < Math.min(nt, 14); i++) {
+        const el = (await p.$$(TABS))[i]; if (!el) continue;
+        const label = ((await el.innerText().catch(() => '')) || '').trim().split('\n')[0].slice(0, 24);
+        await el.click().catch(() => { }); await p.waitForTimeout(200);
+        await log('tab ' + label, await p.evaluate(DETECT)); await log('tab ' + label, await p.evaluate(OVERLAP));
+        await p.evaluate(() => { document.querySelectorAll('main details:not([open])').forEach(d => d.open = true); document.querySelectorAll('main [data-act=xp]').forEach(x => { if (x.getAttribute('aria-expanded') !== 'true') x.click(); }); });
+        await p.waitForTimeout(120); await log('tab ' + label + ' expanded', await p.evaluate(DETECT));
+      }
+      await p.evaluate(h => { location.hash = 'x'; location.hash = h }, hash); await p.waitForTimeout(300);
+      if (pg === 'sow:list') { await p.click('[data-act=sowview][data-v=list]').catch(() => { }); await p.waitForTimeout(250); }
+      if (pg === 'sow') { await p.click('[data-act=sowview][data-v=board]').catch(() => { }); await p.waitForTimeout(250); }
       // open every Show more and every "earlier" list
       await p.evaluate(() => { document.querySelectorAll('main details:not([open])').forEach(d => d.open = true); document.querySelectorAll('main [data-act=xp]').forEach(x => { if (x.getAttribute('aria-expanded') !== 'true') x.click(); }); });
       await p.waitForTimeout(250);
@@ -102,7 +140,7 @@ const COVER = () => {
       const H = await p.evaluate(() => (document.getElementById('main') || document.scrollingElement).scrollHeight); let prev = null, lay0 = null;
       for (let y = 0; y < H; y += Math.round(h * 0.6)) {
         await p.evaluate(y => { (document.getElementById('main') || document.scrollingElement).scrollTop = y }, y); await p.waitForTimeout(120);
-        await log('scrolled', await p.evaluate(DETECT)); await log('scrolled', await p.evaluate(COVER));
+        await log('scrolled', await p.evaluate(DETECT)); await log('scrolled', await p.evaluate(COVER)); await log('scrolled', await p.evaluate(OVERLAP));
         // a fixed bar that changes size or jumps while scrolling
         const bars = await p.evaluate(() => [...document.querySelectorAll('#topbar, .sumbar, .sowpin, [class*=sticky]')].map(e => { const r = e.getBoundingClientRect(); return [e.id || e.className, Math.round(r.top), Math.round(r.height)]; }));
         if (prev) for (const bb of bars) { const o = prev.find(x => x[0] === bb[0]); if (o && o[2] !== bb[2] && Math.abs(o[2] - bb[2]) > 4) await log('scrolled', [{ kind: 'bar changes size while scrolling', el: bb[0], px: bb[2] - o[2] }]); }
@@ -137,7 +175,7 @@ const COVER = () => {
         // mid-animation frame
         await log('edit window opening', await p.evaluate(DETECT)); await p.waitForTimeout(350);
         await p.evaluate(() => document.querySelectorAll('#drawer details').forEach(d => d.open = true));
-        await log('edit window open', await p.evaluate(DETECT));
+        await log('edit window open', await p.evaluate(DETECT)); await log('edit window open', await p.evaluate(OVERLAP));
         const c = await p.$('#drawer:not([hidden]) [data-act=close]'); if (c) await c.click(); await p.waitForTimeout(200);
         const left = await p.evaluate(() => { const d = document.getElementById('drawer'); return d.hidden ? '' : 'drawer still open'; });
         if (left) await log('edit window closed', [{ kind: left, el: '#drawer' }]);
