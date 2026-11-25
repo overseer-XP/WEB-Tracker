@@ -1096,3 +1096,9 @@ table.sowl tr:hover td.lbc .bname{text-decoration:underline;text-underline-offse
 /* next steps: done and remove */
 .nsact{gap:10px}.nsdn{color:var(--ok,#2f7a4f)}.nsall{color:var(--ok,#2f7a4f);font-weight:600;font-size:13px}.nse.isdone>span:nth-child(2){color:var(--muted)}.nsrm{color:var(--bad,#b03a3a)}
 .sowto{margin:0 0 10px;font-size:13px}.nsacts{display:flex;gap:14px;font-size:12px;margin:2px 0 6px}.nslog .nse{padding-bottom:6px;border-bottom:1px solid var(--line)}
+
+/* read more by clicking the text itself */
+.xp.cut{cursor:pointer;border-radius:4px}.xp.cut:hover{background:var(--soft);box-shadow:0 0 0 3px var(--soft)}.xp.cut:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.xp.cut:not(.open){text-decoration:underline dotted var(--line);text-underline-offset:4px}
+.nsmorec{font-size:12px;color:var(--muted);align-self:flex-start;margin-top:2px}.nsmorec:hover{color:var(--accent)}
+.nshist{display:flex;flex-direction:column;gap:8px;margin-top:6px;padding-left:10px;border-left:2px solid var(--line)}

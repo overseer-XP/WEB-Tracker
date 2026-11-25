@@ -35,10 +35,15 @@ parseHash();
 })();
 
 /* long next steps and blockers: show "Show more" only when the text is cut; clicking the text or the link opens it in full */
-(function(){const XO=window.__xpOpen=window.__xpOpen||new Set();const fit=()=>document.querySelectorAll(".xp").forEach(x=>{if(x.dataset.xk&&XO.has(x.dataset.xk)&&!x.classList.contains("open")){x.classList.add("open");x.setAttribute("aria-expanded","true");const mm=x.closest(".nsc")&&x.closest(".nsc").querySelector(".xpm");if(mm){mm.hidden=false;mm.textContent="Show less"}return}const m=x.closest(".nsc")&&x.closest(".nsc").querySelector(".xpm");if(!m||x.classList.contains("open"))return;m.hidden=x.scrollHeight<=x.clientHeight+2});
+(function(){const XO=window.__xpOpen=window.__xpOpen||new Set();const box=x=>x.closest(".nsc");
+ const set=(x,o)=>{x.classList.toggle("open",o);x.setAttribute("aria-expanded",o);const b=box(x);const h=b&&b.querySelector(".nshist");if(h)h.hidden=!o;const c=b&&b.querySelector(".nsmorec");if(c)c.textContent=o?"Hide earlier notes":c.dataset.t};
+ /* text that is cut off (or has earlier notes behind it) becomes clickable; text that fits is left alone */
+ const fit=()=>document.querySelectorAll(".xp").forEach(x=>{const b=box(x);const has=!!(b&&b.querySelector(".nshist"));
+   if(x.dataset.xk&&XO.has(x.dataset.xk)){x.classList.add("cut");if(!x.classList.contains("open"))set(x,true);return}
+   if(x.classList.contains("open"))return;const cut=has||x.scrollHeight>x.clientHeight+2;x.classList.toggle("cut",cut);if(cut){x.tabIndex=0;x.title=has?"Click to read all, with earlier notes":"Click to read all"}else{x.removeAttribute("tabindex");x.removeAttribute("title")}});
  (window.__afterMain=window.__afterMain||[]).push(fit);
  const mn=document.getElementById("main");let q=0;if(mn)new MutationObserver(()=>{if(!q)q=requestAnimationFrame(()=>{q=0;fit()})}).observe(mn,{childList:true,subtree:true});addEventListener("resize",fit);
- const tog=el=>{const x=el.classList.contains("xp")?el:el.closest(".nsc").querySelector(".xp");const m=x.closest(".nsc").querySelector(".xpm");const o=!x.classList.contains("open");x.classList.toggle("open",o);x.setAttribute("aria-expanded",o);if(x.dataset.xk){if(o)XO.add(x.dataset.xk);else XO.delete(x.dataset.xk)}if(m){m.hidden=false;m.textContent=o?"Show less":"Show more"}};
+ const tog=el=>{const x=el.classList.contains("xp")?el:box(el)&&box(el).querySelector(".xp");if(!x||!(x.classList.contains("cut")||x.classList.contains("open")))return;const o=!x.classList.contains("open");set(x,o);if(x.dataset.xk){if(o)XO.add(x.dataset.xk);else XO.delete(x.dataset.xk)}};
  document.addEventListener("click",e=>{const el=e.target.closest("[data-act=xp]");if(el){e.preventDefault();e.stopPropagation();tog(el)}},true);
  document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches&&e.target.matches(".xp")){e.preventDefault();tog(e.target)}});})();
 

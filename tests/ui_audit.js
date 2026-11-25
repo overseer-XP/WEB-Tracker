@@ -122,7 +122,7 @@ const COVER = () => {
       await log('at rest', await p.evaluate(DETECT)); await log('at rest', await p.evaluate(OVERLAP));
       // a redraw (what happens on every live data update) must not flash: the first painted frame has to match the settled page
       const fl = await p.evaluate(async h => {
-        const m = document.getElementById('main'); const snap = () => [m.scrollHeight, [...m.querySelectorAll('.xpm')].filter(x => !x.hidden).length, m.querySelectorAll('*').length > 0];
+        const m = document.getElementById('main'); const snap = () => [m.scrollHeight, m.querySelectorAll('.xp.cut').length, m.querySelectorAll('*').length > 0];
         location.hash = h + '-x'; await new Promise(r => setTimeout(r, 60)); location.hash = h;
         const first = await new Promise(r => { const o = new MutationObserver(() => { o.disconnect(); requestAnimationFrame(() => r(snap())); }); o.observe(m, { childList: true }); });
         await new Promise(r => setTimeout(r, 400)); const settled = snap();
@@ -131,7 +131,7 @@ const COVER = () => {
       if (pg !== 'sow:list' && pg !== 'sow' && (Math.abs(fl.first[0] - fl.settled[0]) > 4 || fl.first[1] !== fl.settled[1])) await log('redraw', [{ kind: 'flashes on redraw (first frame differs from settled page)', el: pg, text: `height ${fl.first[0]}->${fl.settled[0]}, Show more ${fl.first[1]}->${fl.settled[1]}` }]);
       if (pg === 'sow:list' || pg === 'sow') {
         // SOW list/board: redraw through a stage tab (the view switch survives it)
-        const fl2 = await p.evaluate(async () => { const m = document.getElementById('main'); const snap = () => [m.scrollHeight, [...m.querySelectorAll('.xpm')].filter(x => !x.hidden).length]; const b = m.querySelector('.stabs button,.stabs [role=tab]'); if (!b) return null; const before = snap(); b.click(); const first = await new Promise(r => requestAnimationFrame(() => r(snap()))); await new Promise(r => setTimeout(r, 400)); return { before, first, settled: snap() }; });
+        const fl2 = await p.evaluate(async () => { const m = document.getElementById('main'); const snap = () => [m.scrollHeight, m.querySelectorAll('.xp.cut').length]; const b = m.querySelector('.stabs button,.stabs [role=tab]'); if (!b) return null; const before = snap(); b.click(); const first = await new Promise(r => requestAnimationFrame(() => r(snap()))); await new Promise(r => setTimeout(r, 400)); return { before, first, settled: snap() }; });
         if (fl2 && (Math.abs(fl2.first[0] - fl2.settled[0]) > 4 || fl2.first[1] !== fl2.settled[1])) await log('redraw', [{ kind: 'flashes on redraw (first frame differs from settled page)', el: pg, text: `height ${fl2.first[0]}->${fl2.settled[0]}, Show more ${fl2.first[1]}->${fl2.settled[1]}` }]);
       }
       if (pg === 'sow:list') { await p.click('[data-act=sowview][data-v=list]').catch(() => { }); await p.waitForTimeout(250); }
@@ -143,14 +143,14 @@ const COVER = () => {
         const label = ((await el.innerText().catch(() => '')) || '').trim().split('\n')[0].slice(0, 24);
         await el.click().catch(() => { }); await p.waitForTimeout(200);
         await log('tab ' + label, await p.evaluate(DETECT)); await log('tab ' + label, await p.evaluate(OVERLAP));
-        await p.evaluate(() => { document.querySelectorAll('main details:not([open])').forEach(d => d.open = true); document.querySelectorAll('main [data-act=xp]').forEach(x => { if (x.getAttribute('aria-expanded') !== 'true') x.click(); }); });
+        await p.evaluate(() => { document.querySelectorAll('main details:not([open])').forEach(d => d.open = true); document.querySelectorAll('main .xp.cut').forEach(x => { if (x.getAttribute('aria-expanded') !== 'true') x.click(); }); });
         await p.waitForTimeout(120); await log('tab ' + label + ' expanded', await p.evaluate(DETECT));
       }
       await p.evaluate(h => { location.hash = 'x'; location.hash = h }, hash); await p.waitForTimeout(300);
       if (pg === 'sow:list') { await p.click('[data-act=sowview][data-v=list]').catch(() => { }); await p.waitForTimeout(250); }
       if (pg === 'sow') { await p.click('[data-act=sowview][data-v=board]').catch(() => { }); await p.waitForTimeout(250); }
       // open every Show more and every "earlier" list
-      await p.evaluate(() => { document.querySelectorAll('main details:not([open])').forEach(d => d.open = true); document.querySelectorAll('main [data-act=xp]').forEach(x => { if (x.getAttribute('aria-expanded') !== 'true') x.click(); }); });
+      await p.evaluate(() => { document.querySelectorAll('main details:not([open])').forEach(d => d.open = true); document.querySelectorAll('main .xp.cut').forEach(x => { if (x.getAttribute('aria-expanded') !== 'true') x.click(); }); });
       await p.waitForTimeout(250);
       await log('everything expanded', await p.evaluate(DETECT));
       // scroll top to bottom; watch the bars
