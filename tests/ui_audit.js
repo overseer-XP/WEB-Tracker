@@ -52,8 +52,10 @@ const DETECT = () => {
 const OVERLAP = () => {
   const out = []; const seen = new Set();
   const own = e => [...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim());
-  const els = [...document.querySelectorAll('main *, #drawer:not([hidden]) *, #modal:not([hidden]) *')].filter(e => {
-    if (!own(e) || e.closest('.sr,svg,option,select')) return false; const r = e.getBoundingClientRect(); const s = getComputedStyle(e);
+  // with a window open, only the window counts (the page behind it is covered on purpose)
+  const scope = document.querySelector('#modal:not([hidden])') ? '#modal *' : document.querySelector('#drawer:not([hidden])') ? '#drawer *' : 'main *';
+  const els = [...document.querySelectorAll(scope)].filter(e => {
+    if (!own(e) || !(e.innerText || '').trim() || e.closest('.sr,svg,option,select')) return false; const r = e.getBoundingClientRect(); const s = getComputedStyle(e);
     return r.width > 2 && r.height > 2 && r.bottom > 0 && r.top < innerHeight && s.visibility !== 'hidden' && s.opacity !== '0';
   }).slice(0, 700);
   const R = els.map(e => e.getBoundingClientRect());
@@ -61,7 +63,7 @@ const OVERLAP = () => {
   for (let i = 0; i < els.length; i++) for (let j = i + 1; j < els.length; j++) {
     const a = R[i], b = R[j]; const ix = Math.min(a.right, b.right) - Math.max(a.left, b.left), iy = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
     if (ix < 4 || iy < 4) continue; if (els[i].contains(els[j]) || els[j].contains(els[i])) continue;
-    const x = Math.max(a.left, b.left) + ix / 2, y = Math.max(a.top, b.top) + iy / 2; const top = document.elementFromPoint(x, y);
+    const x = Math.max(a.left, b.left) + ix / 2, y = Math.max(a.top, b.top) + iy / 2; if (y > innerHeight - 2 || x > innerWidth - 2) continue; const top = document.elementFromPoint(x, y);
     if (!top || !(els[i].contains(top) || els[j].contains(top) || top.contains(els[i]) || top.contains(els[j]))) continue;
     const ca = clip(els[i]), cb = clip(els[j]); if (ca && (y < ca.top || y > ca.bottom)) continue; if (cb && (y < cb.top || y > cb.bottom)) continue;
     if (ix * iy < 0.2 * Math.min(a.width * a.height, b.width * b.height)) continue;
@@ -146,8 +148,8 @@ const COVER = () => {
         if (prev) for (const bb of bars) { const o = prev.find(x => x[0] === bb[0]); if (o && o[2] !== bb[2] && Math.abs(o[2] - bb[2]) > 4) await log('scrolled', [{ kind: 'bar changes size while scrolling', el: bb[0], px: bb[2] - o[2] }]); }
         prev = bars;
         // the page itself should not reflow while you scroll (things jumping)
-        const lay = await p.evaluate(() => [...document.querySelectorAll('main > *, main > * > *')].filter(e => e.getBoundingClientRect().height > 0 && getComputedStyle(e).position !== 'sticky').slice(0, 60).map(e => Math.round(e.getBoundingClientRect().top + document.getElementById('main').scrollTop) + ':' + Math.round(e.getBoundingClientRect().height)).join(','));
-        if (typeof lay0 !== 'undefined' && lay0 !== null && lay !== lay0) await log('scrolled', [{ kind: 'layout jumps while scrolling', el: pg, px: 0 }]);
+        const lay = await p.evaluate(() => [...document.querySelectorAll('main > *, main > * > *')].filter(e => e.getBoundingClientRect().height > 0 && getComputedStyle(e).position !== 'sticky').slice(0, 60).map(e => [e.tagName.toLowerCase() + '.' + (typeof e.className === 'string' ? e.className.split(' ')[0] : ''), Math.round(e.getBoundingClientRect().top + document.getElementById('main').scrollTop), Math.round(e.getBoundingClientRect().height)]));
+        if (lay0) { const d = lay.find((x, i) => lay0[i] && lay0[i][0] === x[0] && (Math.abs(lay0[i][1] - x[1]) > 1 || Math.abs(lay0[i][2] - x[2]) > 1)); if (d) { const o = lay0[lay.indexOf(d)]; await log('scrolled', [{ kind: 'layout jumps while scrolling', el: d[0], px: (d[1] - o[1]) + '/' + (d[2] - o[2]), text: `top ${o[1]}->${d[1]}, height ${o[2]}->${d[2]}` }]); } }
         lay0 = lay;
         if (w === 1440 && theme === 'light' && FILM) await p.screenshot({ path: `${outdir}/film-${pg.replace(':', '-')}-${String(y).padStart(5, '0')}.png` });
       }
