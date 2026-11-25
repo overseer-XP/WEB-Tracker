@@ -10,7 +10,7 @@
 // Usage: node tests/ui_audit.js <preview.html> <outdir>
 const path = require('path'), fs = require('fs');
 const { chromium } = require('/opt/node-tools/node_modules/playwright');
-const PAGES = ['mine', 'leadership', 'overview', 'sow', 'sow:list', 'access', 'bp', 'org', 'settings', 'brand'];
+const PAGES = process.env.PAGES ? JSON.parse(process.env.PAGES) : ['mine', 'leadership', 'overview', 'sow', 'sow:list', 'access', 'bp', 'org', 'settings', 'brand'];
 const SIZES = process.env.SIZES ? JSON.parse(process.env.SIZES) : [[1280, 720], [1366, 768], [1440, 900], [1920, 1080], [2560, 1440], [3840, 2160]];
 const THEMES = ['light', 'dark'];
 const FILM = process.env.FILM === '1';
