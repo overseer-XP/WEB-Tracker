@@ -134,7 +134,7 @@ document.addEventListener("click",e=>{
   else if(act==="nt-more"){const n=a.previousElementSibling;if(n){n.classList.toggle("open");a.textContent=n.classList.contains("open")?"Less":"More"}}
   else if(act==="mst"){window.__mst=window.__mst===a.dataset.v?"":a.dataset.v;render()}
   else if(act==="stg"){window.__stg=a.dataset.v;for(const k in pager)pager[k].page=1;render()}
-  else if(act==="pgsize"){ls.set("vt-rows",a.dataset.v);for(const k in pager)pager[k].page=1;render()}
+  else if(act==="pgsize"){ls.set("vt-rows"+(a.dataset.k==="sowl"?"-sowl":""),a.dataset.v);for(const k in pager)pager[k].page=1;render()}
   else if(act==="pgp"){const k=a.dataset.k;(pager[k]||(pager[k]={})).page=+a.dataset.v;render();const m=$("#main");if(m)m.scrollTop=0}
   else if(act==="bpgroup"){const g=a.dataset.g;bpOpenG=g==="*"||g===""?g:(bpOpenG===g?"":g);render()}
   else if(act==="tmore"){const tb=a.closest(".topbar");const o=!tb.classList.contains("open");tb.classList.toggle("open",o);a.setAttribute("aria-expanded",String(o))}

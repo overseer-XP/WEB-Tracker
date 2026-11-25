@@ -4,11 +4,11 @@ function boardCols(){const cfg=S.config.sow_board;
   return phases().map(p=>({name:p.code+" "+p.name,cols:p.steps.map(s=>({label:s.name,steps:[s.code]}))}))}
 /* shared table helpers: rows per page (remembered), a brand find box, sort chips */
 let pager={},tq={},bpOpenG="";
-const pgSize=()=>{const v=ls.get("vt-rows");return v===null||v===undefined||v===""?20:+v};
-function paged(k,rows){const p=pager[k]||(pager[k]={page:1});const size=pgSize();const n=rows.length;const pages=size?Math.max(1,Math.ceil(n/size)):1;if(p.page>pages)p.page=pages;if(p.page<1)p.page=1;const start=size?(p.page-1)*size:0;
+const pgSize=k=>{const v=ls.get("vt-rows"+(k==="sowl"?"-sowl":""));return v===null||v===undefined||v===""?(k==="sowl"?5:20):+v};
+function paged(k,rows){const p=pager[k]||(pager[k]={page:1});const size=pgSize(k);const n=rows.length;const pages=size?Math.max(1,Math.ceil(n/size)):1;if(p.page>pages)p.page=pages;if(p.page<1)p.page=1;const start=size?(p.page-1)*size:0;
   const nums=[];for(let i=1;i<=pages;i++)if(i===1||i===pages||Math.abs(i-p.page)<=1)nums.push(i);else if(nums[nums.length-1]!=="…")nums.push("…");
   const html=`<div class="pager"><span class="faint">${n?`Showing ${start+1} to ${size?Math.min(n,start+size):n} of ${n} brands`:"No brands match"}</span>
-   <span class="pg" role="group" aria-label="Brands per page"><span class="faint">Per page</span>${[10,20,0].map(z=>`<button data-act="pgsize" data-v="${z}" class="${size===z?"on":""}" aria-pressed="${size===z}">${z||"All"}</button>`).join("")}</span>
+   <span class="pg" role="group" aria-label="Brands per page"><span class="faint">Per page</span>${(k==="sowl"?[5,10,20,0]:[10,20,0]).map(z=>`<button data-act="pgsize" data-k="${k}" data-v="${z}" class="${size===z?"on":""}" aria-pressed="${size===z}">${z||"All"}</button>`).join("")}</span>
    ${pages>1?`<span class="pg" role="navigation" aria-label="Pages"><button data-act="pgp" data-k="${k}" data-v="${p.page-1}" ${p.page<=1?"disabled":""}>‹ Prev</button>${nums.map(x=>x==="…"?`<span class="faint">…</span>`:`<button data-act="pgp" data-k="${k}" data-v="${x}" class="${x===p.page?"on":""}" aria-current="${x===p.page?"page":"false"}">${x}</button>`).join("")}<button data-act="pgp" data-k="${k}" data-v="${p.page+1}" ${p.page>=pages?"disabled":""}>Next ›</button></span>`:""}</div>`;
   return{rows:size?rows.slice(start,start+size):rows,html}}
 /* click a heading to sort; click again to reverse; a third time goes back to the page's own order */

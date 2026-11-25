@@ -1149,6 +1149,25 @@ main[data-page=mine] .stabs button.on,main[data-page=sow] .stabs button.on,main[
 main[data-page=mine] .tfind,main[data-page=sow] .tfind,main[data-page=bp] .tfind,main[data-page=access] .tfind,main[data-page=mine] input[type=search],main[data-page=sow] input[type=search],main[data-page=bp] input[type=search],main[data-page=access] input[type=search]{background-color:var(--vb-card);border:1px solid var(--vb-line);border-radius:10px}
 /* tags and chips: thin outline pills */
 main[data-page=mine] .tag,main[data-page=sow] .tag,main[data-page=bp] .tag,main[data-page=access] .tag,main[data-page=mine] .dchip,main[data-page=sow] .dchip,main[data-page=bp] .dchip,main[data-page=access] .dchip{border-radius:999px}
+
+/* SOW widgets: use the width, darker text, legend numbers next to their labels */
+main[data-page=sow] .sgl li{grid-template-columns:24px minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr)!important;gap:16px!important;padding:8px 10px!important;font-size:14px}
+main[data-page=sow] .sgl li:nth-child(odd){background:var(--vb-tile)}
+main[data-page=sow] .sgl li .sgn-d{color:var(--vb-ink);font-size:14px}
+main[data-page=sow] .sgl li .sgn-r{text-align:left;color:var(--vb-ink);font-weight:600}
+main[data-page=sow] .sgw .sgwh span,main[data-page=sow] .sgn .its{color:var(--vb-mute)}
+main[data-page=sow] .dn{justify-content:center;gap:32px}
+main[data-page=sow] .dnl{flex:0 1 auto}
+main[data-page=sow] .dnl li{grid-template-columns:10px auto 28px;gap:10px;font-size:14px;color:var(--vb-ink)}
+main[data-page=sow] .dnl li b{text-align:right}
+main[data-page=sow] .dnl li.z{opacity:.6}
+/* stage tabs and find box on one row */
+main[data-page=sow] .stabs{flex-wrap:nowrap!important;align-items:center;overflow-x:auto}
+main[data-page=sow] .stabs .grow{flex:1 1 0;min-width:8px}
+main[data-page=sow] .stabs .tfind{flex:0 0 200px;width:200px;margin:0!important;max-width:none;position:sticky;right:0;z-index:2;background-color:var(--vb-card);box-shadow:-16px 0 12px 4px var(--vb-card),14px 0 0 0 var(--vb-card)}
+main[data-page=sow] .stabs{padding-right:14px!important}
+main[data-page=sow] .stabs button{padding:8px 10px!important}
+main[data-page=sow] .stabs button{flex:none}
 </style>
 
 <div class="app">
@@ -2554,11 +2573,11 @@ function boardCols(){const cfg=S.config.sow_board;
   return phases().map(p=>({name:p.code+" "+p.name,cols:p.steps.map(s=>({label:s.name,steps:[s.code]}))}))}
 /* shared table helpers: rows per page (remembered), a brand find box, sort chips */
 let pager={},tq={},bpOpenG="";
-const pgSize=()=>{const v=ls.get("vt-rows");return v===null||v===undefined||v===""?20:+v};
-function paged(k,rows){const p=pager[k]||(pager[k]={page:1});const size=pgSize();const n=rows.length;const pages=size?Math.max(1,Math.ceil(n/size)):1;if(p.page>pages)p.page=pages;if(p.page<1)p.page=1;const start=size?(p.page-1)*size:0;
+const pgSize=k=>{const v=ls.get("vt-rows"+(k==="sowl"?"-sowl":""));return v===null||v===undefined||v===""?(k==="sowl"?5:20):+v};
+function paged(k,rows){const p=pager[k]||(pager[k]={page:1});const size=pgSize(k);const n=rows.length;const pages=size?Math.max(1,Math.ceil(n/size)):1;if(p.page>pages)p.page=pages;if(p.page<1)p.page=1;const start=size?(p.page-1)*size:0;
   const nums=[];for(let i=1;i<=pages;i++)if(i===1||i===pages||Math.abs(i-p.page)<=1)nums.push(i);else if(nums[nums.length-1]!=="…")nums.push("…");
   const html=`<div class="pager"><span class="faint">${n?`Showing ${start+1} to ${size?Math.min(n,start+size):n} of ${n} brands`:"No brands match"}</span>
-   <span class="pg" role="group" aria-label="Brands per page"><span class="faint">Per page</span>${[10,20,0].map(z=>`<button data-act="pgsize" data-v="${z}" class="${size===z?"on":""}" aria-pressed="${size===z}">${z||"All"}</button>`).join("")}</span>
+   <span class="pg" role="group" aria-label="Brands per page"><span class="faint">Per page</span>${(k==="sowl"?[5,10,20,0]:[10,20,0]).map(z=>`<button data-act="pgsize" data-k="${k}" data-v="${z}" class="${size===z?"on":""}" aria-pressed="${size===z}">${z||"All"}</button>`).join("")}</span>
    ${pages>1?`<span class="pg" role="navigation" aria-label="Pages"><button data-act="pgp" data-k="${k}" data-v="${p.page-1}" ${p.page<=1?"disabled":""}>‹ Prev</button>${nums.map(x=>x==="…"?`<span class="faint">…</span>`:`<button data-act="pgp" data-k="${k}" data-v="${x}" class="${x===p.page?"on":""}" aria-current="${x===p.page?"page":"false"}">${x}</button>`).join("")}<button data-act="pgp" data-k="${k}" data-v="${p.page+1}" ${p.page>=pages?"disabled":""}>Next ›</button></span>`:""}</div>`;
   return{rows:size?rows.slice(start,start+size):rows,html}}
 /* click a heading to sort; click again to reverse; a third time goes back to the page's own order */
@@ -3117,7 +3136,7 @@ document.addEventListener("click",e=>{
   else if(act==="nt-more"){const n=a.previousElementSibling;if(n){n.classList.toggle("open");a.textContent=n.classList.contains("open")?"Less":"More"}}
   else if(act==="mst"){window.__mst=window.__mst===a.dataset.v?"":a.dataset.v;render()}
   else if(act==="stg"){window.__stg=a.dataset.v;for(const k in pager)pager[k].page=1;render()}
-  else if(act==="pgsize"){ls.set("vt-rows",a.dataset.v);for(const k in pager)pager[k].page=1;render()}
+  else if(act==="pgsize"){ls.set("vt-rows"+(a.dataset.k==="sowl"?"-sowl":""),a.dataset.v);for(const k in pager)pager[k].page=1;render()}
   else if(act==="pgp"){const k=a.dataset.k;(pager[k]||(pager[k]={})).page=+a.dataset.v;render();const m=$("#main");if(m)m.scrollTop=0}
   else if(act==="bpgroup"){const g=a.dataset.g;bpOpenG=g==="*"||g===""?g:(bpOpenG===g?"":g);render()}
   else if(act==="tmore"){const tb=a.closest(".topbar");const o=!tb.classList.contains("open");tb.classList.toggle("open",o);a.setAttribute("aria-expanded",String(o))}
