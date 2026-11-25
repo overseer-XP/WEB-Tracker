@@ -1167,3 +1167,7 @@ main[data-page=sow] .stabs button{flex:none}
 
 /* SOW board: step headers keep normal case so long step names fit their column */
 main[data-page=sow] table.board thead th.pc,main[data-page=sow] table.board thead th.gh{text-transform:none;letter-spacing:.01em;font-size:12px}
+
+/* brands outside active work: a quiet remark with their stage */
+.outtag{margin-left:8px;font-size:11px;font-weight:600;color:var(--muted);background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:1px 8px;vertical-align:middle;white-space:nowrap}
+.accb .outtag{margin:4px 0 0;display:inline-block;width:max-content}

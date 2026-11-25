@@ -202,7 +202,7 @@ document.addEventListener("click",e=>{
   else if(act==="add-bp"){const bid=a.dataset.id;create("bps",bid,{brand:bid,owner:"",due_date:"",sections:{},blocker:"",doc_link:"",notes:""},"BPs "+bname(bid))}
   else if(act==="add-brand"){formBox("Add brand",`<div class="f"><label for="n-name">Brand name</label><input id="n-name" name="name" required></div><div class="f"><label for="n-st">Stage</label><select id="n-st" name="stage">${opts(L("stage"),"Qualification",false)}</select></div>`,"Add brand",
     v=>{if(!v.name){toast("Type the brand name.");return false}let id=v.name.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"brand";while(S.brands[id])id+="-2";
-      create("brands",id,{name:v.name,founder:"",website:"",stage:v.stage,lead:"",next_step:"",sprint_label:"",order:brandList().length+1,paused:false,restricted:false},v.name);
+      create("brands",id,{name:v.name,founder:"",website:"",stage:v.stage,lead:"",next_step:"",sprint_label:"",order:brandList().length+1,paused:false,restricted:false},v.name);if(!S.bps[id])create("bps",id,{brand:id,owner:"",due_date:"",sections:{},blocker:"",doc_link:"",notes:""},"BPs "+v.name);
       db.doc("brand_steps/"+id).set({brand:id,s:{}}).catch(()=>{});if(v.stage!=="Internal")db.doc("sow/"+id).set({brand:id,owner:"",support:[],stage:"Not Started",start_date:"",draft_due:"",target_sign:"",blocker:"",next_step:"",sow_link:"",gf_link:"",gf_updated:false,gf_status:"",batch:""}).catch(()=>{});
       go("brand-"+id)})}
   else if(act==="mem-del"){const id=drawerCtx&&drawerCtx.id;const tk=S.tasks[id];if(!tk)return;const sup=(tk.support||[]).slice();const[p]=sup.splice(+a.dataset.i,1);if(!p)return;save("tasks",id,{support:sup},tk.title+" members");taskNote(tk,id,"Removed "+p)}

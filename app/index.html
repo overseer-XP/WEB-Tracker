@@ -1171,6 +1171,10 @@ main[data-page=sow] .stabs button{flex:none}
 
 /* SOW board: step headers keep normal case so long step names fit their column */
 main[data-page=sow] table.board thead th.pc,main[data-page=sow] table.board thead th.gh{text-transform:none;letter-spacing:.01em;font-size:12px}
+
+/* brands outside active work: a quiet remark with their stage */
+.outtag{margin-left:8px;font-size:11px;font-weight:600;color:var(--muted);background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:1px 8px;vertical-align:middle;white-space:nowrap}
+.accb .outtag{margin:4px 0 0;display:inline-block;width:max-content}
 </style>
 
 <div class="app">
@@ -1823,7 +1827,7 @@ function vBp(){
       const word=v==="Complete"?"Done":v==="Blocked"?"Blocked":v==="N/A"?"Not needed":"Not done yet";
       return`<td class="bpqc ${k===0?"gs":""}"><button class="bq ${v==="Complete"?"ok":v==="Blocked"?"bad":v==="N/A"?"na":"no"}" data-act="bpq" data-id="${esc(b.id)}" data-sec="${esc(x)}" title="${esc(x+": "+word)}" aria-label="${esc(b.name+", "+x+": "+word)}" ${canWrite?"":"disabled"}>${v==="Complete"?"✓":v==="Blocked"?"!":v==="N/A"?"–":""}</button></td>`}).join("")).join("");
     
-    h+=`<tr class="${onHold(b)?"held":""}"><td class="bpqb stick"><a class="bname" href="#${brandHash(b.id,"bp")}">${esc(b.name)}</a></td><td class="bpqd"><b>${dn}</b><span class="faint">/${tot}</span></td>
+    h+=`<tr class="${onHold(b)?"held":""}"><td class="bpqb stick"><a class="bname" href="#${brandHash(b.id,"bp")}">${esc(b.name)}</a>${outTag(b.id)}</td><td class="bpqd"><b>${dn}</b><span class="faint">/${tot}</span></td>
      <td class="nowrap">${d.doc_link?`<a class="btn sm" href="${esc(d.doc_link)}" target="_blank" rel="noopener">Open sheet</a>`:""}${canWrite?`<button class="btn sm quiet" data-act="bp-link" data-id="${esc(b.id)}" aria-label="${esc((d.doc_link?"Change":"Add")+" the Best Practices sheet link for "+b.name)}">${d.doc_link?"Change":"+ Link"}</button>`:d.doc_link?"":`<span class="faint">None</span>`}</td><td class="bpqnc">${bl.length?`<div class="nsc"><span class="c-bad bpqbl">Blocked: ${esc(bl.join(", "))}</span>${d.blocker?`<span class="clamp2 xp" tabindex="0" role="button" aria-expanded="false" data-act="xp" data-xk="bp:${esc(b.id)}">${esc(d.blocker)}</span>`:""}</div>`:`<span class="faint">–</span>`}</td>${cells}</tr>`}
   if(!rows.length)h+=`<tr><td colspan="${4+groups.reduce((a,g)=>a+g.sections.length,0)}"><div class="empty">No brands match this filter.</div></td></tr>`;
   return h+`</tbody></table></div>`+pg.html}
@@ -2149,22 +2153,24 @@ function accQueues(){const q=[["open","All open"],["founder","Waiting on founder
 function inQueue(a,q){if(q==="open")return accOpen(a)||a.status==="Granted";if(q==="founder")return ACC_FOUNDER.includes(a.status);if(q==="chase")return needsChase(a);
   if(q==="logins")return a.status==="Granted";if(q==="done")return a.status==="Team confirmed"||a.status==="Not Needed";if(q.startsWith("team:"))return accTeamOf(a)===q.slice(5)&&a.status!=="Not Needed";return true}
 function seatChips(a){const s=a.seats||[];if(!s.length)return`<span class="faint">No one yet</span>`;return s.map(x=>`<span class="seat st-${key(x.s)}" title="${esc(x.p+": "+x.s)}">${esc(x.p)}${x.s==="Has login"?" ✓":x.s==="Asked"?" ·":""}</span>`).join("")}
+const outTag=bid=>{const b=S.brands[bid];if(!onHold(b))return"";return`<span class="tag outtag">${esc(isOutStage(b.stage)?b.stage:"Paused")}</span>`};
 function accBrands(){const all=withId(S.access);const by={};for(const a of all)if(inQueue(a,accQueue))(by[a.brand]=by[a.brand]||[]).push(a);
+  if(accQueue==="open")for(const b of brandList())if(!isInternal(b)&&!all.some(a=>a.brand===b.id))by[b.id]=[];
   return Object.keys(by).filter(b=>S.brands[b]).sort((x,y)=>(holdOf(x)?1:0)-(holdOf(y)?1:0)||(by[y].some(needsChase)?1:0)-(by[x].some(needsChase)?1:0)||bname(x).localeCompare(bname(y))).map(b=>{const mine=all.filter(a=>a.brand===b&&a.status!=="Not Needed");
     return{b,n:by[b].length,ok:mine.filter(accGranted).length,total:mine.length,chase:by[b].filter(needsChase).length,founder:by[b].filter(a=>ACC_FOUNDER.includes(a.status)).length}})}
 function accFull(bid){
   if(!bid){const list=accBrands();const chips=`<div class="toolbar accbar"><label class="tl">Show <select data-act="accqsel" aria-label="Which platforms">${accQueues().map(([k,l])=>{const n=withId(S.access).filter(a=>S.brands[a.brand]&&!holdOf(a.brand)&&inQueue(a,k)).length;return`<option value="${esc(k)}" ${accQueue===k?"selected":""}>${esc(l)} (${n})</option>`}).join("")}</select></label></div>`;
     if(!list.length)return chips+`<div class="tw"><div class="empty">Nothing in this list.</div></div>`;
     const cur=list.some(x=>x.b===accBrand)?accBrand:list[0].b;
-    const side=`<div class="acclist" role="list" aria-label="Brands"><input id="acc-find" type="search" placeholder="Find a brand (${list.length})" aria-label="Find a brand"><div class="accbs">${list.map(x=>`<button role="listitem" class="accb ${x.b===cur?"on":""}" data-act="accb" data-id="${esc(x.b)}" data-n="${esc(bname(x.b).toLowerCase())}" aria-current="${x.b===cur}"><span class="an">${esc(bname(x.b))}</span><span class="am">${x.ok} of ${x.total} granted</span><span class="aw ${x.chase?"bad":x.founder?"warn":x.ok===x.total&&x.total?"ok":"off"}">${x.chase?`${smark("blk","")} ${x.chase} to chase`:x.founder?`${x.founder} with founder`:x.ok===x.total&&x.total?`${smark("done","")} All granted`:"Open"}</span></button>`).join("")}</div></div>`;
+    const side=`<div class="acclist" role="list" aria-label="Brands"><input id="acc-find" type="search" placeholder="Find a brand (${list.length})" aria-label="Find a brand"><div class="accbs">${list.map(x=>`<button role="listitem" class="accb ${x.b===cur?"on":""}" data-act="accb" data-id="${esc(x.b)}" data-n="${esc(bname(x.b).toLowerCase())}" aria-current="${x.b===cur}"><span class="an">${esc(bname(x.b))}</span><span class="am">${x.total?`${x.ok} of ${x.total} granted`:"No platforms yet"}</span><span class="aw ${x.chase?"bad":x.founder?"warn":x.ok===x.total&&x.total?"ok":"off"}">${x.total===0?"":x.chase?`${smark("blk","")} ${x.chase} to chase`:x.founder?`${x.founder} with founder`:x.ok===x.total&&x.total?`${smark("done","")} All granted`:"Open"}</span>${outTag(x.b)}</button>`).join("")}</div></div>`;
     const br=S.brands[cur]||{};const waiting=withId(S.access).filter(a=>a.brand===cur&&ACC_FOUNDER.includes(a.status)).length;const total=withId(S.access).filter(a=>a.brand===cur).length;const shown=list.find(x=>x.b===cur).n;
-    const top=`<div class="row accbh"><h2><a class="bname" href="#brand-${esc(cur)}">${esc(bname(cur))}</a></h2><span class="faint">${esc(br.founder?"Founder: "+br.founder:"")}</span><span class="grow"></span>${waiting?`<button class="btn sm" data-act="fm-open" data-id="${esc(cur)}">Message for founder (${waiting})</button>`:""}${canWrite?`<button class="btn sm" data-act="add-access" data-id="${esc(cur)}">Add platform</button>`:""}</div>${shown<total?`<p class="faint" style="margin:0 0 8px">Showing ${shown} of ${total} platforms in this list.</p>`:""}`;
+    const top=`<div class="row accbh"><h2><a class="bname" href="#brand-${esc(cur)}">${esc(bname(cur))}</a></h2>${outTag(cur)}<span class="faint">${esc(br.founder?"Founder: "+br.founder:"")}</span><span class="grow"></span>${waiting?`<button class="btn sm" data-act="fm-open" data-id="${esc(cur)}">Message for founder (${waiting})</button>`:""}${canWrite?`<button class="btn sm" data-act="add-access" data-id="${esc(cur)}">Add platform</button>`:""}</div>${shown<total?`<p class="faint" style="margin:0 0 8px">Showing ${shown} of ${total} platforms in this list.</p>`:""}`;
     return chips+`<div class="accmd">${side}<div class="accdet">${top}${accRows(withId(S.access).filter(a=>a.brand===cur&&inQueue(a,accQueue)),cur)}</div></div>`}
   return accRows(withId(S.access).filter(a=>a.brand===bid),bid)}
 function accRows(rows,bid){
   const ord=a=>ACC_STEPS.indexOf(a.status)<0?(a.status==="Blocked"?-1:9):ACC_STEPS.indexOf(a.status);
   let h="";
-  if(!rows.length)return`<div class="tw"><div class="empty">No platforms tracked for ${esc(bname(bid))} yet. Add the ones the team needs.</div></div>`;
+  if(!rows.length)return`<div class="tw"><div class="empty">No platforms tracked for ${esc(bname(bid))} yet.${holdOf(bid)?` ${esc(bname(bid))} is ${esc(((S.brands[bid]||{}).stage||"paused").toLowerCase())}, so none may be needed.`:" Add the ones the team needs."}</div></div>`;
   h+=`<div class="tw"><table class="accfull"><thead><tr><th>Platform</th><th>Status and type</th><th>Team logins</th><th>Next step</th><th class="num"><span class="sr">Comments</span></th></tr></thead><tbody>`;
   {const list=rows.sort((x,y)=>ord(x)-ord(y)||String(x.platform).localeCompare(y.platform));
     for(const a of list){const lc=lastContact(a);const wd=workdaysSince(lc);const th=accThread(a._id).filter(c=>c.kind!=="system").length;const ns=a.next_step||{};
@@ -3207,7 +3213,7 @@ document.addEventListener("click",e=>{
   else if(act==="add-bp"){const bid=a.dataset.id;create("bps",bid,{brand:bid,owner:"",due_date:"",sections:{},blocker:"",doc_link:"",notes:""},"BPs "+bname(bid))}
   else if(act==="add-brand"){formBox("Add brand",`<div class="f"><label for="n-name">Brand name</label><input id="n-name" name="name" required></div><div class="f"><label for="n-st">Stage</label><select id="n-st" name="stage">${opts(L("stage"),"Qualification",false)}</select></div>`,"Add brand",
     v=>{if(!v.name){toast("Type the brand name.");return false}let id=v.name.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"brand";while(S.brands[id])id+="-2";
-      create("brands",id,{name:v.name,founder:"",website:"",stage:v.stage,lead:"",next_step:"",sprint_label:"",order:brandList().length+1,paused:false,restricted:false},v.name);
+      create("brands",id,{name:v.name,founder:"",website:"",stage:v.stage,lead:"",next_step:"",sprint_label:"",order:brandList().length+1,paused:false,restricted:false},v.name);if(!S.bps[id])create("bps",id,{brand:id,owner:"",due_date:"",sections:{},blocker:"",doc_link:"",notes:""},"BPs "+v.name);
       db.doc("brand_steps/"+id).set({brand:id,s:{}}).catch(()=>{});if(v.stage!=="Internal")db.doc("sow/"+id).set({brand:id,owner:"",support:[],stage:"Not Started",start_date:"",draft_due:"",target_sign:"",blocker:"",next_step:"",sow_link:"",gf_link:"",gf_updated:false,gf_status:"",batch:""}).catch(()=>{});
       go("brand-"+id)})}
   else if(act==="mem-del"){const id=drawerCtx&&drawerCtx.id;const tk=S.tasks[id];if(!tk)return;const sup=(tk.support||[]).slice();const[p]=sup.splice(+a.dataset.i,1);if(!p)return;save("tasks",id,{support:sup},tk.title+" members");taskNote(tk,id,"Removed "+p)}
