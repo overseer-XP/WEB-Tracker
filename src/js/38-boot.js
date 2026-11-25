@@ -30,11 +30,13 @@ parseHash();
   const f=[...el.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]):not([type=hidden]),select:not([disabled]),textarea:not([disabled]),summary,[tabindex]:not([tabindex="-1"])')].filter(x=>x.getClientRects().length);if(!f.length)return;
   const a=f[0],z=f[f.length-1];if(!el.contains(document.activeElement)){e.preventDefault();a.focus()}else if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus()}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus()}});
  let q=0;const tip=()=>{q=0;document.querySelectorAll(".bname,.kt,.kname").forEach(x=>{if(x.scrollWidth>x.clientWidth+1){if(!x.title)x.title=x.textContent.trim()}})};
+ (window.__afterMain=window.__afterMain||[]).push(tip);
  const mn=document.getElementById("main");if(mn)new MutationObserver(()=>{if(!q)q=requestAnimationFrame(tip)}).observe(mn,{childList:true,subtree:true});addEventListener("resize",()=>{if(!q)q=requestAnimationFrame(tip)});
 })();
 
 /* long next steps and blockers: show "Show more" only when the text is cut; clicking the text or the link opens it in full */
 (function(){const XO=window.__xpOpen=window.__xpOpen||new Set();const fit=()=>document.querySelectorAll(".xp").forEach(x=>{if(x.dataset.xk&&XO.has(x.dataset.xk)&&!x.classList.contains("open")){x.classList.add("open");x.setAttribute("aria-expanded","true");const mm=x.closest(".nsc")&&x.closest(".nsc").querySelector(".xpm");if(mm){mm.hidden=false;mm.textContent="Show less"}return}const m=x.closest(".nsc")&&x.closest(".nsc").querySelector(".xpm");if(!m||x.classList.contains("open"))return;m.hidden=x.scrollHeight<=x.clientHeight+2});
+ (window.__afterMain=window.__afterMain||[]).push(fit);
  const mn=document.getElementById("main");let q=0;if(mn)new MutationObserver(()=>{if(!q)q=requestAnimationFrame(()=>{q=0;fit()})}).observe(mn,{childList:true,subtree:true});addEventListener("resize",fit);
  const tog=el=>{const x=el.classList.contains("xp")?el:el.closest(".nsc").querySelector(".xp");const m=x.closest(".nsc").querySelector(".xpm");const o=!x.classList.contains("open");x.classList.toggle("open",o);x.setAttribute("aria-expanded",o);if(x.dataset.xk){if(o)XO.add(x.dataset.xk);else XO.delete(x.dataset.xk)}if(m){m.hidden=false;m.textContent=o?"Show less":"Show more"}};
  document.addEventListener("click",e=>{const el=e.target.closest("[data-act=xp]");if(el){e.preventDefault();e.stopPropagation();tog(el)}},true);
@@ -42,4 +44,5 @@ parseHash();
 
 /* timeline: a month name that would run under the Today marker is hidden */
 (function(){const fix=()=>document.querySelectorAll(".rmt").forEach(r=>{const td=r.querySelector(".rmtl");r.querySelectorAll(".rmm").forEach(m=>{m.style.visibility="";if(!td||!td.offsetParent)return;const a=td.getBoundingClientRect(),b=m.getBoundingClientRect();if(b.right>a.left-4&&b.left<a.right+4)m.style.visibility="hidden"})});
+ (window.__afterMain=window.__afterMain||[]).push(fix);
  const mn=document.getElementById("main");let q=0;if(mn)new MutationObserver(()=>{if(!q)q=requestAnimationFrame(()=>{q=0;fix()})}).observe(mn,{childList:true,subtree:true});addEventListener("resize",fix)})();

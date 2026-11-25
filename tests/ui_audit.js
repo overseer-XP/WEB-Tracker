@@ -120,6 +120,21 @@ const COVER = () => {
         }
       };
       await log('at rest', await p.evaluate(DETECT)); await log('at rest', await p.evaluate(OVERLAP));
+      // a redraw (what happens on every live data update) must not flash: the first painted frame has to match the settled page
+      const fl = await p.evaluate(async h => {
+        const m = document.getElementById('main'); const snap = () => [m.scrollHeight, [...m.querySelectorAll('.xpm')].filter(x => !x.hidden).length, m.querySelectorAll('*').length > 0];
+        location.hash = h + '-x'; await new Promise(r => setTimeout(r, 60)); location.hash = h;
+        const first = await new Promise(r => { const o = new MutationObserver(() => { o.disconnect(); requestAnimationFrame(() => r(snap())); }); o.observe(m, { childList: true }); });
+        await new Promise(r => setTimeout(r, 400)); const settled = snap();
+        return { first, settled };
+      }, hash);
+      if (pg !== 'sow:list' && pg !== 'sow' && (Math.abs(fl.first[0] - fl.settled[0]) > 4 || fl.first[1] !== fl.settled[1])) await log('redraw', [{ kind: 'flashes on redraw (first frame differs from settled page)', el: pg, text: `height ${fl.first[0]}->${fl.settled[0]}, Show more ${fl.first[1]}->${fl.settled[1]}` }]);
+      if (pg === 'sow:list' || pg === 'sow') {
+        // SOW list/board: redraw through a stage tab (the view switch survives it)
+        const fl2 = await p.evaluate(async () => { const m = document.getElementById('main'); const snap = () => [m.scrollHeight, [...m.querySelectorAll('.xpm')].filter(x => !x.hidden).length]; const b = m.querySelector('.stabs button,.stabs [role=tab]'); if (!b) return null; const before = snap(); b.click(); const first = await new Promise(r => requestAnimationFrame(() => r(snap()))); await new Promise(r => setTimeout(r, 400)); return { before, first, settled: snap() }; });
+        if (fl2 && (Math.abs(fl2.first[0] - fl2.settled[0]) > 4 || fl2.first[1] !== fl2.settled[1])) await log('redraw', [{ kind: 'flashes on redraw (first frame differs from settled page)', el: pg, text: `height ${fl2.first[0]}->${fl2.settled[0]}, Show more ${fl2.first[1]}->${fl2.settled[1]}` }]);
+      }
+      if (pg === 'sow:list') { await p.click('[data-act=sowview][data-v=list]').catch(() => { }); await p.waitForTimeout(250); }
       // every tab and view switch on the page
       const TABS = 'main [role=tab], main .rsub [data-tab], main [data-act=settab], main [data-act=sowview], main [data-act=campview], main .stabs button, main .seg button, #topbar [data-act=simple]';
       const nt = await p.$$eval(TABS, es => es.filter(e => e.offsetParent).length);
