@@ -39,6 +39,9 @@ parseHash();
  document.addEventListener("scroll",e=>{const tw=e.target;if(!tw||!tw.classList||!tw.classList.contains("tw"))return;const m=document.getElementById("main");if(!m||!m.contains(tw))return;X[key(m,tw,[...m.querySelectorAll(".tw")].indexOf(tw))]=tw.scrollLeft},true);
  (window.__afterMain=window.__afterMain||[]).push(()=>{const m=document.getElementById("main");if(!m)return;[...m.querySelectorAll(".tw")].forEach((tw,i)=>{const v=X[key(m,tw,i)];if(v)tw.scrollLeft=v})})})();
 
+/* a view switch fades the new view in */
+(window.__afterMain=window.__afterMain||[]).push(()=>{if(!window.__vsw)return;window.__vsw=false;const m=document.getElementById("main");const seg=m&&m.querySelector(".viewseg2");if(!seg)return;let el=seg.nextElementSibling;while(el){el.classList.remove("vin");void el.offsetWidth;el.classList.add("vin");el=el.nextElementSibling}});
+
 /* long next steps and blockers: show "Show more" only when the text is cut; clicking the text or the link opens it in full */
 (function(){const XO=window.__xpOpen=window.__xpOpen||new Set();const box=x=>x.closest(".nsc");
  const set=(x,o)=>{x.classList.toggle("open",o);x.setAttribute("aria-expanded",o);const b=box(x);const h=b&&b.querySelector(".nshist");if(h)h.hidden=!o;const c=b&&b.querySelector(".nsmorec");if(c)c.textContent=o?"Hide earlier notes":c.dataset.t};

@@ -61,7 +61,7 @@ document.addEventListener("click",e=>{
   else if(act==="mcols"){mineCols=a.dataset.v;ls.set("vt-mcols",mineCols);render()}
   else if(act==="minetab"){mineTab=a.dataset.v;ls.set("vt-minetab",mineTab);render()}
   else if(act==="accb"){accBrand=a.dataset.id;ls.set("vt-accbrand",accBrand);render()}
-  else if(act==="sowview"){sowView=a.dataset.v;ls.set("vt-sowview",sowView);render()}
+  else if(act==="sowview"){window.__vsw=sowView!==a.dataset.v;sowView=a.dataset.v;ls.set("vt-sowview",sowView);render()}
   else if(act==="accgap"){flt.accGap=a.dataset.v==="1";render()}
   else if(act==="board")openDrawer("board",a.dataset.b,a.dataset.c);
   else if(act==="nav-steps"){closeDrawer();go(brandHash(a.dataset.id,"steps"))}

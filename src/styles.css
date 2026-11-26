@@ -1223,3 +1223,25 @@ table.sowl td{padding:14px 12px!important}
 
 /* SOW list: the Edit cue never splits from its pencil */
 table.sowl td.lbc .lfe{white-space:nowrap;display:inline-block}
+
+/* view switch: segmented control like Table | Cards */
+.viewseg2{display:inline-flex;gap:2px;padding:3px;border-radius:12px;background:var(--vb-tile,var(--panel2));border:1px solid var(--vb-line,var(--line));margin:6px 0 14px}
+.viewseg2 button{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:9px;font-size:14px;font-weight:600;color:var(--vb-mute,var(--muted));transition:background .18s ease,color .18s ease,box-shadow .18s ease}
+.viewseg2 button svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.6}
+.viewseg2 button:hover{color:var(--vb-ink,var(--ink))}
+.viewseg2 button.on{background:var(--vb-card,var(--panel));color:var(--vb-ink,var(--ink));box-shadow:0 1px 2px rgb(11 16 51/.08),0 2px 8px -2px rgb(11 16 51/.12)}
+.viewseg2 button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@keyframes vin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.vin{animation:vin .26s cubic-bezier(.2,.7,.2,1)}
+@media (prefers-reduced-motion:reduce){.vin{animation:none}.viewseg2 button{transition:none}}
+/* cards stand off the page: clear edge, soft shadow, header band */
+:root:not([data-theme="dark"]){--vb-page:#EEF0F6;--vb-line:#DCE0EA;--vb-head:#F4F6FA;--vb-cardsh:0 1px 2px rgb(11 16 51/.06),0 10px 28px -14px rgb(11 16 51/.22)}
+:root[data-theme="dark"]{--vb-page:var(--bg);--vb-card:var(--panel);--vb-line:var(--line2);--vb-head:var(--panel2);--vb-tile:var(--panel2);--vb-ink:var(--ink);--vb-mute:var(--muted);--vb-eyebrow:var(--muted);--vb-row:var(--line);--vb-hover:var(--panel2);--vb-sec:var(--panel2);--vb-sec-ink:var(--ink);--vb-pri:var(--ink);--vb-pri-ink:var(--bg);--vb-cardsh:0 1px 2px rgb(0 0 0/.45),0 14px 32px -14px rgb(0 0 0/.65)}
+main[data-page=sow] .tw,main[data-page=sow] .tcard,main[data-page=sow] .stabs,main[data-page=sow] .sgone>.it,
+main[data-page=bp] .tw,main[data-page=bp] .toolbar,main[data-page=access] .accdet,main[data-page=access] .acclist,main[data-page=mine] .card{border-color:var(--vb-line)!important}
+main[data-page=sow] .tw,main[data-page=bp] .tw,main[data-page=access] .accdet .tw{box-shadow:var(--vb-cardsh)!important}
+main[data-page=sow] .stabs:has(+ .tw),main[data-page=sow] .tbar.tcard{border:1px solid var(--vb-line)!important;border-bottom:0!important;border-radius:16px 16px 0 0!important;background:var(--vb-card)!important}
+main[data-page=sow] .stabs + .tw,main[data-page=sow] .tbar.tcard + .tw{border:1px solid var(--vb-line)!important;border-top:0!important;border-radius:0 0 16px 16px!important}
+main[data-page=sow] table thead th,main[data-page=bp] table thead th,main[data-page=access] table thead th{background:var(--vb-head)!important;border-bottom:1px solid var(--vb-line)!important;color:var(--vb-ink)!important}
+main[data-page=sow] table tbody td{border-bottom-color:var(--vb-line)}
+main[data-page=sow] table tbody tr:hover td{background:color-mix(in srgb,var(--vb-head) 70%,transparent)}
