@@ -1245,3 +1245,7 @@ main[data-page=sow] .stabs + .tw,main[data-page=sow] .tbar.tcard + .tw{border:1p
 main[data-page=sow] table thead th,main[data-page=bp] table thead th,main[data-page=access] table thead th{background:var(--vb-head)!important;border-bottom:1px solid var(--vb-line)!important;color:var(--vb-ink)!important}
 main[data-page=sow] table tbody td{border-bottom-color:var(--vb-line)}
 main[data-page=sow] table tbody tr:hover td{background:color-mix(in srgb,var(--vb-head) 70%,transparent)}
+
+/* big screens zoom the page: windows must still fit the real screen height */
+@media (min-width:2200px) and (max-resolution:1.1dppx){.drawer:not(.cardback):not(.sowd){max-height:calc(88vh / 1.25)}.drawer.cardback,.drawer.sowd{max-height:calc(90vh / 1.25)}}
+@media (min-width:2900px) and (max-resolution:1.1dppx){.drawer:not(.cardback):not(.sowd){max-height:calc(88vh / 1.5)}.drawer.cardback,.drawer.sowd{max-height:calc(90vh / 1.5)}}

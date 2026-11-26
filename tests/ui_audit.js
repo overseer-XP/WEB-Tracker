@@ -193,7 +193,9 @@ const COVER = () => {
         await log('edit window opening', await p.evaluate(DETECT)); await p.waitForTimeout(350);
         await p.evaluate(() => document.querySelectorAll('#drawer details').forEach(d => d.open = true));
         await log('edit window open', await p.evaluate(DETECT)); await log('edit window open', await p.evaluate(OVERLAP));
-        const c = await p.$('#drawer:not([hidden]) [data-act=close]'); if (c) await c.click(); await p.waitForTimeout(200);
+        const off = await p.evaluate(() => { const d = document.getElementById('drawer'); if (d.hidden) return null; const r = d.getBoundingClientRect(); return (r.top < -1 || r.bottom > innerHeight + 1) ? [r.left, r.top, r.width, r.height].map(Math.round) : null; });
+        if (off) await log('edit window open', [{ kind: 'edit window runs off the screen (Close not reachable)', el: '#drawer.' + (await p.evaluate(() => document.getElementById('drawer').className)), rect: off }]);
+        await p.evaluate(() => { const c = document.querySelector('#drawer:not([hidden]) [data-act=close]'); if (c) c.click(); }); await p.waitForTimeout(200);
         const left = await p.evaluate(() => { const d = document.getElementById('drawer'); return d.hidden ? '' : 'drawer still open'; });
         if (left) await log('edit window closed', [{ kind: left, el: '#drawer' }]);
       }
