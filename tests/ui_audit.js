@@ -55,7 +55,7 @@ const OVERLAP = () => {
   // with a window open, only the window counts (the page behind it is covered on purpose)
   const scope = document.querySelector('#modal:not([hidden])') ? '#modal *' : document.querySelector('#drawer:not([hidden])') ? '#drawer *' : 'main *';
   const els = [...document.querySelectorAll(scope)].filter(e => {
-    if (!own(e) || !(e.innerText || '').trim() || e.closest('.sr,svg,option,select')) return false; const r = e.getBoundingClientRect(); const s = getComputedStyle(e);
+    if (!own(e) || !(e.innerText || '').trim() || e.closest('.sr,svg,option,select,.xp:not(.open) .nf')) return false; const r = e.getBoundingClientRect(); const s = getComputedStyle(e);
     return r.width > 2 && r.height > 2 && r.bottom > 0 && r.top < innerHeight && s.visibility !== 'hidden' && s.opacity !== '0';
   }).slice(0, 700);
   const R = els.map(e => e.getBoundingClientRect());

@@ -34,6 +34,11 @@ parseHash();
  const mn=document.getElementById("main");if(mn)new MutationObserver(()=>{if(!q)q=requestAnimationFrame(tip)}).observe(mn,{childList:true,subtree:true});addEventListener("resize",()=>{if(!q)q=requestAnimationFrame(tip)});
 })();
 
+/* tables keep their sideways scroll when the page redraws (live updates, saves) */
+(function(){const X={};const key=(m,tw,i)=>(location.hash||"")+"|"+(m.dataset.page||"")+"|"+((tw.querySelector("table")||{}).className||"")+"|"+i;
+ document.addEventListener("scroll",e=>{const tw=e.target;if(!tw||!tw.classList||!tw.classList.contains("tw"))return;const m=document.getElementById("main");if(!m||!m.contains(tw))return;X[key(m,tw,[...m.querySelectorAll(".tw")].indexOf(tw))]=tw.scrollLeft},true);
+ (window.__afterMain=window.__afterMain||[]).push(()=>{const m=document.getElementById("main");if(!m)return;[...m.querySelectorAll(".tw")].forEach((tw,i)=>{const v=X[key(m,tw,i)];if(v)tw.scrollLeft=v})})})();
+
 /* long next steps and blockers: show "Show more" only when the text is cut; clicking the text or the link opens it in full */
 (function(){const XO=window.__xpOpen=window.__xpOpen||new Set();const box=x=>x.closest(".nsc");
  const set=(x,o)=>{x.classList.toggle("open",o);x.setAttribute("aria-expanded",o);const b=box(x);const h=b&&b.querySelector(".nshist");if(h)h.hidden=!o;const c=b&&b.querySelector(".nsmorec");if(c)c.textContent=o?"Hide earlier notes":c.dataset.t};

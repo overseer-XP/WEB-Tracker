@@ -82,7 +82,7 @@ document.addEventListener("click",e=>{
     formBox((st==="Agreed"?"Agree: ":"Send back: ")+escTitle(e.kind,e.ref,e.code),`<p class="muted" style="margin:0">${esc(e.ask)}</p><div class="f"><label for="n-note">${st==="Agreed"?"Note (optional)":"Why, and what is needed instead"}</label><textarea id="n-note" name="note" ${st==="Agreed"?"":"required"}></textarea></div>`,st==="Agreed"?"Agree":"Send back",
       v=>{if(st!=="Agreed"&&!v.note){toast("Say why it is going back.");return false}decideEsc(id,st,v.note)})}
   else if(act==="esc-open"){const e=S.esc[a.dataset.id];if(!e)return;if(e.kind==="task")openDrawer("task",e.ref);else if(e.kind==="step")openDrawer("step",e.ref,e.code);else if(e.kind==="access")openDrawer("access",e.ref);else if(e.kind==="sow")openDrawer("sow",e.ref);else go("brand-"+e.brand)}
-  else if(act==="gate-ok"){const bid=a.dataset.id,code=a.dataset.code;const why=gateBlock(bid,code);if(why){toast(why);return}if(!me){toast("Pick your name first (Which one is you?).");return}
+  else if(act==="gate-ok"){const bid=a.dataset.id,code=a.dataset.code;const why=stepBlock(bid,code);if(why){toast(why);return}if(!me){toast("Pick your name first (Which one is you?).");return}
     saveStep(bid,code,{status:"Done"});const s=S.steps[code]||{};const owner=stepState(bid,code).owner||(S.brands[bid]||{}).lead||"";
     create("esc",null,{brand:bid,kind:"gate",ref:bid,code,title:code+" "+(s.name||""),ask:"Gate sign-off",by:me,at:Date.now(),state:"Agreed",decision:"",decided_by:me,decided_at:Date.now()},"Signed off "+code);
     create("comments",null,{brand:bid,text:`${owner?"@"+owner+" ":""}Leadership signed off ${code} ${s.name||""}`,by:me,at:Date.now(),mentions:owner?[owner]:[]},"Gate signed off")}
@@ -110,6 +110,10 @@ document.addEventListener("click",e=>{
     lg[i]=Object.assign({},e);delete lg[i].legacy;if(act==="ns-done")lg[i].done={by:me,at:Date.now()};else delete lg[i].done;
     save("sow",id,{ns_log:lg},(act==="ns-done"?"SOW next step done ":"SOW next step reopened ")+bname(id)).then(after)}
   else if(act==="close-go"){e.preventDefault();closeDrawer();go(a.getAttribute("href").slice(1))}
+  else if(act==="ask-pre"){const bid=a.dataset.id,code=a.dataset.code,pre=S.steps[a.dataset.pre],s=S.steps[code];if(!pre||!s)return;if(!me){toast("Pick your name first (Which one is you?).");return}const o=stepOwner(bid,pre);
+    const ats=o.split(",").map(x=>x.trim()).filter(Boolean);const text=`${ats.map(x=>"@"+x).join(" ")} ${sno(s)} ${s.name} for ${bname(bid)} is waiting on ${sno(pre)} ${pre.name}. Can you finish it, or say when it will be ready?`;
+    formBox("Ask "+o,`<div class="f"><label for="n-ask">Message to ${esc(o)}</label><textarea id="n-ask" name="text" rows="4">${esc(text)}</textarea></div><p class="faint" style="margin:0 0 10px;font-size:13px">It reaches ${esc(o)} as a mention in VALFLO and stays on ${esc(bname(bid))}'s comments.</p>`,"Send",v=>{const tx=(v.text||"").trim();if(!tx)return false;
+      create("comments",null,{brand:bid,step:code,text:tx,by:me,at:Date.now(),tz:tzNow().tz,mentions:mentionsIn(tx)},"Asked "+o+" about "+pre.name).then(()=>toast("Sent to "+o+"."))})}
   else if(act==="ns-edit"){const id=a.dataset.id,i=+a.dataset.i;const s=S.sow[id];if(!s||!canWrite)return;if(!me){toast("Pick your name at the top first.");return}const lg=nsLog(s).slice();const e=lg[i];if(!e)return;
     formBox("Edit next step · "+bname(id),`<div class="f"><label for="n-nse">${esc(nsStamp(e))}</label><textarea id="n-nse" name="text" rows="5">${esc(e.t)}</textarea></div><p class="faint" style="margin:0 0 10px;font-size:13px">The entry keeps its original date and author and is marked edited by ${esc(me)}.</p>`,"Save",v=>{const tx=(v.text||"").trim();if(!tx){toast("The entry can't be empty.");return false}
       lg[i]=Object.assign({},e,{t:tx,edited:{by:me,at:Date.now()}});delete lg[i].legacy;save("sow",id,{ns_log:lg},"SOW next steps edited "+bname(id)).then(()=>{if(drawerCtx&&drawerCtx.kind==="sow")openDrawer("sow",id,null,true)})})}
@@ -238,7 +242,8 @@ document.addEventListener("change",e=>{
   if(act==="roleprev"){if(!realEdit)return;ls.set("vt-roleprev",t.value);applyRolePreview();closeDrawer();render();toast(t.value?"Showing VALFLO as a "+(t.value==="view"?"view-only":"member")+" sees it":"Back to admin");return}
   if(act==="status"){const kind=t.dataset.kind,id=t.dataset.id,v=t.value;
     if(kind==="task"){const cur=S.tasks[id];t.value=cur.status;setTaskStatus(id,v)}
-    else if(kind==="step"){const code=t.dataset.code;if(v==="Done"){const why=gateBlock(id,code);if(why){t.value=stepState(id,code).status||"Not Started";toast(why);return}}saveStep(id,code,{status:v})}
+    else if(kind==="step"){const code=t.dataset.code;if(v==="Done"){const why=stepBlock(id,code);if(why){t.value=stepState(id,code).status||"Not Started";
+        if(isLeader(me))confirmBox(why+" As Leadership you can mark it done anyway. The override is recorded on the step.","Mark done anyway",()=>saveStep(id,code,{status:"Done",override:{by:me,at:Date.now(),why}}));else toast(why);return}}saveStep(id,code,{status:v})}
     else if(kind==="access"){const cur=S.access[id];if(v==="Blocked"&&!cur.blocker){t.value=cur.status;askBlocker(r=>{save("access",id,{status:"Blocked",blocker:r.text,owner:cur.owner||r.person},bname(cur.brand)+" "+cur.platform);accSystemNote(cur,id,"Blocked: "+r.text+" (waiting on "+r.person+")")});return}setAccStatus(id,v)}
     else if(kind==="sow"){const cur=S.sow[id]||{};if(v==="Blocked"&&!cur.blocker){t.value=cur.stage||"Not Started";askBlocker(r=>save("sow",id,{stage:"Blocked",blocker:r.text+" (waiting on "+r.person+")"},"SOW "+bname(id)));return}
       if(!S.sow[id])create("sow",id,{brand:id,stage:v},"SOW "+bname(id));else save("sow",id,{stage:v},"SOW "+bname(id))}
